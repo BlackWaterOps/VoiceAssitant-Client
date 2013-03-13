@@ -5,6 +5,8 @@ $(function () {
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
+    $('.console').ClassyScroll();
+
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
@@ -58,7 +60,12 @@ $(function () {
                             }
                             break;
                         case arg.indexOf('f***') > -1:
-                            reply = "How shall I fuck off, oh lord?";
+                            reply = "How shall I fuck off?";
+                            conversation();
+                            break;
+                        case arg == "clear the conversation":
+                            $('.console').html("");
+                            reply = "Okay. Your wish is my command.";
                             conversation();
                             break;
                         default:
@@ -72,6 +79,7 @@ $(function () {
     }
     function conversation (e) {
         $('.console').append('<p class="bubble please">' + reply + '</p>');
+        $('.console').trigger('uscrollbar',[999]);
         window.plugins.tts.speak(reply);
     }
 
