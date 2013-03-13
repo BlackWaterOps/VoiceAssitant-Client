@@ -1,7 +1,8 @@
-var api = cordova.require('please/api');
-
 $(function () {
-    var capture,
+    var api = cordova.require('please/api'),
+        actions = cordova.require('please/actions'),
+
+        capture,
         activeContact,
         activeContactTel;
 
@@ -60,6 +61,10 @@ $(function () {
         $('.console').append('<p class="bubble please">' + message + '</p>');
         window.plugins.tts.speak(message);
     }
+
+    var performAction = function(action, payload) {
+        actions[action](payload);
+    };
 
     function contactLookup (e) {
         var options = new ContactFindOptions();
