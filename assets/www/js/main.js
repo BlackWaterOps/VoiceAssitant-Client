@@ -5,8 +5,6 @@ $(function () {
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
-    $('.console').ClassyScroll();
-
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
@@ -52,6 +50,7 @@ $(function () {
                             break;
                         case arg.indexOf('yes') != -1 && activeContact != null:
                             var numbers = activeContact.phoneNumbers;
+                            console.log(numbers);
                             if ( numbers.length == 0 ) {
                                 reply = "I couldn't find any numbers for " + activeContact.displayName;
                                 conversation();
@@ -79,7 +78,6 @@ $(function () {
     }
     function conversation (e) {
         $('.console').append('<p class="bubble please">' + reply + '</p>');
-        $('.console').trigger('uscrollbar',[999]);
         window.plugins.tts.speak(reply);
     }
 
@@ -90,6 +88,7 @@ $(function () {
         navigator.contacts.find(fields, contactLookupSuccess, contactLookupError, options);
     }
     function contactLookupSuccess(contacts) {
+        console.log(contacts)
         if (contacts.length > 1) {
             reply = "I found" + contacts.length;
         } else if ( contacts.length == 1 ) {
@@ -120,8 +119,9 @@ $(function () {
 
     // $('.micbutton').click(function () {
     //     capture = "Go fuck yourself";
-    //     $('.console').append('<p class="bubble please">' + capture + '</p>');
-    //     window.plugins.tts.speak(capture);
+    //     $('.console').append('<p class="bubble please" id="last">' + capture + '</p>');
+    //     window.location='#last';
+    //     // window.plugins.tts.speak(capture);
     // })
 
     $('.micbutton').click(function () {
