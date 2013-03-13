@@ -1,7 +1,9 @@
+var api = cordova.require('please/api');
+
 $(function () {
     var capture,
-    activeContact,
-    activeContactTel;
+        activeContact,
+        activeContactTel;
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -31,53 +33,37 @@ $(function () {
         if (result) {
             respObj = JSON.parse(result);
             if (respObj) {
+                // TODO: Send multiple matches with probabilities (will need to
+                // mod plugin)
                 var matches = respObj.speechMatches.speechMatch;
 
-                for (x in matches) {
-                    $('.console').append('<p class="bubble owner">' + matches[x] + '</p>');
-                    
-                    arg = matches[x];
-                    switch (true) {
-                        case arg == "what is my name":
-                            reply = "why don't you know what your name is?";
-                            conversation();
-                            break;
-                        case arg.indexOf('call') > -1:
-                            var lookup = arg.split(" ");
-                            var person = lookup[1];
-                            console.log(person + " is here")
-                            contactLookup(person);
-                            break;
-                        case arg.indexOf('yes') != -1 && activeContact != null:
-                            var numbers = activeContact.phoneNumbers;
-                            if ( numbers.length == 0 ) {
-                                reply = "I couldn't find any numbers for " + activeContact.displayName;
-                                conversation();
-                            } else {
-                                window.plugins.PhoneCall.call(numbers[0]);
-                            }
-                            break;
-                        case arg.indexOf('f***') > -1:
-                            reply = "How shall I fuck off, oh lord?";
-                            conversation();
-                            break;
-                        default:
-                            reply = "I didn't understand. I am such an idiot.";
-                            conversation();
-                            break;
-                    }
+                if ( matches.length > 0 ) {
+                    api.ask(matches[0], function(response) {
+                        console.log(JSON.stringify(response));
+
+                        if ( response.response != null ) {
+                            say(response.response);
+                        }
+
+                        if ( response.action != null ) {
+                            performAction(response.action, response.payload);
+                        }
+                    });
+                } else {
+                    say("I didn't understand. I am such an idiot.");
                 }
-            }        
+            }
         }
     }
-    function conversation (e) {
-        $('.console').append('<p class="bubble please">' + reply + '</p>');
-        window.plugins.tts.speak(reply);
+
+    function say(message) {
+        $('.console').append('<p class="bubble please">' + message + '</p>');
+        window.plugins.tts.speak(message);
     }
 
     function contactLookup (e) {
         var options = new ContactFindOptions();
-        options.filter = e; 
+        options.filter = e;
         var fields = ["displayName", "name", "phoneNumbers"];
         navigator.contacts.find(fields, contactLookupSuccess, contactLookupError, options);
     }
