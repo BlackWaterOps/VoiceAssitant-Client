@@ -1,0 +1,57 @@
+/* line 1, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+* {
+  -webkit-box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none; }
+
+/* line 6, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+body {
+  background-color: #000;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  font-family: Verdana, Arial, sans-serif; }
+
+/* line 15, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.container {
+  min-height: 100%;
+  position: relative; }
+
+/* line 19, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.console {
+  padding: 10px; }
+
+/* line 22, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.control {
+  padding: 10px;
+  height: 48px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center; }
+  /* line 30, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+  .control .micbutton {
+    width: 120px;
+    height: 36px;
+    border-radius: 5px;
+    background-color: #555;
+    display: block;
+    margin: 0 auto;
+    padding: 6px;
+    cursor: pointer; }
+
+/* line 41, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.bubble {
+  padding: 10px;
+  border-radius: 10px; }
+
+/* line 45, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.please {
+  background-color: #369; }
+
+/* line 48, /Users/rewis/Sites/pgtest/assets/www/scss/main.scss */
+.owner {
+  background-color: #963; }

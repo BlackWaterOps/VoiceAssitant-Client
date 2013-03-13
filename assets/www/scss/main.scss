@@ -1,0 +1,50 @@
+* {
+	-webkit-box-sizing: border-box;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-user-select: none;
+}
+body {
+	background-color: #000;
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	color: #fff;
+	font-family: Verdana, Arial, sans-serif;
+}
+.container {
+	min-height: 100%;
+	position: relative;
+}
+.console {
+	padding: 10px;
+}
+.control {
+	padding: 10px;
+	height: 48px;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	.micbutton {
+		width: 120px;
+		height: 36px;
+		border-radius: 5px;
+		background-color: #555;
+		display: block;
+		margin: 0 auto;
+		padding: 6px;
+		cursor: pointer;
+	}
+}
+.bubble {
+	padding: 10px;
+	border-radius: 10px;
+}
+.please {
+	background-color: #369;
+}
+.owner {
+	background-color: #963;
+}
