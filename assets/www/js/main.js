@@ -50,7 +50,6 @@ $(function () {
                             break;
                         case arg.indexOf('yes') != -1 && activeContact != null:
                             var numbers = activeContact.phoneNumbers;
-                            alert(numbers[0]);
                             if ( numbers.length == 0 ) {
                                 reply = "I couldn't find any numbers for " + activeContact.displayName;
                                 conversation();
@@ -79,7 +78,7 @@ $(function () {
     function contactLookup (e) {
         var options = new ContactFindOptions();
         options.filter = e; 
-        var fields = ["displayName", "name"];
+        var fields = ["displayName", "name", "phoneNumbers"];
         navigator.contacts.find(fields, contactLookupSuccess, contactLookupError, options);
     }
     function contactLookupSuccess(contacts) {
