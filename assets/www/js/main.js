@@ -4,7 +4,17 @@ $(function () {
     activeContactTel;
 
     document.addEventListener("deviceready", onDeviceReady, false);
+
     var myScroll = new iScroll('wrapper', {checkDOMChanges: true});
+    var hite = $('#wrapper').innerHeight();
+    function refreshiScroll () {
+        setTimeout(function () {
+            myScroll.refresh();
+            if($('.console').innerHeight() > hite) {
+                myScroll.scrollToElement('.console p:last-child', 250);
+            }
+        }, 0);
+    }
 
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
@@ -15,6 +25,7 @@ $(function () {
         // When result is equal to STARTED we are ready to play
         if (result == TTS.STARTED) {
             $('.console').append('<p class="bubble please">How can I be of assistance?</p>');
+            refreshiScroll();
             window.plugins.tts.speak("How can I be of assistance?");
         }
     }
@@ -79,10 +90,7 @@ $(function () {
     }
     function conversation (e) {
         $('.console').append('<p class="bubble please">' + reply + '</p>');
-        setTimeout(function () {
-            myScroll.refresh();
-            myScroll.scrollToElement('.console p:last-child', 250);
-        }, 0);
+        refreshiScroll();
         window.plugins.tts.speak(reply);
     }
 
