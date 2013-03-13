@@ -57,6 +57,7 @@
     <plugin name="InAppBrowser" value="org.apache.cordova.InAppBrowser"/>
     <plugin name="SpeechRecognizer" value="com.urbtek.phonegap.SpeechRecognizer"/>
     <plugin name="TTS" value="com.phonegap.plugins.speech.TTS"/>
+    <plugin name="PhoneCall" value="com.stremor.plugins.PhoneCall" />
 </plugins>
 </cordova>
 

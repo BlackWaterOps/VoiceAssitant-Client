@@ -48,6 +48,16 @@ $(function () {
                             console.log(person + " is here")
                             contactLookup(person);
                             break;
+                        case arg.indexOf('yes') != -1 && activeContact != null:
+                            var numbers = activeContact.phoneNumbers;
+                            alert(numbers[0]);
+                            if ( numbers.length == 0 ) {
+                                reply = "I couldn't find any numbers for " + activeContact.displayName;
+                                conversation();
+                            } else {
+                                window.plugins.PhoneCall.call(numbers[0]);
+                            }
+                            break;
                         case arg.indexOf('f***') > -1:
                             reply = "How shall I fuck off, oh lord?";
                             conversation();
@@ -75,16 +85,17 @@ $(function () {
     function contactLookupSuccess(contacts) {
         if (contacts.length > 1) {
             reply = "I found" + contacts.length;
-        } else {
+        } else if ( contacts.length == 1 ) {
             reply = "Shall I call " + contacts[0].displayName + "?";
-            activeContact = contacts[0].displayName;
-
+            activeContact = contacts[0];
+        } else {
+            reply = "I couldn't find anyone in your address book with that name.";
         }
         conversation();
     }
     function contactLookupError () {
         reply = "Oh, snap";
-        return reply;
+        conversation();
     }
 
     function speechInitOk() {
