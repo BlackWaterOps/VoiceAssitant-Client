@@ -56,7 +56,7 @@ $(function () {
                                 reply = "I couldn't find any numbers for " + activeContact.displayName;
                                 conversation();
                             } else {
-                                window.plugins.PhoneCall.call(numbers[0]);
+                                window.plugins.PhoneCall.call(numbers[0].value);
                             }
                             break;
                         case arg.indexOf('f***') > -1:
