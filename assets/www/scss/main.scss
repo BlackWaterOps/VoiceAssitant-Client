@@ -41,14 +41,14 @@ body {
 	-webkit-box-shadow: 0 4px 8px rgba(0,0,0,.5);
 	z-index: 99;
 }
-.console {
-	overflow-y: auto;
+#wrapper {
+	overflow: auto;
 	position: absolute;
 	top: 58px;
 	bottom: 80px;
 	left: 0;
 	right: 0;
-	margin-bottom: 0px;
+	-webkit-overflow-scrolling: touch;
 }
 .control {
 	position: fixed;

@@ -4,6 +4,7 @@ $(function () {
     activeContactTel;
 
     document.addEventListener("deviceready", onDeviceReady, false);
+    var myScroll = new iScroll('wrapper', {checkDOMChanges: true});
 
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
@@ -78,6 +79,10 @@ $(function () {
     }
     function conversation (e) {
         $('.console').append('<p class="bubble please">' + reply + '</p>');
+        setTimeout(function () {
+            myScroll.refresh();
+            myScroll.scrollToElement('.console p:last-child', 250);
+        }, 0);
         window.plugins.tts.speak(reply);
     }
 

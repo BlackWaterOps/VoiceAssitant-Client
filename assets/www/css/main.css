@@ -43,14 +43,14 @@ body {
   z-index: 99; }
 
 /* line 44, /Users/rewis/Sites/please/assets/www/scss/main.scss */
-.console {
-  overflow-y: auto;
+#wrapper {
+  overflow: auto;
   position: absolute;
   top: 58px;
   bottom: 80px;
   left: 0;
   right: 0;
-  margin-bottom: 0px; }
+  -webkit-overflow-scrolling: touch; }
 
 /* line 53, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .control {
