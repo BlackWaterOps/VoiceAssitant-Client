@@ -11,40 +11,106 @@ body {
 	padding: 0;
 	color: #fff;
 	font-family: Verdana, Arial, sans-serif;
+	background-image: url('../img/please-bg.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: fixed;
 }
 .container {
 	min-height: 100%;
-	position: relative;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	// background-image: url('../img/please-bg.jpg');
+	// background-repeat: no-repeat;
+	// background-size: cover;
+}
+.header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 60px;
+	background-image: url('../img/please-logo.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: rgba(0,0,0,1);
+	background-size: auto 90%;
+	-webkit-box-shadow: 0 4px 8px rgba(0,0,0,.5);
+	z-index: 99;
 }
 .console {
-	padding: 10px;
+	overflow-y: auto;
+	position: absolute;
+	top: 58px;
+	bottom: 80px;
+	left: 0;
+	right: 0;
+	margin-bottom: 0px;
 }
 .control {
-	padding: 10px;
-	height: 48px;
 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
+	z-index: 99;
 	text-align: center;
+	// background-image: url('../img/please-bottom.png');
+	background-repeat: no-repeat;
+	background-size: 100% auto;
 	.micbutton {
-		width: 120px;
-		height: 36px;
-		border-radius: 5px;
-		background-color: #555;
 		display: block;
+		width: 100px;
 		margin: 0 auto;
-		padding: 6px;
 		cursor: pointer;
+		position: relative;
+		&:before {
+			content: "";
+			position: absolute;
+			background-color: rgba(0,0,0,1);
+			height: 100px;
+			width: 100px;
+			border-radius: 50%;
+			z-index: -99;
+			-webkit-box-shadow: 0 -4px 8px rgba(0,0,0,.5);
+		}
+	}
+	&:before {
+		content: "";
+		position: absolute;
+		left:0;
+		right:0;
+		bottom: 0;
+		background-color: rgba(0,0,0,1);
+		height: 80px;
+		z-index: -99;
+		-webkit-box-shadow: 0 -4px 8px rgba(0,0,0,.5);
 	}
 }
 .bubble {
-	padding: 10px;
-	border-radius: 10px;
+	width: 100%;
+	margin: 0;
+	padding: 24px;
+	background-color: rgba(255, 255, 255, .75);
+	border-bottom: 2px solid #000;
+	font-weight: bold;
+	&:first-of-type {
+		border-top: 2px solid #000;
+	}
 }
 .please {
-	background-color: #369;
+	background-image: url('../img/please-p.png');
+	background-repeat: no-repeat;
+	background-position: 10px 50%;
+	background-size: auto 30px;
+	padding-left: 40px;
+	color: rgba(18,39,79,.8);
+	text-shadow: 1px 1px 0px rgba(255,255,255,.8);
 }
 .owner {
-	background-color: #963;
+	color: #000;
+	text-align: right;
+	text-shadow: 1px 1px 0px rgba(255,255,255,.8);
 }
