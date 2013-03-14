@@ -58,7 +58,7 @@
     <plugin name="SpeechRecognizer" value="com.urbtek.phonegap.SpeechRecognizer"/>
     <plugin name="TTS" value="com.phonegap.plugins.speech.TTS"/>
     <plugin name="PhoneCall" value="com.stremor.plugins.PhoneCall" />
-    <plugin name="Calendar" value="com.tenforwardconsulting.phonegap.plugins.CalendarPlugin" />
+    <plugin name="CalendarPlugin" value="com.tenforwardconsulting.phonegap.plugins.CalendarPlugin" />
 </plugins>
 </cordova>
 
