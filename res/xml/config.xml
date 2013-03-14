@@ -61,6 +61,7 @@
     <plugin name="Calendar" value="com.tenforwardconsulting.phonegap.plugins.CalendarPlugin" />
     <plugin name="LocalNotification" value="com.phonegap.plugin.localnotification.LocalNotification" />
     <plugin name="CalendarPlugin" value="com.tenforwardconsulting.phonegap.plugins.CalendarPlugin" />
+    <plugin name="SendSms" value="com.phonegap.plugins.sms.SendSms" />
 </plugins>
 </cordova>
 

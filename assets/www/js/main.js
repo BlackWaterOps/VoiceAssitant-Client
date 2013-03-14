@@ -12,7 +12,7 @@ $(function () {
     function refreshiScroll () {
         setTimeout(function () {
             myScroll.refresh();
-            if($('.console').innerHeight() > hite) {
+            if ($('.console').innerHeight() > hite) {
                 myScroll.scrollToElement('.console p:last-child', 250);
             }
         }, 0);
@@ -22,22 +22,7 @@ $(function () {
 
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
-        window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
-
-        if (typeof plugins !== "undefined") {
-
-          var now = new Date();
-          now.setSeconds(now.getSeconds() + 30);
-          console.log(now);
-
-          window.plugins.localNotification.add({
-            date : now,
-            message : "Phonegap - Boooyyyaaaaah!\r\nUpyoass!",
-            ticker : "Yeeeaaaaahhhh!!!",
-            repeatDaily : false,
-            id : 4
-          });
-    }
+        window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);       
     }
 
     function startupWin(result) {
@@ -67,8 +52,11 @@ $(function () {
                 var matches = respObj.speechMatches.speechMatch;
 
                 if ( matches.length > 0 ) {
+                    reply = matches[0];
+                    echo(reply);
+
                     api.ask(matches[0], function(response) {
-                        console.log(JSON.stringify(response));
+                        console.log("RESPONSE: " + JSON.stringify(response));
 
                         if ( response.response != null ) {
                             say(response.response);
@@ -83,6 +71,12 @@ $(function () {
                 }
             }
         }
+    }
+
+    function echo (message) {
+        $('.console').append('<p class="bubble owner">' + message + '</p>');
+        refreshiScroll();
+        window.plugins.tts.speak(message);
     }
 
     function say(message) {
