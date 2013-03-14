@@ -2,7 +2,7 @@
  * Actions triggered by the Butler API
  */
 cordova.define('please/actions', function(require, exports, module) {
-    var Calendar = require('cordova/plugin/calendar');
+    var Calendar = window.plugins.calendarPlugin;
     var PhoneCall = require('cordova/plugin/phonecall');
 
     exports['calendar.addEvent'] = function(payload) {
