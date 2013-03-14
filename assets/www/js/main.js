@@ -1,7 +1,6 @@
 $(function () {
     var api = cordova.require('please/api'),
         actions = cordova.require('please/actions'),
-
         capture,
         activeContact,
         activeContactTel;
@@ -19,9 +18,26 @@ $(function () {
         }, 0);
     }
 
+
+
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
+
+        if (typeof plugins !== "undefined") {
+
+          var now = new Date();
+          now.setSeconds(now.getSeconds() + 90);
+          console.log(now);
+
+          window.plugins.localNotification.add({
+            date : now,
+            message : "Phonegap - Boooyyyaaaaah!\r\nUpyoass!",
+            ticker : "Yeeeaaaaahhhh!!!",
+            repeatDaily : false,
+            id : 4
+          });
+    }
     }
 
     function startupWin(result) {
