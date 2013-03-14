@@ -27,7 +27,7 @@ $(function () {
         if (typeof plugins !== "undefined") {
 
           var now = new Date();
-          now.setSeconds(now.getSeconds() + 90);
+          now.setSeconds(now.getSeconds() + 30);
           console.log(now);
 
           window.plugins.localNotification.add({
