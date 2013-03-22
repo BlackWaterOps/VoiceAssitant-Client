@@ -1,4 +1,4 @@
-var echo, say, performAction;
+var echo, say, performAction, speechStatus = false;
 
 $(function () {
     var api = cordova.require('please/api'),
@@ -33,6 +33,7 @@ $(function () {
             $('.console').append('<p class="bubble please">How can I be of assistance?</p>');
             refreshiScroll();
             window.plugins.tts.speak("How can I be of assistance?");
+            speechStatus = true;
         }
     }
 
@@ -56,11 +57,10 @@ $(function () {
                 if ( matches.length > 0 ) {
                     reply = matches[0];
                     echo(reply);
-
                     if (reply == "can you find me") {
                         performAction('locate', "");
-
-                    } else {
+                    } 
+                     else {
                         api.ask(matches[0], function(response) {
                         if ( response.speak != null ) {
                             say(response.speak);
@@ -144,9 +144,9 @@ $(function () {
     // })
 
     $('.control').on('click', '.micbutton', function () {
-        recognizeSpeech();
-        // payload = {"location": "san francisco"}
-        // actions['directions'] (payload);
-    })
-
+            // window.plugins.tts.stop();
+            // recognizeSpeech();
+            payload = {duration:"0.5", person:null, location:null, time:null, date:"2013-03-21", subject:"Party"};
+            actions.calendar(payload);
+        });
 })

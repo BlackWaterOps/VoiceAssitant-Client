@@ -6,11 +6,23 @@ cordova.define('please/actions', function(require, exports, module) {
 
     exports.calendar = function(payload) {
         var temp, sDate, eDate;
+            if (payload.time == null) {
+                payload.time = "12:00:00 PM";
+            }
             sDate = new Date(payload.date + " " + payload.time);
             temp = sDate.getTime();
             temp += (payload.duration * 3600000);
             eDate = new Date(temp);
-            memo = payload.subject + " with " + payload.person + " at " + payload.location;
+            if (payload.location == null) {
+                payload.location = "";
+            }
+            memo = payload.subject;
+            if (payload.person !== null) {
+                memo += " with " + payload.person;
+            }
+            if ((payload.location !== null) && (payload.location !== "")) {
+                memo += " at " + payload.location;
+            }
 
             function success () {}
             function error () {}
