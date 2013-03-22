@@ -6,19 +6,16 @@
 
 /* line 6, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 body {
-  background-color: #000;
+  background-color: #2a2c2e;
   height: 100%;
   min-height: 100%;
   margin: 0;
   padding: 0;
   color: #fff;
   font-family: Verdana, Arial, sans-serif;
-  background-image: url("../img/please-bg.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: fixed; }
+  font-size: 18px; }
 
-/* line 19, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 20, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .container {
   min-height: 100%;
   position: absolute;
@@ -27,7 +24,7 @@ body {
   right: 0;
   left: 0; }
 
-/* line 30, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 31, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .header {
   position: fixed;
   top: 0;
@@ -42,79 +39,94 @@ body {
   -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   z-index: 99; }
 
-/* line 44, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 45, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 #wrapper {
   overflow: auto;
   position: absolute;
-  top: 58px;
+  top: 0;
   bottom: 80px;
   left: 0;
   right: 0;
   -webkit-overflow-scrolling: touch; }
 
-/* line 53, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 54, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .control {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 99;
-  text-align: center;
-  background-repeat: no-repeat;
-  background-size: 100% auto; }
-  /* line 63, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  text-align: center; }
+  /* line 64, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
-    /* line 69, /Users/rewis/Sites/please/assets/www/scss/main.scss */
-    .control .micbutton:before {
+    /* line 70, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+    .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
-      background-color: black;
-      height: 100px;
-      width: 100px;
-      border-radius: 50%;
-      z-index: -99;
-      -webkit-box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5); }
-  /* line 80, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+      background-color: #303336;
+      height: 130px;
+      width: 130px;
+      z-index: -9;
+      top: -15px;
+      left: -15px;
+      border-radius: 50%; }
+    /* line 82, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+    .control .micbutton:after {
+      -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+      z-index: -999; }
+  /* line 88, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .control:before {
     content: "";
     position: absolute;
     left: 0;
+    right: 0px;
+    top: -30px;
+    height: 90px;
+    z-index: -99; }
+  /* line 103, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  .control:after {
+    content: "";
+    position: absolute;
+    left: 0;
     right: 0;
-    bottom: 0;
-    background-color: black;
-    height: 80px;
-    z-index: -99;
-    -webkit-box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5); }
+    top: 20px;
+    background-color: #303336;
+    -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+    height: 85px;
+    z-index: -99; }
 
-/* line 92, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 117, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+#gMap, #gMapPos {
+  width: 100%;
+  height: 300px;
+  margin-top: 20px; }
+
+/* line 122, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .bubble {
   width: 100%;
   margin: 0;
-  padding: 24px;
-  background-color: rgba(255, 255, 255, 0.75);
+  padding: 36px 24px;
+  background-color: white;
   border-bottom: 2px solid black;
   font-weight: bold; }
-  /* line 99, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 129, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .bubble:first-of-type {
     border-top: 2px solid black; }
+  /* line 132, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  .bubble img, .bubble video {
+    max-width: 100%; }
 
-/* line 103, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 136, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .please {
-  background-image: url("../img/please-p.png");
-  background-repeat: no-repeat;
-  background-position: 10px 50%;
-  background-size: auto 30px;
-  padding-left: 40px;
-  color: rgba(18, 39, 79, 0.8);
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8); }
+  color: #bd0d54; }
 
-/* line 112, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 144, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .owner {
   color: #000;
-  text-align: right;
-  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8); }
+  background-color: #cfcfcf;
+  text-align: right; }

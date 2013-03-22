@@ -1,3 +1,5 @@
+var echo, say, performAction;
+
 $(function () {
     var api = cordova.require('please/api'),
         actions = cordova.require('please/actions'),
@@ -55,17 +57,19 @@ $(function () {
                     reply = matches[0];
                     echo(reply);
 
-                    api.ask(matches[0], function(response) {
-                        console.log("RESPONSE: " + JSON.stringify(response));
+                    if (reply == "can you find me") {
+                        performAction('locate', "");
 
-                        if ( response.response != null ) {
-                            say(response.response);
+                    } else {
+                        api.ask(matches[0], function(response) {
+                        if ( response.speak != null ) {
+                            say(response.speak);
                         }
-
-                        if ( response.action != null ) {
-                            performAction(response.action, response.payload);
+                        if ( response.trigger.action != null ) {
+                            performAction(response.trigger.action, response.trigger.payload);
                         }
                     });
+                    }  
                 } else {
                     say("I didn't understand. I am such an idiot.");
                 }
@@ -73,20 +77,27 @@ $(function () {
         }
     }
 
-    function echo (message) {
+    // changed to a variable so that it can be called from the actions plugin
+    echo = function (message) {
         $('.console').append('<p class="bubble owner">' + message + '</p>');
         refreshiScroll();
-        window.plugins.tts.speak(message);
+        // window.plugins.tts.speak(message);
     }
 
-    function say(message) {
+    say = function (message) {
         $('.console').append('<p class="bubble please">' + message + '</p>');
         refreshiScroll();
         window.plugins.tts.speak(message);
     }
 
-    var performAction = function(action, payload) {
-        actions[action](payload);
+    performAction = function (action, payload) {
+        actions[action] (payload);
+    };
+
+    function clearCookie(name, domain, path){
+        var domain = domain || document.domain;
+        var path = path || "/";
+        document.cookie = name + "=; expires=" + +new Date + "; domain=" + domain + "; path=" + path;
     };
 
     function contactLookup (e) {
@@ -132,8 +143,10 @@ $(function () {
     //     // window.plugins.tts.speak(capture);
     // })
 
-    $('.micbutton').click(function () {
+    $('.control').on('click', '.micbutton', function () {
         recognizeSpeech();
+        // payload = {"location": "san francisco"}
+        // actions['directions'] (payload);
     })
 
 })
