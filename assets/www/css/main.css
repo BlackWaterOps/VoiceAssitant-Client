@@ -50,6 +50,10 @@ body {
   -webkit-overflow-scrolling: touch; }
 
 /* line 54, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+.spinner {
+  z-index: 99999; }
+
+/* line 57, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .control {
   position: fixed;
   bottom: 0;
@@ -57,14 +61,14 @@ body {
   right: 0;
   z-index: 99;
   text-align: center; }
-  /* line 64, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 67, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
-    /* line 70, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+    /* line 73, /Users/rewis/Sites/please/assets/www/scss/main.scss */
     .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
@@ -75,11 +79,11 @@ body {
       top: -15px;
       left: -15px;
       border-radius: 50%; }
-    /* line 82, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+    /* line 85, /Users/rewis/Sites/please/assets/www/scss/main.scss */
     .control .micbutton:after {
       -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
       z-index: -999; }
-  /* line 88, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 91, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .control:before {
     content: "";
     position: absolute;
@@ -88,7 +92,7 @@ body {
     top: -30px;
     height: 90px;
     z-index: -99; }
-  /* line 103, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 106, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .control:after {
     content: "";
     position: absolute;
@@ -100,13 +104,25 @@ body {
     height: 85px;
     z-index: -99; }
 
-/* line 117, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 120, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+.fixit {
+  position: fixed;
+  bottom: 0;
+  width: 100%; }
+
+/* line 125, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 #gMap, #gMapPos {
   width: 100%;
   height: 300px;
   margin-top: 20px; }
 
-/* line 122, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 130, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+.galleryImg {
+  border: 1px solid black;
+  margin: 10px auto 0;
+  display: block; }
+
+/* line 135, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .bubble {
   width: 100%;
   margin: 0;
@@ -114,18 +130,25 @@ body {
   background-color: white;
   border-bottom: 2px solid black;
   font-weight: bold; }
-  /* line 129, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 142, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .bubble:first-of-type {
     border-top: 2px solid black; }
-  /* line 132, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+  /* line 145, /Users/rewis/Sites/please/assets/www/scss/main.scss */
   .bubble img, .bubble video {
     max-width: 100%; }
 
-/* line 136, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 149, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+.extLink {
+  margin: 20px 0;
+  display: block;
+  text-align: right;
+  text-decoration: none; }
+
+/* line 155, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .please {
   color: #bd0d54; }
 
-/* line 144, /Users/rewis/Sites/please/assets/www/scss/main.scss */
+/* line 163, /Users/rewis/Sites/please/assets/www/scss/main.scss */
 .owner {
   color: #000;
   background-color: #cfcfcf;

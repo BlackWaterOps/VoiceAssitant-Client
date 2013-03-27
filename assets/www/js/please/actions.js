@@ -28,15 +28,41 @@ cordova.define('please/actions', function(require, exports, module) {
             function error () {}
 
         window.plugins.calendarPlugin.createEvent(
-                payload.subject, 
+                memo, 
                 payload.location, 
-                memo,
+                "",
                 sDate, 
                 eDate,
                 success,
                 error
             );
     };
+
+    var time = function () {
+        var theDate = new Date();
+        var hours = theDate.getHours();
+        if (hours < 12) {
+            var ampm = "AM";
+        } else {
+            ampm = "PM";
+        }
+        var mins = theDate.getMinutes();
+        if (mins < 10) {
+            mins = "0" + mins;
+        }
+        var seconds = theDate.getSeconds();
+        if (seconds < 10) {
+            seconds = "0" + seconds;
+        }
+        var dayOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        var day = dayOfTheWeek[theDate.getDay()];
+        var monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var month = monthsOfTheYear[theDate.getMonth()];
+        var date = theDate.getDate();
+        var year = theDate.getFullYear();
+        say("It is now " + hours + ":" + mins + " " + ampm + " on " + day + ", " + month + " " +  date + ", " + year + ".");
+    }
+    exports.time = time;
 
     exports.call = function(payload) {
         PhoneCall.call(payload.phone);
@@ -45,6 +71,11 @@ cordova.define('please/actions', function(require, exports, module) {
     exports.web = function(payload) {
         window.open(payload.url, '_blank', 'location=yes');
     };
+
+    var link = function (payload) {
+        $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for the original article</a>');
+    };
+    exports.link = link;
 
     exports.reminder = function (payload) {
         var now = new Date();
@@ -57,6 +88,15 @@ cordova.define('please/actions', function(require, exports, module) {
             id: 999
         })
     }
+
+    var images = function (payload) {
+        for (var i=0; i<payload.url.length; i++) {
+            path = payload.url[i];
+            $('.bubble:last').append('<img class="galleryImg" src="' +path + '" />');
+        }
+        refreshiScroll();
+    }
+    exports.images = images;
 
     exports.sms = function (payload) {
          cordova.exec(
@@ -117,26 +157,31 @@ cordova.define('please/actions', function(require, exports, module) {
 
     exports.clear_log = function (payload) {
         $('.console').html("");
-        say('Let me know how I can be of assistance.');
+        // say('Let me know how I can be of assistance.');
     }
 
     exports.locate = function (payload) {
-        console.log(payload)
-        navigator.geolocation.getCurrentPosition(geoSuccess, geoFail, {timeout:5000, enableHighAccuracy:true});
+        var oops = false;
+         var defaultLocation = {"coords":{"latitude":33.620632, "longitude":-111.92565}};
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoFail, {timeout:10000, enableHighAccuracy:true});
         
         function geoSuccess(pos) {
             var lat = pos.coords.latitude;
             var lng = pos.coords.longitude;
-            say("I found you!");
+            if (!oops) {
+                say("I found you!");
+            }
             $('#gMapPos').attr('id', '');
             $('.bubble:last').append('<div id="gMapPos"></div>');
             var latlng = new google.maps.LatLng(lat,lng);   
-            var options = { zoom: 16, center: latlng, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP };
+            var options = { zoom: 16, center: latlng, disableDefaultUI: true, mapTypeId: google.maps.MapTypeId.ROADMAP, draggable: false };
             var map = new google.maps.Map(document.getElementById('gMapPos'), options);
             var uRHere = new google.maps.Marker({ position: latlng, map: map, title: 'You are here' });
         }
         function geoFail () {
-           say("You must be hiding, because I can't find you.");
+           say("You must be hiding, because I can't find you. But I did find Stremor headquarters in Scottsdale.");
+           oops = true;
+           geoSuccess(defaultLocation);
         }
     }
 
@@ -145,10 +190,17 @@ cordova.define('please/actions', function(require, exports, module) {
         var directionsService = new google.maps.DirectionsService();
         var map;
         var myDestination = payload.location;
+        var defaultLocation = {"coords":{"latitude":33.620632, "longitude":-111.92565}};
+        var oops = false;
 
-        navigator.geolocation.getCurrentPosition(navSuccess, navFail, {timeout:5000, enableHighAccuracy:true});
+        navigator.geolocation.getCurrentPosition(navSuccess, navFail, {timeout:10000, enableHighAccuracy:true});
+        $('#gMap').attr('id', '');
+        $('#wrapper').spin(opts);
 
         function navSuccess(pos) {
+            if (!oops) {
+                say("Here is the route that I found: ")
+            }
           directionsDisplay = new google.maps.DirectionsRenderer();
           var lat = pos.coords.latitude;
           var lng = pos.coords.longitude;
@@ -156,9 +208,9 @@ cordova.define('please/actions', function(require, exports, module) {
           var mapOptions = {
             zoom:7,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            center: originPoint
+            center: originPoint,
+            draggable: false
           }
-          $('#gMap').attr('id', '');
           $('.bubble:last').append('<div id="gMap"></div>');
           map = new google.maps.Map(document.getElementById("gMap"), mapOptions);
           directionsDisplay.setMap(map);
@@ -178,9 +230,13 @@ cordova.define('please/actions', function(require, exports, module) {
               directionsDisplay.setDirections(result);
             }
           });
+          refreshiScroll();
         }
-        function navFail () {console.log('foo')}
+        function navFail () {
+            say("This is sad, but I'm having trouble with my GPS. Here's how to get there from Scottsdale.");
+            oops = true;
+            navSuccess(defaultLocation);
+        }
     }
     exports.directions = directions;
-    
 });

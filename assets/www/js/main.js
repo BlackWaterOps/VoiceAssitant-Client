@@ -1,4 +1,15 @@
-var echo, say, performAction, speechStatus = false;
+var echo, say, performAction, refreshiScroll;
+
+var opts = {
+      lines: 12, // The number of lines to draw
+      length: 7, // The length of each line
+      width: 5, // The line thickness
+      radius: 10, // The radius of the inner circle
+      color: '#999', // #rbg or #rrggbb
+      speed: 1, // Rounds per second
+      trail: 100, // Afterglow percentage
+      shadow: true // Whether to render a shadow
+    };
 
 $(function () {
     var api = cordova.require('please/api'),
@@ -7,33 +18,64 @@ $(function () {
         activeContact,
         activeContactTel;
 
+    $.fn.spin = function(opts) {
+            this.each(function() {
+            var $this = $(this),
+            spinner = $this.data('spinner');
+
+            if (spinner) spinner.stop();
+            if (opts !== false) {
+                  opts = $.extend({color: $this.css('color')}, opts);
+                  spinner = new Spinner(opts).spin(this);
+                  $this.data('spinner', spinner);
+                }
+              });
+          return this;
+    };
+
     document.addEventListener("deviceready", onDeviceReady, false);
 
     var myScroll = new iScroll('wrapper', {checkDOMChanges: true});
     var hite = $('#wrapper').innerHeight();
-    function refreshiScroll () {
+    refreshiScroll = function () {
         setTimeout(function () {
             myScroll.refresh();
             if ($('.console').innerHeight() > hite) {
                 myScroll.scrollToElement('.console p:last-child', 250);
             }
         }, 0);
+        $('.spinner').remove();
     }
-
-
 
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
-        window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);       
+        window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
+        document.getElementById('wrapper').offsetWidth; 
+        playAudio('file:///android_asset/www/snd/happyalert.wav');    
     }
+
+    function playAudio(url) {
+    // Play the audio file at url
+    var my_media = new Media(url,
+        // success callback
+        function() {
+            console.log("playAudio():Audio Success");
+        },
+        // error callback
+        function(err) {
+            console.log("playAudio():Audio Error: "+err);
+    });
+
+    // Play audio
+    my_media.play();
+}
 
     function startupWin(result) {
         // When result is equal to STARTED we are ready to play
         if (result == TTS.STARTED) {
-            $('.console').append('<p class="bubble please">How can I be of assistance?</p>');
+            $('.console').append('<p class="bubble please">Tap the Please logo to get started</p>');
             refreshiScroll();
-            window.plugins.tts.speak("How can I be of assistance?");
-            speechStatus = true;
+            // window.plugins.tts.speak("How can I be of assistance?");
         }
     }
 
@@ -62,8 +104,8 @@ $(function () {
                     } 
                      else {
                         api.ask(matches[0], function(response) {
-                        if ( response.speak != null ) {
-                            say(response.speak);
+                        if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                                say(response.speak);
                         }
                         if ( response.trigger.action != null ) {
                             performAction(response.trigger.action, response.trigger.payload);
@@ -82,6 +124,8 @@ $(function () {
         $('.console').append('<p class="bubble owner">' + message + '</p>');
         refreshiScroll();
         // window.plugins.tts.speak(message);
+        $('#wrapper').spin(opts);
+        $('#wrapper>div:first').addClass('spinner');
     }
 
     say = function (message) {
@@ -134,19 +178,18 @@ $(function () {
     }
     function startupFail(result) {
         console.log("Startup failure = " + result);
-    }
+    }    
 
-    // $('.micbutton').click(function () {
-    //     capture = "Go fuck yourself";
-    //     $('.console').append('<p class="bubble please" id="last">' + capture + '</p>');
-    //     window.location='#last';
-    //     // window.plugins.tts.speak(capture);
-    // })
+    $('.console').on('click', '.extLink', function () {
+        e = event.target;
+        window.open($(e).attr('href'), '_blank', 'location=yes');
+        return false;
+    });
 
     $('.control').on('click', '.micbutton', function () {
-            // window.plugins.tts.stop();
-            // recognizeSpeech();
-            payload = {duration:"0.5", person:null, location:null, time:null, date:"2013-03-21", subject:"Party"};
-            actions.calendar(payload);
+            $('.spinner').remove();
+            $('.control').addClass('fixIt').removeClass('fixIt');
+            window.plugins.tts.stop();
+            recognizeSpeech();
         });
 })
