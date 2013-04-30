@@ -15,8 +15,6 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-//using Microsoft.Xna.Framework; //needed for soundEffect object
-//using Microsoft.Xna.Framework.Audio; //needed for soundEffect object
 
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
@@ -36,10 +34,7 @@ namespace Please
         IAsyncOperation<SpeechRecognitionUIResult> _recoOperation;
 
         Geolocator geolocator;
-
         Geoposition myposition;
-
-        //SoundEffect audioSample;
 
         // Constructor
         public MainPage()
@@ -77,17 +72,10 @@ namespace Please
                 App.PleaseViewModel.AddDialog("user", "testing 5");
                 App.PleaseViewModel.AddDialog("please", "testing 6");
                 */
-
-                //var sample = Application.GetResourceStream(new Uri("Assets/happyalert.wav", UriKind.Relative));
-                //audioSample = SoundEffect.FromStream(sample.Stream);
-                //FrameworkDispatcher.Update();
-                //audioSample.Play();
-
             }
             catch (Exception err)
             {
                 Debug.WriteLine(err.ToString());
-                //textblock.Text = err.ToString();
             }
 
             base.OnNavigatedTo(e);
@@ -106,6 +94,23 @@ namespace Please
             }
 
             return replacement;
+        }
+
+        protected async void CancelButton(object sender, EventArgs e)
+        {
+            SystemTray.ProgressIndicator.IsVisible = true;
+            
+            string uriString = "query=nevermind";
+
+            var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", Uri.EscapeUriString(uriString));
+
+            SystemTray.ProgressIndicator.IsVisible = false;
+
+            if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
+            {
+                Debug.WriteLine(response.speak);
+                await Say("please", response.speak);
+            }
         }
 
         protected async void PleaseButton(object sender, EventArgs e)
@@ -148,13 +153,12 @@ namespace Please
                     else
                     {
                         SystemTray.ProgressIndicator.IsVisible = true;
-
-                        //string uriString = await buildRequest(request);
                         
-                        //strip punctuations before sending to server
+                        //strip punctuations & lowercase before sending to server
                         request = Regex.Replace(request, @"[^A-Za-z0-9\s]", "").ToLower();
 
                         string uriString = "query=" + request;
+                        //string uriString = await buildRequest(request);
 
                         Debug.WriteLine(Uri.EscapeUriString(uriString));
                         
@@ -270,13 +274,15 @@ namespace Please
             {
                 await _synthesizer.SpeakTextAsync(message);
             }
+
         }
 
         protected async Task<String> buildRequest(string query)
         {
             string uriString = "query=" + query;
 
-            //TODO: ADD TIMESTAMP TO REQUEST
+            uriString += "&timestamp=" + Please.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
+
             var geolocation = await GetGeolocation();
 
             if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
@@ -299,27 +305,29 @@ namespace Please
         
         protected async Task<Dictionary<string, string>> GetGeolocation()
         {
+            var response = new Dictionary<string, string>();
+
             geolocator = new Geolocator();
             geolocator.DesiredAccuracyInMeters = 50;
-            var response = new Dictionary<string, string>();
 
             try
             {
+                Debug.WriteLine(geolocator);
+
                 myposition = await geolocator.GetGeopositionAsync(
                     maximumAge: TimeSpan.FromMinutes(5),
                     timeout: TimeSpan.FromSeconds(10)
                 );
 
+                Debug.WriteLine("here");
+                
                 response.Add("latitude", myposition.Coordinate.Latitude.ToString("0.00"));
                 response.Add("longitude", myposition.Coordinate.Longitude.ToString("0.00"));
-
-                // check the time to see if it's usable
-               // Debug.WriteLine(myposition.CivicAddress.Timestamp.ToString());
-
-                return response;
             }
             catch (Exception err)
             {
+                Debug.WriteLine(err);
+
                 if ((uint)err.HResult == 0x80004004)
                 {
                     // location has been diabled in phone settings. display appropriate message
@@ -330,11 +338,10 @@ namespace Please
                     // unforeseen error
                     response.Add("error", err.ToString());
                 }
-
-                return response;
             }
-        }
 
+            return response;
+        }
 
         #region Actions/Tasks
         protected void DoCall(Dictionary<string, object> payload)
