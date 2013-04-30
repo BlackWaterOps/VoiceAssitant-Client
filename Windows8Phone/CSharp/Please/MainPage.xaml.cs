@@ -152,7 +152,7 @@ namespace Please
                         //string uriString = await buildRequest(request);
                         
                         //strip punctuations before sending to server
-                        request = Regex.Replace(request, @"[^A-Za-z0-9\s]", "");
+                        request = Regex.Replace(request, @"[^A-Za-z0-9\s]", "").ToLower();
 
                         string uriString = "query=" + request;
 
