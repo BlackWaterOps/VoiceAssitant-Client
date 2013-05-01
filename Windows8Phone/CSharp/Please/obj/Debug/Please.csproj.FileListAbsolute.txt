@@ -20,3 +20,6 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\D
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.pdb
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\XapCacheFile.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.csprojResolveAssemblyReference.cache
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.Toolkit.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\GalleryPage.g.cs

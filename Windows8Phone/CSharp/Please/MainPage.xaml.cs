@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,13 +41,13 @@ namespace Please
         {
             InitializeComponent();
 
-            this.DataContext = App.PleaseViewModel;
+            DataContext = App.PleaseViewModel;
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             try
             {
@@ -79,6 +79,18 @@ namespace Please
             }
 
             base.OnNavigatedTo(e);
+
+            var uriString = "query=show me images of fish";
+
+            var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", Uri.EscapeUriString(uriString));
+
+            var payload = response.trigger.payload;
+
+            App.GalleryViewModel.SearchTerm = response.speak;
+
+            App.GalleryViewModel.LoadImages(payload);
+
+            NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
         }
 
         protected static string ProfanityFilter(Match match)
@@ -179,7 +191,13 @@ namespace Please
                             Debug.WriteLine(response.trigger.action);
                             Debug.WriteLine(response.trigger.payload);
 
-                            switch (response.trigger.action)
+                            /* dynamic way to call methods
+                            Type type = typeof(Please.MainPage);
+                            MethodInfo info = type.GetMethod(response.trigger.action);
+                            info.Invoke(this, new object[] { response.trigger.payload });
+                            */
+
+                            switch (((string)response.trigger.action).ToLower())
                             {
                                 case "call":
                                     DoCall(response.trigger.payload);
@@ -202,10 +220,20 @@ namespace Please
                                     break;
 
                                 case "locate":
+                                    if (myposition == null)
+                                    {
+                                        await GetGeolocation();
+                                    }
+
                                     DoLocate(response.trigger.payload);
                                     break;
 
                                 case "directions":
+                                    if (myposition == null)
+                                    {
+                                        await GetGeolocation();
+                                    }
+
                                     DoDirections(response.trigger.payload);
                                     break;
 
@@ -216,6 +244,12 @@ namespace Please
 
                                 case "calendar":
                                     DoCalendar(response.trigger.payload);
+                                    break;
+
+                                case "images":
+                                    App.GalleryViewModel.SearchTerm = response.speak;
+                                    App.GalleryViewModel.LoadImages(response.trigger.payload);
+                                    NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
                                     break;
                             }
                         }
@@ -318,8 +352,6 @@ namespace Please
                     maximumAge: TimeSpan.FromMinutes(5),
                     timeout: TimeSpan.FromSeconds(10)
                 );
-
-                Debug.WriteLine("here");
                 
                 response.Add("latitude", myposition.Coordinate.Latitude.ToString("0.00"));
                 response.Add("longitude", myposition.Coordinate.Longitude.ToString("0.00"));
@@ -465,41 +497,47 @@ namespace Please
             // payload.location
             if (payload.ContainsKey("location"))
             {
-                /* ENDPOINT CURRENTLY DOES NOT SUPPORT THIS FEATURE
+                /* ENDPOINT CURRENTLY DOES NOT SUPPORT THIS FEATURE */
                 var mapsDirectionTask = new MapsDirectionsTask();
 
                 var start = new LabeledMapLocation();
                 var startLocation = new System.Device.Location.GeoCoordinate(myposition.Coordinate.Latitude, myposition.Coordinate.Longitude);
-                start.Location = startLocation; 
+                start.Location = startLocation;
                 
                 var end = new LabeledMapLocation();
                 // if payload["location"] is latlong value
-                var endLocation = new System.Device.Location.GeoCoordinate();
-                end.Location = endLocation;
+                //var endLocation = new System.Device.Location.GeoCoordinate();
+                //end.Location = endLocation;
 
                 //if payload["location"] is city/state value
-                end.Label = payload["location"];
+                end.Label = (string)payload["location"];
 
                 mapsDirectionTask.Start = start;
-
                 mapsDirectionTask.End = end;
-                */
+
+                mapsDirectionTask.Show();
             }
-
-        }
-
-        protected void DoReminder(Dictionary<string, object> payload)
-        {
-            // use Phone.Scheduler.Reminder or Phone.Scheduler.Alarm
-            // payload.seconds
-            // payload.ticker
-            // payload.message
-
         }
 
         protected void DoLocate(Dictionary<string, object> payload)
         {
+            var mapsTask = new MapsTask();
+            var center = new System.Device.Location.GeoCoordinate(myposition.Coordinate.Latitude, myposition.Coordinate.Longitude);
+   
+            if (payload.ContainsKey("coordinates"))
+            {
+                // payload would need to send lat/long coords
+                // center = new System.Device.Location.GeoCoordinate(payload.Latitude, payload.Longitude);
+            }
+             
+            if (payload.ContainsKey("searchterm"))
+            {
+               // var searchTerm = (string)payload["searchterm"];
+               // mapsTask.SearchTerm = searchTerm;
+            }
 
+            mapsTask.Center = center;
+            mapsTask.Show();
         }
         #endregion
 

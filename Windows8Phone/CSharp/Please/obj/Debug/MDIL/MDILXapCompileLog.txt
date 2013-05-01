@@ -1,5 +1,9 @@
 Compile filter specified.  Only the following files will be processed:
 c:\users\jeff schifano\documents\visual studio 2012\projects\please\please\bin\debug\mdil\please.dll
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Microsoft.Phone.Controls.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Microsoft.Phone.Controls.dll is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Microsoft.Phone.Controls.Toolkit.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Microsoft.Phone.Controls.Toolkit.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Newtonsoft.Json.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Newtonsoft.Json.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Please.dll

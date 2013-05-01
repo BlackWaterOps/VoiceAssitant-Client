@@ -29,6 +29,19 @@ namespace Please
             }
         }
 
+        private static GalleryViewModel _galleryViewModel = null;
+        /// <summary>
+        /// A static ViewModel used by the views to bind against.
+        /// </summary>
+        /// <returns>The PleaseViewModel object.</returns>
+        public static GalleryViewModel GalleryViewModel
+        {
+            get
+            {
+                return _galleryViewModel;
+            }
+        }
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -73,6 +86,7 @@ namespace Please
             }
 
             _pleaseViewModel = new PleaseViewModel();
+            _galleryViewModel = new GalleryViewModel();
         }
 
         // Code to execute when the application is launching (eg, from Start)
