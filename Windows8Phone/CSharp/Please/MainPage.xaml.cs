@@ -79,18 +79,6 @@ namespace Please
             }
 
             base.OnNavigatedTo(e);
-
-            var uriString = "query=show me images of fish";
-
-            var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", Uri.EscapeUriString(uriString));
-
-            var payload = response.trigger.payload;
-
-            App.GalleryViewModel.SearchTerm = response.speak;
-
-            App.GalleryViewModel.LoadImages(payload);
-
-            NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
         }
 
         protected static string ProfanityFilter(Match match)
