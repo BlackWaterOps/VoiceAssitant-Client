@@ -11,6 +11,8 @@ var opts = {
       shadow: true // Whether to render a shadow
     };
 
+var latitude, longitude, clientDate, positionCheck;
+
 $(function () {
     var api = cordova.require('please/api'),
         actions = cordova.require('please/actions'),
@@ -51,7 +53,8 @@ $(function () {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
         document.getElementById('wrapper').offsetWidth; 
-        playAudio('file:///android_asset/www/snd/happyalert.wav');    
+        playAudio('file:///android_asset/www/snd/happyalert.wav');
+        positionCheck = setInterval(get_location, 60000);
     }
 
     function playAudio(url) {
@@ -103,7 +106,27 @@ $(function () {
                         performAction('locate', "");
                     } 
                      else {
-                        api.ask(matches[0], function(response) {
+                        clientDate = new Date();
+                        clientDate = clientDate.toString();
+                        deviceInfo = {
+                                "device":{
+                                        "lat":latitude,
+                                        "lon":longitude,
+                                        "time":clientDate
+                                    }
+                            }
+                        if (!window.context) {
+                            window.context = { "context": deviceInfo };
+                            console.log(context)
+                        } else {
+                            context.device = deviceInfo;
+                            console.log("here",  context)
+                        }
+
+                        window.context = JSON.stringify(context);
+
+                        api.ask(matches[0], context, function(response) {
+                            window.context = response.context;
                         if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
                                 say(response.speak);
                         }
@@ -138,6 +161,25 @@ $(function () {
         actions[action] (payload);
     };
 
+    function get_location() {
+      navigator.geolocation.getCurrentPosition(update_position);
+    }
+    function update_position (position) {
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+    }
+
+    get_location();
+
+    var test = "call";
+    var deviceInfo = {
+        "device":{
+                "lat":latitude,
+                "lon":longitude,
+                "time":clientDate
+            }
+    }
+
     function clearCookie(name, domain, path){
         var domain = domain || document.domain;
         var path = path || "/";
@@ -166,7 +208,6 @@ $(function () {
         reply = "Oh, snap";
         conversation();
     }
-
     function speechInitOk() {
         console.log('speech recognizer is ready');
     }
@@ -189,7 +230,29 @@ $(function () {
     $('.control').on('click', '.micbutton', function () {
             $('.spinner').remove();
             $('.control').addClass('fixIt').removeClass('fixIt');
-            window.plugins.tts.stop();
-            recognizeSpeech();
+            // window.plugins.tts.stop();
+            // recognizeSpeech();
+            clientDate = new Date();
+                        clientDate = clientDate.toString();
+                        deviceInfo = {
+                                "device":{
+                                        "lat":latitude,
+                                        "lon":longitude,
+                                        "time":clientDate
+                                    }
+                            }
+                        if (!window.context) {
+                            window.context = { "context": deviceInfo };
+                            console.log(context)
+                        } else {
+                            context.device = deviceInfo;
+                            console.log("here",  context)
+                        }
+
+                        window.context = JSON.stringify(context);
+
+                        api.ask(test, context, function(response) {
+                            window.context = response.context;
+                        });
         });
 })

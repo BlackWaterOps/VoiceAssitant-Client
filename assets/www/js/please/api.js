@@ -3,7 +3,9 @@
  */
 cordova.define('please/api', function(require, exports, module) {
     // var API_ENDPOINT = 'http://192.168.1.71:8080/butler';
-    var API_ENDPOINT = "http://dev.liquid-helium.appspot.com/please";
+    // var API_ENDPOINT = "http://dev.liquid-helium.appspot.com/please";
+        var API_ENDPOINT = "http://stremor-va.appspot.com/rest";
+
 
     // var ask = function(message, callback) {
     //     $.get(API_ENDPOINT,
@@ -12,18 +14,22 @@ cordova.define('please/api', function(require, exports, module) {
     //               'query': message
     //           }, callback, 'json');
     // };
-    var ask = function (message, callback) {
+    var ask = function (message, context, callback) {
     	$.ajax({
     		"url": API_ENDPOINT,
     		"type": 'POST',
-    		"data": {"query": message},
+    		"data": {
+                            "query": message,
+                            "context": context
+                        },
     		"dataType": 'json',
     		success: function (response) {
     			console.log("RESPONSE: " + response)
     			callback(response);
     		},
-    		error: function (response) {
-    			console.log('WTF: ' + response);
+    		error: function (response, jqXHR, textStatus, errorThrown) {
+                callback(response);
+    			console.log('WTF: ' + jqXHR + ' status: ' + textStatus + ' error: ' + errorThrown);
     		}
     	})
     }
