@@ -11,7 +11,7 @@ var opts = {
       shadow: true // Whether to render a shadow
     };
 
-var latitude, longitude, clientDate, positionCheck;
+var latitude, longitude, clientDate, positionCheck, test;
 
 $(function () {
     var api = cordova.require('please/api'),
@@ -107,33 +107,33 @@ $(function () {
                     } 
                      else {
                         clientDate = new Date();
-                        clientDate = clientDate.toString();
                         deviceInfo = {
                                 "device":{
-                                        "lat":latitude,
-                                        "lon":longitude,
-                                        "time":clientDate
+                                        "lat": latitude,
+                                        "lon": longitude,
+                                        "timestamp": clientDate.getTime(),
+                                        "timeoffset": clientDate.getTimezoneOffset() / 60
                                     }
                             }
                         if (!window.context) {
-                            window.context = { "context": deviceInfo };
+                            window.context = deviceInfo;
                             console.log(context)
                         } else {
-                            context.device = deviceInfo;
-                            console.log("here",  context)
+                            context.device = deviceInfo.device;
+                            console.log("sending: ", context)
                         }
 
-                        window.context = JSON.stringify(context);
+                         window.context = JSON.stringify(context);
 
                         api.ask(matches[0], context, function(response) {
                             window.context = response.context;
-                        if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
-                                say(response.speak);
-                        }
-                        if ( response.trigger.action != null ) {
-                            performAction(response.trigger.action, response.trigger.payload);
-                        }
-                    });
+                            if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                                    say(response.speak);
+                            }
+                            if ( response.trigger.action != null ) {
+                                performAction(response.trigger.action, response.trigger.payload);
+                            }
+                        });
                     }  
                 } else {
                     say("I didn't understand. I am such an idiot.");
@@ -171,7 +171,7 @@ $(function () {
 
     get_location();
 
-    var test = "call";
+    test = "send Anghel a LONG text";
     var deviceInfo = {
         "device":{
                 "lat":latitude,
@@ -230,29 +230,33 @@ $(function () {
     $('.control').on('click', '.micbutton', function () {
             $('.spinner').remove();
             $('.control').addClass('fixIt').removeClass('fixIt');
-            // window.plugins.tts.stop();
-            // recognizeSpeech();
-            clientDate = new Date();
-                        clientDate = clientDate.toString();
-                        deviceInfo = {
-                                "device":{
-                                        "lat":latitude,
-                                        "lon":longitude,
-                                        "time":clientDate
-                                    }
-                            }
-                        if (!window.context) {
-                            window.context = { "context": deviceInfo };
-                            console.log(context)
-                        } else {
-                            context.device = deviceInfo;
-                            console.log("here",  context)
-                        }
+            window.plugins.tts.stop();
+            recognizeSpeech();
+                        // clientDate = new Date();
+                        // // clientDate = clientDate.toString();
+                        // deviceInfo = {
+                        //         "device":{
+                        //                 "lat": latitude,
+                        //                 "lon": longitude,
+                        //                 "timestamp": clientDate.getTime(),
+                        //                 "timeoffset": clientDate.getTimezoneOffset() / 60
+                        //             }
+                        //     }
+                        // if (!window.context) {
+                        //     window.context = deviceInfo;
+                        //     console.log(context)
+                        // } else {
+                        //     context.device = deviceInfo.device;
+                        //     // context = {context}
+                        //     console.log("sending: ", context)
+                        // }
 
-                        window.context = JSON.stringify(context);
+                        //  window.context = JSON.stringify(context);
 
-                        api.ask(test, context, function(response) {
-                            window.context = response.context;
-                        });
+                        // api.ask(test, context, function(response) {
+                        //     console.log("received: ", response);
+                        //     window.context = response.context;
+                        //     console.log('new context: ', context)
+                        // });
         });
 })

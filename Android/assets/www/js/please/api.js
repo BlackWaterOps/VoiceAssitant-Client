@@ -28,7 +28,7 @@ cordova.define('please/api', function(require, exports, module) {
     			callback(response);
     		},
     		error: function (response, jqXHR, textStatus, errorThrown) {
-                callback(response);
+                                    say("I'm sorry. I didn't understand that.");
     			console.log('WTF: ' + jqXHR + ' status: ' + textStatus + ' error: ' + errorThrown);
     		}
     	})

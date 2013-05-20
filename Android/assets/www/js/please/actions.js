@@ -39,28 +39,28 @@ cordova.define('please/actions', function(require, exports, module) {
     };
 
     var time = function () {
-        var theDate = new Date();
-        var hours = theDate.getHours();
-        if (hours < 12) {
-            var ampm = "AM";
-        } else {
-            ampm = "PM";
-        }
-        var mins = theDate.getMinutes();
-        if (mins < 10) {
-            mins = "0" + mins;
-        }
-        var seconds = theDate.getSeconds();
-        if (seconds < 10) {
-            seconds = "0" + seconds;
-        }
-        var dayOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-        var day = dayOfTheWeek[theDate.getDay()];
-        var monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        var month = monthsOfTheYear[theDate.getMonth()];
-        var date = theDate.getDate();
-        var year = theDate.getFullYear();
-        say("It is now " + hours + ":" + mins + " " + ampm + " on " + day + ", " + month + " " +  date + ", " + year + ".");
+        // var theDate = new Date();
+        // var hours = theDate.getHours();
+        // if (hours < 12) {
+        //     var ampm = "AM";
+        // } else {
+        //     ampm = "PM";
+        // }
+        // var mins = theDate.getMinutes();
+        // if (mins < 10) {
+        //     mins = "0" + mins;
+        // }
+        // var seconds = theDate.getSeconds();
+        // if (seconds < 10) {
+        //     seconds = "0" + seconds;
+        // }
+        // var dayOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        // var day = dayOfTheWeek[theDate.getDay()];
+        // var monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // var month = monthsOfTheYear[theDate.getMonth()];
+        // var date = theDate.getDate();
+        // var year = theDate.getFullYear();
+        // say("It is now " + hours + ":" + mins + " " + ampm + " on " + day + ", " + month + " " +  date + ", " + year + ".");
     }
     exports.time = time;
 
@@ -73,7 +73,7 @@ cordova.define('please/actions', function(require, exports, module) {
     };
 
     var link = function (payload) {
-        $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for the original article</a>');
+        $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for more</a>');
     };
     exports.link = link;
 
