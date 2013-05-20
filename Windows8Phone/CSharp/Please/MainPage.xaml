@@ -79,7 +79,7 @@ Z        </StackPanel>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppControl">
             <shell:ApplicationBarIconButton x:Name="MicrophoneBtn" IconUri="/Assets/microphone.png" Text="Microphone" Click="PleaseButton"/>
-            <!--<shell:ApplicationBarIconButton x:Name="CancelBtn" IconUri="/Assets/cancel.png" Text="Cancel" Click="CancelButton"/>-->
+            <shell:ApplicationBarIconButton x:Name="CancelBtn" IconUri="/Assets/cancel.png" Text="Cancel" Click="CancelButton"/>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

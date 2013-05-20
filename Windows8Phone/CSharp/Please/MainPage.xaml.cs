@@ -21,6 +21,8 @@ using Windows.Foundation;
 using Windows.Phone.Speech.Recognition;
 using Windows.Phone.Speech.Synthesis;
 
+using Newtonsoft.Json;
+
 using Please.Resources;
 using Please.Models;
 
@@ -35,6 +37,9 @@ namespace Please
 
         Geolocator geolocator;
         Geoposition myposition;
+
+        Please.Models.Context requestContext;
+        Please.Models.Device deviceInfo;
 
         // Constructor
         public MainPage()
@@ -63,6 +68,14 @@ namespace Please
 
                 SystemTray.ProgressIndicator = new ProgressIndicator();
                 SystemTray.ProgressIndicator.IsIndeterminate = true;
+                
+                /*
+                string testQuery = "call";
+                Debug.WriteLine("before buildRequest");
+                string testRequest = await buildRequest(testQuery);
+                Debug.WriteLine("after buildRequest");
+                Debug.WriteLine(testRequest);
+                */
 
                 /* test dialog. should setup a sample viewModel but hey, this is a demo!
                 App.PleaseViewModel.AddDialog("user", "testing 1");
@@ -98,18 +111,32 @@ namespace Please
 
         protected async void CancelButton(object sender, EventArgs e)
         {
-            SystemTray.ProgressIndicator.IsVisible = true;
-            
-            string uriString = "query=nevermind";
-
-            var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", Uri.EscapeUriString(uriString));
-
-            SystemTray.ProgressIndicator.IsVisible = false;
-
-            if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
+            try
             {
-                Debug.WriteLine(response.speak);
-                await Say("please", response.speak);
+                SystemTray.ProgressIndicator.IsVisible = true;
+
+                string requestString = await buildRequest("nevermind");;
+
+                Debug.WriteLine(requestString);
+
+                var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", requestString);
+
+                Debug.WriteLine(response.ToString());
+           
+                SystemTray.ProgressIndicator.IsVisible = false;
+
+                // clear out context
+                requestContext = response.context;
+
+                if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
+                {
+                    Debug.WriteLine(response.speak);
+                    await Say("please", response.speak, response.show);
+                }
+            }
+            catch (WebException err)
+            {
+                Debug.WriteLine(err.ToString());
             }
         }
 
@@ -153,23 +180,28 @@ namespace Please
                     else
                     {
                         SystemTray.ProgressIndicator.IsVisible = true;
-                        
+
                         //strip punctuations & lowercase before sending to server
                         request = Regex.Replace(request, @"[^A-Za-z0-9\s]", "").ToLower();
 
-                        string uriString = "query=" + request;
-                        //string uriString = await buildRequest(request);
+                        //string requestString = "{\"query\": \"" + request + "\"}";
+                        string requestString = await buildRequest(request);
 
-                        Debug.WriteLine(Uri.EscapeUriString(uriString));
-                        
-                        var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", Uri.EscapeUriString(uriString));
+                        Debug.WriteLine(requestString);
+
+                        var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", requestString);
+
+                        Debug.WriteLine(response.ToString());
 
                         SystemTray.ProgressIndicator.IsVisible = false;
+
+                        // update and hold response context
+                        requestContext = response.context;
 
                         if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
                         {
                             Debug.WriteLine(response.speak);
-                            await Say("please", response.speak);
+                            await Say("please", response.speak, response.show);
                         }
 
                         micBtn.IsEnabled = true;
@@ -227,7 +259,7 @@ namespace Please
 
                                 case "time":
                                     string time = DoTime(response.trigger.payload);
-                                    await Say("please", time);
+                                    await Say("please", time, time);
                                     break;
 
                                 case "calendar":
@@ -235,7 +267,7 @@ namespace Please
                                     break;
 
                                 case "images":
-                                    App.GalleryViewModel.SearchTerm = response.speak;
+                                    App.GalleryViewModel.SearchTerm = response.show;
                                     App.GalleryViewModel.LoadImages(response.trigger.payload);
                                     NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
                                     break;
@@ -247,6 +279,10 @@ namespace Please
             catch (System.Threading.Tasks.TaskCanceledException)
             {
 
+            }
+            catch (WebException webErr)
+            {
+                Debug.WriteLine(webErr.ToString());
             }
             catch (Exception err)
             {
@@ -286,43 +322,62 @@ namespace Please
             }
         }
 
-        protected async Task Say(String type, String message)
+        protected async Task Say(String type, String speak, String show = "")
         {
-            App.PleaseViewModel.AddDialog(type, message);
+            show = (show == null || show == "") ? speak : show;
+
+            // display response
+            App.PleaseViewModel.AddDialog(type, show);
 
             ScrollTo();
 
             if (type.ToLower() == "please")
             {
-                await _synthesizer.SpeakTextAsync(message);
+                await _synthesizer.SpeakTextAsync(speak);
             }
-
         }
 
         protected async Task<String> buildRequest(string query)
         {
-            string uriString = "query=" + query;
+            deviceInfo = new Please.Models.Device();
 
-            uriString += "&timestamp=" + Please.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
+            // Fri May 17 2013 11:05:06 GMT-0700 (MST)"
+            // deviceInfo.time = String.Format("{0,3:ddd} {0,4:MMM} {0,2:dd} {0,4:yyyy} {0,2:hh}:{0,2:mm}:{0,2:ss} GMT{0,4:zzz}", DateTime.Now).Replace(":", "");
+            deviceInfo.timestamp = Please.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
+            deviceInfo.timeoffset = DateTimeOffset.Now.Offset.Hours; // this is not good enough for world but good enough for demo
 
             var geolocation = await GetGeolocation();
 
             if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
             {
-                foreach (var coord in geolocation)
-                {
-                    Debug.WriteLine(coord.Key + "=" + coord.Value);
-
-                    uriString += "&" + coord.Key + "=" + coord.Value;
-                }
+                deviceInfo.lat = geolocation["latitude"];
+                deviceInfo.lon = geolocation["longitude"];
             }
             else if (geolocation.ContainsKey("error"))
             {
                 //ran into error acquiring geolocation
+                deviceInfo.lat = "";
+                deviceInfo.lon = "";
+
                 Debug.WriteLine(geolocation["error"]);
             }
 
-            return uriString;
+            // if context isn't set, this must be the first request.
+            if (requestContext == null)
+            {
+                requestContext = new Please.Models.Context();
+            }
+
+            // add new device info to context
+            requestContext.device = deviceInfo;
+
+            // create request string
+            string requestString;
+
+            requestString = "query=" + Uri.EscapeDataString(query);
+            requestString += "&context=" + Uri.EscapeDataString(Newtonsoft.Json.JsonConvert.SerializeObject(requestContext));
+
+            return requestString;
         }
         
         protected async Task<Dictionary<string, string>> GetGeolocation()
@@ -331,7 +386,8 @@ namespace Please
 
             geolocator = new Geolocator();
             geolocator.DesiredAccuracyInMeters = 50;
-
+            geolocator.ReportInterval = 600000; // 10 min in milliseconds
+            
             try
             {
                 Debug.WriteLine(geolocator);

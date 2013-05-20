@@ -9,9 +9,12 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\D
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Please.pdb
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\AppManifest.xaml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Please_Debug_AnyCPU.xap
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.Toolkit.dll
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Newtonsoft.Json.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.dll
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Newtonsoft.Json.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\App.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\GalleryPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\MainPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.g.resources
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.Resources.AppResources.resources
@@ -20,6 +23,3 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\D
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.pdb
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\XapCacheFile.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.csprojResolveAssemblyReference.cache
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.Toolkit.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\GalleryPage.g.cs

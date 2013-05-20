@@ -18,6 +18,10 @@ namespace Please.Util
     {
         static CookieContainer cookieJar = new CookieContainer();
 
+        public static String ContentType = null;
+        public static String AcceptType = null;
+        public static String Method = "GET";
+
         public static async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
             // if we have post/put data, write it to the request stream
@@ -32,7 +36,6 @@ namespace Please.Util
                 }
             }
 
-            //var task = Task.Factory.FromAsync((cb, o) => ((HttpWebRequest)o).BeginGetResponse(cb, o), res => ((HttpWebRequest)res.AsyncState).EndGetResponse(res), req);
             var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
 
             var result = await task;
@@ -48,7 +51,8 @@ namespace Please.Util
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
             req.Method = requestMethod;
             req.AllowReadStreamBuffering = true;
-
+            req.ContentType = Please.Util.Request.ContentType;
+            req.Accept = Please.Util.Request.AcceptType;
             req.CookieContainer = Please.Util.Request.cookieJar;
             
             var tr = await DoRequestAsync(req, requestData);
@@ -74,7 +78,9 @@ namespace Please.Util
             var ret = await DoRequestAsync(uri, requestMethod, requestData);
             var response = await ret.ReadToEndAsync();
 
-            var jsonSettings = new JsonSerializerSettings();
+            Debug.WriteLine(response.ToString());
+            
+            var jsonSettings = new JsonSerializerSettings();                      
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;

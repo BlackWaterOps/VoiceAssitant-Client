@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Net;
 namespace Please.Models
 {
-    /*
-    class Payload
+    public class Device
     {
-        public string? url { get; set; }
-        public int? phone { get; set; }
-        public int? seconds { get; set; }
-        public string? ticker { get; set; }
-        public string? message { get; set; }
+        public string lat { get; set; }
+        public string lon { get; set; }
+        public double timestamp { get; set; }
+        public int timeoffset { get; set; }
     }
-    */
 
     public class Trigger
     {
@@ -23,9 +17,18 @@ namespace Please.Models
         public string action { get; set; }
     }
 
+    public class Context
+    {
+        public string status { get; set; }
+        public string query_type { get; set; }
+        public Device device { get; set; }
+    }
+
     public class PleaseModel
     {
         public Trigger trigger { get; set; }
+        public Context context { get; set; }
         public string speak { get; set; }
+        public string show { get; set; }
     }
 }

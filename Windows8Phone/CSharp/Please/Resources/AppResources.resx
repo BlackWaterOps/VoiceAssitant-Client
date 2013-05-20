@@ -135,6 +135,6 @@
     <value>Menu Item</value>
   </data>
   <data name="Endpoint" xml:space="preserve">
-    <value>http://dev.liquid-helium.appspot.com/please</value>
+    <value>http://stremor-va.appspot.com/rest</value>
   </data>
 </root>

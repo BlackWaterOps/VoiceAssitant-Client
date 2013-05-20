@@ -88,7 +88,7 @@ namespace Please.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://dev.liquid-helium.appspot.com/please.
+        ///   Looks up a localized string similar to http://stremor-va.appspot.com/rest.
         /// </summary>
         public static string Endpoint {
             get {
