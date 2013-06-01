@@ -16,6 +16,12 @@ namespace Please
     public partial class App : Application
     {
 
+        // holder for list or date picker choice
+        public static String userChoice;
+
+        public static Please.Models.Context requestContext;
+        public static Please.Models.Device deviceInfo;
+
         private static PleaseViewModel _pleaseViewModel = null;
         /// <summary>
         /// A static ViewModel used by the views to bind against.
@@ -33,12 +39,39 @@ namespace Please
         /// <summary>
         /// A static ViewModel used by the views to bind against.
         /// </summary>
-        /// <returns>The PleaseViewModel object.</returns>
+        /// <returns>The GalleryViewModel object.</returns>
         public static GalleryViewModel GalleryViewModel
         {
             get
             {
                 return _galleryViewModel;
+            }
+        }
+
+        private static ListPickerViewModel _listPickerViewModel = null;
+        /// <summary>
+        /// A static ViewModel used by the views to bind against.
+        /// </summary>
+        /// <returns>The ListPickerViewModel object.</returns>
+        public static ListPickerViewModel ListPickerViewModel
+        {
+            get
+            {
+                return _listPickerViewModel;
+            }
+        }
+
+
+        private static DatePickerViewModel _datePickerViewModel = null;
+        /// <summary>
+        /// A static ViewModel used by the views to bind against.
+        /// </summary>
+        /// <returns>The DatePickerViewModel object.</returns>
+        public static DatePickerViewModel DatePickerViewModel
+        {
+            get
+            {
+                return _datePickerViewModel;
             }
         }
 
@@ -87,6 +120,8 @@ namespace Please
 
             _pleaseViewModel = new PleaseViewModel();
             _galleryViewModel = new GalleryViewModel();
+            _listPickerViewModel = new ListPickerViewModel();
+            _datePickerViewModel = new DatePickerViewModel();
         }
 
         // Code to execute when the application is launching (eg, from Start)
@@ -250,6 +285,17 @@ namespace Please
 
                 throw;
             }
+        }
+
+
+        protected void ListPicker(object sender, EventArgs e)
+        {
+            RootFrame.Navigate(new Uri("/ListPickerPage.xaml", UriKind.Relative));
+        }
+
+        protected void DatePicker(object sender, EventArgs e)
+        {
+            RootFrame.Navigate(new Uri("/DatePickerPage.xaml", UriKind.Relative));
         }
     }
 }

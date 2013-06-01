@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using System.Net;
 namespace Please.Models
 {
+    public class Extracted
+    {
+        
+    }
+
+    public class Show
+    {
+        public string type { get; set; }
+        public string text { get; set; }
+        public List<string> list { get; set; }
+    }
+
     public class Device
     {
         public string lat { get; set; }
@@ -22,6 +34,7 @@ namespace Please.Models
         public string status { get; set; }
         public string query_type { get; set; }
         public Device device { get; set; }
+        public object extracted { get; set; }
     }
 
     public class PleaseModel
@@ -29,6 +42,6 @@ namespace Please.Models
         public Trigger trigger { get; set; }
         public Context context { get; set; }
         public string speak { get; set; }
-        public string show { get; set; }
+        public Show show { get; set; }
     }
 }

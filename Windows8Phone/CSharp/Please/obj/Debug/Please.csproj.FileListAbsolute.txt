@@ -14,7 +14,9 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\D
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Microsoft.Phone.Controls.dll
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\Newtonsoft.Json.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\App.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\DatePickerPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\GalleryPage.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\ListPickerPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\MainPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.g.resources
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\Please.Resources.AppResources.resources

@@ -10,6 +10,7 @@
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
+    Style="{StaticResource SlideTransition}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     shell:SystemTray.IsVisible="True">
 
@@ -46,6 +47,11 @@
 Z        </StackPanel>
         -->
         <!--ContentPanel - place additional content here-->
+        <!--
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkGray">
+            <TextBox x:Name="TestInput" Width="480" KeyDown="CaptureTestText" GotFocus="TestInputGotFocus" LostFocus="TestInputLostFocus"/>
+        </StackPanel>
+        -->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0" Background="{StaticResource PleaseLogo}">
             <ListBox x:Name="PleaseDialogList" Margin="0,0,0,0" ItemsSource="{Binding PleaseList}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemContainerStyle>
@@ -57,9 +63,16 @@ Z        </StackPanel>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <!-- List items go here -->
-                        <StackPanel Margin="0" Background="{Binding sender, Converter={StaticResource Background}}">
+                        <StackPanel x:Name="MainStackPanel" Margin="0" Background="{Binding sender, Converter={StaticResource Background}}">
                             <Border BorderThickness="2" Height="2" BorderBrush="Black"/>
-                            <TextBlock Padding="10,20" FontWeight="Bold" TextWrapping="Wrap" Text="{Binding message}" Foreground="{Binding sender, Converter={StaticResource Foreground}}" TextAlignment="{Binding sender, Converter={StaticResource Alignment}}"/>
+                            <StackPanel Margin="10,20">
+                                <RichTextBox IsReadOnly="True" FontWeight="Bold" TextWrapping="Wrap">
+                                    <Paragraph TextAlignment="{Binding sender, Converter={StaticResource Alignment}}">
+                                        <Run Text="{Binding message}" Foreground="{Binding sender, Converter={StaticResource Foreground}}"/>
+                                    </Paragraph>
+                                </RichTextBox>
+                                <HyperlinkButton Content="Click for more" TargetName="_blank" Visibility="{Binding link, Converter={StaticResource Visibility}}" NavigateUri="{Binding link}" Foreground="#0000ee" HorizontalAlignment="Right"/>
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -79,7 +92,7 @@ Z        </StackPanel>
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppControl">
             <shell:ApplicationBarIconButton x:Name="MicrophoneBtn" IconUri="/Assets/microphone.png" Text="Microphone" Click="PleaseButton"/>
-            <shell:ApplicationBarIconButton x:Name="CancelBtn" IconUri="/Assets/cancel.png" Text="Cancel" Click="CancelButton"/>
+            <!--<shell:ApplicationBarIconButton x:Name="CancelBtn" IconUri="/Assets/cancel.png" Text="Cancel" Click="CancelButton"/>-->
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

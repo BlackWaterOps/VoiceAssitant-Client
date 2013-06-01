@@ -27,7 +27,7 @@ namespace Please.ViewModels
             }
         }
 
-        public void AddDialog(string sender, string message)
+        public void AddDialog(string sender, string message, string link = "")
         {
             if (PleaseList == null)
             {
@@ -38,6 +38,7 @@ namespace Please.ViewModels
 
             dialog.sender = sender;
             dialog.message = message;
+            dialog.link = link;
 
             PleaseList.Add(dialog);
         }

@@ -38,8 +38,9 @@ namespace Please
         Geolocator geolocator;
         Geoposition myposition;
 
-        Please.Models.Context requestContext;
-        Please.Models.Device deviceInfo;
+        ApplicationBarIconButton micBtn;
+
+        bool disableSpeech = false;
 
         // Constructor
         public MainPage()
@@ -48,8 +49,7 @@ namespace Please
 
             DataContext = App.PleaseViewModel;
 
-            // Sample code to localize the ApplicationBar
-            //BuildLocalizedApplicationBar();
+            micBtn = (ApplicationBar.Buttons[0] as ApplicationBarIconButton);
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -64,27 +64,58 @@ namespace Please
                 if (_recognizer == null)
                 {
                     _recognizer = new SpeechRecognizerUI();
+                    _recognizer.Settings.ReadoutEnabled = false;
+                    _recognizer.Settings.ShowConfirmation = false;
                 }
 
                 SystemTray.ProgressIndicator = new ProgressIndicator();
                 SystemTray.ProgressIndicator.IsIndeterminate = true;
-                
+
+                if (e.NavigationMode == NavigationMode.Back && App.userChoice != "" && App.userChoice != null)
+                {
+                    var userChoice = App.userChoice;
+
+                    App.userChoice = null;
+
+                    addAppBarItem(String.Empty);
+
+                    await Say("user", userChoice);
+
+                    await makeRequest(userChoice); 
+                }
+
                 /*
-                string testQuery = "call";
-                Debug.WriteLine("before buildRequest");
-                string testRequest = await buildRequest(testQuery);
-                Debug.WriteLine("after buildRequest");
-                Debug.WriteLine(testRequest);
+                List<string> testList = new List<string>();
+
+                testList.Add("value 1");
+                testList.Add("value 2");
+                testList.Add("value 3");
+                testList.Add("value 4");
+                testList.Add("value 5");
+                testList.Add("value 6");
+
+                App.ListPickerViewModel.SearchTerm = "testing text";
+                App.ListPickerViewModel.LoadList(testList);                 
+                addAppBarItem("listpickerpage");
                 */
 
-                /* test dialog. should setup a sample viewModel but hey, this is a demo!
+                
+                App.DatePickerViewModel.SearchTerm = "testing text";
+                App.DatePickerViewModel.DefaultDate = DateTime.Now;
+                addAppBarItem("datepickerpage");
+                
+
+                /* test dialog. should setup a sample viewModel but hey, this is a demo! */
+                /*
+                App.PleaseViewModel.PleaseList.Clear();
                 App.PleaseViewModel.AddDialog("user", "testing 1");
-                App.PleaseViewModel.AddDialog("please", "testing 2");
+                App.PleaseViewModel.AddDialog("please", "testing 2", "http://m.samuru.com/?python");
                 App.PleaseViewModel.AddDialog("user", "testing 3");
                 App.PleaseViewModel.AddDialog("please", "testing 4");
                 App.PleaseViewModel.AddDialog("user", "testing 5");
                 App.PleaseViewModel.AddDialog("please", "testing 6");
                 */
+                
             }
             catch (Exception err)
             {
@@ -109,6 +140,50 @@ namespace Please
             return replacement;
         }
 
+        protected void ListPicker(object sender, EventArgs e)
+        {
+             NavigationService.Navigate(new Uri("/ListPickerPage.xaml", UriKind.Relative));
+        }
+
+        protected void DatePicker(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/DatePickerPage.xaml", UriKind.Relative));
+        }
+        /*
+        protected async void CaptureTestText(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key.Equals(System.Windows.Input.Key.Enter))
+            {
+                disableSpeech = true;
+
+                var testInput = TestInput.Text;
+
+                TestInput.Text = String.Empty;
+
+                addAppBarItem(String.Empty);
+
+                await Say("user", testInput, testInput);
+
+                await makeRequest(testInput);
+            }
+        }
+        */
+        protected void TestInputGotFocus(object sender, EventArgs e)
+        {
+            if (micBtn != null)
+            {
+                micBtn.IsEnabled = false;
+            }
+        }
+
+        protected void TestInputLostFocus(object sender, EventArgs e)
+        {
+            if (micBtn != null)
+            {
+                micBtn.IsEnabled = true;
+            }
+        }
+
         protected async void CancelButton(object sender, EventArgs e)
         {
             try
@@ -119,19 +194,25 @@ namespace Please
 
                 Debug.WriteLine(requestString);
 
-                var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", requestString);
+                var req = new Please.Util.Request();
+
+                //req.AcceptType = "json";
+                req.ContentType = "application/json";
+                req.Method = "POST";
+
+                var response = await req.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, requestString);
 
                 Debug.WriteLine(response.ToString());
            
                 SystemTray.ProgressIndicator.IsVisible = false;
 
                 // clear out context
-                requestContext = response.context;
+                App.requestContext = response.context;
 
                 if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
                 {
                     Debug.WriteLine(response.speak);
-                    await Say("please", response.speak, response.show);
+                    await Say("please", response.speak);
                 }
             }
             catch (WebException err)
@@ -142,8 +223,10 @@ namespace Please
 
         protected async void PleaseButton(object sender, EventArgs e)
         {
-            var micBtn = sender as ApplicationBarIconButton;
-            
+            micBtn = (sender as ApplicationBarIconButton);
+
+            addAppBarItem(String.Empty);
+
             // Cancel the outstanding recognition operation, if one exists 
             if (_recoOperation != null && _recoOperation.Status == AsyncStatus.Started)
             {
@@ -179,100 +262,8 @@ namespace Please
                     }
                     else
                     {
-                        SystemTray.ProgressIndicator.IsVisible = true;
-
-                        //strip punctuations & lowercase before sending to server
-                        request = Regex.Replace(request, @"[^A-Za-z0-9\s]", "").ToLower();
-
-                        //string requestString = "{\"query\": \"" + request + "\"}";
-                        string requestString = await buildRequest(request);
-
-                        Debug.WriteLine(requestString);
-
-                        var response = await Please.Util.Request.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, "POST", requestString);
-
-                        Debug.WriteLine(response.ToString());
-
-                        SystemTray.ProgressIndicator.IsVisible = false;
-
-                        // update and hold response context
-                        requestContext = response.context;
-
-                        if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
-                        {
-                            Debug.WriteLine(response.speak);
-                            await Say("please", response.speak, response.show);
-                        }
-
-                        micBtn.IsEnabled = true;
-
-                        if (response.trigger.action != null && response.trigger.action != "")
-                        {
-                            Debug.WriteLine(response.trigger.action);
-                            Debug.WriteLine(response.trigger.payload);
-
-                            /* dynamic way to call methods
-                            Type type = typeof(Please.MainPage);
-                            MethodInfo info = type.GetMethod(response.trigger.action);
-                            info.Invoke(this, new object[] { response.trigger.payload });
-                            */
-
-                            switch (((string)response.trigger.action).ToLower())
-                            {
-                                case "call":
-                                    DoCall(response.trigger.payload);
-                                    break;
-
-                                case "sms":
-                                    DoSms(response.trigger.payload);
-                                    break;
-
-                                case "link":
-                                    //DoLink(response.trigger.payload);
-                                    break;
-
-                                case "web":
-                                    DoWeb(response.trigger.payload);
-                                    break;
-
-                                case "email":
-                                    DoEmail(response.trigger.payload);
-                                    break;
-
-                                case "locate":
-                                    if (myposition == null)
-                                    {
-                                        await GetGeolocation();
-                                    }
-
-                                    DoLocate(response.trigger.payload);
-                                    break;
-
-                                case "directions":
-                                    if (myposition == null)
-                                    {
-                                        await GetGeolocation();
-                                    }
-
-                                    DoDirections(response.trigger.payload);
-                                    break;
-
-                                case "time":
-                                    string time = DoTime(response.trigger.payload);
-                                    await Say("please", time, time);
-                                    break;
-
-                                case "calendar":
-                                    DoCalendar(response.trigger.payload);
-                                    break;
-
-                                case "images":
-                                    App.GalleryViewModel.SearchTerm = response.show;
-                                    App.GalleryViewModel.LoadImages(response.trigger.payload);
-                                    NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
-                                    break;
-                            }
-                        }
+                        Debug.WriteLine("make request");
+                        await makeRequest(request);
                     }
                 }
             }
@@ -286,7 +277,7 @@ namespace Please
             }
             catch (Exception err)
             {
-                micBtn.IsEnabled = true;
+                MicrophoneBtn.IsEnabled = true;
 
                 const int privacyPolicyHResult = unchecked((int)0x80045509);
 
@@ -301,6 +292,209 @@ namespace Please
                     // textBlock.Text = "Error: " + err.Message;
                 }
             }   
+        }
+
+        protected async Task makeRequest(string request)
+        {
+            try
+            {
+                SystemTray.ProgressIndicator.IsVisible = true;
+
+                //strip punctuations & lowercase before sending to server
+                //request = Regex.Replace(request, @"[^A-Za-z0-9'\s]", "").ToLower();
+
+                string requestString = await buildRequest(request);
+
+                Debug.WriteLine(requestString);
+
+                var req = new Please.Util.Request();
+                //req.AcceptType = "json";
+                req.ContentType = "application/json";
+                req.Method = "POST";
+
+                PleaseModel response = new PleaseModel();
+
+                try
+                {
+                    response = await req.DoRequestJsonAsync<PleaseModel>(AppResources.Endpoint, requestString);
+                }
+                catch
+                {
+                    Confused();
+                    return;
+                }
+
+                Debug.WriteLine(response.ToString());
+
+                SystemTray.ProgressIndicator.IsVisible = false;
+
+                // update and hold response context
+                Debug.WriteLine(response.context);
+                App.requestContext = response.context;
+                Debug.WriteLine(response.speak);
+                Debug.WriteLine(response.show);
+
+                if (response.show != null)
+                {
+                    switch ((response.show.type).ToLower())
+                    {
+                        case "string":
+                        case "standard":
+                            await Say("please", response.speak, response.show.text);
+                            break;
+
+                        case "list":
+                            if (response.show.list.Count > 0)
+                            {
+                                App.ListPickerViewModel.SearchTerm = response.show.text;
+                                App.ListPickerViewModel.LoadList(response.show.list);
+                                addAppBarItem("listpickerpage");
+                            }
+
+                            await Say("please", response.speak, response.show.text);
+                            break;
+
+                        case "date":
+                            App.DatePickerViewModel.SearchTerm = response.show.text;
+                            App.DatePickerViewModel.DefaultDate = DateTime.Now;
+                            addAppBarItem("datepickerpage");
+                            await Say("please", response.speak, response.show.text);
+                            break;
+                    }
+                }
+                else if (response.speak != null && response.speak != "REPLACE_WITH_DEVICE_TIME")
+                {
+                    
+                    if (response.trigger.action == null || ((string)response.trigger.action).ToLower() != "link")
+                    {
+                        Debug.WriteLine("say please response");
+                        await Say("please", response.speak);
+                    }
+                }
+
+                if (micBtn != null)
+                {
+                    micBtn.IsEnabled = true;
+                }
+
+                Debug.WriteLine("before trigger action");
+
+                if (response.trigger.action != null && response.trigger.action != "")
+                {
+                    /* dynamic way to call methods
+                    Type type = typeof(Please.MainPage);
+                    MethodInfo info = type.GetMethod(response.trigger.action);
+                    info.Invoke(this, new object[] { response.trigger.payload });
+                    */
+
+                    switch (((string)response.trigger.action).ToLower())
+                    {
+                        case "clear_log":
+                            App.PleaseViewModel.PleaseList.Clear();
+                            addAppBarItem(String.Empty);
+                            break;
+
+                        case "call":
+                            DoCall(response.trigger.payload);
+                            break;
+
+                        case "sms":
+                            DoSms(response.trigger.payload);
+                            break;
+
+                        case "link":
+
+                            //var hyperlink = new HyperlinkButton();
+                            var url = (string)response.trigger.payload["url"];
+                            //hyperlink.NavigateUri = new Uri(url, UriKind.Absolute);
+                            //hyperlink.TargetName = "_blank";
+                            //hyperlink.Content = "Click for more";
+
+                            await Say("please", response.speak, response.speak, url);
+                            break;
+
+                        case "web":
+                            DoWeb(response.trigger.payload);
+                            break;
+
+                        case "email":
+                            DoEmail(response.trigger.payload);
+                            break;
+
+                        case "locate":
+                            if (myposition == null)
+                            {
+                                await GetGeolocation();
+                            }
+
+                            DoLocate(response.trigger.payload);
+                            break;
+
+                        case "directions":
+                            if (myposition == null)
+                            {
+                                await GetGeolocation();
+                            }
+
+                            DoDirections(response.trigger.payload);
+                            break;
+
+                        case "time":
+                            string time = DoTime(response.trigger.payload);
+                            await Say("please", time, time);
+                            break;
+
+                        case "calendar":
+                            DoCalendar(response.trigger.payload);
+                            break;
+
+                        case "images":
+                            App.GalleryViewModel.SearchTerm = response.show.text;
+                            App.GalleryViewModel.LoadImages(response.trigger.payload);
+                            NavigationService.Navigate(new Uri("/GalleryPage.xaml", UriKind.Relative));
+                            break;
+                        
+                        case "app_view":
+                        case "view":
+                            KeyValuePair<string, object> uri = response.trigger.payload.ElementAt(0);
+
+                            await Windows.System.Launcher.LaunchUriAsync(new Uri((string)uri.Value));
+                            break;
+                    }
+                }
+            }
+            catch 
+            {
+                Confused();                
+            }
+        }
+
+        protected void addAppBarItem(string page)
+        {
+            var appBar = ApplicationBar;
+
+            // reusable appbar btn
+            ApplicationBarIconButton appBarBtn;
+
+            if (appBar.Buttons.Count > 1)
+            {
+                appBar.Buttons.RemoveAt(1);
+            }
+
+            switch (page.ToLower())
+            {
+                case "listpickerpage":
+                    // browser button
+                    appBarBtn = Application.Current.Resources["ListPickerBtn"] as ApplicationBarIconButton;
+                    appBar.Buttons.Insert(1, appBarBtn);
+                  break;
+
+                case "datepickerpage":
+                    // settings button
+                    appBarBtn = Application.Current.Resources["DatePickerBtn"] as ApplicationBarIconButton;
+                    appBar.Buttons.Insert(1, appBarBtn);
+                    break;
+            }
         }
 
         protected void ScrollTo()
@@ -322,60 +516,85 @@ namespace Please
             }
         }
 
-        protected async Task Say(String type, String speak, String show = "")
+        protected async Task Confused()
         {
-            show = (show == null || show == "") ? speak : show;
+            SystemTray.ProgressIndicator.IsVisible = false;
+            micBtn.IsEnabled = true;
+            await Say("please", "I'm sorry. I didn't understand that.");
+        }
 
-            // display response
-            App.PleaseViewModel.AddDialog(type, show);
-
-            ScrollTo();
-
-            if (type.ToLower() == "please")
+        protected async Task Say(String type, String speak = "", String show = "", String link = "")
+        {
+            try
             {
-                await _synthesizer.SpeakTextAsync(speak);
+                show = (show == null || show == "") ? speak : show;
+
+                // display response
+                if (show != "")
+                {
+                    App.PleaseViewModel.AddDialog(type, show, link);
+                    ScrollTo();
+                }
+
+                // say response
+                if (type.ToLower() == "please" && speak != "" && disableSpeech != true)
+                {
+                    await _synthesizer.SpeakTextAsync(speak);
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("exception");
+                Debug.WriteLine(err.ToString());
             }
         }
 
         protected async Task<String> buildRequest(string query)
         {
-            deviceInfo = new Please.Models.Device();
+            App.deviceInfo = new Please.Models.Device();
 
             // Fri May 17 2013 11:05:06 GMT-0700 (MST)"
             // deviceInfo.time = String.Format("{0,3:ddd} {0,4:MMM} {0,2:dd} {0,4:yyyy} {0,2:hh}:{0,2:mm}:{0,2:ss} GMT{0,4:zzz}", DateTime.Now).Replace(":", "");
-            deviceInfo.timestamp = Please.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
-            deviceInfo.timeoffset = DateTimeOffset.Now.Offset.Hours; // this is not good enough for world but good enough for demo
+            App.deviceInfo.timestamp = Please.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
+            App.deviceInfo.timeoffset = DateTimeOffset.Now.Offset.Hours; // this is not good enough for world but good enough for demo
 
             var geolocation = await GetGeolocation();
 
             if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
             {
-                deviceInfo.lat = geolocation["latitude"];
-                deviceInfo.lon = geolocation["longitude"];
+                App.deviceInfo.lat = geolocation["latitude"];
+                App.deviceInfo.lon = geolocation["longitude"];
             }
             else if (geolocation.ContainsKey("error"))
             {
                 //ran into error acquiring geolocation
-                deviceInfo.lat = "";
-                deviceInfo.lon = "";
+                App.deviceInfo.lat = "";
+                App.deviceInfo.lon = "";
 
                 Debug.WriteLine(geolocation["error"]);
             }
 
             // if context isn't set, this must be the first request.
-            if (requestContext == null)
+            if (App.requestContext == null)
             {
-                requestContext = new Please.Models.Context();
+                App.requestContext = new Please.Models.Context();
             }
 
             // add new device info to context
-            requestContext.device = deviceInfo;
+            App.requestContext.device = App.deviceInfo;
 
-            // create request string
-            string requestString;
+            // make request payload
+            var rm = new RequestModel();
 
-            requestString = "query=" + Uri.EscapeDataString(query);
-            requestString += "&context=" + Uri.EscapeDataString(Newtonsoft.Json.JsonConvert.SerializeObject(requestContext));
+            rm.query = query;
+            rm.context = App.requestContext;
+
+            var jsonSettings = new JsonSerializerSettings();
+
+            jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+
+            string requestString = Newtonsoft.Json.JsonConvert.SerializeObject(rm, jsonSettings);
 
             return requestString;
         }

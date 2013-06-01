@@ -16,13 +16,13 @@ namespace Please.Util
 
     public class Request
     {
-        static CookieContainer cookieJar = new CookieContainer();
+        CookieContainer cookieJar = new CookieContainer();
 
-        public static String ContentType = null;
-        public static String AcceptType = null;
-        public static String Method = "GET";
+        public String ContentType = null;
+        public String AcceptType = null;
+        public String Method = "GET";
 
-        public static async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
+        public async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
             // if we have post/put data, write it to the request stream
             if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
@@ -40,27 +40,32 @@ namespace Please.Util
 
             var result = await task;
             var resp = result;
+            var head = resp.Headers;
+            for (var i = 0; i < head.Count; i++)
+            {
+                Debug.WriteLine(head.AllKeys[i]);
+            }
             var stream = resp.GetResponseStream();
             var sr = new System.IO.StreamReader(stream);
 
             return sr;
         }
 
-        public static async Task<System.IO.TextReader> DoRequestAsync(String url, String requestMethod = "GET", String requestData = "")
+        public async Task<System.IO.TextReader> DoRequestAsync(String url, String requestData = "")
         {
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
-            req.Method = requestMethod;
+            req.Method = Method;
             req.AllowReadStreamBuffering = true;
-            req.ContentType = Please.Util.Request.ContentType;
-            req.Accept = Please.Util.Request.AcceptType;
-            req.CookieContainer = Please.Util.Request.cookieJar;
+            req.ContentType = ContentType;
+            //req.Accept = this.AcceptType;
+            req.CookieContainer = this.cookieJar;
             
             var tr = await DoRequestAsync(req, requestData);
 
             return tr;
         }
 
-        public static async Task<T> DoRequestJsonAsync<T>(WebRequest req, String requestData = "")
+        public async Task<T> DoRequestJsonAsync<T>(WebRequest req, String requestData = "")
         {
             var ret = await DoRequestAsync(req, requestData);
             var response = await ret.ReadToEndAsync();
@@ -73,14 +78,14 @@ namespace Please.Util
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response, jsonSettings);
         }
 
-        public static async Task<T> DoRequestJsonAsync<T>(String uri, String requestMethod = "GET", String requestData = "")
+        public async Task<T> DoRequestJsonAsync<T>(String uri, String requestData = "")
         {
-            var ret = await DoRequestAsync(uri, requestMethod, requestData);
+            var ret = await DoRequestAsync(uri, requestData);
             var response = await ret.ReadToEndAsync();
 
             Debug.WriteLine(response.ToString());
-            
-            var jsonSettings = new JsonSerializerSettings();                      
+
+            var jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;

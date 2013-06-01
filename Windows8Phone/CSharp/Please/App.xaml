@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:util="clr-namespace:Please.Util">
 
     <!--Application Resources-->
@@ -14,12 +15,46 @@
         <SolidColorBrush x:Key="PleaseBackground" Color="#ffffff"/>
         <SolidColorBrush x:Key="UserForeground" Color="#000000"/>
         <SolidColorBrush x:Key="PleaseForeground" Color="#bd0d54"/>
+        <SolidColorBrush x:Key="HyperlinkTransparent" Color="#00FFFFFF"/>
+        <SolidColorBrush x:Key="HyperlinkVisible" Color="#0000ee"/>
         
         <ImageBrush x:Key="PleaseLogo" ImageSource="/Assets/please-bubble.png" AlignmentX="Center" AlignmentY="Center" Stretch="Uniform" Opacity=".15"/>
         
         <util:BackgroundConverter x:Key="Background"/>
         <util:ForegroundConverter x:Key="Foreground"/>
         <util:AlignmentConverter x:Key="Alignment"/>
+        <util:VisibilityConverter x:Key="Visibility"/>
+
+        <shell:ApplicationBarIconButton x:Key="ListPickerBtn" IconUri="/Assets/tileview.png" Text="Pick from list" Click="ListPicker" />
+        <shell:ApplicationBarIconButton x:Key="DatePickerBtn" IconUri="/Assets/feature.calendar.png" Text="Pick Date" Click="DatePicker" />
+
+        <!-- default page transition -->
+        <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
+            <Setter Property="toolkit:TransitionService.NavigationInTransition">
+                <Setter.Value>
+                    <toolkit:NavigationInTransition>
+                        <toolkit:NavigationInTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
+                        </toolkit:NavigationInTransition.Backward>
+                        <toolkit:NavigationInTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideLeftFadeIn"/>
+                        </toolkit:NavigationInTransition.Forward>
+                    </toolkit:NavigationInTransition>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
+                <Setter.Value>
+                    <toolkit:NavigationOutTransition>
+                        <toolkit:NavigationOutTransition.Backward>
+                            <toolkit:SlideTransition Mode="SlideRightFadeOut"/>
+                        </toolkit:NavigationOutTransition.Backward>
+                        <toolkit:NavigationOutTransition.Forward>
+                            <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
+                        </toolkit:NavigationOutTransition.Forward>
+                    </toolkit:NavigationOutTransition>
+                </Setter.Value>
+            </Setter>
+        </Style>
         
     </Application.Resources>
 

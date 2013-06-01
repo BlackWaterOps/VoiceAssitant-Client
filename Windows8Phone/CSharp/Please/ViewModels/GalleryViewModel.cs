@@ -44,15 +44,8 @@ namespace Please.ViewModels
 
         public void LoadImages(Dictionary<string, object> payload)
         {
-            if (GalleryList == null)
-            {
-                GalleryList = new ObservableCollection<BitmapImage>();
-            }
-            else
-            {
-                // clear collection for new set of images?
-            }
-
+            GalleryList = new ObservableCollection<BitmapImage>();
+           
             if (payload.ContainsKey("url"))
             {
                 var urls = payload["url"] as Newtonsoft.Json.Linq.JArray;
