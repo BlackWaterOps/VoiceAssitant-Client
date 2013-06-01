@@ -239,4 +239,20 @@ cordova.define('please/actions', function(require, exports, module) {
         }
     }
     exports.directions = directions;
+
+    var app_launch = function (payload) {
+        window.plugins.AndroidLauncher.launch(payload.package, null, null);
+    };
+    exports.app_launch = app_launch;
+
+    var app_view = function (payload) {
+        window.plugins.AndroidLauncher.view(payload.location, null, function(b){
+            if ( payload.location.indexOf('waze') != -1 ) {
+                window.plugins.AppInstallOffer.prompt('Waze not found',
+                                                      "We couldn't find Waze on your phone. Please install it.",
+                                                      "com.waze");
+            }
+        });
+    };
+    exports.app_view = app_view;
 });

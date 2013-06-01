@@ -16,9 +16,14 @@ var latitude, longitude, clientDate, positionCheck, test;
 $(function () {
     var api = cordova.require('please/api'),
         actions = cordova.require('please/actions'),
+        shows = cordova.require('please/shows'),
         capture,
         activeContact,
         activeContactTel;
+
+    var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November',
+                       'December'];
 
     $.fn.spin = function(opts) {
             this.each(function() {
@@ -52,8 +57,20 @@ $(function () {
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
-        document.getElementById('wrapper').offsetWidth; 
-        playAudio('file:///android_asset/www/snd/happyalert.wav');
+
+        $(document).on('mediaButton', function() {
+            initQuery();
+        });
+
+        $(document).on('backbutton', function () {
+            var l = $('.listSlider');
+
+            if ( l.hasClass('active') )
+                l.addClass('suspended').removeClass('active');
+            else
+                navigator.app.exitApp();
+        });
+
         positionCheck = setInterval(get_location, 60000);
     }
 
@@ -97,44 +114,20 @@ $(function () {
             if (respObj) {
                 // TODO: Send multiple matches with probabilities (will need to
                 // mod plugin)
-                var matches = respObj.speechMatches.speechMatch;
+                matches = respObj.speechMatches.speechMatch;
 
                 if ( matches.length > 0 ) {
-                    reply = matches[0];
-                    echo(reply);
-                    if (reply == "can you find me") {
+                    $(document).trigger('sendQuery');
+
+                    var query = matches[0];
+                    query = cleanQuery(query);
+                    echo(query);
+
+                    if (query == "can you find me") {
                         performAction('locate', "");
-                    } 
-                     else {
-                        clientDate = new Date();
-                        deviceInfo = {
-                                "device":{
-                                        "lat": latitude,
-                                        "lon": longitude,
-                                        "timestamp": clientDate.getTime(),
-                                        "timeoffset": clientDate.getTimezoneOffset() / 60
-                                    }
-                            }
-                        if (!window.context) {
-                            window.context = deviceInfo;
-                            console.log(context)
-                        } else {
-                            context.device = deviceInfo.device;
-                            console.log("sending: ", context)
-                        }
-
-                         window.context = JSON.stringify(context);
-
-                        api.ask(matches[0], context, function(response) {
-                            window.context = response.context;
-                            if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
-                                    say(response.speak);
-                            }
-                            if ( response.trigger.action != null ) {
-                                performAction(response.trigger.action, response.trigger.payload);
-                            }
-                        });
-                    }  
+                    } else {
+                        sendQuery(query);
+                    }
                 } else {
                     say("I didn't understand. I am such an idiot.");
                 }
@@ -142,22 +135,93 @@ $(function () {
         }
     }
 
-    // changed to a variable so that it can be called from the actions plugin
-    echo = function (message) {
+    var initQuery = function () {
+        $('.spinner').remove();
+        $('.control').addClass('fixIt').removeClass('fixIt');
+        window.plugins.tts.stop();
+        recognizeSpeech();
+    };
+
+    /**
+     * Do some very basic cleaning on a query.
+     */
+    var cleanQuery = function (query) {
+        query = query.replace('needa', 'need a');
+        return query;
+    };
+
+    /**
+     * Send a voice query to the server.
+     *
+     * @param query The raw text of a voice query, as returned by the speech
+     *     recognition engine.
+     */
+    var sendQuery = function (query, cb) {
+        clientDate = new Date();
+        deviceInfo = {
+            "device": {
+                "platform": "android",
+                "lat": latitude,
+                "lon": longitude,
+                "timestamp": clientDate.getTime(),
+                "timeoffset": clientDate.getTimezoneOffset() / 60
+            }
+        };
+
+        if (!window.context) {
+            window.context = deviceInfo;
+            console.log(context)
+        } else {
+            context.device = deviceInfo.device;
+            console.log("sending: ", context)
+        }
+
+        api.ask(query, context, function(response) {
+            window.context = response.context;
+            if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                say(response.speak);
+            }
+
+            if ( response.show !== undefined && response.show.type != 'string' ) {
+                performShow(response.show);
+            }
+
+            if ( response.trigger.action != null ) {
+                performAction(response.trigger.action, response.trigger.payload);
+            }
+
+            if ( cb )
+                cb();
+        });
+    };
+
+    /**
+     * Display text spoken by the user.
+     * @param message
+     */
+    var echo = function (message) {
         $('.console').append('<p class="bubble owner">' + message + '</p>');
         refreshiScroll();
         // window.plugins.tts.speak(message);
         $('#wrapper').spin(opts);
         $('#wrapper>div:first').addClass('spinner');
-    }
+    };
 
-    say = function (message) {
-        $('.console').append('<p class="bubble please">' + message + '</p>');
+    /**
+     * Continue the conversation with a message.
+     * @param message
+     */
+    var say = function (message) {
+        $('.console').append('<p class="bubble please">' + message + '<span class="helperButtons"></span></p>');
         refreshiScroll();
         window.plugins.tts.speak(message);
-    }
+    };
 
-    performAction = function (action, payload) {
+    var performShow = function (showData) {
+        shows[showData.type] (showData);
+    };
+
+    var performAction = function (action, payload) {
         actions[action] (payload);
     };
 
@@ -170,15 +234,6 @@ $(function () {
     }
 
     get_location();
-
-    test = "send Anghel a LONG text";
-    var deviceInfo = {
-        "device":{
-                "lat":latitude,
-                "lon":longitude,
-                "time":clientDate
-            }
-    }
 
     function clearCookie(name, domain, path){
         var domain = domain || document.domain;
@@ -219,7 +274,43 @@ $(function () {
     }
     function startupFail(result) {
         console.log("Startup failure = " + result);
-    }    
+    }
+
+    $('.listView').on('click', 'li', function () {
+        var query = $(this).text();
+
+        echo(query);
+        sendQuery(query);
+
+        $('.listSlider').removeClass('active suspended');
+    });
+
+    $(document).on('swipeRight', function () {
+        if ( $('.listSlider').hasClass('active') ) {
+            $('.listSlider').addClass('suspended').removeClass('active');
+        }
+    });
+
+    $(document).on('swipeLeft', function () {
+        if ( $('.listSlider').hasClass('suspended') ) {
+            $('.listSlider').removeClass('suspended').addClass('active');
+        }
+    });
+
+    $('.console').on('click', '.calendarLink', function () {
+        window.plugins.CalendarDialog.getDate(function (isoDate) {
+            if ( isoDate == undefined ) return;
+
+            var date = new Date(isoDate);
+            var dateString = MONTH_NAMES[date.getMonth()] + ' ' + date.getDate()
+                    + ' ' + date.getFullYear();
+            var dateQueryString = date.getFullYear() + '-'
+                    + (date.getMonth + 1) + '-' + date.getDate();
+
+            echo(dateString);
+            sendQuery(dateQueryString);
+        }, null);
+    });
 
     $('.console').on('click', '.extLink', function () {
         e = event.target;
@@ -227,11 +318,8 @@ $(function () {
         return false;
     });
 
-    $('.control').on('click', '.micbutton', function () {
-            $('.spinner').remove();
-            $('.control').addClass('fixIt').removeClass('fixIt');
-            window.plugins.tts.stop();
-            recognizeSpeech();
+    $('.control').on('fastClick', '.micbutton', function () {
+        initQuery();
                         // clientDate = new Date();
                         // // clientDate = clientDate.toString();
                         // deviceInfo = {

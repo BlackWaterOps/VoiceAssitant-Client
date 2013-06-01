@@ -15,13 +15,15 @@ cordova.define('please/api', function(require, exports, module) {
     //           }, callback, 'json');
     // };
     var ask = function (message, context, callback) {
+        var data = JSON.stringify({
+            "query": message,
+            "context": context
+        });
+
     	$.ajax({
     		"url": API_ENDPOINT,
     		"type": 'POST',
-    		"data": {
-                            "query": message,
-                            "context": context
-                        },
+            "data": data,
     		"dataType": 'json',
     		success: function (response) {
     			console.log("RESPONSE: " + response)
