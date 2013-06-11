@@ -129,7 +129,7 @@ $(function () {
                         sendQuery(query);
                     }
                 } else {
-                    say("I didn't understand. I am such an idiot.");
+                    say("I didn't understand. I am such an idiot.", null);
                 }
             }
         }
@@ -178,8 +178,11 @@ $(function () {
 
         api.ask(query, context, function(response) {
             window.context = response.context;
-            if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
-                say(response.speak);
+
+            if ( response.show !== undefined && response.show.type == 'string' ) {
+                say(response.speak, response.show.text);
+            } else if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                say(response.speak, null);
             }
 
             if ( response.show !== undefined && response.show.type != 'string' ) {
@@ -211,10 +214,15 @@ $(function () {
      * Continue the conversation with a message.
      * @param message
      */
-    var say = function (message) {
-        $('.console').append('<p class="bubble please">' + message + '<span class="helperButtons"></span></p>');
+    var say = function (speak, show) {
+
+        if (show === null || typeof show === 'undefined') {
+            show = speak;
+        }
+
+        $('.console').append('<p class="bubble please">' + show + '<span class="helperButtons"></span></p>');
         refreshiScroll();
-        window.plugins.tts.speak(message);
+        window.plugins.tts.speak(speak);
     };
 
     var performShow = function (showData) {
