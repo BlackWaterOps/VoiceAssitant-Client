@@ -19,18 +19,34 @@
 
 package com.stremor.pgtest;
 
+import org.apache.cordova.Config;
+import org.apache.cordova.DroidGap;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
-import org.apache.cordova.*;
+import android.webkit.WebView;
 
 public class pgtest extends DroidGap
 {
-    @Override
+    public static WebView webView;
+    
+	@Override
     public void onCreate(Bundle savedInstanceState)
     {
+        AudioManager am = (AudioManager) getContext().getSystemService(
+        		Context.AUDIO_SERVICE);
+        
+        am.registerMediaButtonEventReceiver(
+        		new ComponentName(getContext(), AudioButtonReceiver.class));
+		
         super.onCreate(savedInstanceState);
         // Set by <content src="index.html" /> in config.xml
         super.loadUrl(Config.getStartUrl());
         //super.loadUrl("file:///android_asset/www/index.html")
+        
+        webView = this.appView;
     }
 }
 

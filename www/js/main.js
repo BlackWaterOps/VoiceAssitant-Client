@@ -1,5 +1,7 @@
 var echo, say, performAction, refreshiScroll;
 
+var shouldSpeak = true;
+
 var opts = {
       lines: 12, // The number of lines to draw
       length: 7, // The length of each line
@@ -110,6 +112,7 @@ $(function () {
     function speechOk(result) {
         var respObj, requestCode, matches;
         if (result) {
+            shouldSpeak = true;
             respObj = JSON.parse(result);
             if (respObj) {
                 // TODO: Send multiple matches with probabilities (will need to
@@ -129,7 +132,7 @@ $(function () {
                         sendQuery(query);
                     }
                 } else {
-                    say("I didn't understand. I am such an idiot.");
+                    say("I didn't understand. I am such an idiot.", null);
                 }
             }
         }
@@ -163,8 +166,8 @@ $(function () {
                 "platform": "android",
                 "lat": latitude,
                 "lon": longitude,
-                "timestamp": clientDate.getTime(),
-                "timeoffset": clientDate.getTimezoneOffset() / 60
+                "timestamp": clientDate.getTime() / 1000,
+                "timeoffset": - clientDate.getTimezoneOffset() / 60
             }
         };
 
@@ -178,8 +181,11 @@ $(function () {
 
         api.ask(query, context, function(response) {
             window.context = response.context;
-            if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
-                say(response.speak);
+
+            if (response.show !== undefined && response.show.type == 'string') {
+                say(response.speak, response.show.text);
+            } else if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                say(response.speak, null);
             }
 
             if ( response.show !== undefined && response.show.type != 'string' ) {
@@ -199,7 +205,7 @@ $(function () {
      * Display text spoken by the user.
      * @param message
      */
-    var echo = function (message) {
+    echo = function (message) {
         $('.console').append('<p class="bubble owner">' + message + '</p>');
         refreshiScroll();
         // window.plugins.tts.speak(message);
@@ -211,17 +217,26 @@ $(function () {
      * Continue the conversation with a message.
      * @param message
      */
-    var say = function (message) {
-        $('.console').append('<p class="bubble please">' + message + '<span class="helperButtons"></span></p>');
+    say = function (speak, show) {
+        if (show === undefined || show === null)
+            show = speak;
+
+        $('.console').append('<p class="bubble please">' + show + '<span class="helperButtons"></span></p>');
         refreshiScroll();
-        window.plugins.tts.speak(message);
+
+        if (shouldSpeak === true)
+            window.plugins.tts.speak(speak);
+
+        // clear out test input field if it's visible
+        if ($('.container').hasClass('enableForm'))
+            $('.testInput').val("");
     };
 
     var performShow = function (showData) {
         shows[showData.type] (showData);
     };
 
-    var performAction = function (action, payload) {
+    performAction = function (action, payload) {
         actions[action] (payload);
     };
 
@@ -320,31 +335,52 @@ $(function () {
 
     $('.control').on('fastClick', '.micbutton', function () {
         initQuery();
-                        // clientDate = new Date();
-                        // // clientDate = clientDate.toString();
-                        // deviceInfo = {
-                        //         "device":{
-                        //                 "lat": latitude,
-                        //                 "lon": longitude,
-                        //                 "timestamp": clientDate.getTime(),
-                        //                 "timeoffset": clientDate.getTimezoneOffset() / 60
-                        //             }
-                        //     }
-                        // if (!window.context) {
-                        //     window.context = deviceInfo;
-                        //     console.log(context)
-                        // } else {
-                        //     context.device = deviceInfo.device;
-                        //     // context = {context}
-                        //     console.log("sending: ", context)
-                        // }
 
-                        //  window.context = JSON.stringify(context);
+        // clientDate = new Date();
+        // // clientDate = clientDate.toString();
+        // deviceInfo = {
+        //         "device":{
+        //                 "lat": latitude,
+        //                 "lon": longitude,
+        //                 "timestamp": clientDate.getTime(),
+        //                 "timeoffset": clientDate.getTimezoneOffset() / 60
+        //             }
+        //     }
+        // if (!window.context) {
+        //     window.context = deviceInfo;
+        //     console.log(context)
+        // } else {
+        //     context.device = deviceInfo.device;
+        //     // context = {context}
+        //     console.log("sending: ", context)
+        // }
 
-                        // api.ask(test, context, function(response) {
-                        //     console.log("received: ", response);
-                        //     window.context = response.context;
-                        //     console.log('new context: ', context)
-                        // });
-        });
-})
+        //  window.context = JSON.stringify(context);
+
+        // api.ask(test, context, function(response) {
+        //     console.log("received: ", response);
+        //     window.context = response.context;
+        //     console.log('new context: ', context)
+        // });
+    });
+    
+    // accept typed text in place of spoken text.
+    // Remove for Demos
+    $('#testForm').submit(function(e) {
+        e.preventDefault();
+
+        var query = $(this).find('#testInput').val();
+
+        if ( query.length > 0 ) {
+            shouldSpeak = false;
+            query = cleanQuery(query);
+            echo(query);
+
+            if (query == "can you find me") {
+                performAction('locate', "");
+            } else {
+                sendQuery(query);
+            }
+        }
+    });
+});

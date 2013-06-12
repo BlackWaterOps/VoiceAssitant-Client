@@ -1,39 +1,36 @@
 /**
- * Manages communication with the Butler API.
+ * Manages communication with the API.
  */
 cordova.define('please/api', function(require, exports, module) {
-    // var API_ENDPOINT = 'http://192.168.1.71:8080/butler';
-    // var API_ENDPOINT = "http://dev.liquid-helium.appspot.com/please";
-        var API_ENDPOINT = "http://stremor-va.appspot.com/rest";
+    var API_ENDPOINT = "http://stremor-va.appspot.com/rest";
 
-
-    // var ask = function(message, callback) {
-    //     $.get(API_ENDPOINT,
-    //           {
-    //               'format': 'json',
-    //               'query': message
-    //           }, callback, 'json');
-    // };
     var ask = function (message, context, callback) {
         var data = JSON.stringify({
             "query": message,
             "context": context
         });
 
-    	$.ajax({
-    		"url": API_ENDPOINT,
-    		"type": 'POST',
+        $.ajax({
+            "url": API_ENDPOINT,
+            "type": 'POST',
             "data": data,
-    		"dataType": 'json',
-    		success: function (response) {
-    			console.log("RESPONSE: " + response)
-    			callback(response);
-    		},
-    		error: function (response, jqXHR, textStatus, errorThrown) {
-                                    say("I'm sorry. I didn't understand that.");
-    			console.log('WTF: ' + jqXHR + ' status: ' + textStatus + ' error: ' + errorThrown);
-    		}
-    	})
+            "dataType": 'json',
+            timeout: 10000,
+            success: function (response) {
+                console.log("RESPONSE: " + response)
+                callback(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                message = 'The Please server could not process your request.';
+
+                if ( textStatus == 'timeout' )
+                    message = "I'm having trouble communicating with the Please server. " +
+                      "Please try again later.";
+
+                say(message, null);
+                console.log('WTF: ' + jqXHR + ' status: ' + textStatus + ' error: ' + errorThrown);
+            }
+        });
     }
 
     exports.ask = ask;
