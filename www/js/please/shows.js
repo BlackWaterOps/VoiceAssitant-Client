@@ -2,7 +2,8 @@
  * Methods for displaying prompt and result information to the user
  */
 cordova.define('please/shows', function(require, exports, module) {
-  var list = function (data) {
+  var list = function (response) {
+    var data = response.show;
     var listContents = '<li>' + data.list.join('</li><li>') + '</li>';
     $('.listView ul').html(listContents);
     $('.listView p.prompt').text(data.text);
@@ -26,8 +27,9 @@ cordova.define('please/shows', function(require, exports, module) {
   };
   exports.date = date;
 
-  var preformatted = function (data) {
+  var preformatted = function (response) {
     var template, source, html, item;
+    var data = response.show;
     switch (data.template.toLowerCase()) {
       case "shopping":
         source = $('#shoppingTemplate').html();
@@ -45,12 +47,13 @@ cordova.define('please/shows', function(require, exports, module) {
     template = Handlebars.compile(source);
 
     html = template(data);
+    
+    item = $('<div/>').addClass('preformatted').html(html).get(0).outerHTML; 
 
-    item = $('<div/>').addClass('bubble please preformatted').html(html); 
+    say(response.speak, item);
 
-    $('.console').append(item);
   };
-  exports.preformatted;
+  exports.preformatted = preformatted;
 
   // couple of helper functions if needed when setting strings to attributes
   String.prototype.htmlEscape = function(str) {
