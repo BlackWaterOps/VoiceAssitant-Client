@@ -29,6 +29,22 @@ body {
 	// background-repeat: no-repeat;
 	// background-size: cover;
 }
+.testForm {
+	width: 100%;
+	background-color: #676767;
+	padding: 10px;
+	border-bottom: 1px solid black;
+	position: relative;
+	display: none;
+	-webkit-user-select: text;
+}
+.testInput {
+	width: 100%;
+	border: 1px solid black;
+	height: 32px;
+	padding: 0 10px;
+	-webkit-user-select: text;
+}
 .header {
 	position: fixed;
 	top: 0;
