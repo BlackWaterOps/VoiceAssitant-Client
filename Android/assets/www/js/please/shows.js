@@ -25,4 +25,49 @@ cordova.define('please/shows', function(require, exports, module) {
     });
   };
   exports.date = date;
+
+  var preformatted = function (data) {
+    var template, source, html, item;
+    switch (data.template.toLowerCase()) {
+      case "shopping":
+        source = $('#shoppingTemplate').html();
+      break;
+
+      case "search":
+
+      break;
+
+      case "video":
+
+      break;
+    }
+
+    template = Handlebars.compile(source);
+
+    html = template(data);
+
+    item = $('<div/>').addClass('bubble please preformatted').html(html); 
+
+    $('.console').append(item);
+  };
+  exports.preformatted;
+
+  // couple of helper functions if needed when setting strings to attributes
+  String.prototype.htmlEscape = function(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+  }
+
+  String.prototype.htmlUnescape = function(str) {
+    return String(value)
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
+  }
 });

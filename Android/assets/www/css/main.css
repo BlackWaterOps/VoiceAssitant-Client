@@ -1,8 +1,10 @@
+/* line 1, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 * {
   -webkit-box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-user-select: none; }
 
+/* line 6, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 body {
   background-color: #2a2c2e;
   height: 100%;
@@ -13,6 +15,7 @@ body {
   font-family: Verdana, Arial, sans-serif;
   font-size: 18px; }
 
+/* line 20, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .container {
   min-height: 100%;
   position: absolute;
@@ -22,6 +25,7 @@ body {
   left: 0;
   overflow: hidden; }
 
+/* line 32, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .header {
   position: fixed;
   top: 0;
@@ -36,6 +40,7 @@ body {
   -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   z-index: 99; }
 
+/* line 46, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 #wrapper {
   overflow: auto;
   position: absolute;
@@ -45,9 +50,11 @@ body {
   right: 0;
   -webkit-overflow-scrolling: touch; }
 
+/* line 55, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .spinner {
   z-index: 99999; }
 
+/* line 58, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .control {
   position: fixed;
   bottom: 0;
@@ -55,12 +62,14 @@ body {
   right: 0;
   z-index: 99;
   text-align: center; }
+  /* line 68, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
+    /* line 74, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
     .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
@@ -71,9 +80,11 @@ body {
       top: -15px;
       left: -15px;
       border-radius: 50%; }
+    /* line 86, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
     .control .micbutton:after {
       -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
       z-index: -999; }
+  /* line 92, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .control:before {
     content: "";
     position: absolute;
@@ -82,6 +93,7 @@ body {
     top: -30px;
     height: 90px;
     z-index: -99; }
+  /* line 107, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .control:after {
     content: "";
     position: absolute;
@@ -93,24 +105,29 @@ body {
     height: 85px;
     z-index: -99; }
 
+/* line 121, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .fixit {
   position: fixed;
   bottom: 0;
   width: 100%; }
 
+/* line 126, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 #gMap, #gMapPos {
   width: 100%;
   height: 300px;
   margin-top: 20px; }
 
+/* line 131, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .galleryImg {
   border: 1px solid black;
   margin: 10px auto 0;
   display: block; }
 
+/* line 136, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .console {
   padding-bottom: 12px; }
 
+/* line 139, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .bubble {
   z-index: 1;
   width: 100%;
@@ -119,31 +136,83 @@ body {
   background-color: white;
   border-bottom: 1px solid black;
   font-weight: bold; }
+  /* line 147, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .bubble:first-of-type {
     border-top: 2px solid black; }
+  /* line 150, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .bubble img, .bubble video {
     max-width: 100%; }
+  /* line 153, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .bubble .helperButtons a {
     text-decoration: underline;
     display: block;
     text-align: center;
     padding: 10px 0; }
 
+/* line 160, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .extLink {
   margin: 20px 0;
   display: block;
   text-align: right;
   text-decoration: none; }
 
+/* line 166, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .please {
   color: #003066;
   font-weight: normal; }
 
+/* line 175, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .owner {
   color: #000;
   background-color: #e4e4e4;
   text-align: right; }
 
+/* PREFORMATTED SHOW RESULTS */
+/* line 184, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.preformatted {
+  max-height: 300px;
+  overflow-x: hidden;
+  oveflow-y: auto;
+  -webkit-overflow-scrolling: touch; }
+  /* line 190, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+  .preformatted ul {
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+
+/* line 197, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.shoppingItem {
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #999999; }
+  /* line 203, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+  .shoppingItem ul {
+    height: 100%; }
+
+/* line 208, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.shoppingImage {
+  float: left;
+  width: 25%;
+  max-width: 160px;
+  background-color: black;
+  height: 100%; }
+  /* line 214, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+  .shoppingImage img {
+    border: 1px solid black;
+    display: block; }
+
+/* line 220, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.shoppingDescription {
+  float: left;
+  width: 73%;
+  margin-left: 2%;
+  word-wrap: break-word; }
+  /* line 225, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+  .shoppingDescription * {
+    display: block; }
+
+/* END PREFORMATTED SHOW RESULTS */
+/* line 232, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
 .listSlider {
   z-index: 98;
   -webkit-transition: -webkit-transform 0.2s ease-in-out;
@@ -154,6 +223,7 @@ body {
   bottom: 84px;
   /* Drawer pull bar */
   /* Drawer grip */ }
+  /* line 243, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .listSlider:before {
     content: "";
     position: absolute;
@@ -162,6 +232,7 @@ body {
     bottom: 0;
     width: 5%;
     background-color: #fff; }
+  /* line 254, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .listSlider:after {
     content: "";
     position: absolute;
@@ -171,10 +242,13 @@ body {
     height: 4%;
     border-left: 1px solid #aaaaaa;
     border-right: 1px solid #aaaaaa; }
+  /* line 267, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .listSlider.suspended {
     -webkit-transform: translate3d(95%, 0, 0); }
+  /* line 271, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .listSlider.active {
     -webkit-transform: translate3d(5%, 0, 0); }
+  /* line 275, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
   .listSlider .listView {
     width: 100%;
     position: absolute;
@@ -183,15 +257,34 @@ body {
     overflow-y: scroll;
     background-color: #fff;
     color: #000; }
+    /* line 276, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
     .listSlider .listView p.prompt {
       margin-right: 5%;
       text-align: center;
       color: #003066; }
+    /* line 291, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
     .listSlider .listView ul {
       margin: 0;
       padding: 0;
       list-style: none; }
+      /* line 296, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
       .listSlider .listView ul li {
         border-bottom: 1px solid #cccccc;
         margin: 0;
         padding: 10px 20px; }
+
+/****** CLEAR FIX *******/
+/* line 307, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.cf {
+  *zoom: 1; }
+
+/* line 310, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.cf:before, .cf:after {
+  content: "";
+  display: table;
+  line-height: 0;
+  height: 0; }
+
+/* line 316, /Users/jeffschifano/Sites/Stremor/Please/Android/assets/www/scss/main.scss */
+.cf:after {
+  clear: both; }
