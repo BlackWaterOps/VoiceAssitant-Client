@@ -17,7 +17,7 @@ cordova.define('please/api', function(require, exports, module) {
             "dataType": 'json',
             timeout: 10000,
             success: function (response) {
-                console.log("RESPONSE: " + response)
+                console.log("RESPONSE", response);
                 callback(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
