@@ -73,7 +73,8 @@ cordova.define('please/actions', function(require, exports, module) {
     };
 
     var link = function (payload) {
-        $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for more</a>');
+        if (payload.url !== undefined && payload.url !== null)
+            $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for more</a>');
     };
     exports.link = link;
 
