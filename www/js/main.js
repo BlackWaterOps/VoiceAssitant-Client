@@ -182,7 +182,7 @@ $(function () {
         api.ask(query, context, function(response) {
             window.context = response.context;
 
-            if (response.show !== undefined && response.show.type == 'string') {
+            if ( response.show !== undefined && response.show.type == 'string' ) {
                 say(response.speak, response.show.text);
             } else if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
                 say(response.speak, null);

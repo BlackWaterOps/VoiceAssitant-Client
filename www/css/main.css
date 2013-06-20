@@ -50,6 +50,24 @@ body {
   -webkit-user-select: text; }
 
 /* line 57, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.testForm {
+  width: 100%;
+  background-color: #676767;
+  padding: 10px;
+  border-bottom: 1px solid black;
+  position: relative;
+  display: none;
+  -webkit-user-select: text; }
+
+/* line 66, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.testInput {
+  width: 100%;
+  border: 1px solid black;
+  height: 32px;
+  padding: 0 10px;
+  -webkit-user-select: text; }
+
+/* line 73, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .header {
   position: fixed;
   top: 0;
@@ -64,7 +82,7 @@ body {
   -webkit-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   z-index: 99; }
 
-/* line 71, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 87, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 #wrapper {
   overflow: auto;
   position: absolute;
@@ -74,11 +92,11 @@ body {
   right: 0;
   -webkit-overflow-scrolling: touch; }
 
-/* line 80, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 96, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .spinner {
   z-index: 99999; }
 
-/* line 83, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 99, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .control {
   position: fixed;
   bottom: 0;
@@ -87,14 +105,14 @@ body {
   right: 0;
   z-index: 99;
   text-align: center; }
-  /* line 94, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 110, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
-    /* line 100, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 116, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
@@ -105,11 +123,11 @@ body {
       top: -15px;
       left: -15px;
       border-radius: 50%; }
-    /* line 112, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 128, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .control .micbutton:after {
       -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
       z-index: -999; }
-  /* line 118, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 134, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .control:before {
     content: "";
     position: absolute;
@@ -118,7 +136,7 @@ body {
     top: -30px;
     height: 90px;
     z-index: -99; }
-  /* line 133, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 149, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .control:after {
     content: "";
     position: absolute;
@@ -130,29 +148,29 @@ body {
     height: 85px;
     z-index: -99; }
 
-/* line 147, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 163, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .fixit {
   position: fixed;
   bottom: 0;
   width: 100%; }
 
-/* line 152, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 168, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 #gMap, #gMapPos {
   width: 100%;
   height: 300px;
   margin-top: 20px; }
 
-/* line 157, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 173, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .galleryImg {
   border: 1px solid black;
   margin: 10px auto 0;
   display: block; }
 
-/* line 162, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 178, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .console {
   padding-bottom: 12px; }
 
-/* line 165, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 181, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .bubble {
   z-index: 1;
   width: 100%;
@@ -161,38 +179,83 @@ body {
   background-color: white;
   border-bottom: 1px solid black;
   font-weight: bold; }
-  /* line 173, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 189, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .bubble:first-of-type {
     border-top: 2px solid black; }
-  /* line 176, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 192, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .bubble img, .bubble video {
     max-width: 100%; }
-  /* line 179, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 195, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .bubble .helperButtons a {
     text-decoration: underline;
     display: block;
     text-align: center;
     padding: 10px 0; }
 
-/* line 186, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 202, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .extLink {
   margin: 20px 0;
   display: block;
   text-align: right;
   text-decoration: none; }
 
-/* line 192, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 208, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .please {
   color: #003066;
   font-weight: normal; }
 
-/* line 201, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 217, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .owner {
   color: #000;
   background-color: #e4e4e4;
   text-align: right; }
 
-/* line 207, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* PREFORMATTED SHOW RESULTS */
+/* line 226, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.preformatted {
+  max-height: 300px;
+  overflow-x: hidden;
+  oveflow-y: auto;
+  -webkit-overflow-scrolling: touch; }
+  /* line 232, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  .preformatted ul {
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+
+/* line 239, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.shoppingItem {
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #999999; }
+  /* line 245, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  .shoppingItem ul {
+    height: 100%; }
+
+/* line 250, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.shoppingImage {
+  float: left;
+  width: 25%;
+  max-width: 160px;
+  background-color: black;
+  height: 100%; }
+  /* line 256, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  .shoppingImage img {
+    border: 1px solid black;
+    display: block; }
+
+/* line 262, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.shoppingDescription {
+  float: left;
+  width: 73%;
+  margin-left: 2%;
+  word-wrap: break-word; }
+  /* line 267, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  .shoppingDescription * {
+    display: block; }
+
+/* END PREFORMATTED SHOW RESULTS */
+/* line 274, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .listSlider {
   z-index: 98;
   -webkit-transition: -webkit-transform 0.2s ease-in-out;
@@ -203,7 +266,7 @@ body {
   bottom: 84px;
   /* Drawer pull bar */
   /* Drawer grip */ }
-  /* line 218, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 285, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider:before {
     content: "";
     position: absolute;
@@ -212,7 +275,7 @@ body {
     bottom: 0;
     width: 5%;
     background-color: #fff; }
-  /* line 229, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 296, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider:after {
     content: "";
     position: absolute;
@@ -222,13 +285,13 @@ body {
     height: 4%;
     border-left: 1px solid #aaaaaa;
     border-right: 1px solid #aaaaaa; }
-  /* line 242, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 309, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider.suspended {
     -webkit-transform: translate3d(95%, 0, 0); }
-  /* line 246, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 313, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider.active {
     -webkit-transform: translate3d(5%, 0, 0); }
-  /* line 250, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 317, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider .listView {
     width: 100%;
     position: absolute;
@@ -237,18 +300,34 @@ body {
     overflow-y: scroll;
     background-color: #fff;
     color: #000; }
-    /* line 251, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 318, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .listSlider .listView p.prompt {
       margin-right: 5%;
       text-align: center;
       color: #003066; }
-    /* line 266, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 333, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .listSlider .listView ul {
       margin: 0;
       padding: 0;
       list-style: none; }
-      /* line 271, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+      /* line 338, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
       .listSlider .listView ul li {
         border-bottom: 1px solid #cccccc;
         margin: 0;
         padding: 10px 20px; }
+
+/****** CLEAR FIX *******/
+/* line 349, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.cf {
+  *zoom: 1; }
+
+/* line 352, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.cf:before, .cf:after {
+  content: "";
+  display: table;
+  line-height: 0;
+  height: 0; }
+
+/* line 358, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.cf:after {
+  clear: both; }

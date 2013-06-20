@@ -38,6 +38,37 @@
           <p class="bubble please">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sed volutpat enim. Etiam vehicula, mauris id pellentesque dictum, tortor mi facilisis nibh, eu consectetur elit lectus et nibh.</p>
           <p class="bubble owner">Is that all you have?</p>
           <p class="bubble please">Curabitur sed turpis sed nisi ultrices bibendum. Proin placerat pharetra purus, convallis pharetra eros gravida eu. Phasellus aliquam malesuada fermentum. Donec condimentum pellentesque velit non dictum. Nulla posuere, diam ut rutrum elementum, arcu lorem semper enim, quis venenatis dui erat a justo. Suspendisse a eros in ante venenatis condimentum sed sed augue. Suspendisse sem ligula, dignissim at tincidunt rhoncus, imperdiet non lorem. </p> -->
+
+          <!--
+          <div class="bubble please preformatted">
+            <ul>
+              <li class="shoppingItem">
+                <ul class="cf">
+                  <li class="shoppingImage">
+                    <img src="http://ecx.images-amazon.com/images/I/31zzEmvOy6L._SL160_.jpg" alt="Aurora BITTY Rabbit Bunny MINI FLOPSIE 8&quot; Plush Beanbag"/>
+                  </li>
+                  <li class="shoppingDescription">
+                    <a href="http://www.amazon.com/Aurora-BITTY-Rabbit-FLOPSIE-Beanbag/dp/B000VFJOL0%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB000VFJOL0">Aurora BITTY Rabbit Bunny MINI FLOPSIE 8&quot; Plush Beanbag</a>
+                    <span>$5.36</span>
+                  </li>
+                </ul>  
+              </li>
+              
+              <li class="shoppingItem">
+                <ul class="cf">
+                  <li class="shoppingImage">
+                    <img src="http://ecx.images-amazon.com/images/I/51aixeX46rL._SL160_.jpg" alt="Melissa &amp; Doug Princess Soft Toys 14&quot; Plush Burrow Bunny"/>
+                  </li>
+                  <li class="shoppingDescription">
+                    <a href="http://www.amazon.com/Melissa-Doug-Princess-Plush-Burrow/dp/B004N7NFSK%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB004N7NFSK">Melissa &amp; Doug Princess Soft Toys 14&quot; Plush Burrow Bunny</a>
+                    <span>$13.43</span>
+                  </li>
+                </ul> 
+              </li>
+            </ul>
+          </div>
+          -->
+          
         </div>
       </div>
       <div class="control">
@@ -51,6 +82,24 @@
         </div>
       </div>
     </div>
+
+    <script id="shoppingTemplate" type="text/x-handlebars-template">
+      <ul>
+        {{#each output}}
+        <li class="shoppingItem">
+          <ul class="cf">
+            <li class="shoppingImage">
+              <img src="{{image}}" alt="{{title}}"/>
+            </li>
+            <li class="shoppingDescription">
+              <a href="{{url}}">{{title}}</a>
+              <span>{{price}}</span>
+            </li>
+          </ul>  
+        </li>
+        {{/each}}
+      </ul>
+    </script>
 
     <script type="text/javascript" src="js/please/actions.js"></script>
     <script type="text/javascript" src="js/please/api.js"></script>
