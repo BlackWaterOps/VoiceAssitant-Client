@@ -12,8 +12,28 @@ cordova.define('please/actions', function(require, exports, module) {
         return new Date(date + " " + time);
     }
 
+    /*
+    {'action': 'calendar', 'payload': {'date': '2013-06-20', 'person': u'bob', 'location': None, 'time': '02:18:00', 'duration': 0.5, 'query': u'Dinner at 2:18 a m with bob', 'subject': u'Dinner'}}
+    */
+
+    var createEventSubject = function (subject, person, location) {
+        if (subject === undefined || subject === null) {
+            subject = "";
+        }
+
+        if (person !== null) {
+            subject += " with " + person;
+        }
+        if ((location !== null) && (location !== "")) {
+            subject += " at " + location;
+        }
+
+        return subject;
+    }
+
     var calendar = function (payload) {
-        var temp, sDate, eDate;
+        var temp, sDate, eDate, memo;
+        
         sDate = dateFromString(payload.date, payload.time);
         /*
         if (payload.time == null) {
@@ -24,9 +44,14 @@ cordova.define('please/actions', function(require, exports, module) {
         temp = sDate.getTime();
         temp += (payload.duration * 3600000);
         eDate = new Date(temp);
+        
         if (payload.location == null) {
             payload.location = "";
         }
+
+        memo = createEventSubject(payload.subject, payload.person, payload.location);
+        
+        /*
         memo = payload.subject;
         if (payload.person !== null) {
             memo += " with " + payload.person;
@@ -34,7 +59,7 @@ cordova.define('please/actions', function(require, exports, module) {
         if ((payload.location !== null) && (payload.location !== "")) {
             memo += " at " + payload.location;
         }
-
+        */
         function success() {}
         function error() {}
 
@@ -51,25 +76,32 @@ cordova.define('please/actions', function(require, exports, module) {
     exports.calendar = calendar;
 
     var event = function(payload) {
-        var sDate;
+        var temp, sDate, eDate, memo;
 
         sDate = dateFromString(payload.date, payload.time);
 
         temp = sDate.getTime();
         temp += (payload.duration * 3600000);
+        
         eDate = new Date(temp);
+
+        if (payload.location == null) {
+            payload.location = "";
+        }
+
+        memo = createEventSubject(payload.subject, payload.person, payload.location);
 
         function success() {}
         function error() {}
 
         window.plugins.eventPlugin.addEvent(
-                payload.subject, // title
+                memo, // title
                 payload.location, // location
                 "", // notes
                 sDate, // start date
                 eDate, // end date
                 success, // success handler
-                error, // error handler
+                error // error handler
             );
     };
     exports.event = event;

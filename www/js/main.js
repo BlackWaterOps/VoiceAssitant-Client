@@ -56,6 +56,37 @@ $(function () {
         $('.spinner').remove();
     }
 
+     /*
+    {'action': 'calendar', 'payload': {'date': '2013-06-20', 'person': u'bob', 'location': None, 'time': '02:18:00', 'duration': 0.5, 'query': u'Dinner at 2:18 a m with bob', 'subject': u'Dinner'}}
+    */
+    function createNewEventPlayload() {
+        var payload = { };
+
+        var date = new Date();
+        var month = (date.getMonth() + 1);
+        var day = date.getDate();
+
+        if (month < 10) {
+            month = "0" + month;
+        }
+
+        if (day < 10) {
+            day = "0" + day;
+        }
+
+        dateString = [date.getFullYear(), month, day].join("-");
+        payload.duration = 0.5;
+        payload.date = dateString;
+        payload.time = '02:18:00';
+        payload.location = null;
+        payload.person = "jeff";
+        payload.subject = "meeting";
+
+        return payload;
+    }
+
+    //console.log(createNewEventPlayload());
+
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
         window.plugins.speechrecognizer.init(speechInitOk, speechInitFail);
