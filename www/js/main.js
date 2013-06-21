@@ -182,6 +182,21 @@ $(function () {
         api.ask(query, context, function(response) {
             window.context = response.context;
 
+            if (response.show !== undefined && response.show !== null) {
+                switch (response.show.type) {
+                    case "string":
+                    say(response.speak, response.show.text);
+                    break;
+
+                    default:
+                    performShow(response);
+                    break;
+                }
+            } else if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
+                say(response.speak, null);
+            }
+
+            /*
             if ( response.show !== undefined && response.show.type == 'string' ) {
                 say(response.speak, response.show.text);
             } else if (( response.speak != null ) && (response.speak !== "REPLACE_WITH_DEVICE_TIME")) {
@@ -191,7 +206,8 @@ $(function () {
             if ( response.show !== undefined && response.show.type != 'string' ) {
                 performShow(response.show);
             }
-
+            */
+            
             if ( response.trigger.action != null ) {
                 performAction(response.trigger.action, response.trigger.payload);
             }
@@ -206,7 +222,7 @@ $(function () {
      * @param message
      */
     echo = function (message) {
-        $('.console').append('<p class="bubble owner">' + message + '</p>');
+        $('.console').append('<div class="bubble owner">' + message + '</div>');
         refreshiScroll();
         // window.plugins.tts.speak(message);
         $('#wrapper').spin(opts);
@@ -221,7 +237,7 @@ $(function () {
         if (show === undefined || show === null)
             show = speak;
 
-        $('.console').append('<p class="bubble please">' + show + '<span class="helperButtons"></span></p>');
+        $('.console').append('<div class="bubble please">' + show + '<span class="helperButtons"></span></div>');
         refreshiScroll();
 
         if (shouldSpeak === true)
@@ -232,8 +248,8 @@ $(function () {
             $('.testInput').val("");
     };
 
-    var performShow = function (showData) {
-        shows[showData.type] (showData);
+    var performShow = function (response) {
+        shows[response.show.type] (response);
     };
 
     performAction = function (action, payload) {
