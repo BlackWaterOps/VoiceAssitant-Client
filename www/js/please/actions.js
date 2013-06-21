@@ -4,28 +4,39 @@
 cordova.define('please/actions', function(require, exports, module) {
     var PhoneCall = require('cordova/plugin/phonecall');
 
-    exports.calendar = function(payload) {
-        var temp, sDate, eDate;
-            if (payload.time == null) {
-                payload.time = "12:00:00 PM";
-            }
-            sDate = new Date(payload.date + " " + payload.time);
-            temp = sDate.getTime();
-            temp += (payload.duration * 3600000);
-            eDate = new Date(temp);
-            if (payload.location == null) {
-                payload.location = "";
-            }
-            memo = payload.subject;
-            if (payload.person !== null) {
-                memo += " with " + payload.person;
-            }
-            if ((payload.location !== null) && (payload.location !== "")) {
-                memo += " at " + payload.location;
-            }
+    var dateFromString = function (date, time) {
+        if (time === undefined || time === null) {
+            time = "12:00:00 PM";
+        }
+        
+        return new Date(date + " " + time);
+    }
 
-            function success () {}
-            function error () {}
+    var calendar = function (payload) {
+        var temp, sDate, eDate;
+        sDate = dateFromString(payload.date, payload.time);
+        /*
+        if (payload.time == null) {
+            payload.time = "12:00:00 PM";
+        }
+        sDate = new Date(payload.date + " " + payload.time);
+        */
+        temp = sDate.getTime();
+        temp += (payload.duration * 3600000);
+        eDate = new Date(temp);
+        if (payload.location == null) {
+            payload.location = "";
+        }
+        memo = payload.subject;
+        if (payload.person !== null) {
+            memo += " with " + payload.person;
+        }
+        if ((payload.location !== null) && (payload.location !== "")) {
+            memo += " at " + payload.location;
+        }
+
+        function success() {}
+        function error() {}
 
         window.plugins.calendarPlugin.createEvent(
                 memo, 
@@ -37,6 +48,31 @@ cordova.define('please/actions', function(require, exports, module) {
                 error
             );
     };
+    exports.calendar = calendar;
+
+    var event = function(payload) {
+        var sDate;
+
+        sDate = dateFromString(payload.date, payload.time);
+
+        temp = sDate.getTime();
+        temp += (payload.duration * 3600000);
+        eDate = new Date(temp);
+
+        function success() {}
+        function error() {}
+
+        window.plugins.eventPlugin.addEvent(
+                payload.subject, // title
+                payload.location, // location
+                "", // notes
+                sDate, // start date
+                eDate, // end date
+                success, // success handler
+                error, // error handler
+            );
+    };
+    exports.event = event;
 
     var time = function () {
         // var theDate = new Date();
@@ -61,16 +97,18 @@ cordova.define('please/actions', function(require, exports, module) {
         // var date = theDate.getDate();
         // var year = theDate.getFullYear();
         // say("It is now " + hours + ":" + mins + " " + ampm + " on " + day + ", " + month + " " +  date + ", " + year + ".");
-    }
+    };
     exports.time = time;
 
-    exports.call = function(payload) {
+    var call = function (payload) {
         PhoneCall.call(payload.phone);
     };
+    exports.call = call;
 
-    exports.web = function(payload) {
+    var web = function (payload) {
         window.open(payload.url, '_blank', 'location=yes');
     };
+    exports.web = web;
 
     var link = function (payload) {
         if (payload.url !== undefined && payload.url !== null)
@@ -78,7 +116,7 @@ cordova.define('please/actions', function(require, exports, module) {
     };
     exports.link = link;
 
-    exports.reminder = function (payload) {
+    var reminder = function (payload) {
         var now = new Date();
         now.setSeconds(now.getSeconds() + payload.seconds);
         window.plugins.localNotification.add({
@@ -88,7 +126,8 @@ cordova.define('please/actions', function(require, exports, module) {
             repeatDaily: false,
             id: 999
         })
-    }
+    };
+    exports.reminder = reminder;
 
     var images = function (payload) {
         for (var i=0; i<payload.url.length; i++) {
@@ -96,10 +135,10 @@ cordova.define('please/actions', function(require, exports, module) {
             $('.bubble:last').append('<img class="galleryImg" src="' +path + '" />');
         }
         refreshiScroll();
-    }
+    };
     exports.images = images;
 
-    exports.sms = function (payload) {
+    var sms = function (payload) {
          cordova.exec(
             function(success) {}, 
             function(error) {}, 
@@ -110,8 +149,9 @@ cordova.define('please/actions', function(require, exports, module) {
                 payload.message
             ]);
     };
+    exports.sms = sms;
 
-    exports.email = function (payload) {
+    var email = function (payload) {
             window.plugins.emailComposer.showEmailComposer(
                 payload.subject,
                 payload.message,
@@ -121,7 +161,8 @@ cordova.define('please/actions', function(require, exports, module) {
                 false, // isHtml
                 [] //attachments
             );
-    }
+    };
+    exports.email = email;
 
     var capture_image = function (payload) {
         navigator.device.capture.captureImage(onSuccess, onFail, {limit:1});
@@ -130,8 +171,8 @@ cordova.define('please/actions', function(require, exports, module) {
             $('.console').append('<p class="bubble please">' + '<img src="' +path + '" />' + '</p>');
             say('That is a beautiful picture!')
         }
-        function onFail () {}
-    }
+        function onFail() {}
+    };
     exports.capture_image = capture_image;
 
     var capture_audio = function (payload) {
@@ -141,8 +182,8 @@ cordova.define('please/actions', function(require, exports, module) {
             $('.console').append('<p class="bubble please">' + '<audio src="' +path + '"controls ></audio>' + '</p>');
             say('That sounded great!')
         }
-        function captureError () {}
-    }
+        function captureError() {}
+    };
     exports.capture_audio = capture_audio;
 
     var capture_video = function (payload) {
@@ -152,16 +193,17 @@ cordova.define('please/actions', function(require, exports, module) {
             $('.console').append('<p class="bubble please">' + '<video src="' +path + '" controls ></video>' + '</p>');
             say('That was a funny video!')
         }
-        function captureError () {}
-    }
+        function captureError() {}
+    };
     exports.capture_video = capture_video;
 
-    exports.clear_log = function (payload) {
+    var clear_log = function (payload) {
         $('.console').html("");
         // say('Let me know how I can be of assistance.');
-    }
+    };
+    exports.clear_log = clear_log;
 
-    exports.locate = function (payload) {
+    var locate = function (payload) {
         var oops = false;
          var defaultLocation = {"coords":{"latitude":33.620632, "longitude":-111.92565}};
         navigator.geolocation.getCurrentPosition(geoSuccess, geoFail, {timeout:10000, enableHighAccuracy:true});
@@ -179,12 +221,14 @@ cordova.define('please/actions', function(require, exports, module) {
             var map = new google.maps.Map(document.getElementById('gMapPos'), options);
             var uRHere = new google.maps.Marker({ position: latlng, map: map, title: 'You are here' });
         }
-        function geoFail () {
+
+        function geoFail() {
            say("You must be hiding, because I can't find you. But I did find Stremor headquarters in Scottsdale.");
            oops = true;
            geoSuccess(defaultLocation);
         }
-    }
+    };
+    exports.locate = locate;
 
     var directions = function (payload) {
         var directionsDisplay;
@@ -233,12 +277,12 @@ cordova.define('please/actions', function(require, exports, module) {
           });
           refreshiScroll();
         }
-        function navFail () {
+        function navFail() {
             say("This is sad, but I'm having trouble with my GPS. Here's how to get there from Scottsdale.");
             oops = true;
             navSuccess(defaultLocation);
         }
-    }
+    };
     exports.directions = directions;
 
     var app_launch = function (payload) {
