@@ -44,6 +44,14 @@ $(function () {
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
+    // $('.preformatted').on('touchstart', function() {
+    //     myScroll.vScroll = false;
+    //     var con = $('.console');
+    //     con.offset({left: 0, top: con.offset().top});
+    // }).on('touchend', function() {
+    //     myScroll.vScroll = true;
+    // });
+
     var myScroll = new iScroll('wrapper', {checkDOMChanges: true});
     var hite = $('#wrapper').innerHeight();
     refreshiScroll = function () {
@@ -59,7 +67,7 @@ $(function () {
      /*
     {'action': 'calendar', 'payload': {'date': '2013-06-20', 'person': u'bob', 'location': None, 'time': '02:18:00', 'duration': 0.5, 'query': u'Dinner at 2:18 a m with bob', 'subject': u'Dinner'}}
     */
-    function createNewEventPlayload() {
+    function createNewEventPayload() {
         var payload = { };
 
         var date = new Date();
@@ -85,7 +93,7 @@ $(function () {
         return payload;
     }
 
-    //console.log(createNewEventPlayload());
+    //console.log(createNewEventPayload());
 
     function onDeviceReady() {
         window.plugins.tts.startup(startupWin, startupFail);
@@ -105,6 +113,8 @@ $(function () {
         });
 
         positionCheck = setInterval(get_location, 60000);
+
+        //actions['event'](createNewEventPayload());
     }
 
     function playAudio(url) {
@@ -126,7 +136,7 @@ $(function () {
     function startupWin(result) {
         // When result is equal to STARTED we are ready to play
         if (result == TTS.STARTED) {
-            $('.console').append('<p class="bubble please">Tap the Please logo to get started</p>');
+            $('.console').append('<div class="bubble please">Tap the Please logo to get started</div>');
             refreshiScroll();
             // window.plugins.tts.speak("How can I be of assistance?");
         }
@@ -347,13 +357,13 @@ $(function () {
         $('.listSlider').removeClass('active suspended');
     });
 
-    $(document).on('swipeRight', function () {
+    $(document).on('swipeRight', function() {
         if ( $('.listSlider').hasClass('active') ) {
             $('.listSlider').addClass('suspended').removeClass('active');
         }
     });
 
-    $(document).on('swipeLeft', function () {
+    $(document).on('swipeLeft', function() {
         if ( $('.listSlider').hasClass('suspended') ) {
             $('.listSlider').removeClass('suspended').addClass('active');
         }

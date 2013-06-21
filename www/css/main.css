@@ -211,17 +211,11 @@ body {
   text-align: right; }
 
 /* PREFORMATTED SHOW RESULTS */
-/* line 226, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
-.preformatted {
-  max-height: 300px;
-  overflow-x: hidden;
-  oveflow-y: auto;
-  -webkit-overflow-scrolling: touch; }
-  /* line 232, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
-  .preformatted ul {
-    list-style: none;
-    padding: 0;
-    margin: 0; }
+/* line 232, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.preformatted ul {
+  list-style: none;
+  padding: 0;
+  margin: 0; }
 
 /* line 239, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .shoppingItem {
