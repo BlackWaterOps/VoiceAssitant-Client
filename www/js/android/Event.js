@@ -24,15 +24,15 @@ eventPlugin.prototype.addEvent = function(title, location, notes, startDate, end
     "endTimeMillis": endDate.getTime()
   }]); // List of arguments to the plugin
 };
-calendarPlugin.prototype.deleteEvent = function(title, location, notes, startDate, endDate, deleteAll, successCallback, errorCallback) {
+eventPlugin.prototype.deleteEvent = function(title, location, notes, startDate, endDate, deleteAll, successCallback, errorCallback) {
   throw "NotImplemented";
 }
 
-calendarPlugin.prototype.findEvent = function(title, location, notes, startDate, endDate, successCallback, errorCallback) {
+eventPlugin.prototype.findEvent = function(title, location, notes, startDate, endDate, successCallback, errorCallback) {
   throw "NotImplemented";
 }
 
-calendarPlugin.prototype.modifyEvent = function(title, location, notes, startDate, endDate, newTitle, newLocation, newNotes, newStartDate, newEndDate, successCallback, errorCallback) {
+eventPlugin.prototype.modifyEvent = function(title, location, notes, startDate, endDate, newTitle, newLocation, newNotes, newStartDate, newEndDate, successCallback, errorCallback) {
   throw "NotImplemented";
 }
 
