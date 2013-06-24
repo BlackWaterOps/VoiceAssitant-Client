@@ -4,6 +4,10 @@
 cordova.define('please/api', function(require, exports, module) {
     var API_ENDPOINT = "http://stremor-va.appspot.com/rest";
 
+    if (isDebugging === true) {
+        API_ENDPOINT.replace("stremor-va", "dev.stremor-va");
+    }
+
     var ask = function (message, context, callback) {
         var data = JSON.stringify({
             "query": message,

@@ -1,4 +1,4 @@
-var echo, say, performAction, refreshiScroll;
+var echo, say, performAction, refreshiScroll, isDebugging = false;
 
 var shouldSpeak = true;
 
@@ -55,7 +55,17 @@ $(function () {
         }, 0);
         $('.spinner').remove();
     }
-    
+
+    function startDebugging() {
+        $('.container').addClass("enableForm");
+        isDebugging = true;
+    }
+
+    function stopDebugging() {
+        $('.container').removeClass("enableForm");
+        isDebugging = false;
+    }
+
     function createNewEventPayload() {
         var payload = { };
 
@@ -154,11 +164,27 @@ $(function () {
                     query = cleanQuery(query);
                     echo(query);
 
+                    switch (query) {
+                        case "can you find me":
+                        performAction('locate', "");
+                        break;
+
+                        case "it takes two to tango":
+                        startDebugging();
+                        break;
+
+                        default:
+                        sendQuery(query);
+                        break;
+                    }
+
+                    /*
                     if (query == "can you find me") {
                         performAction('locate', "");
                     } else {
                         sendQuery(query);
                     }
+                    */
                 } else {
                     say("I didn't understand. I am such an idiot.", null);
                 }
