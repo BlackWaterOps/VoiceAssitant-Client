@@ -74,38 +74,7 @@ cordova.define('please/actions', function(require, exports, module) {
             );
     };
     exports.calendar = calendar;
-
-    var event = function(payload) {
-        var temp, sDate, eDate, memo;
-
-        sDate = dateFromString(payload.date, payload.time);
-
-        temp = sDate.getTime();
-        temp += (payload.duration * 3600000);
-        
-        eDate = new Date(temp);
-
-        if (payload.location == null) {
-            payload.location = "";
-        }
-
-        memo = createEventSubject(payload.subject, payload.person, payload.location);
-
-        function success() {}
-        function error() {}
-
-        window.plugins.eventPlugin.addEvent(
-                memo, // title
-                payload.location, // location
-                "", // notes
-                sDate, // start date
-                eDate, // end date
-                success, // success handler
-                error // error handler
-            );
-    };
-    exports.event = event;
-
+    
     var time = function () {
         // var theDate = new Date();
         // var hours = theDate.getHours();
@@ -157,9 +126,21 @@ cordova.define('please/actions', function(require, exports, module) {
             message: payload.message,
             repeatDaily: false,
             id: 999
-        })
+        });
     };
     exports.reminder = reminder;
+
+    var alarm = function (payload) {
+        var now = new Date(payload.datetime);
+        window.plugins.localNotification.add({
+            date: now,
+            ticker: "Please Alarm",
+            message: "Please Alarm",
+            repeatDaily: false,
+            id: 999
+        })
+    };
+    exports.alarm = alarm;
 
     var images = function (payload) {
         for (var i=0; i<payload.url.length; i++) {
