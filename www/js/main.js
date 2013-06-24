@@ -44,29 +44,18 @@ $(function () {
 
     document.addEventListener("deviceready", onDeviceReady, false);
 
-    // $('.preformatted').on('touchstart', function() {
-    //     myScroll.vScroll = false;
-    //     var con = $('.console');
-    //     con.offset({left: 0, top: con.offset().top});
-    // }).on('touchend', function() {
-    //     myScroll.vScroll = true;
-    // });
-
     var myScroll = new iScroll('wrapper', {checkDOMChanges: true});
     var hite = $('#wrapper').innerHeight();
     refreshiScroll = function () {
         setTimeout(function () {
             myScroll.refresh();
             if ($('.console').innerHeight() > hite) {
-                myScroll.scrollToElement('.console p:last-child', 250);
+                myScroll.scrollToElement('.console div:last-child', 250);
             }
         }, 0);
         $('.spinner').remove();
     }
-
-     /*
-    {'action': 'calendar', 'payload': {'date': '2013-06-20', 'person': u'bob', 'location': None, 'time': '02:18:00', 'duration': 0.5, 'query': u'Dinner at 2:18 a m with bob', 'subject': u'Dinner'}}
-    */
+    
     function createNewEventPayload() {
         var payload = { };
 
@@ -85,7 +74,7 @@ $(function () {
         dateString = [date.getFullYear(), month, day].join("-");
         payload.duration = 0.5;
         payload.date = dateString;
-        payload.time = '02:18:00';
+        payload.time = '20:18:00';
         payload.location = null;
         payload.person = "jeff";
         payload.subject = "meeting";
@@ -113,25 +102,23 @@ $(function () {
         });
 
         positionCheck = setInterval(get_location, 60000);
-
-        //actions['event'](createNewEventPayload());
     }
 
     function playAudio(url) {
-    // Play the audio file at url
-    var my_media = new Media(url,
-        // success callback
-        function() {
-            console.log("playAudio():Audio Success");
-        },
-        // error callback
-        function(err) {
-            console.log("playAudio():Audio Error: "+err);
-    });
+        // Play the audio file at url
+        var my_media = new Media(url,
+            // success callback
+            function() {
+                console.log("playAudio():Audio Success");
+            },
+            // error callback
+            function(err) {
+                console.log("playAudio():Audio Error: "+err);
+        });
 
-    // Play audio
-    my_media.play();
-}
+        // Play audio
+        my_media.play();
+    }
 
     function startupWin(result) {
         // When result is equal to STARTED we are ready to play
@@ -205,6 +192,7 @@ $(function () {
         deviceInfo = {
             "device": {
                 "platform": "android",
+                "device": "android-client",
                 "lat": latitude,
                 "lon": longitude,
                 "timestamp": clientDate.getTime() / 1000,
@@ -313,7 +301,7 @@ $(function () {
         document.cookie = name + "=; expires=" + +new Date + "; domain=" + domain + "; path=" + path;
     };
 
-    function contactLookup (e) {
+    function contactLookup(e) {
         var options = new ContactFindOptions();
         options.filter = e;
         var fields = ["displayName", "name", "phoneNumbers"];
@@ -331,7 +319,7 @@ $(function () {
         }
         conversation();
     }
-    function contactLookupError () {
+    function contactLookupError() {
         reply = "Oh, snap";
         conversation();
     }
@@ -369,7 +357,7 @@ $(function () {
         }
     });
 
-    $('.console').on('click', '.calendarLink', function () {
+    $('.console').on('click', '.calendarLink', function() {
         window.plugins.CalendarDialog.getDate(function (isoDate) {
             if ( isoDate == undefined ) return;
 
@@ -384,7 +372,7 @@ $(function () {
         }, null);
     });
 
-    $('.console').on('click', '.extLink', function () {
+    $('.console').on('click', 'a', function() {
         e = event.target;
         window.open($(e).attr('href'), '_blank', 'location=yes');
         return false;
