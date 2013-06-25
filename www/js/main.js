@@ -241,6 +241,10 @@ $(function () {
                     case "string":
                     say(response.speak, response.show.text);
                     break;
+                    
+                    case "preformatted":
+                    performShow(response);
+                    break;
 
                     default:
                     say(response.speak);
