@@ -292,10 +292,12 @@ $(function () {
         if (show === undefined || show === null)
             show = speak;
 
-        $('.console').append('<div class="bubble please">' + show + '<span class="helperButtons"></span></div>');
-        refreshiScroll();
+        if (show != "") {
+            $('.console').append('<div class="bubble please">' + show + '<span class="helperButtons"></span></div>');
+            refreshiScroll();
+        }
 
-        if (shouldSpeak === true)
+        if (shouldSpeak === true && speak != "")
             window.plugins.tts.speak(speak);
 
         // clear out test input field if it's visible
