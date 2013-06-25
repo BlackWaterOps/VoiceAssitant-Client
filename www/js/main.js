@@ -218,7 +218,7 @@ $(function () {
         deviceInfo = {
             "device": {
                 "platform": "android",
-                "device": "android-client",
+                "type": "android-client",
                 "lat": latitude,
                 "lon": longitude,
                 "timestamp": clientDate.getTime() / 1000,
@@ -244,6 +244,7 @@ $(function () {
                     break;
 
                     default:
+                    say(response.speak);
                     performShow(response);
                     break;
                 }
@@ -383,7 +384,8 @@ $(function () {
         }
     });
 
-    $('.console').on('click', '.calendarLink', function() {
+    $('.console').on('click', '.calendarLink', function(e) {
+        e.preventDefault();
         window.plugins.CalendarDialog.getDate(function (isoDate) {
             if ( isoDate == undefined ) return;
 
@@ -398,7 +400,7 @@ $(function () {
         }, null);
     });
 
-    $('.console').on('click', 'a', function() {
+    $('.console').on('click', '.extLink', function() {
         e = event.target;
         window.open($(e).attr('href'), '_blank', 'location=yes');
         return false;
