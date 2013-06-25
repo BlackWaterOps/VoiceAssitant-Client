@@ -12,6 +12,10 @@ cordova.define('please/actions', function(require, exports, module) {
         return new Date(date + " " + time);
     }
 
+    var monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var dayOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
     /*
     {'action': 'calendar', 'payload': {'date': '2013-06-20', 'person': u'bob', 'location': None, 'time': '02:18:00', 'duration': 0.5, 'query': u'Dinner at 2:18 a m with bob', 'subject': u'Dinner'}}
     */
@@ -131,14 +135,17 @@ cordova.define('please/actions', function(require, exports, module) {
     exports.reminder = reminder;
 
     var alarm = function (payload) {
-        var now = new Date(payload.datetime);
+        var alarm = new Date(payload.datetime);
+
         window.plugins.localNotification.add({
-            date: now,
+            date: alarm,
             ticker: "Please Alarm",
             message: "Please Alarm",
             repeatDaily: false,
             id: 999
-        })
+        });
+
+        say("an alarm has been set for you");
     };
     exports.alarm = alarm;
 
