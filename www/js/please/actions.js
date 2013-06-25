@@ -74,7 +74,7 @@ cordova.define('please/actions', function(require, exports, module) {
             );
     };
     exports.calendar = calendar;
-    
+
     var time = function () {
         // var theDate = new Date();
         // var hours = theDate.getHours();
@@ -113,7 +113,7 @@ cordova.define('please/actions', function(require, exports, module) {
 
     var link = function (payload) {
         if (payload.url !== undefined && payload.url !== null)
-            $('.bubble:last').append('<a href="' + payload.url + '" class="extLink">Click for more</a>');
+            $('.bubble:last').append('<a href="' + payload.url + '" class="showMore extLink">Click for more</a>');
     };
     exports.link = link;
 
