@@ -12,10 +12,10 @@ import android.util.Log;
 import android.content.*;
 
 public class EventPlugin extends CordovaPlugin {
-	Context context;
+	private Context ctx;
 	
-	public EventPlugin() {
-		context = super.cordova.getActivity().getApplicationContext();
+	public EventPlugin(Context context) {
+		this.ctx = context;
 	}
 	
 	@Override
@@ -25,7 +25,7 @@ public class EventPlugin extends CordovaPlugin {
 				Log.v("EventPlugin", "addEvent");
 				//JSONObject arg_object = args.getJSONObject(0);
 								
-				//Cursor cursor = context.getContentResolver().query(Uri.parse("content://com.android.calendar/calendars"), new String[]{"_id", "displayname"}, null, null, null);
+				//Cursor cursor = this.ctx.query(Uri.parse("content://com.android.calendar/calendars"), new String[]{"_id", "displayname"}, null, null, null);
 				/*
 				cursor.moveToFirst();
 				// Get calendars name
