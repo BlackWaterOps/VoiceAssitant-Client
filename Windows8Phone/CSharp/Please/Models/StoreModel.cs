@@ -17,6 +17,8 @@ namespace Please.Models
 
         // define our Appointments table
         public Table<AppointmentItem> Appointments;
+
+        public Table<OutputItem> Outputs;
     }
 
     [Table]
@@ -102,6 +104,51 @@ namespace Please.Models
                     NotifyPropertyChanging("AppointmentHash");
                     _hash = value;
                     NotifyPropertyChanged("AppointmentHash");
+                }
+            }
+        }
+    }
+
+    // dummy table to hold show output so I don't have to keep requesting data while testing 
+    [Table]
+    public class OutputItem : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL IDENTITY", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("OutputId");
+                    _id = value;
+                    NotifyPropertyChanged("OutputId");
+                }
+            }
+        }
+
+        private string _value;
+
+        [Column]
+        public string Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (_value != value)
+                {
+                    NotifyPropertyChanging("OutputValue");
+                    _value = value;
+                    NotifyPropertyChanged("OutputValue");
                 }
             }
         }

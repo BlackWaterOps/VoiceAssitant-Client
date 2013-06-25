@@ -16,3 +16,5 @@ MDIL image C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\P
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\Please.dll output C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\obj\Debug\MDIL\Please.dll
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\WMAppManifest.xml
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\WMAppManifest.xml is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\WPControls.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please\Please\Bin\Debug\MDIL\WPControls.dll is not in the compile filter. Skipping.

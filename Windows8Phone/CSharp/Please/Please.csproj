@@ -93,9 +93,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CalendarPage.xaml.cs">
+      <DependentUpon>CalendarPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DatePicker\DataSource.cs" />
     <Compile Include="DatePickerPage.xaml.cs">
       <DependentUpon>DatePickerPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DatePicker\CustomDateTimePickerPageBase.cs" />
     <Compile Include="GalleryPage.xaml.cs">
       <DependentUpon>GalleryPage.xaml</DependentUpon>
     </Compile>
@@ -107,29 +112,36 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\RequestModel.cs" />
+    <Compile Include="Models\ShoppingModel.cs" />
     <Compile Include="Models\StoreModel.cs" />
     <Compile Include="Models\DialogModel.cs" />
     <Compile Include="Models\ListModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Models\PleaseModel.cs" />
+    <None Include="Pages\PleasePageBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\AppResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Util\BackgroundConverter.cs" />
-    <Compile Include="Util\AlignmentConverter.cs" />
+    <Compile Include="NotificationsPage.xaml.cs">
+      <DependentUpon>NotificationsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Util\Actions.cs" />
+    <Compile Include="Converters\BackgroundConverter.cs" />
+    <Compile Include="Converters\AlignmentConverter.cs" />
     <Compile Include="Util\Datetime.cs" />
     <Compile Include="Util\Extractor.cs" />
-    <Compile Include="Util\FontSizeConverter.cs" />
-    <Compile Include="Util\ForegroundConverter.cs" />
-    <Compile Include="Util\VisibilityConverter.cs" />
+    <Compile Include="Util\Location.cs" />
+    <Compile Include="Converters\ForegroundConverter.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Util\Request.cs" />
     <Compile Include="ViewModels\DatePickerViewModel.cs" />
     <Compile Include="ViewModels\GalleryViewModel.cs" />
     <Compile Include="ViewModels\ListPickerViewModel.cs" />
     <Compile Include="ViewModels\PleaseViewModel.cs" />
+    <Compile Include="ViewModels\NotificationsViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +149,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="CalendarPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DatePickerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -150,6 +166,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NotificationsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -167,10 +187,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\cancel.png" />
+    <Content Include="Assets\feature.alarm.png" />
     <Content Include="Assets\feature.calendar.png" />
-    <Content Include="Assets\happyalert.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\microphone.png" />
     <Content Include="Assets\please-bubble.png" />
     <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
@@ -190,7 +208,6 @@
     </Content>
     <Content Include="Assets\tileview.png" />
     <Content Include="README_FIRST.txt" />
-    <Content Include="template.html" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
@@ -209,6 +226,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\sl4-windowsphone71\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="WPControls">
+      <HintPath>..\packages\WPControls.1.4.0\lib\sl4-wp71\WPControls.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />

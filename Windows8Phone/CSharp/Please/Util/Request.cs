@@ -40,11 +40,6 @@ namespace Please.Util
 
             var result = await task;
             var resp = result;
-            var head = resp.Headers;
-            for (var i = 0; i < head.Count; i++)
-            {
-                Debug.WriteLine(head.AllKeys[i]);
-            }
             var stream = resp.GetResponseStream();
             var sr = new System.IO.StreamReader(stream);
 

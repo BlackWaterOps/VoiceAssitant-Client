@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Navigation;
-
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Controls.Primitives;
 using Microsoft.Phone.Shell;
 
 using Please.Resources;
@@ -19,8 +20,7 @@ namespace Please
         // holder for list or date picker choice
         public static String userChoice;
 
-        public static Please.Models.Context requestContext;
-        public static Please.Models.Device deviceInfo;
+        public static Dictionary<string, object> requestContext;
 
         private static PleaseViewModel _pleaseViewModel = null;
         /// <summary>
@@ -134,12 +134,17 @@ namespace Please
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
+            //Debug.WriteLine("now returning to please app");
+            var appService = sender as PhoneApplicationService;
+
+            Debug.WriteLine(appService.StartupMode);
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            //Debug.WriteLine("now leaving please app");
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
@@ -295,7 +300,7 @@ namespace Please
 
         protected void DatePicker(object sender, EventArgs e)
         {
-            RootFrame.Navigate(new Uri("/DatePickerPage.xaml", UriKind.Relative));
+            RootFrame.Navigate(new Uri("/CalendarPage.xaml", UriKind.Relative));
         }
     }
 }

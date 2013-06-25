@@ -41,7 +41,7 @@ namespace Please.ViewModels
         }
 
         // load collection for use in the view
-        public void LoadList(List<string> data)
+        public void LoadList(Newtonsoft.Json.Linq.JArray data)
         {            
             TheList = new ObservableCollection<string>();
 
