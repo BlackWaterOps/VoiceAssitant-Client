@@ -212,6 +212,9 @@ cordova.define('please/actions', function(require, exports, module) {
 
     var clear_log = function (payload) {
         $('.console').html("");
+        $('.listSlider').removeClass('active suspended')
+        .find('.prompt').empty().end()
+        .find('ul').empty();
         // say('Let me know how I can be of assistance.');
     };
     exports.clear_log = clear_log;
