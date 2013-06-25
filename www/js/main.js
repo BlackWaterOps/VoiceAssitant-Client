@@ -217,7 +217,6 @@ $(function () {
         clientDate = new Date();
         deviceInfo = {
             "device": {
-                "platform": "android",
                 "type": "android-client",
                 "lat": latitude,
                 "lon": longitude,
