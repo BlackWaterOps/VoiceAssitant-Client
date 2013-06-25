@@ -192,64 +192,64 @@ body {
     text-align: center;
     padding: 10px 0; }
 
-/* line 202, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
-.extLink {
+/* line 203, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+.showMore {
   margin: 20px 0;
   display: block;
   text-align: right;
   text-decoration: none; }
 
-/* line 208, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 209, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .please {
   color: #003066;
   font-weight: normal; }
 
-/* line 217, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 218, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .owner {
   color: #000;
   background-color: #e4e4e4;
   text-align: right; }
 
 /* PREFORMATTED SHOW RESULTS */
-/* line 232, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 233, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .preformatted ul {
   list-style: none;
   padding: 0;
   margin: 0; }
 
-/* line 239, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 240, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .shoppingItem {
   margin-bottom: 10px;
   padding-bottom: 5px;
   border-bottom: 1px solid #999999; }
-  /* line 245, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 246, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .shoppingItem ul {
     height: 100%; }
 
-/* line 250, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 251, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .shoppingImage {
   float: left;
   width: 25%;
   max-width: 160px;
   background-color: black;
   height: 100%; }
-  /* line 256, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 257, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .shoppingImage img {
     border: 1px solid black;
     display: block; }
 
-/* line 262, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 263, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .shoppingDescription {
   float: left;
   width: 73%;
   margin-left: 2%;
   word-wrap: break-word; }
-  /* line 267, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 268, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .shoppingDescription * {
     display: block; }
 
 /* END PREFORMATTED SHOW RESULTS */
-/* line 274, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 275, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .listSlider {
   z-index: 98;
   -webkit-transition: -webkit-transform 0.2s ease-in-out;
@@ -260,7 +260,7 @@ body {
   bottom: 84px;
   /* Drawer pull bar */
   /* Drawer grip */ }
-  /* line 285, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 286, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider:before {
     content: "";
     position: absolute;
@@ -269,7 +269,7 @@ body {
     bottom: 0;
     width: 5%;
     background-color: #fff; }
-  /* line 296, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 297, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider:after {
     content: "";
     position: absolute;
@@ -279,13 +279,13 @@ body {
     height: 4%;
     border-left: 1px solid #aaaaaa;
     border-right: 1px solid #aaaaaa; }
-  /* line 309, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 310, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider.suspended {
     -webkit-transform: translate3d(95%, 0, 0); }
-  /* line 313, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 314, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider.active {
     -webkit-transform: translate3d(5%, 0, 0); }
-  /* line 317, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+  /* line 318, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
   .listSlider .listView {
     width: 100%;
     position: absolute;
@@ -294,34 +294,34 @@ body {
     overflow-y: scroll;
     background-color: #fff;
     color: #000; }
-    /* line 318, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 319, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .listSlider .listView p.prompt {
       margin-right: 5%;
       text-align: center;
       color: #003066; }
-    /* line 333, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+    /* line 334, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
     .listSlider .listView ul {
       margin: 0;
       padding: 0;
       list-style: none; }
-      /* line 338, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+      /* line 339, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
       .listSlider .listView ul li {
         border-bottom: 1px solid #cccccc;
         margin: 0;
         padding: 10px 20px; }
 
 /****** CLEAR FIX *******/
-/* line 349, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 350, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .cf {
   *zoom: 1; }
 
-/* line 352, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 353, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .cf:before, .cf:after {
   content: "";
   display: table;
   line-height: 0;
   height: 0; }
 
-/* line 358, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
+/* line 359, /Users/jeffschifano/Sites/Stremor/Please/www/scss/main.scss */
 .cf:after {
   clear: both; }
