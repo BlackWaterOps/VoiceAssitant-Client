@@ -8,6 +8,7 @@
 
     function Please(options) {
       this.datetimeHelper = __bind(this.datetimeHelper, this);
+      this.newDate = __bind(this.newDate, this);
       this.fuzzyHelper = __bind(this.fuzzyHelper, this);
       this.weekdayHelper = __bind(this.weekdayHelper, this);
       this.buildDatetime = __bind(this.buildDatetime, this);
@@ -23,10 +24,10 @@
       this.getLocation = __bind(this.getLocation, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
       this.init = __bind(this.init, this);
-      this.classifier = 'http://casper.stremor-nli.appspot.com/';
+      this.classifier = 'http://casper-cached.stremor-nli.appspot.com/';
       this.builder = '';
       this.disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate';
-      this.responder = 'http://clever.stremor-x.appspot.com/';
+      this.responder = 'http://clever-cached.stremor-x.appspot.com/';
       this.lat = 0.00;
       this.lon = 0.00;
       this.sendDeviceInfo = false;
@@ -48,7 +49,8 @@
         shopping: Handlebars.compile($('#shopping-template').html()),
         images: Handlebars.compile($('#images-template').html()),
         list: Handlebars.compile($('#list-template').html()),
-        web: Handlebars.compile($('#web-template').html())
+        web: Handlebars.compile($('#web-template').html()),
+        link: Handlebars.compile($('#link-template').html())
       };
       this.presets = {
         'after work': '18:00:00',
@@ -60,7 +62,7 @@
 
     Please.prototype.init = function() {
       var init;
-      this.input.focus().val("Book a hotel in Fremont").on('webkitspeechchange', this.ask).on('keyup', this.keyup);
+      this.input.focus().on('webkitspeechchange', this.ask).on('keyup', this.keyup);
       if (this.board.is(':empty')) {
         init = $('#init');
         init.fadeIn('slow');
@@ -68,9 +70,7 @@
           return init.fadeOut('slow');
         }), 1000);
       }
-      this.getLocation();
-      console.log(this.dateRegex.test('2013-07-01'));
-      return console.log(this.timeRegex.test('15:30:34'));
+      return this.getLocation();
     };
 
     Please.prototype.store = {
@@ -175,22 +175,24 @@
         };
       }
       doneHandler = function(results) {
-        var datetime;
+        var checkDates, datetime;
         console.log('doneHandler', results);
+        checkDates = true;
         if (results != null) {
           if ((results.date != null) || (results.time != null)) {
             datetime = _this.buildDatetime(results.date, results.time);
             results[type] = datetime[type];
+            checkDates = false;
             console.log('done handler', results);
           }
         }
         _this.context.payload[field] = results[type];
-        return _this.resolver(_this.context);
+        return _this.resolver(_this.context, checkDates);
       };
       return this.requestHelper(endpoint, "POST", data, doneHandler);
     };
 
-    Please.prototype.resolver = function(response) {
+    Please.prototype.resolver = function(response, checkDates) {
       /*
       		here is where we need to make checks of whether to pass along data
       		to 'REZ' or resolve with the disambiguator
@@ -223,9 +225,10 @@
       } else {
         console.log('resolver response without status', response);
         payload = response.payload;
-        if (payload != null) {
+        if ((payload != null) && checkDates === true) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
             datetime = this.buildDatetime(payload.start_date, payload.start_time);
+            console.log('datetime no status', datetime);
             if (payload.start_date != null) {
               payload.start_date = datetime.date;
             }
@@ -306,8 +309,8 @@
       if (this.sendDeviceInfo === true) {
         clientDate = new Date();
         data.device_info = {
-          "lat": this.lat,
-          "lon": this.lon,
+          "latitude": this.lat,
+          "longitude": this.lon,
           "timestamp": clientDate.getTime() / 1000,
           "timeoffset": -clientDate.getTimezoneOffset() / 60
         };
@@ -357,15 +360,17 @@
     Please.prototype.buildDatetime = function(date, time) {
       var dateString, newDate;
       newDate = null;
-      console.log('start date parsing');
+      console.log('start date parsing', date);
       if (date !== null && date !== void 0) {
         newDate = this.datetimeHelper(date);
       }
-      console.log('start time parsing');
+      console.log('start time parsing', time);
       if (time !== null && time !== void 0) {
         newDate = this.datetimeHelper(time, newDate);
       }
+      console.log('buildDatetime datestring', newDate);
       dateString = this.toISOString(newDate).split('T');
+      console.log('buildDatetime datestring', dateString);
       return {
         date: dateString[0],
         time: dateString[1]
@@ -374,6 +379,7 @@
 
     Please.prototype.weekdayHelper = function(dayOfWeek) {
       var currentDate, currentDay, date, offset;
+      console.log('weekday helper', dayOfWeek);
       date = new Date();
       currentDay = date.getDay();
       currentDate = date.getDate();
@@ -387,6 +393,7 @@
 
     Please.prototype.fuzzyHelper = function(datetime, isDate) {
       var date, datetimeArr, def, key, label, preference, presetLabel, splitSym, val;
+      console.log('fuzzy helper', datetime, isDate);
       date = new Date();
       console.log('handle fuzzy date or time');
       label = null;
@@ -423,6 +430,32 @@
       return date;
     };
 
+    Please.prototype.newDate = function(datetime) {
+      var newDate, split;
+      console.log('newDate', datetime);
+      if (datetime.indexOf('now') !== -1) {
+        console.log('is now');
+        newDate = new Date();
+      } else if (this.dateRegex.test(datetime) === true) {
+        console.log('is date string');
+        split = datetime.split('-');
+        newDate = new Date(split[0], split[1] - 1, split[2]);
+      } else if (this.timeRegex.test(datetime) === true) {
+        console.log('is time');
+        newDate = new Date();
+        split = datetime.split(':');
+        newDate.setHours(split[0]);
+        newDate.setMinutes(split[1]);
+        newDate.setSeconds(split[2]);
+      }
+      console.log('newDate bottom', newDate);
+      if (newDate === null || newDate === void 0) {
+        return new Date();
+      } else {
+        return newDate;
+      }
+    };
+
     Please.prototype.datetimeHelper = function(dateOrTime, newDate) {
       var action, curr, date, dateOrTimeType, interval, isDate, item, itemKey, itemType, itemValue, operator, parsable, parsableType, time, _i, _len;
       if (newDate == null) {
@@ -432,54 +465,63 @@
       dateOrTimeType = Object.prototype.toString.call(dateOrTime);
       switch (dateOrTimeType) {
         case '[object String]':
+          console.log('is string');
           if (newDate === null) {
-            newDate = dateOrTime.indexOf('now') !== -1 ? new Date() : new Date(dateOrTime);
+            newDate = this.newDate(dateOrTime);
           }
           break;
         case '[object Object]':
+          console.log('is object');
           for (action in dateOrTime) {
             parsable = dateOrTime[action];
             console.log('step 1', action, parsable);
-            operator = action.indexOf('add') !== -1 ? '+' : '-';
-            parsableType = Object.prototype.toString.call(parsable);
-            if (parsableType === '[object Array]') {
-              for (_i = 0, _len = parsable.length; _i < _len; _i++) {
-                item = parsable[_i];
-                itemType = Object.prototype.toString.call(item);
-                if (newDate === null) {
-                  console.log('step 2', 'set datetime');
-                  switch (itemType) {
-                    case '[object String]':
-                      newDate = item.indexOf('now') !== -1 ? new Date() : new Date(item);
-                      break;
-                    case '[object Object]':
-                      for (itemKey in item) {
-                        itemValue = item[itemKey];
-                        if (newDate === null) {
-                          if (itemKey.indexOf('weekday') !== -1) {
-                            newDate = this.weekdayHelper(itemValue);
-                          } else if (itemKey.indexOf('fuzzy') !== -1) {
-                            isDate = itemKey.indexOf('date') !== -1 ? true : false;
-                            newDate = this.fuzzyHelper(itemValue, isDate);
+            if (action.indexOf('weekday') !== -1) {
+              return this.weekdayHelper(parsable);
+            } else if (action.indexOf('fuzzy') !== -1) {
+              isDate = action.indexOf('date') !== -1 ? true : false;
+              return this.fuzzyHelper(parsable, isDate);
+            } else {
+              operator = action.indexOf('add') !== -1 ? '+' : '-';
+              parsableType = Object.prototype.toString.call(parsable);
+              if (parsableType === '[object Array]') {
+                for (_i = 0, _len = parsable.length; _i < _len; _i++) {
+                  item = parsable[_i];
+                  itemType = Object.prototype.toString.call(item);
+                  if (newDate === null) {
+                    console.log('step 2', 'set datetime');
+                    switch (itemType) {
+                      case '[object String]':
+                        newDate = this.newDate(item);
+                        break;
+                      case '[object Object]':
+                        for (itemKey in item) {
+                          itemValue = item[itemKey];
+                          if (newDate === null) {
+                            if (itemKey.indexOf('weekday') !== -1) {
+                              newDate = this.weekdayHelper(itemValue);
+                            } else if (itemKey.indexOf('fuzzy') !== -1) {
+                              isDate = itemKey.indexOf('date') !== -1 ? true : false;
+                              newDate = this.fuzzyHelper(itemValue, isDate);
+                            }
                           }
                         }
-                      }
-                  }
-                } else if (itemType === '[object Number]') {
-                  console.log('step 3', 'parse array group');
-                  interval = item;
-                  if (interval === null) {
-                    console.log('frag error', interval);
-                    return;
-                  }
-                  if (action.indexOf('time') !== -1) {
-                    curr = newDate.getSeconds();
-                    time = operators[operator](curr, interval);
-                    newDate.setSeconds(time);
-                  } else if (action.indexOf('date') !== -1) {
-                    curr = newDate.getDate();
-                    date = operators[operator](curr, interval);
-                    newDate.setDate(date);
+                    }
+                  } else if (itemType === '[object Number]') {
+                    console.log('step 3', 'parse array group');
+                    interval = item;
+                    if (interval === null) {
+                      console.log('frag error', interval);
+                      return;
+                    }
+                    if (action.indexOf('time') !== -1) {
+                      curr = newDate.getSeconds();
+                      time = operators[operator](curr, interval);
+                      newDate.setSeconds(time);
+                    } else if (action.indexOf('date') !== -1) {
+                      curr = newDate.getDate();
+                      date = operators[operator](curr, interval);
+                      newDate.setDate(date);
+                    }
                   }
                 }
               }

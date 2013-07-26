@@ -1,9 +1,9 @@
 class Please
 	constructor: (options) ->
-		@classifier = 'http://casper.stremor-nli.appspot.com/'
+		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
 		@builder = ''
 		@disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate'
-		@responder = 'http://clever.stremor-x.appspot.com/'
+		@responder = 'http://clever-cached.stremor-x.appspot.com/'
 		@lat = 0.00
 		@lon = 0.00
 		@sendDeviceInfo = false
@@ -26,7 +26,8 @@ class Please
 			images: Handlebars.compile($('#images-template').html())
 			list: Handlebars.compile($('#list-template').html())
 			web: Handlebars.compile($('#web-template').html())
-		
+			link: Handlebars.compile($('#link-template').html())
+
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
 		@presets = 
 			'after work': '18:00:00'
@@ -35,7 +36,7 @@ class Please
 		@init()
 	init: =>
 		@input.focus()
-		.val("Book a hotel in Fremont")
+		#.val("Book a hotel in Fremont")
 		#.val("schedule drinks tomorrow")
 		#.val("I have an appointment.")
 		.on('webkitspeechchange', @ask)
@@ -52,23 +53,6 @@ class Please
 			), 1000
 
 		@getLocation()
-
-		console.log @dateRegex.test('2013-07-01')
-		console.log @timeRegex.test('15:30:34')
-
-		# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
-
-		# test = '#time_add':
-		#     [
-		#         '#time_fuzzy': 
-		#             'label': 'dinner'
-		#             'default': '19:00:00'
-		#         , 3600
-		#     ]
-
-		# buildResults = @buildDatetime null, test
-
-		# console.log buildResults
 
 	store:
 		createCookie: (k, v, d) ->
@@ -164,22 +148,27 @@ class Please
 
 		doneHandler = (results) =>
 			console.log 'doneHandler', results
+			# gross hack to stop the resolver from 
+			checkDates = true
+
 			if results?
 				if results.date? or results.time?
 					datetime = @buildDatetime(results.date, results.time)
 				
 					results[type] = datetime[type]
 
+					checkDates = false
+
 					console.log 'done handler', results
 
 			@context.payload[field] = results[type]
 			
-			@resolver @context
+			@resolver @context, checkDates
 
 		@requestHelper endpoint, "POST", data, doneHandler
 
 	# TODO: resolver logic can be split into two function, classifier responses & responder responses
-	resolver: (response) =>
+	resolver: (response, checkDates) =>
 		###
 		here is where we need to make checks of whether to pass along data
 		to 'REZ' or resolve with the disambiguator
@@ -210,9 +199,11 @@ class Please
 			console.log 'resolver response without status', response  
 			payload = response.payload
 
-			if payload?
+			if payload? and checkDates is true
 				if payload.start_date? or payload.start_time?
 					datetime = @buildDatetime payload.start_date, payload.start_time
+
+					console.log 'datetime no status', datetime
 
 					payload.start_date = datetime.date if payload.start_date?
 					payload.start_time = datetime.time if payload.start_time?
@@ -320,8 +311,8 @@ class Please
 			clientDate = new Date()
 			# TODO: APPEND THIS DATA
 			data.device_info =
-				"lat": @lat,
-				"lon": @lon,
+				"latitude": @lat,
+				"longitude": @lon,
 				"timestamp": clientDate.getTime() / 1000,
 				"timeoffset": - clientDate.getTimezoneOffset() / 60
 			
@@ -363,19 +354,25 @@ class Please
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		console.log 'start date parsing'
+		console.log 'start date parsing', date
 		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined
 
-		console.log 'start time parsing'
+		console.log 'start time parsing', time
 		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined
 
+		console.log 'buildDatetime datestring', newDate
+
 		dateString = @toISOString(newDate).split('T')
-				
+		
+		console.log 'buildDatetime datestring', dateString
+
 		date: dateString[0]
 		time: dateString[1]
 
 	# #date-add: {[{#weekday:1}, [1, 'day']]}
 	weekdayHelper: (dayOfWeek) =>
+		console.log 'weekday helper', dayOfWeek
+
 		date = new Date();
 
 		currentDay = date.getDay()
@@ -390,6 +387,8 @@ class Please
 		return date
 
 	fuzzyHelper: (datetime, isDate) =>
+		console.log 'fuzzy helper', datetime, isDate
+
 		date = new Date()
 
 		console.log 'handle fuzzy date or time'
@@ -426,6 +425,29 @@ class Please
 
 		return date
 	
+	newDate: (datetime) =>
+		console.log 'newDate', datetime
+		if datetime.indexOf('now') isnt -1
+			console.log 'is now'
+			newDate = new Date();
+
+		else if @dateRegex.test(datetime) is true
+			console.log 'is date string'
+			split = datetime.split('-')
+			newDate = new Date(split[0], (split[1]-1), split[2])
+
+		else if @timeRegex.test(datetime) is true
+			console.log 'is time'
+			newDate = new Date();
+			split = datetime.split(':')
+			newDate.setHours split[0]
+			newDate.setMinutes split[1]
+			newDate.setSeconds split[2]
+
+		console.log 'newDate bottom', newDate
+
+		return if newDate is null or newDate is undefined then new Date() else newDate
+
 	# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
 	datetimeHelper: (dateOrTime, newDate = null) =>
 		console.log dateOrTime
@@ -434,53 +456,61 @@ class Please
 
 		switch (dateOrTimeType)
 			when '[object String]'
+				console.log 'is string'
 				if newDate is null
-					newDate = if dateOrTime.indexOf('now') isnt -1 then new Date() else new Date(dateOrTime)
+					newDate = @newDate dateOrTime
 
 			when '[object Object]'
+				console.log 'is object'
 				for action, parsable of dateOrTime
 					console.log 'step 1', action, parsable
 
-					operator = if action.indexOf('add') isnt -1 then '+' else '-'
+					if action.indexOf('weekday') isnt -1
+						return @weekdayHelper parsable
+					else if action.indexOf('fuzzy') isnt -1
+						isDate = if action.indexOf('date') isnt -1 then true else false 
+						return @fuzzyHelper parsable, isDate
+					else
+						operator = if action.indexOf('add') isnt -1 then '+' else '-'
 
-					parsableType = Object.prototype.toString.call(parsable)
+						parsableType = Object.prototype.toString.call(parsable)
 
-					if parsableType is '[object Array]' # date partials
-						for item in parsable
-							itemType = Object.prototype.toString.call(item);
+						if parsableType is '[object Array]' # date partials
+							for item in parsable
+								itemType = Object.prototype.toString.call(item);
 
-							if newDate is null 
-								console.log 'step 2', 'set datetime'
+								if newDate is null 
+									console.log 'step 2', 'set datetime'
 
-								switch itemType
-									when '[object String]' # 'now' or '2013-07-01'
-										newDate = if item.indexOf('now') isnt -1 then new Date() else new Date(item)
-									when '[object Object]' #weekday, #fuzzy operators
-										for itemKey, itemValue of item
-											if newDate is null
-												if itemKey.indexOf('weekday') isnt -1
-													newDate = @weekdayHelper itemValue
-												else if itemKey.indexOf('fuzzy') isnt -1
-													isDate = if itemKey.indexOf('date') isnt -1 then true else false 
-													newDate = @fuzzyHelper itemValue, isDate
-							
-							else if itemType is '[object Number]' # dates to add to Date object 
-								console.log 'step 3', 'parse array group'
-
-								interval = item
+									switch itemType
+										when '[object String]' # 'now' or '2013-07-01'
+											newDate = @newDate item
+										when '[object Object]' #weekday, #fuzzy operators
+											for itemKey, itemValue of item
+												if newDate is null
+													if itemKey.indexOf('weekday') isnt -1
+														newDate = @weekdayHelper itemValue
+													else if itemKey.indexOf('fuzzy') isnt -1
+														isDate = if itemKey.indexOf('date') isnt -1 then true else false 
+														newDate = @fuzzyHelper itemValue, isDate
 								
-								if interval is null 
-									console.log 'frag error', interval
-									return
+								else if itemType is '[object Number]' # dates to add to Date object 
+									console.log 'step 3', 'parse array group'
 
-								if action.indexOf('time') isnt -1
-									curr = newDate.getSeconds()
-									time = operators[operator](curr, interval)
-									newDate.setSeconds(time)
-								else if action.indexOf('date') isnt -1
-									curr = newDate.getDate()
-									date = operators[operator](curr, interval)
-									newDate.setDate(date)
+									interval = item
+									
+									if interval is null 
+										console.log 'frag error', interval
+										return
+
+									if action.indexOf('time') isnt -1
+										curr = newDate.getSeconds()
+										time = operators[operator](curr, interval)
+										newDate.setSeconds(time)
+									else if action.indexOf('date') isnt -1
+										curr = newDate.getDate()
+										date = operators[operator](curr, interval)
+										newDate.setDate(date)
 
 		return newDate
 	
