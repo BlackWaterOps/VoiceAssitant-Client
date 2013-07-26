@@ -13,14 +13,12 @@ import android.content.*;
 
 public class EventPlugin extends CordovaPlugin {
 	private Context ctx;
-	
-	public EventPlugin(Context context) {
-		this.ctx = context;
-	}
-	
+		
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		try {			
+		try {
+			this.ctx = this.cordova.getActivity().getApplicationContext();
+			
 			if (action.equals("addEvent")) {
 				Log.v("EventPlugin", "addEvent");
 				//JSONObject arg_object = args.getJSONObject(0);

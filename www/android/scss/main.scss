@@ -1,0 +1,362 @@
+* {
+	-webkit-box-sizing: border-box;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-user-select: none;
+}
+body {
+	background-color: #2a2c2e;
+	height: 100%;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	color: #fff;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 18px;
+	// background-image: url('../img/please-bg.jpg');
+	// background-repeat: no-repeat;
+	// background-size: cover;
+	// background-position: fixed;
+}
+.container {
+	min-height: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+  	overflow: hidden;
+	// background-image: url('../img/please-bg.jpg');
+	// background-repeat: no-repeat;
+	// background-size: cover;
+	&.enableForm {
+		#wrapper {
+			// push wrapper down to make room for form
+			top: 52px;
+		}
+		.testForm {
+			display: block;
+		}
+	}
+}
+.testForm {
+	width: 100%;
+	background-color: #676767;
+	padding: 10px;
+	border-bottom: 1px solid black;
+	position: relative;
+	display: none;
+	-webkit-user-select: text;
+}
+.testInput {
+	width: 100%;
+	border: 1px solid black;
+	height: 32px;
+	padding: 0 10px;
+	-webkit-user-select: text;
+}
+.testForm {
+	width: 100%;
+	background-color: #676767;
+	padding: 10px;
+	border-bottom: 1px solid black;
+	position: relative;
+	display: none;
+	-webkit-user-select: text;
+}
+.testInput {
+	width: 100%;
+	border: 1px solid black;
+	height: 32px;
+	padding: 0 10px;
+	-webkit-user-select: text;
+}
+.header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 60px;
+	background-image: url('../img/please-logo.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: rgba(0,0,0,1);
+	background-size: auto 90%;
+	-webkit-box-shadow: 0 4px 8px rgba(0,0,0,.5);
+	z-index: 99;
+}
+#wrapper {
+	overflow: auto;
+	position: absolute;
+	top: 0;
+	bottom: 80px;
+	left: 0;
+	right: 0;
+	-webkit-overflow-scrolling: touch;
+}
+.spinner {
+	z-index: 99999;
+}
+.control {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+	right: 0;
+	z-index: 99;
+	text-align: center;
+	// background-image: url('../img/please-bottom.png');
+	// background-repeat: no-repeat;
+	// background-size: 100% auto;
+	.micbutton {
+		display: block;
+		width: 100px;
+		margin: 0 auto;
+		cursor: pointer;
+		position: relative;
+		&:before, &:after {
+			content: "";
+			position: absolute;
+			background-color: #303336;
+			height: 130px;
+			width: 130px;
+			z-index: -9;
+			top: -15px;
+			left: -15px;
+			border-radius: 50%;
+			// -webkit-box-shadow: 0 -4px 8px rgba(0,0,0,.5);
+		}
+		&:after {
+			-webkit-box-shadow: 0 -2px 8px 5px rgba(0,0,0,.35);
+			z-index: -999;
+		}
+
+	}
+	&:before {
+		content: "";
+		position: absolute;
+		left:0;
+		right:0px;
+		top: -30px;
+		// background-color: #303336;
+		height: 90px;
+		z-index: -99;
+		// background-image: url('../img/please-sliver.png');
+		// background-repeat: repeat-x;
+		// background-size: 30px 150px;
+		// background-position: 0 -65px;
+		// -webkit-box-shadow: 0 -4px 8px rgba(0,0,0,.5);
+	}
+	&:after {
+		content: "";
+		position: absolute;
+		left:0;
+		right:0;
+		top: 20px;
+		background-color: #303336;
+		-webkit-box-shadow: 0 -2px 8px 5px rgba(0,0,0,.35);
+		// border: 1px solid red;
+		height: 85px;
+		z-index: -99;
+
+	}
+}
+.fixit {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
+#gMap, #gMapPos {
+	width: 100%;
+	height: 300px;
+	margin-top: 20px;
+}
+.galleryImg {
+	border: 1px solid black;
+	margin: 10px auto 0;
+	display: block;
+}
+.console {
+	padding-bottom: 12px;
+}
+.bubble {
+  	z-index: 1;
+	width: 100%;
+	margin: 0;
+	padding: 24px 9px;
+	background-color: rgba(255, 255, 255,1);
+	border-bottom: 1px solid #000;
+	font-weight: bold;
+	&:first-of-type {
+		border-top: 2px solid #000;
+	}
+	img, video {
+		max-width: 100%;
+	}
+  .helperButtons a {
+    text-decoration: underline;
+    display: block;
+    text-align: center;
+    padding: 10px 0;
+  }
+}
+
+.showMore {
+	margin: 20px 0;
+	display: block;
+	text-align: right;
+	text-decoration: none;
+}
+.please {
+	// background-image: url('../img/please-p.png');
+	// background-repeat: no-repeat;
+	// background-position: 10px 50%;
+	// background-size: auto 30px;
+	color: #003066;
+	font-weight: normal;
+	// text-shadow: 1px 1px 0px rgba(255,255,255,.8);
+}
+.owner {
+	color: #000;
+	background-color: #e4e4e4;
+	text-align: right;
+	// text-shadow: 1px 1px 0px rgba(255,255,255,.8);
+}
+
+/* PREFORMATTED SHOW RESULTS */
+
+.preformatted {
+	//max-height: 300px;
+	//overflow-x: hidden;
+	//overflow-y: auto;
+	//-webkit-overflow-scrolling: touch;
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+}
+
+.shoppingItem {
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #999;
+
+	//height: 150px;
+	ul {
+		height: 100%;
+	}
+}
+
+.shoppingImage {
+	float: left;
+	width: 25%;
+	max-width: 160px;
+	background-color: black;
+	min-height: 100%;
+	height: 100%;
+	img {
+		border: 1px solid black;
+		display: block;
+	}
+}
+
+.shoppingDescription {
+	float: left;
+	width: 73%;
+	margin-left: 2%;
+	word-wrap: break-word;
+	* {
+		display: block;
+	}
+}
+
+/* END PREFORMATTED SHOW RESULTS */
+
+.listSlider {
+  z-index: 98;
+  -webkit-transition: -webkit-transform 0.2s ease-in-out;
+  -webkit-transform: translate3d(120%, 0, 0);
+
+  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 84px;
+
+  /* Drawer pull bar */
+  &:before {
+    content: "";
+    position: absolute;
+    left: -5%;
+    top: 0;
+    bottom: 0;
+    width: 5%;
+    background-color: #fff;
+  }
+
+  /* Drawer grip */
+  &:after {
+    content: "";
+    position: absolute;
+    top: 48%;
+    left: -3%;
+
+    width: 3px;
+    height: 4%;
+
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+  }
+
+  &.suspended {
+    -webkit-transform: translate3d(95%, 0, 0);
+  }
+
+  &.active {
+    -webkit-transform: translate3d(5%, 0, 0);
+  }
+
+  .listView {
+    p.prompt {
+      margin-right: 5%;
+      text-align: center;
+      color: #003066;
+    }
+
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow-y: scroll;
+
+    background-color: #fff;
+    color: #000;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        border-bottom: 1px solid #ccc;
+        margin: 0;
+        padding: 10px 20px;
+      }
+    }
+  }
+}
+
+/****** CLEAR FIX *******/
+
+.cf {
+ *zoom:1;
+}
+.cf:before, .cf:after {
+	content:"";
+	display:table;
+	line-height: 0;
+	height: 0;
+}
+.cf:after {
+	clear:both;
+}
