@@ -27,7 +27,7 @@
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/';
       this.builder = '';
       this.disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate';
-      this.responder = 'http://clever-cached.stremor-x.appspot.com/';
+      this.responder = 'http://clever.stremor-x.appspot.com/';
       this.lat = 0.00;
       this.lon = 0.00;
       this.sendDeviceInfo = false;
@@ -40,7 +40,7 @@
       this.board = $('#board');
       this.input = $('#main-input');
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
-      this.timeRegex = /\d{2}[:]\d{2}[:]\d{2}/i;
+      this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
       this.templates = {
         bubblein: Handlebars.compile($('#bubblein-template').html()),
@@ -431,7 +431,7 @@
     };
 
     Please.prototype.newDate = function(datetime) {
-      var newDate, split;
+      var hours, minutes, newDate, seconds, split;
       console.log('newDate', datetime);
       if (datetime.indexOf('now') !== -1) {
         console.log('is now');
@@ -444,6 +444,12 @@
         console.log('is time');
         newDate = new Date();
         split = datetime.split(':');
+        hours = newDate.getHours();
+        minutes = newDate.getMinutes();
+        seconds = newDate.getSeconds();
+        if ((hours > split[0]) || (hours === split[0] && minutes > split[1])) {
+          newDate.setDate(newDate.getDate() + 1);
+        }
         newDate.setHours(split[0]);
         newDate.setMinutes(split[1]);
         newDate.setSeconds(split[2]);

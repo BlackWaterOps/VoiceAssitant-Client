@@ -3,7 +3,7 @@ class Please
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
 		@builder = ''
 		@disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate'
-		@responder = 'http://clever-cached.stremor-x.appspot.com/'
+		@responder = 'http://clever.stremor-x.appspot.com/'
 		@lat = 0.00
 		@lon = 0.00
 		@sendDeviceInfo = false
@@ -16,7 +16,7 @@ class Please
 		@board = $('#board')
 		@input = $('#main-input')
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
-		@timeRegex = /\d{2}[:]\d{2}[:]\d{2}/i
+		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
 		@templates = 
 			bubblein: Handlebars.compile($('#bubblein-template').html())
@@ -440,6 +440,14 @@ class Please
 			console.log 'is time'
 			newDate = new Date();
 			split = datetime.split(':')
+			hours = newDate.getHours()
+			minutes = newDate.getMinutes()
+			seconds = newDate.getSeconds()
+
+			if (hours > split[0]) or (hours is split[0] and minutes > split[1])
+				# move date up one day
+				newDate.setDate(newDate.getDate() + 1);
+
 			newDate.setHours split[0]
 			newDate.setMinutes split[1]
 			newDate.setSeconds split[2]
