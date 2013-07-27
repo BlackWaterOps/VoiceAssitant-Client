@@ -2,8 +2,8 @@ class Please
 	constructor: (options) ->
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
 		@builder = ''
-		@disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate'
-		@responder = 'http://clever.stremor-x.appspot.com/'
+		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate'
+		@responder = 'http://rez.stremor-apier.appspot.com/'
 		@lat = 0.00
 		@lon = 0.00
 		@sendDeviceInfo = false
@@ -168,7 +168,7 @@ class Please
 		@requestHelper endpoint, "POST", data, doneHandler
 
 	# TODO: resolver logic can be split into two function, classifier responses & responder responses
-	resolver: (response, checkDates) =>
+	resolver: (response, checkDates = true) =>
 		###
 		here is where we need to make checks of whether to pass along data
 		to 'REZ' or resolve with the disambiguator
@@ -177,6 +177,7 @@ class Please
 			switch response.status.toLowerCase()
 				when 'disambiguate'
 					console.log 'resolver disambiguate', response
+					@inProgress = false
 					@disambiguate response
 				when 'in progress'
 					@counter = 0
@@ -196,10 +197,10 @@ class Please
 					else
 						@requestHelper @responder + response.actor, 'POST', @context, @show
 		else  
-			console.log 'resolver response without status', response  
+			console.log 'resolver response without status', response 
 			payload = response.payload
 
-			if payload? and checkDates is true
+			if payload? and checkDates
 				if payload.start_date? or payload.start_time?
 					datetime = @buildDatetime payload.start_date, payload.start_time
 
@@ -378,7 +379,7 @@ class Please
 		currentDay = date.getDay()
 		currentDate = date.getDate()
 
-		return date if currentDay is dayOfWeek
+		# return date if currentDay is dayOfWeek
 		
 		offset = if currentDay < dayOfWeek then (dayOfWeek - currentDay) else (7 - (currentDay - dayOfWeek))
 		

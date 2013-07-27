@@ -26,8 +26,8 @@
       this.init = __bind(this.init, this);
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/';
       this.builder = '';
-      this.disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate';
-      this.responder = 'http://clever.stremor-x.appspot.com/';
+      this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate';
+      this.responder = 'http://rez.stremor-apier.appspot.com/';
       this.lat = 0.00;
       this.lon = 0.00;
       this.sendDeviceInfo = false;
@@ -193,16 +193,20 @@
     };
 
     Please.prototype.resolver = function(response, checkDates) {
+      var datetime, payload;
+      if (checkDates == null) {
+        checkDates = true;
+      }
       /*
       		here is where we need to make checks of whether to pass along data
       		to 'REZ' or resolve with the disambiguator
       */
 
-      var datetime, payload;
       if (response.status != null) {
         switch (response.status.toLowerCase()) {
           case 'disambiguate':
             console.log('resolver disambiguate', response);
+            this.inProgress = false;
             return this.disambiguate(response);
           case 'in progress':
             this.counter = 0;
@@ -225,7 +229,7 @@
       } else {
         console.log('resolver response without status', response);
         payload = response.payload;
-        if ((payload != null) && checkDates === true) {
+        if ((payload != null) && checkDates) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
             datetime = this.buildDatetime(payload.start_date, payload.start_time);
             console.log('datetime no status', datetime);
@@ -383,9 +387,6 @@
       date = new Date();
       currentDay = date.getDay();
       currentDate = date.getDate();
-      if (currentDay === dayOfWeek) {
-        return date;
-      }
       offset = currentDay < dayOfWeek ? dayOfWeek - currentDay : 7 - (currentDay - dayOfWeek);
       date.setDate(currentDate + offset);
       return date;
