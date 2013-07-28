@@ -138,7 +138,7 @@ class Please
 			checkDates = true
 
 			if @debug is true and @inProgress is true
-				@addDebug(null, 'in')
+				@addDebug()
 				
 			if results?
 				if results.date? or results.time?
@@ -212,10 +212,9 @@ class Please
 
 			@requestHelper @responder, "POST", response, @resolver if @counter < 3
 
-	addDebug: (results, bubble) =>
+	addDebug: (results) =>
 		@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
 		@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
-		@debugData.bubble = bubble
 		
 		if !results
 			results = 
@@ -224,7 +223,7 @@ class Please
 			results.debug = @debugData
 
 		template = Handlebars.compile($('#debug-template').html())
-		@board.append(template(results)).scrollTop(@board.height())
+		@board.find(':last').append(template(results))
 
 	ask: (input) =>
 		console.log 'ask'
@@ -246,7 +245,7 @@ class Please
 					
 			@requestHelper @classifier, "GET", data, (response) =>
 				if @debug is true
-					@addDebug(null, 'in')
+					@addDebug()
 
 				@resolver response
 
@@ -295,7 +294,7 @@ class Please
 
 		@board.append(template(results)).scrollTop(@board.height())
 
-		@addDebug(results, 'out') if @debug is true
+		@addDebug(results) if @debug is true
 			
 		@loader.hide()
 

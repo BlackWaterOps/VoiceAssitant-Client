@@ -170,7 +170,7 @@
         console.log('successHandler', results);
         checkDates = true;
         if (_this.debug === true && _this.inProgress === true) {
-          _this.addDebug(null, 'in');
+          _this.addDebug();
         }
         if (results != null) {
           if ((results.date != null) || (results.time != null)) {
@@ -252,7 +252,7 @@
       }
     };
 
-    Please.prototype.addDebug = function(results, bubble) {
+    Please.prototype.addDebug = function(results) {
       var template;
       if (this.debugData.request != null) {
         this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
@@ -260,7 +260,6 @@
       if (this.debugData.response != null) {
         this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
       }
-      this.debugData.bubble = bubble;
       if (!results) {
         results = {
           debug: this.debugData
@@ -269,7 +268,7 @@
         results.debug = this.debugData;
       }
       template = Handlebars.compile($('#debug-template').html());
-      return this.board.append(template(results)).scrollTop(this.board.height());
+      return this.board.find(':last').append(template(results));
     };
 
     Please.prototype.ask = function(input) {
@@ -290,7 +289,7 @@
         };
         return this.requestHelper(this.classifier, "GET", data, function(response) {
           if (_this.debug === true) {
-            _this.addDebug(null, 'in');
+            _this.addDebug();
           }
           return _this.resolver(response);
         });
@@ -333,7 +332,7 @@
       template = Handlebars.compile(template);
       this.board.append(template(results)).scrollTop(this.board.height());
       if (this.debug === true) {
-        this.addDebug(results, 'out');
+        this.addDebug(results);
       }
       return this.loader.hide();
     };
