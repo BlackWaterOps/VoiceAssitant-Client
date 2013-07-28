@@ -18,6 +18,7 @@
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
       this.ask = __bind(this.ask, this);
+      this.addDebug = __bind(this.addDebug, this);
       this.resolver = __bind(this.resolver, this);
       this.disambiguate = __bind(this.disambiguate, this);
       this.updatePosition = __bind(this.updatePosition, this);
@@ -168,6 +169,9 @@
         var checkDates, datetime;
         console.log('successHandler', results);
         checkDates = true;
+        if (_this.debug === true && _this.inProgress === true) {
+          _this.addDebug(null, 'in');
+        }
         if (results != null) {
           if ((results.date != null) || (results.time != null)) {
             datetime = _this.buildDatetime(results.date, results.time);
@@ -248,6 +252,26 @@
       }
     };
 
+    Please.prototype.addDebug = function(results, bubble) {
+      var template;
+      if (this.debugData.request != null) {
+        this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
+      }
+      if (this.debugData.response != null) {
+        this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
+      }
+      this.debugData.bubble = bubble;
+      if (!results) {
+        results = {
+          debug: this.debugData
+        };
+      } else {
+        results.debug = this.debugData;
+      }
+      template = Handlebars.compile($('#debug-template').html());
+      return this.board.append(template(results)).scrollTop(this.board.height());
+    };
+
     Please.prototype.ask = function(input) {
       var data, template, text,
         _this = this;
@@ -265,20 +289,8 @@
           query: text
         };
         return this.requestHelper(this.classifier, "GET", data, function(response) {
-          var results;
           if (_this.debug === true) {
-            if (_this.debugData.request != null) {
-              _this.debugData.request = JSON.stringify(_this.debugData.request, null, 4);
-            }
-            if (_this.debugData.response != null) {
-              _this.debugData.response = JSON.stringify(_this.debugData.response, null, 4);
-            }
-            _this.debugData.bubble = 'in';
-            results = {
-              debug: _this.debugData
-            };
-            template = Handlebars.compile($('#debug-template').html());
-            _this.board.append(template(results)).scrollTop(_this.board.height());
+            _this.addDebug(null, 'in');
           }
           return _this.resolver(response);
         });
@@ -317,24 +329,12 @@
     Please.prototype.show = function(results) {
       var template, templateName;
       templateName = results.action != null ? results.action : 'bubbleout';
-      template = $('#' + templateName + '-template');
-      if (this.debug === true) {
-        if (this.debugData.request != null) {
-          this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
-        }
-        if (this.debugData.response != null) {
-          this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
-        }
-        this.debugData.bubble = 'out';
-        results.debug = this.debugData;
-        $('#debug-template').find('.debug').removeClass('in').addClass('out');
-        template = template.append($('#debug-template').html()).html();
-      } else {
-        template = template.html();
-      }
+      template = $('#' + templateName + '-template').html();
       template = Handlebars.compile(template);
-      console.log(template(results));
       this.board.append(template(results)).scrollTop(this.board.height());
+      if (this.debug === true) {
+        this.addDebug(results, 'out');
+      }
       return this.loader.hide();
     };
 

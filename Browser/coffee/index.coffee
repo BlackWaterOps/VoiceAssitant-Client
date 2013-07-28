@@ -137,6 +137,9 @@ class Please
 			# gross hack to stop the resolver from 
 			checkDates = true
 
+			if @debug is true and @inProgress is true
+				@addDebug(null, 'in')
+				
 			if results?
 				if results.date? or results.time?
 					datetime = @buildDatetime(results.date, results.time)
@@ -209,6 +212,20 @@ class Please
 
 			@requestHelper @responder, "POST", response, @resolver if @counter < 3
 
+	addDebug: (results, bubble) =>
+		@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
+		@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
+		@debugData.bubble = bubble
+		
+		if !results
+			results = 
+				debug:@debugData
+		else
+			results.debug = @debugData
+
+		template = Handlebars.compile($('#debug-template').html())
+		@board.append(template(results)).scrollTop(@board.height())
+
 	ask: (input) =>
 		console.log 'ask'
 		input = $(input)
@@ -229,16 +246,7 @@ class Please
 					
 			@requestHelper @classifier, "GET", data, (response) =>
 				if @debug is true
-					@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
-					@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
-					@debugData.bubble = 'in'
-					
-					results = 
-						debug:@debugData
-
-					template = Handlebars.compile($('#debug-template').html())
-
-					@board.append(template(results)).scrollTop(@board.height())
+					@addDebug(null, 'in')
 
 				@resolver response
 
@@ -281,27 +289,14 @@ class Please
 		# Handlebars.compile($('#bubblein-template').html())
 		templateName = if results.action? then results.action else 'bubbleout'
 
-		template = $('#' + templateName + '-template')
-
-		if @debug is true
-			@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
-			@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
-			@debugData.bubble = 'out'
-			
-			results.debug = @debugData
-
-			$('#debug-template').find('.debug').removeClass('in').addClass('out')
-
-			template = template.append($('#debug-template').html()).html()
-		else 
-			template = template.html()
+		template = $('#' + templateName + '-template').html()
 
 		template = Handlebars.compile(template)
 
-		console.log template(results)
-
 		@board.append(template(results)).scrollTop(@board.height())
 
+		@addDebug(results, 'out') if @debug is true
+			
 		@loader.hide()
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
