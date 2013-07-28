@@ -21,6 +21,7 @@
       this.addDebug = __bind(this.addDebug, this);
       this.resolver = __bind(this.resolver, this);
       this.disambiguate = __bind(this.disambiguate, this);
+      this.cancel = __bind(this.cancel, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
@@ -37,7 +38,7 @@
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
-      this.pos = history.length;
+      this.pos = this.history.length;
       this.loader = $('#loader');
       this.board = $('#board');
       this.input = $('#main-input');
@@ -56,6 +57,7 @@
       var init;
       this.input.focus().on('webkitspeechchange', this.ask).on('keyup', this.keyup);
       $('body').on('click', '.expand', this.expand);
+      $('#cancel').on('click', this.cancel);
       if (this.board.is(':empty')) {
         init = $('#init');
         init.fadeIn('slow');
@@ -138,6 +140,14 @@
     Please.prototype.updatePosition = function(position) {
       this.lat = position.coords.latitude;
       return this.lon = position.coords.longitude;
+    };
+
+    Please.prototype.cancel = function(e) {
+      this.board.empty();
+      this.mainContext = {};
+      this.disambigContext = {};
+      this.history = [];
+      return $('#input-form').removeClass('cancel');
     };
 
     Please.prototype.disambiguate = function(payload) {
@@ -280,6 +290,7 @@
       input.val('');
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text));
+      $('#input-form').addClass('cancel');
       if (this.inProgress === true) {
         console.log('should disambiguate');
         return this.disambiguate(text);

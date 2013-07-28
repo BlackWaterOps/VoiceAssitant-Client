@@ -12,7 +12,7 @@ class Please
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
-		@pos = history.length
+		@pos = @history.length
 		@loader = $('#loader')
 		@board = $('#board')
 		@input = $('#main-input')
@@ -34,6 +34,8 @@ class Please
 		$('body').on('click', '.expand', @expand)
 		#.on('click', '.simulate', @simulate)
 		
+		$('#cancel').on('click', @cancel)
+
 		if (@board.is(':empty'))
 			init = $('#init')
 			init.fadeIn('slow');
@@ -99,7 +101,15 @@ class Please
 	updatePosition: (position) =>
 		@lat = position.coords.latitude
 		@lon = position.coords.longitude
-		
+	
+	cancel: (e) =>
+		@board.empty()
+		@mainContext = { }
+		@disambigContext = { }
+		@history = [ ]
+
+		$('#input-form').removeClass 'cancel'
+
 	disambiguate: (payload) =>
 		if @inProgress is true
 			endpoint = @disambiguator + "/active"
@@ -236,7 +246,9 @@ class Please
 		template = Handlebars.compile($('#bubblein-template').html())
 		
 		@board.append template(text)
-	
+		
+		$('#input-form').addClass 'cancel'
+
 		if @inProgress is true
 			console.log 'should disambiguate'
 			@disambiguate text
@@ -249,7 +261,7 @@ class Please
 
 				@resolver response
 
-	keyup: (e) =>
+	keyup: (e) =>	
 		value = $(e.target).val()
 
 		target = $(e.target)

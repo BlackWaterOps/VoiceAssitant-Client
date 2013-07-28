@@ -15,9 +15,19 @@ div, p, input {
     margin: 0 auto;
     text-align: left;
 }
+#input-form.cancel {
+    #main-input {
+            padding-right: 85px;
+    }
+
+    .cancel-btn {
+        right: 0;
+    }
+}
+
 #main-input {
     font-size: 46px;
-    padding: 7px 5px;
+    padding: 7px 5px 7px 5px;
     width: 425px;
     margin-top: 20px;
     position: fixed;
@@ -28,9 +38,27 @@ div, p, input {
     box-shadow: 0 0 10px black;
     background-color: #1f2122;
     border: solid #1f2122 1px;
+    @include transition(".2s ease-in-out"); 
 }
 #main-input:focus {
     outline: none;
+}
+.cancel-btn {
+    position: fixed;
+    bottom: 0;
+    right: -80px;
+    background: #9a9a9a;
+    color: rgba(31, 33, 34, 0.8);
+    border-left: 1px solid #b3b3b3;
+    width: 80px;
+    font-size: 46px;
+    padding: 7px 5px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 1px 4px 6px #9a9a9a, 0 0 0 #000, 1px 4px 6px #9a9a9a;
+    @include box-sizing(border-box);
+    @include transition(".2s ease-in-out"); 
 }
 #board {
     position: absolute;
