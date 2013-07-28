@@ -289,7 +289,7 @@
       text = input.val();
       input.val('');
       template = Handlebars.compile($('#bubblein-template').html());
-      this.board.append(template(text));
+      this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
       $('#input-form').addClass('cancel');
       if (this.inProgress === true) {
         console.log('should disambiguate');
@@ -341,7 +341,7 @@
       templateName = results.action != null ? results.action : 'bubbleout';
       template = $('#' + templateName + '-template').html();
       template = Handlebars.compile(template);
-      this.board.append(template(results)).scrollTop(this.board.height());
+      this.board.append(template(results)).scrollTop(this.board.find(':last').offset().top);
       if (this.debug === true) {
         this.addDebug(results);
       }

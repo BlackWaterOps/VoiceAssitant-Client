@@ -245,7 +245,7 @@ class Please
 		
 		template = Handlebars.compile($('#bubblein-template').html())
 		
-		@board.append template(text)
+		@board.append(template(text)).scrollTop(@board.find(':last').offset().top)
 		
 		$('#input-form').addClass 'cancel'
 
@@ -304,7 +304,7 @@ class Please
 
 		template = Handlebars.compile(template)
 
-		@board.append(template(results)).scrollTop(@board.height())
+		@board.append(template(results)).scrollTop(@board.find(':last').offset().top)
 
 		@addDebug(results) if @debug is true
 			
