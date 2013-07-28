@@ -15,25 +15,26 @@
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.show = __bind(this.show, this);
+      this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
       this.ask = __bind(this.ask, this);
       this.resolver = __bind(this.resolver, this);
       this.disambiguate = __bind(this.disambiguate, this);
-      this.actors = __bind(this.actors, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
       this.init = __bind(this.init, this);
+      this.debug = true;
+      this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/';
-      this.builder = '';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate';
       this.responder = 'http://rez.stremor-apier.appspot.com/';
       this.lat = 0.00;
       this.lon = 0.00;
       this.sendDeviceInfo = false;
       this.inProgress = false;
-      this.context = {};
-      this.fromResponder = {};
+      this.mainContext = {};
+      this.disambigContext = {};
       this.history = [];
       this.pos = history.length;
       this.loader = $('#loader');
@@ -42,16 +43,6 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
-      this.templates = {
-        bubblein: Handlebars.compile($('#bubblein-template').html()),
-        bubbleout: Handlebars.compile($('#bubbleout-template').html()),
-        simulate: Handlebars.compile($('#simulate-template').html()),
-        shopping: Handlebars.compile($('#shopping-template').html()),
-        images: Handlebars.compile($('#images-template').html()),
-        list: Handlebars.compile($('#list-template').html()),
-        web: Handlebars.compile($('#web-template').html()),
-        link: Handlebars.compile($('#link-template').html())
-      };
       this.presets = {
         'after work': '18:00:00',
         'breakfast': '7:30:00',
@@ -63,6 +54,7 @@
     Please.prototype.init = function() {
       var init;
       this.input.focus().on('webkitspeechchange', this.ask).on('keyup', this.keyup);
+      $('body').on('click', '.expand', this.expand);
       if (this.board.is(':empty')) {
         init = $('#init');
         init.fadeIn('slow');
@@ -147,15 +139,13 @@
       return this.lon = position.coords.longitude;
     };
 
-    Please.prototype.actors = function(data) {};
-
     Please.prototype.disambiguate = function(payload) {
-      var data, doneHandler, endpoint, field, text, type,
+      var data, endpoint, field, successHandler, text, type,
         _this = this;
       if (this.inProgress === true) {
         endpoint = this.disambiguator + "/active";
-        field = this.fromResponder.field;
-        type = this.fromResponder.type;
+        field = this.disambigContext.field;
+        type = this.disambigContext.type;
         text = payload;
         data = {
           text: text,
@@ -168,28 +158,28 @@
         this.sendDeviceInfo = true;
         field = payload.field;
         type = payload.type;
-        text = this.context.payload[field];
+        text = this.mainContext.payload[field];
         data = {
           text: text,
           types: [type]
         };
       }
-      doneHandler = function(results) {
+      successHandler = function(results) {
         var checkDates, datetime;
-        console.log('doneHandler', results);
+        console.log('successHandler', results);
         checkDates = true;
         if (results != null) {
           if ((results.date != null) || (results.time != null)) {
             datetime = _this.buildDatetime(results.date, results.time);
             results[type] = datetime[type];
             checkDates = false;
-            console.log('done handler', results);
+            console.log('successhandler', results);
           }
         }
-        _this.context.payload[field] = results[type];
-        return _this.resolver(_this.context, checkDates);
+        _this.mainContext.payload[field] = results[type];
+        return _this.resolver(_this.mainContext, checkDates);
       };
-      return this.requestHelper(endpoint, "POST", data, doneHandler);
+      return this.requestHelper(endpoint, "POST", data, successHandler);
     };
 
     Please.prototype.resolver = function(response, checkDates) {
@@ -211,7 +201,7 @@
           case 'in progress':
             this.counter = 0;
             this.inProgress = true;
-            this.fromResponder = response;
+            this.disambigContext = response;
             console.log('resolver progress', response);
             return this.show(response);
           case 'complete':
@@ -219,11 +209,11 @@
             console.log('resolver complete', response);
             this.counter = 0;
             this.inProgress = false;
-            this.fromResponder = {};
+            this.disambigContext = {};
             if (response.actor === null || response.actor === void 0) {
               return this.show(response);
             } else {
-              return this.requestHelper(this.responder + response.actor, 'POST', this.context, this.show);
+              return this.requestHelper(this.responder + response.actor, 'POST', this.mainContext, this.show);
             }
         }
       } else {
@@ -250,7 +240,7 @@
             }
           }
         }
-        this.context = response;
+        this.mainContext = response;
         this.counter++;
         if (this.counter < 3) {
           return this.requestHelper(this.responder, "POST", response, this.resolver);
@@ -259,12 +249,14 @@
     };
 
     Please.prototype.ask = function(input) {
-      var data, text;
+      var data, template, text,
+        _this = this;
       console.log('ask');
       input = $(input);
       text = input.val();
       input.val('');
-      this.board.append(this.templates.bubblein(text));
+      template = Handlebars.compile($('#bubblein-template').html());
+      this.board.append(template(text));
       if (this.inProgress === true) {
         console.log('should disambiguate');
         return this.disambiguate(text);
@@ -272,7 +264,24 @@
         data = {
           query: text
         };
-        return this.requestHelper(this.classifier, "GET", data, this.resolver);
+        return this.requestHelper(this.classifier, "GET", data, function(response) {
+          var results;
+          if (_this.debug === true) {
+            if (_this.debugData.request != null) {
+              _this.debugData.request = JSON.stringify(_this.debugData.request, null, 4);
+            }
+            if (_this.debugData.response != null) {
+              _this.debugData.response = JSON.stringify(_this.debugData.response, null, 4);
+            }
+            _this.debugData.bubble = 'in';
+            results = {
+              debug: _this.debugData
+            };
+            template = Handlebars.compile($('#debug-template').html());
+            _this.board.append(template(results)).scrollTop(_this.board.height());
+          }
+          return _this.resolver(response);
+        });
       }
     };
 
@@ -300,10 +309,32 @@
       }
     };
 
+    Please.prototype.expand = function(e) {
+      e.preventDefault();
+      return $(e.target).parent().next().toggle();
+    };
+
     Please.prototype.show = function(results) {
-      var template;
-      template = results.action != null ? results.action : 'bubbleout';
-      this.board.append(this.templates[template](results)).scrollTop(this.board.height());
+      var template, templateName;
+      templateName = results.action != null ? results.action : 'bubbleout';
+      template = $('#' + templateName + '-template');
+      if (this.debug === true) {
+        if (this.debugData.request != null) {
+          this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
+        }
+        if (this.debugData.response != null) {
+          this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
+        }
+        this.debugData.bubble = 'out';
+        results.debug = this.debugData;
+        $('#debug-template').find('.debug').removeClass('in').addClass('out');
+        template = template.append($('#debug-template').html()).html();
+      } else {
+        template = template.html();
+      }
+      template = Handlebars.compile(template);
+      console.log(template(results));
+      this.board.append(template(results)).scrollTop(this.board.height());
       return this.loader.hide();
     };
 
@@ -320,21 +351,37 @@
         };
         this.sendDeviceInfo = false;
       }
-      if (type === "POST") {
-        data = JSON.stringify(data);
+      if (this.debug === true) {
+        this.debugData = {
+          endpoint: endpoint,
+          type: type,
+          request: data
+        };
       }
       return $.ajax({
         url: endpoint,
         type: type,
-        data: data,
+        data: type === "POST" ? JSON.stringify(data) : data,
         dataType: "json",
         timeout: 10000,
         beforeSend: function() {
           console.log(endpoint, type, data);
           return _this.loader.show();
         }
-      }).done(doneHandler != null ? doneHandler : void 0).fail(function(response) {
+      }).done(function(response, status) {
+        if (_this.debug === true) {
+          _this.debugData.status = status;
+          _this.debugData.response = response;
+        }
+        if (doneHandler != null) {
+          return doneHandler(response);
+        }
+      }).fail(function(response, status) {
         console.log('* POST fail', response, response.getResponseHeader());
+        if (_this.debug === true) {
+          _this.debugData.status = status;
+          _this.debugData.response = response;
+        }
         return _this.loader.hide();
       });
     };

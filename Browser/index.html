@@ -61,7 +61,24 @@
                 <a class="extLink" href="{{payload.url}}">Click for more</a>
             </div>
         </script>
-
+        
+        <script id="debug-template" type="text/x-handlebars-template">
+            <div class="bubble debug {{debug.bubble}}">
+                <div class="underspeak">
+                    <strong>Endpoint:&nbsp;</strong>{{debug.endpoint}}
+                    <strong>Type:&nbsp;</strong>{{debug.type}}
+                    <strong>Status:&nbsp;</strong>{{debug.status}}
+                    <a class="expand">...</a>
+                </div>
+                <div class="data">
+                    <strong>Request</strong>
+                    <pre>{{debug.request}}</pre>
+                    <strong>Response</strong>
+                    <pre>{{debug.response}}</pre>
+                </div>
+            </div>    
+        </script>
+        
         <script src="js/index.js"></script>
     </body>
     

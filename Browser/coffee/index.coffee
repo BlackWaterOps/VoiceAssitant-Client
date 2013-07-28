@@ -1,15 +1,16 @@
 class Please
 	constructor: (options) ->
+		@debug = true
+		@debugData = { }
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
-		@builder = ''
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate'
 		@responder = 'http://rez.stremor-apier.appspot.com/'
 		@lat = 0.00
 		@lon = 0.00
 		@sendDeviceInfo = false
 		@inProgress = false
-		@context = { }
-		@fromResponder = { }
+		@mainContext = { }
+		@disambigContext = { }
 		@history = [ ]
 		@pos = history.length
 		@loader = $('#loader')
@@ -18,16 +19,7 @@ class Please
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
-		@templates = 
-			bubblein: Handlebars.compile($('#bubblein-template').html())
-			bubbleout: Handlebars.compile($('#bubbleout-template').html())
-			simulate: Handlebars.compile($('#simulate-template').html())
-			shopping: Handlebars.compile($('#shopping-template').html())
-			images: Handlebars.compile($('#images-template').html())
-			list: Handlebars.compile($('#list-template').html())
-			web: Handlebars.compile($('#web-template').html())
-			link: Handlebars.compile($('#link-template').html())
-
+	
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
 		@presets = 
 			'after work': '18:00:00'
@@ -36,13 +28,10 @@ class Please
 		@init()
 	init: =>
 		@input.focus()
-		#.val("Book a hotel in Fremont")
-		#.val("schedule drinks tomorrow")
-		#.val("I have an appointment.")
 		.on('webkitspeechchange', @ask)
 		.on('keyup', @keyup)
 
-		#$('body').on('click', '.expand', @expand)
+		$('body').on('click', '.expand', @expand)
 		#.on('click', '.simulate', @simulate)
 		
 		if (@board.is(':empty'))
@@ -53,7 +42,7 @@ class Please
 			), 1000
 
 		@getLocation()
-
+		
 	store:
 		createCookie: (k, v, d) ->
 			exp = new Date()
@@ -110,17 +99,14 @@ class Please
 	updatePosition: (position) =>
 		@lat = position.coords.latitude
 		@lon = position.coords.longitude
-
-	actors: (data) =>
 		
-
 	disambiguate: (payload) =>
 		if @inProgress is true
 			endpoint = @disambiguator + "/active"
 
-			field = @fromResponder.field
+			field = @disambigContext.field
 
-			type = @fromResponder.type
+			type = @disambigContext.type
 			
 			text = payload
 
@@ -140,14 +126,14 @@ class Please
 			# TODO: handle multi types
 			type = payload.type
 
-			text = @context.payload[field]
+			text = @mainContext.payload[field]
 
 			data = 
 				text: text
 				types: [type]
 
-		doneHandler = (results) =>
-			console.log 'doneHandler', results
+		successHandler = (results) =>
+			console.log 'successHandler', results
 			# gross hack to stop the resolver from 
 			checkDates = true
 
@@ -159,13 +145,13 @@ class Please
 
 					checkDates = false
 
-					console.log 'done handler', results
+					console.log 'successhandler', results
 
-			@context.payload[field] = results[type]
+			@mainContext.payload[field] = results[type]
 			
-			@resolver @context, checkDates
+			@resolver @mainContext, checkDates
 
-		@requestHelper endpoint, "POST", data, doneHandler
+		@requestHelper endpoint, "POST", data, successHandler
 
 	# TODO: resolver logic can be split into two function, classifier responses & responder responses
 	resolver: (response, checkDates = true) =>
@@ -183,7 +169,7 @@ class Please
 					@counter = 0
 					@inProgress = true
 					# store response so @disambiguate can get to it after @show
-					@fromResponder = response
+					@disambigContext = response
 					console.log 'resolver progress', response
 					# display text to user and get response
 					@show response
@@ -191,11 +177,11 @@ class Please
 					console.log 'resolver complete', response
 					@counter = 0
 					@inProgress = false
-					@fromResponder = { }
+					@disambigContext = { }
 					if response.actor is null or response.actor is undefined
 						@show response
 					else
-						@requestHelper @responder + response.actor, 'POST', @context, @show
+						@requestHelper @responder + response.actor, 'POST', @mainContext, @show
 		else  
 			console.log 'resolver response without status', response 
 			payload = response.payload
@@ -217,7 +203,7 @@ class Please
 
 
 			# this needs to be an append and not an override
-			@context = response
+			@mainContext = response
 
 			@counter++
 
@@ -231,7 +217,9 @@ class Please
 
 		input.val('')
 		
-		@board.append @templates.bubblein(text)
+		template = Handlebars.compile($('#bubblein-template').html())
+		
+		@board.append template(text)
 	
 		if @inProgress is true
 			console.log 'should disambiguate'
@@ -239,32 +227,21 @@ class Please
 		else
 			data = query: text
 					
-			@requestHelper @classifier, "GET", data, @resolver
-			# $.ajax(
-			#     url: @classifier
-			#     type: "GET"
-			#     data: data
-			#     dataType: "json"
-			#     timeout: 10000
-			#     beforeSend: =>
-			#         @loader.show()
-			# ).then((response) =>
-			#     console.log 'then', response
-			#     $.ajax(
-			#         url: @responder
-			#         type: "POST"
-			#         data: JSON.stringify(response)
-			#         dataType: 'json'
-			#         timeout: 10000
-			#     )
-			# ).done((response) =>
-			#     console.log 'we\'re done', response
-			# ).fail((response) =>
-			#     console.log '* POST fail', response, response.getResponseHeader()
-			#     @loader.hide()
-			# )
+			@requestHelper @classifier, "GET", data, (response) =>
+				if @debug is true
+					@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
+					@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
+					@debugData.bubble = 'in'
+					
+					results = 
+						debug:@debugData
 
-		
+					template = Handlebars.compile($('#debug-template').html())
+
+					@board.append(template(results)).scrollTop(@board.height())
+
+				@resolver response
+
 	keyup: (e) =>
 		value = $(e.target).val()
 
@@ -284,9 +261,9 @@ class Please
 				pos += 1 if pos < history.length
 				target.val history[pos]
 				
-	# expand: (e) =>
-	#     e.preventDefault()
-	#     $(e.target).parent().next().toggle()
+	expand: (e) =>
+	    e.preventDefault()
+	    $(e.target).parent().next().toggle()
 
 	# simulate: (e) =>
 	#     data = JSON.stringify(
@@ -301,9 +278,29 @@ class Please
 	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
 	
 	show: (results) =>
-		template = if results.action? then results.action else 'bubbleout'
+		# Handlebars.compile($('#bubblein-template').html())
+		templateName = if results.action? then results.action else 'bubbleout'
 
-		@board.append(@templates[template](results)).scrollTop(@board.height())
+		template = $('#' + templateName + '-template')
+
+		if @debug is true
+			@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
+			@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
+			@debugData.bubble = 'out'
+			
+			results.debug = @debugData
+
+			$('#debug-template').find('.debug').removeClass('in').addClass('out')
+
+			template = template.append($('#debug-template').html()).html()
+		else 
+			template = template.html()
+
+		template = Handlebars.compile(template)
+
+		console.log template(results)
+
+		@board.append(template(results)).scrollTop(@board.height())
 
 		@loader.hide()
 
@@ -319,22 +316,34 @@ class Please
 			
 			@sendDeviceInfo = false
 
-		data = JSON.stringify(data) if type is "POST"
+		if @debug is true
+			@debugData = 
+				endpoint: endpoint
+				type: type
+				request: data
 
 		$.ajax(
 			url: endpoint
 			type: type
-			data: data
+			data: if type is "POST" then JSON.stringify(data) else data 
 			# contentType: "application/json"
 			dataType: "json"
 			timeout: 10000
 			beforeSend: =>
 				console.log endpoint, type, data
 				@loader.show()
-		).done(
-			doneHandler if doneHandler?
-		).fail((response) =>
+		).done((response, status) =>
+			if @debug is true
+				@debugData.status = status
+				@debugData.response = response
+
+			doneHandler(response) if doneHandler?
+		).fail((response, status) =>
 			console.log '* POST fail', response, response.getResponseHeader()
+			if @debug is true
+				@debugData.status = status
+				@debugData.response = response
+			
 			@loader.hide()
 		)
 
