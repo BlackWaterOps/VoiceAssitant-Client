@@ -109,6 +109,7 @@ class Please
 		@history = [ ]
 
 		$('#input-form').removeClass 'cancel'
+		@input.focus()
 
 	disambiguate: (payload) =>
 		if @inProgress is true

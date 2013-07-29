@@ -147,7 +147,8 @@
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
-      return $('#input-form').removeClass('cancel');
+      $('#input-form').removeClass('cancel');
+      return this.input.focus();
     };
 
     Please.prototype.disambiguate = function(payload) {
