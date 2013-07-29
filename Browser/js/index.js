@@ -8,7 +8,7 @@
 
     function Please(options) {
       this.datetimeHelper = __bind(this.datetimeHelper, this);
-      this.newDate = __bind(this.newDate, this);
+      this.newDateHelper = __bind(this.newDateHelper, this);
       this.fuzzyHelper = __bind(this.fuzzyHelper, this);
       this.weekdayHelper = __bind(this.weekdayHelper, this);
       this.buildDatetime = __bind(this.buildDatetime, this);
@@ -489,7 +489,7 @@
       return date;
     };
 
-    Please.prototype.newDate = function(datetime) {
+    Please.prototype.newDateHelper = function(datetime) {
       var hours, minutes, newDate, seconds, split;
       console.log('newDate', datetime);
       if (datetime.indexOf('now') !== -1) {
@@ -532,7 +532,7 @@
         case '[object String]':
           console.log('is string');
           if (newDate === null) {
-            newDate = this.newDate(dateOrTime);
+            newDate = this.newDateHelper(dateOrTime);
           }
           break;
         case '[object Object]':
@@ -556,7 +556,7 @@
                     console.log('step 2', 'set datetime');
                     switch (itemType) {
                       case '[object String]':
-                        newDate = this.newDate(item);
+                        newDate = this.newDateHelper(item);
                         break;
                       case '[object Object]':
                         for (itemKey in item) {

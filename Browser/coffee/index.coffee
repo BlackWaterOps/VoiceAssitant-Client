@@ -442,7 +442,7 @@ class Please
 
 		return date
 	
-	newDate: (datetime) =>
+	newDateHelper: (datetime) =>
 		console.log 'newDate', datetime
 		if datetime.indexOf('now') isnt -1
 			console.log 'is now'
@@ -483,7 +483,7 @@ class Please
 			when '[object String]'
 				console.log 'is string'
 				if newDate is null
-					newDate = @newDate dateOrTime
+					newDate = @newDateHelper dateOrTime
 
 			when '[object Object]'
 				console.log 'is object'
@@ -509,7 +509,7 @@ class Please
 
 									switch itemType
 										when '[object String]' # 'now' or '2013-07-01'
-											newDate = @newDate item
+											newDate = @newDateHelper item
 										when '[object Object]' #weekday, #fuzzy operators
 											for itemKey, itemValue of item
 												if newDate is null
