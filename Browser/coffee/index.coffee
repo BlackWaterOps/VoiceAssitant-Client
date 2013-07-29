@@ -109,6 +109,7 @@ class Please
 		@history = [ ]
 
 		$('#input-form').removeClass 'cancel'
+		@loader.hide()
 		@input.focus()
 
 	disambiguate: (payload) =>

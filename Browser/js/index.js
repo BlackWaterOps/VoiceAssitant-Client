@@ -148,6 +148,7 @@
       this.disambigContext = {};
       this.history = [];
       $('#input-form').removeClass('cancel');
+      this.loader.hide();
       return this.input.focus();
     };
 
