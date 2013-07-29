@@ -321,15 +321,15 @@
           }
           break;
         case 38:
-          if (pos > 0) {
-            pos -= 1;
+          if (this.pos > 0) {
+            this.pos -= 1;
           }
-          return target.val(history[pos]);
+          return target.val(history[this.pos]);
         case 40:
-          if (pos < history.length) {
-            pos += 1;
+          if (this.pos < history.length) {
+            this.pos += 1;
           }
-          return target.val(history[pos]);
+          return target.val(history[this.pos]);
       }
     };
 

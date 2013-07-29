@@ -275,12 +275,12 @@ class Please
 					# history.push value
 					@pos = history.length
 			when 38
-				pos -= 1 if pos > 0
-				target.val history[pos]
+				@pos -= 1 if @pos > 0
+				target.val history[@pos]
 
 			when 40
-				pos += 1 if pos < history.length
-				target.val history[pos]
+				@pos += 1 if @pos < history.length
+				target.val history[@pos]
 				
 	expand: (e) =>
 	    e.preventDefault()
