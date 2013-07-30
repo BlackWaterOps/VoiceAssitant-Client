@@ -14,6 +14,7 @@
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
+      this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
       this.show = __bind(this.show, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
@@ -24,13 +25,13 @@
       this.cancel = __bind(this.cancel, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
-      this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
+      this.log = __bind(this.log, this);
       this.init = __bind(this.init, this);
       this.debug = true;
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate';
-      this.responder = 'http://rez.stremor-apier.appspot.com/';
+      this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
       this.sendDeviceInfo = false;
@@ -66,6 +67,19 @@
         }), 1000);
       }
       return this.getLocation();
+    };
+
+    Please.prototype.log = function() {
+      var args, argument, _i, _len;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        argument = arguments[_i];
+        if (typeof argument === 'object') {
+          argument = JSON.stringify(argument);
+        }
+        args.push(argument);
+      }
+      return console.log(args.join(" "));
     };
 
     Please.prototype.store = {
@@ -119,20 +133,6 @@
       }
     };
 
-    Please.prototype.buildDeviceInfo = function() {
-      var clientDate, device;
-      clientDate = Date();
-      return device = {
-        "device": {
-          "type": "web-client",
-          "lat": 0.00,
-          "lon": 0.00,
-          "timestamp": clientDate.getTime() / 1000,
-          "timeoffset": -clientDate.getTimezoneOffset() / 60
-        }
-      };
-    };
-
     Please.prototype.getLocation = function() {
       return navigator.geolocation.getCurrentPosition(this.updatePosition);
     };
@@ -164,9 +164,9 @@
           text: text,
           types: [type]
         };
-        console.log('disambiguate user response', data);
+        this.log('disambiguate user response', data);
       } else {
-        console.log('disambiguate rez response');
+        this.log('disambiguate rez response');
         endpoint = this.disambiguator + "/passive";
         this.sendDeviceInfo = true;
         field = payload.field;
@@ -179,7 +179,7 @@
       }
       successHandler = function(results) {
         var checkDates, datetime;
-        console.log('successHandler', results);
+        _this.log('successHandler', results);
         checkDates = true;
         if (_this.debug === true && _this.inProgress === true) {
           _this.addDebug();
@@ -189,7 +189,7 @@
             datetime = _this.buildDatetime(results.date, results.time);
             results[type] = datetime[type];
             checkDates = false;
-            console.log('successhandler', results);
+            _this.log('successhandler', results);
           }
         }
         _this.mainContext.payload[field] = results[type];
@@ -211,34 +211,34 @@
       if (response.status != null) {
         switch (response.status.toLowerCase()) {
           case 'disambiguate':
-            console.log('resolver disambiguate', response);
+            this.log('resolver disambiguate', response);
             this.inProgress = false;
             return this.disambiguate(response);
           case 'in progress':
             this.counter = 0;
             this.inProgress = true;
             this.disambigContext = response;
-            console.log('resolver progress', response);
+            this.log('resolver progress', response);
             return this.show(response);
           case 'complete':
           case 'completed':
-            console.log('resolver complete', response);
+            this.log('resolver complete', response);
             this.counter = 0;
             this.inProgress = false;
             this.disambigContext = {};
             if (response.actor === null || response.actor === void 0) {
               return this.show(response);
             } else {
-              return this.requestHelper(this.responder + response.actor, 'POST', this.mainContext, this.show);
+              return this.requestHelper(this.responder + 'actors/' + response.actor, 'POST', this.mainContext, this.show);
             }
         }
       } else {
-        console.log('resolver response without status', response);
+        this.log('resolver response without status', response);
         payload = response.payload;
         if ((payload != null) && checkDates) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
             datetime = this.buildDatetime(payload.start_date, payload.start_time);
-            console.log('datetime no status', datetime);
+            this.log('datetime no status', datetime);
             if (payload.start_date != null) {
               payload.start_date = datetime.date;
             }
@@ -259,7 +259,7 @@
         this.mainContext = response;
         this.counter++;
         if (this.counter < 3) {
-          return this.requestHelper(this.responder, "POST", response, this.resolver);
+          return this.requestHelper(this.responder + 'audit', "POST", response, this.resolver);
         }
       }
     };
@@ -286,7 +286,6 @@
     Please.prototype.ask = function(input) {
       var data, template, text,
         _this = this;
-      console.log('ask');
       input = $(input);
       text = input.val();
       input.val('');
@@ -294,7 +293,7 @@
       this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
       $('#input-form').addClass('cancel');
       if (this.inProgress === true) {
-        console.log('should disambiguate');
+        this.log('should disambiguate');
         return this.disambiguate(text);
       } else {
         data = {
@@ -350,17 +349,21 @@
       return this.loader.hide();
     };
 
+    Please.prototype.buildDeviceInfo = function() {
+      var clientDate, deviceInfo;
+      clientDate = Date();
+      return deviceInfo = {
+        "latitude": this.lat,
+        "longitude": this.lon,
+        "timestamp": clientDate.getTime() / 1000,
+        "timeoffset": -clientDate.getTimezoneOffset() / 60
+      };
+    };
+
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
-      var clientDate,
-        _this = this;
+      var _this = this;
       if (this.sendDeviceInfo === true) {
-        clientDate = new Date();
-        data.device_info = {
-          "latitude": this.lat,
-          "longitude": this.lon,
-          "timestamp": clientDate.getTime() / 1000,
-          "timeoffset": -clientDate.getTimezoneOffset() / 60
-        };
+        data.device_info = this.buildDeviceInfo();
         this.sendDeviceInfo = false;
       }
       if (this.debug === true) {
@@ -377,7 +380,7 @@
         dataType: "json",
         timeout: 10000,
         beforeSend: function() {
-          console.log(endpoint, type, data);
+          _this.log(endpoint, type, data);
           return _this.loader.show();
         }
       }).done(function(response, status) {
@@ -389,7 +392,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        console.log('* POST fail', response, response.getResponseHeader());
+        _this.log('* POST fail', response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -423,17 +426,17 @@
     Please.prototype.buildDatetime = function(date, time) {
       var dateString, newDate;
       newDate = null;
-      console.log('start date parsing', date);
+      this.log('start date parsing', date);
       if (date !== null && date !== void 0) {
         newDate = this.datetimeHelper(date);
       }
-      console.log('start time parsing', time);
+      this.log('start time parsing', time);
       if (time !== null && time !== void 0) {
         newDate = this.datetimeHelper(time, newDate);
       }
-      console.log('buildDatetime datestring', newDate);
+      this.log('buildDatetime datestring', newDate);
       dateString = this.toISOString(newDate).split('T');
-      console.log('buildDatetime datestring', dateString);
+      this.log('buildDatetime datestring', dateString);
       return {
         date: dateString[0],
         time: dateString[1]
@@ -442,7 +445,7 @@
 
     Please.prototype.weekdayHelper = function(dayOfWeek) {
       var currentDate, currentDay, date, offset;
-      console.log('weekday helper', dayOfWeek);
+      this.log('weekday helper', dayOfWeek);
       date = new Date();
       currentDay = date.getDay();
       currentDate = date.getDate();
@@ -453,14 +456,14 @@
 
     Please.prototype.fuzzyHelper = function(datetime, isDate) {
       var date, datetimeArr, def, key, label, preference, presetLabel, splitSym, val;
-      console.log('fuzzy helper', datetime, isDate);
+      this.log('fuzzy helper', datetime, isDate);
       date = new Date();
-      console.log('handle fuzzy date or time');
+      this.log('handle fuzzy date or time');
       label = null;
       def = null;
       for (key in datetime) {
         val = datetime[key];
-        console.log(key, val);
+        this.log(key, val);
         if (key === 'label') {
           label = val;
         }
@@ -469,11 +472,11 @@
         }
       }
       presetLabel = this.presets[label];
-      console.log('presetLabel', presetLabel);
+      this.log('presetLabel', presetLabel);
       preference = presetLabel != null ? presetLabel : def;
-      console.log('use', preference);
+      this.log('use', preference);
       if (preference === null) {
-        console.log('useTime error');
+        this.log('useTime error');
         return;
       }
       splitSym = isDate === true ? '-' : ':';
@@ -492,16 +495,16 @@
 
     Please.prototype.newDateHelper = function(datetime) {
       var hours, minutes, newDate, seconds, split;
-      console.log('newDate', datetime);
+      this.log('newDate', datetime);
       if (datetime.indexOf('now') !== -1) {
-        console.log('is now');
+        this.log('is now');
         newDate = new Date();
       } else if (this.dateRegex.test(datetime) === true) {
-        console.log('is date string');
+        this.log('is date string');
         split = datetime.split('-');
         newDate = new Date(split[0], split[1] - 1, split[2]);
       } else if (this.timeRegex.test(datetime) === true) {
-        console.log('is time');
+        this.log('is time');
         newDate = new Date();
         split = datetime.split(':');
         hours = newDate.getHours();
@@ -514,7 +517,7 @@
         newDate.setMinutes(split[1]);
         newDate.setSeconds(split[2]);
       }
-      console.log('newDate bottom', newDate);
+      this.log('newDate bottom', newDate);
       if (newDate === null || newDate === void 0) {
         return new Date();
       } else {
@@ -527,20 +530,20 @@
       if (newDate == null) {
         newDate = null;
       }
-      console.log(dateOrTime);
+      this.log(dateOrTime);
       dateOrTimeType = Object.prototype.toString.call(dateOrTime);
       switch (dateOrTimeType) {
         case '[object String]':
-          console.log('is string');
+          this.log('is string');
           if (newDate === null) {
             newDate = this.newDateHelper(dateOrTime);
           }
           break;
         case '[object Object]':
-          console.log('is object');
+          this.log('is object');
           for (action in dateOrTime) {
             parsable = dateOrTime[action];
-            console.log('step 1', action, parsable);
+            this.log('step 1', action, parsable);
             if (action.indexOf('weekday') !== -1) {
               return this.weekdayHelper(parsable);
             } else if (action.indexOf('fuzzy') !== -1) {
@@ -554,7 +557,7 @@
                   item = parsable[_i];
                   itemType = Object.prototype.toString.call(item);
                   if (newDate === null) {
-                    console.log('step 2', 'set datetime');
+                    this.log('step 2', 'set datetime');
                     switch (itemType) {
                       case '[object String]':
                         newDate = this.newDateHelper(item);
@@ -573,10 +576,10 @@
                         }
                     }
                   } else if (itemType === '[object Number]') {
-                    console.log('step 3', 'parse array group');
+                    this.log('step 3', 'parse array group');
                     interval = item;
                     if (interval === null) {
-                      console.log('frag error', interval);
+                      this.log('frag error', interval);
                       return;
                     }
                     if (action.indexOf('time') !== -1) {
@@ -599,10 +602,10 @@
 
     /*   
     	datetimeHelper: (dateOrTime, newDate = null) =>
-    		console.log dateOrTime
+    		@log dateOrTime
     
     		for action, parsable of dateOrTime
-    			console.log 'step 1', action, parsable
+    			@log 'step 1', action, parsable
     
     			if action.indexOf('fuzzy') is -1
     				operator = if action.indexOf('add') isnt -1 then '+' else '-'
@@ -614,7 +617,7 @@
     					itemType = Object.prototype.toString.call(item);
     
     					if newDate is null 
-    						console.log 'step 2', 'set datetime'
+    						@log 'step 2', 'set datetime'
     
     						switch itemType
     							when '[object String]' # 'now' or '2013-07-01'
@@ -623,7 +626,7 @@
     								for itemKey, itemValue of item
     									newDate = @weekdayHelper itemValue if itemKey.indexOf("weekday") isnt -1 and newDate is null
     					else if itemType is '[object Array]' # dates to add to Date object 
-    						console.log 'step 3', 'parse array group'
+    						@log 'step 3', 'parse array group'
     
     						interval = null
     						type = null
@@ -633,7 +636,7 @@
     							type = frag if typeof frag is 'string' and not type?
     
     						if interval is null or type is null
-    							console.log 'frag error', interval, type
+    							@log 'frag error', interval, type
     							return
     
     						if type.indexOf('second') isnt -1
@@ -654,21 +657,21 @@
     							newDate.setDate(date)
     
     			else if parsableType is '[object Object]' # if item is an object we must have a 'special' time
-    				console.log 'step 2', 'handle fuzzy date or time'
+    				@log 'step 2', 'handle fuzzy date or time'
     				label = null
     				def = null
     
     				for key, val of parsable
-    					console.log key, val
+    					@log key, val
     					label = val if key is 'label'
     					def = val if key is 'default'
     
     				presetLabel = @presets[label]
-    				console.log 'presetLabel', presetLabel
+    				@log 'presetLabel', presetLabel
     				useTime = if presetLabel? then presetLabel else def
-    				console.log 'useTime', useTime
+    				@log 'useTime', useTime
     				if useTime is null
-    					console.log 'useTime error' 
+    					@log 'useTime error' 
     					return
     
     				useTimeArr = useTime.trim().split(':')

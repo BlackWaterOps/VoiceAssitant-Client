@@ -4,7 +4,7 @@ class Please
 		@debugData = { }
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate'
-		@responder = 'http://rez.stremor-apier.appspot.com/'
+		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00
 		@sendDeviceInfo = false
@@ -44,7 +44,15 @@ class Please
 			), 1000
 
 		@getLocation()
-		
+
+	log: =>
+		args = [ ]
+		for argument in arguments
+			argument = JSON.stringify(argument) if typeof argument is 'object'
+			args.push argument
+
+		console.log args.join(" ")
+
 	store:
 		createCookie: (k, v, d) ->
 			exp = new Date()
@@ -85,16 +93,6 @@ class Please
 			else
 				createCookie k, v, -1
 	
-	buildDeviceInfo: =>
-		clientDate = Date()
-
-		device = "device": 
-			"type": "web-client",
-			"lat": 0.00,
-			"lon": 0.00,
-			"timestamp": clientDate.getTime() / 1000,
-			"timeoffset": - clientDate.getTimezoneOffset() / 60
-
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
 	
@@ -126,9 +124,9 @@ class Please
 				text: text
 				types: [type]
 
-			console.log 'disambiguate user response', data
+			@log 'disambiguate user response', data
 		else
-			console.log 'disambiguate rez response'
+			@log 'disambiguate rez response'
 
 			endpoint = @disambiguator + "/passive"
 
@@ -145,7 +143,7 @@ class Please
 				types: [type]
 
 		successHandler = (results) =>
-			console.log 'successHandler', results
+			@log 'successHandler', results
 			# gross hack to stop the resolver from 
 			checkDates = true
 
@@ -160,7 +158,7 @@ class Please
 
 					checkDates = false
 
-					console.log 'successhandler', results
+					@log 'successhandler', results
 
 			@mainContext.payload[field] = results[type]
 			
@@ -177,7 +175,7 @@ class Please
 		if response.status?            
 			switch response.status.toLowerCase()
 				when 'disambiguate'
-					console.log 'resolver disambiguate', response
+					@log 'resolver disambiguate', response
 					@inProgress = false
 					@disambiguate response
 				when 'in progress'
@@ -185,27 +183,27 @@ class Please
 					@inProgress = true
 					# store response so @disambiguate can get to it after @show
 					@disambigContext = response
-					console.log 'resolver progress', response
+					@log 'resolver progress', response
 					# display text to user and get response
 					@show response
 				when 'complete', 'completed'
-					console.log 'resolver complete', response
+					@log 'resolver complete', response
 					@counter = 0
 					@inProgress = false
 					@disambigContext = { }
 					if response.actor is null or response.actor is undefined
 						@show response
 					else
-						@requestHelper @responder + response.actor, 'POST', @mainContext, @show
+						@requestHelper @responder + 'actors/' + response.actor, 'POST', @mainContext, @show
 		else  
-			console.log 'resolver response without status', response 
+			@log 'resolver response without status', response 
 			payload = response.payload
 
 			if payload? and checkDates
 				if payload.start_date? or payload.start_time?
 					datetime = @buildDatetime payload.start_date, payload.start_time
 
-					console.log 'datetime no status', datetime
+					@log 'datetime no status', datetime
 
 					payload.start_date = datetime.date if payload.start_date?
 					payload.start_time = datetime.time if payload.start_time?
@@ -222,7 +220,7 @@ class Please
 
 			@counter++
 
-			@requestHelper @responder, "POST", response, @resolver if @counter < 3
+			@requestHelper @responder + 'audit' , "POST", response, @resolver if @counter < 3
 
 	addDebug: (results) =>
 		@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
@@ -238,7 +236,6 @@ class Please
 		@board.find(':last').append(template(results))
 
 	ask: (input) =>
-		console.log 'ask'
 		input = $(input)
 
 		text = input.val()
@@ -252,7 +249,7 @@ class Please
 		$('#input-form').addClass 'cancel'
 
 		if @inProgress is true
-			console.log 'should disambiguate'
+			@log 'should disambiguate'
 			@disambiguate text
 		else
 			data = query: text
@@ -292,7 +289,7 @@ class Please
 	#     )
 
 	#     doneHandler = (response) =>
-	#         console.log '* POST success'
+	#         @log '* POST success'
 	#         @board.append(@templates.simulate(response)).scrollTop(@board.height());
 	#         @loader.hide();
 
@@ -312,16 +309,18 @@ class Please
 			
 		@loader.hide()
 
+	buildDeviceInfo: =>
+		clientDate = Date()
+
+		deviceInfo =
+			"latitude": @lat,
+			"longitude": @lon,
+			"timestamp": clientDate.getTime() / 1000,
+			"timeoffset": - clientDate.getTimezoneOffset() / 60
+
 	requestHelper: (endpoint, type, data, doneHandler) =>
 		if @sendDeviceInfo is true
-			clientDate = new Date()
-			# TODO: APPEND THIS DATA
-			data.device_info =
-				"latitude": @lat,
-				"longitude": @lon,
-				"timestamp": clientDate.getTime() / 1000,
-				"timeoffset": - clientDate.getTimezoneOffset() / 60
-			
+			data.device_info = @buildDeviceInfo()
 			@sendDeviceInfo = false
 
 		if @debug is true
@@ -338,7 +337,7 @@ class Please
 			dataType: "json"
 			timeout: 10000
 			beforeSend: =>
-				console.log endpoint, type, data
+				@log endpoint, type, data
 				@loader.show()
 		).done((response, status) =>
 			if @debug is true
@@ -347,7 +346,8 @@ class Please
 
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
-			console.log '* POST fail', response, response.getResponseHeader()
+			@log '* POST fail', response
+			
 			if @debug is true
 				@debugData.status = status
 				@debugData.response = response
@@ -372,24 +372,23 @@ class Please
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		console.log 'start date parsing', date
+		@log 'start date parsing', date
 		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined
 
-		console.log 'start time parsing', time
+		@log 'start time parsing', time
 		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined
 
-		console.log 'buildDatetime datestring', newDate
-
+		@log 'buildDatetime datestring', newDate
 		dateString = @toISOString(newDate).split('T')
 		
-		console.log 'buildDatetime datestring', dateString
+		@log 'buildDatetime datestring', dateString
 
 		date: dateString[0]
 		time: dateString[1]
 
 	# #date-add: {[{#weekday:1}, [1, 'day']]}
 	weekdayHelper: (dayOfWeek) =>
-		console.log 'weekday helper', dayOfWeek
+		@log 'weekday helper', dayOfWeek
 
 		date = new Date();
 
@@ -405,27 +404,27 @@ class Please
 		return date
 
 	fuzzyHelper: (datetime, isDate) =>
-		console.log 'fuzzy helper', datetime, isDate
+		@log 'fuzzy helper', datetime, isDate
 
 		date = new Date()
 
-		console.log 'handle fuzzy date or time'
+		@log 'handle fuzzy date or time'
 		label = null
 		def = null
 
 		for key, val of datetime
-			console.log key, val
+			@log key, val
 			label = val if key is 'label'
 			def = val if key is 'default'
 
 		presetLabel = @presets[label]
-		console.log 'presetLabel', presetLabel
+		@log 'presetLabel', presetLabel
 		preference = if presetLabel? then presetLabel else def
 		
-		console.log 'use', preference
+		@log 'use', preference
 		
 		if preference is null
-			console.log 'useTime error' 
+			@log 'useTime error' 
 			return
 
 		splitSym = if isDate is true then '-' else ':'
@@ -444,18 +443,18 @@ class Please
 		return date
 	
 	newDateHelper: (datetime) =>
-		console.log 'newDate', datetime
+		@log 'newDate', datetime
 		if datetime.indexOf('now') isnt -1
-			console.log 'is now'
+			@log 'is now'
 			newDate = new Date();
 
 		else if @dateRegex.test(datetime) is true
-			console.log 'is date string'
+			@log 'is date string'
 			split = datetime.split('-')
 			newDate = new Date(split[0], (split[1]-1), split[2])
 
 		else if @timeRegex.test(datetime) is true
-			console.log 'is time'
+			@log 'is time'
 			newDate = new Date();
 			split = datetime.split(':')
 			hours = newDate.getHours()
@@ -470,26 +469,26 @@ class Please
 			newDate.setMinutes split[1]
 			newDate.setSeconds split[2]
 
-		console.log 'newDate bottom', newDate
+		@log 'newDate bottom', newDate
 
 		return if newDate is null or newDate is undefined then new Date() else newDate
 
 	# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
 	datetimeHelper: (dateOrTime, newDate = null) =>
-		console.log dateOrTime
+		@log dateOrTime
 
 		dateOrTimeType = Object.prototype.toString.call(dateOrTime)
 
 		switch (dateOrTimeType)
 			when '[object String]'
-				console.log 'is string'
+				@log 'is string'
 				if newDate is null
 					newDate = @newDateHelper dateOrTime
 
 			when '[object Object]'
-				console.log 'is object'
+				@log 'is object'
 				for action, parsable of dateOrTime
-					console.log 'step 1', action, parsable
+					@log 'step 1', action, parsable
 
 					if action.indexOf('weekday') isnt -1
 						return @weekdayHelper parsable
@@ -506,7 +505,7 @@ class Please
 								itemType = Object.prototype.toString.call(item);
 
 								if newDate is null 
-									console.log 'step 2', 'set datetime'
+									@log 'step 2', 'set datetime'
 
 									switch itemType
 										when '[object String]' # 'now' or '2013-07-01'
@@ -521,12 +520,12 @@ class Please
 														newDate = @fuzzyHelper itemValue, isDate
 								
 								else if itemType is '[object Number]' # dates to add to Date object 
-									console.log 'step 3', 'parse array group'
+									@log 'step 3', 'parse array group'
 
 									interval = item
 									
 									if interval is null 
-										console.log 'frag error', interval
+										@log 'frag error', interval
 										return
 
 									if action.indexOf('time') isnt -1
@@ -542,10 +541,10 @@ class Please
 	
 	###   
 	datetimeHelper: (dateOrTime, newDate = null) =>
-		console.log dateOrTime
+		@log dateOrTime
 
 		for action, parsable of dateOrTime
-			console.log 'step 1', action, parsable
+			@log 'step 1', action, parsable
 
 			if action.indexOf('fuzzy') is -1
 				operator = if action.indexOf('add') isnt -1 then '+' else '-'
@@ -557,7 +556,7 @@ class Please
 					itemType = Object.prototype.toString.call(item);
 
 					if newDate is null 
-						console.log 'step 2', 'set datetime'
+						@log 'step 2', 'set datetime'
 
 						switch itemType
 							when '[object String]' # 'now' or '2013-07-01'
@@ -566,7 +565,7 @@ class Please
 								for itemKey, itemValue of item
 									newDate = @weekdayHelper itemValue if itemKey.indexOf("weekday") isnt -1 and newDate is null
 					else if itemType is '[object Array]' # dates to add to Date object 
-						console.log 'step 3', 'parse array group'
+						@log 'step 3', 'parse array group'
 
 						interval = null
 						type = null
@@ -576,7 +575,7 @@ class Please
 							type = frag if typeof frag is 'string' and not type?
 
 						if interval is null or type is null
-							console.log 'frag error', interval, type
+							@log 'frag error', interval, type
 							return
 
 						if type.indexOf('second') isnt -1
@@ -597,21 +596,21 @@ class Please
 							newDate.setDate(date)
 
 			else if parsableType is '[object Object]' # if item is an object we must have a 'special' time
-				console.log 'step 2', 'handle fuzzy date or time'
+				@log 'step 2', 'handle fuzzy date or time'
 				label = null
 				def = null
 
 				for key, val of parsable
-					console.log key, val
+					@log key, val
 					label = val if key is 'label'
 					def = val if key is 'default'
 
 				presetLabel = @presets[label]
-				console.log 'presetLabel', presetLabel
+				@log 'presetLabel', presetLabel
 				useTime = if presetLabel? then presetLabel else def
-				console.log 'useTime', useTime
+				@log 'useTime', useTime
 				if useTime is null
-					console.log 'useTime error' 
+					@log 'useTime error' 
 					return
 
 				useTimeArr = useTime.trim().split(':')
