@@ -100,6 +100,8 @@ define([
 
 			@form.addClass 'cancel'
 
+			@loader.show()
+
 			if AppState.get('inProgress') is true
 				#@log 'should disambiguate'
 				@disambiguate text

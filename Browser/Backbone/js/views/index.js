@@ -121,6 +121,7 @@
         template = Handlebars.compile($('#bubblein-template').html());
         this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
         this.form.addClass('cancel');
+        this.loader.show();
         if (AppState.get('inProgress') === true) {
           return this.disambiguate(text);
         } else {
