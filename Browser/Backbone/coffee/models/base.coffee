@@ -16,8 +16,6 @@ define([
 		post: (attributes, options) =>
 			options = { } if not options?
 
-			Util.log 'models base', attributes, options
-
 			options.contentType = 'application/x-www-form-urlencoded'
 			options.type = 'POST'
 

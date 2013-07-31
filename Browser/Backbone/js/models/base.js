@@ -32,7 +32,6 @@
         if (options == null) {
           options = {};
         }
-        Util.log('models base', attributes, options);
         options.contentType = 'application/x-www-form-urlencoded';
         options.type = 'POST';
         return Backbone.Model.prototype.save.call(this, attributes, options);
