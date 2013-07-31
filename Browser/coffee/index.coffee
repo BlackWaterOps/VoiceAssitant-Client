@@ -310,7 +310,7 @@ class Please
 		@loader.hide()
 
 	buildDeviceInfo: =>
-		clientDate = Date()
+		clientDate = new Date()
 
 		deviceInfo =
 			"latitude": @lat,

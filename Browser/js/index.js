@@ -351,7 +351,7 @@
 
     Please.prototype.buildDeviceInfo = function() {
       var clientDate, deviceInfo;
-      clientDate = Date();
+      clientDate = new Date();
       return deviceInfo = {
         "latitude": this.lat,
         "longitude": this.lon,
