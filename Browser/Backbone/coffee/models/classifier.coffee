@@ -5,7 +5,7 @@ define([
 	'models/appState'
 ], (_, Backbone, ModelBase, AppState) ->
 	class classifer extends ModelBase	
-		urlRoot: 'http://casper.stremor-nli.appspot.com/'
+		urlRoot: 'http://casper-cached.stremor-nli.appspot.com/v1'
 		
 		fetch: (query) ->
 			console.log 'classifier fetch', query

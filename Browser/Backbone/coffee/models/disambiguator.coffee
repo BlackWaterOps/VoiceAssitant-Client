@@ -10,7 +10,7 @@ define([
 			text: ''
 			types: [ ]
 
-		urlRoot: 'http://casper.stremor-nli.appspot.com/disambiguate/' 
+		urlRoot: 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate/' 
 
 		urlAction: null
 

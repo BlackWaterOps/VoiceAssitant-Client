@@ -13,7 +13,7 @@
         return _ref;
       }
 
-      classifer.prototype.urlRoot = 'http://casper.stremor-nli.appspot.com/';
+      classifer.prototype.urlRoot = 'http://casper-cached.stremor-nli.appspot.com/v1';
 
       classifer.prototype.fetch = function(query) {
         var debug;
