@@ -14,7 +14,7 @@ define([
 
 		urlAction: null
 
-		url: (action) =>
+		url: =>
 			if @urlAction? then @urlRoot + @urlAction else @urlRoot
 
 		initialize: (attributes, options) ->
@@ -25,12 +25,16 @@ define([
 					when 'audit'
 						@urlAction = options.action
 
-					when 'actor'
-						@urlAction = options.action + '/' + attributes.actor
+					when 'actors'
+						@urlAction = options.action + '/' + options.actor
 
 		parse: (response, options) ->
 			# take response and set it to responderContext
-			AppState.set 'responderContext', response
+			if response? and response.status? and response.status isnt 'completed'
+				AppState.set 'responderContext', response
+
+			# clear out action so we don't get audit/actor confusion
+			@urlAction is null if @urlAction?
 
 			return response
 

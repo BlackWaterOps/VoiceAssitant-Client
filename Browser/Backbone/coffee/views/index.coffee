@@ -23,11 +23,6 @@ define([
 
 			@checkDates = false
 			AppState.on 'change:mainContext change:responderContext', @resolver
-			
-			# before = {"action":"create","model":"hotel_booking","payload":{"duration":null,"start_date":null,"location":null}}
-			# after = {"action":"create","model":"hotel_booking","payload":{"duration":null,"start_date":null,"location":{"city":"scottsdale","state":"az","latitude":33.697268,"dst":false,"time_offset":-7,"zipcode":"85255","longitude":-111.88321}}}
-
-
 
 		render: (options) ->
 			@input.focus()
@@ -217,15 +212,19 @@ define([
 					when 'complete', 'completed'
 						@log 'resolver complete', response
 						
+						mc = AppState.get 'mainContext'
+						rc = AppState.get 'responderContext'
+
 						AppState.set 
 							inProgress: false
 							responderContext: { }
+							mainContext: { }
 
 						if not response.actor?
 							@show response
 						else
-							context = AppState.get('mainContext')
-							dis = new Responder(context, action: 'actors')
+							dis = new Responder(mc, action: 'actors', actor: rc.actor)
+							dis.post()
 			else  
 				@log 'resolver response without status', response, AppState.get('mainContext')
 

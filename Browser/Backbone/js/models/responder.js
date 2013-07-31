@@ -25,7 +25,7 @@
 
       responder.prototype.urlAction = null;
 
-      responder.prototype.url = function(action) {
+      responder.prototype.url = function() {
         if (this.urlAction != null) {
           return this.urlRoot + this.urlAction;
         } else {
@@ -39,14 +39,19 @@
           switch (options.action) {
             case 'audit':
               return this.urlAction = options.action;
-            case 'actor':
-              return this.urlAction = options.action + '/' + attributes.actor;
+            case 'actors':
+              return this.urlAction = options.action + '/' + options.actor;
           }
         }
       };
 
       responder.prototype.parse = function(response, options) {
-        AppState.set('responderContext', response);
+        if ((response != null) && (response.status != null) && response.status !== 'completed') {
+          AppState.set('responderContext', response);
+        }
+        if (this.urlAction != null) {
+          this.urlAction === null;
+        }
         return response;
       };
 

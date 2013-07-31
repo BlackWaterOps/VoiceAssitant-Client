@@ -220,7 +220,7 @@
         			to 'REZ' or resolve with the disambiguator
         */
 
-        var context, datetime, dis, payload, posted, rez;
+        var datetime, dis, mc, payload, posted, rc, rez;
         if (response.status != null) {
           switch (response.status.toLowerCase()) {
             case 'disambiguate':
@@ -237,17 +237,21 @@
             case 'complete':
             case 'completed':
               this.log('resolver complete', response);
+              mc = AppState.get('mainContext');
+              rc = AppState.get('responderContext');
               AppState.set({
                 inProgress: false,
-                responderContext: {}
+                responderContext: {},
+                mainContext: {}
               });
               if (response.actor == null) {
                 return this.show(response);
               } else {
-                context = AppState.get('mainContext');
-                return dis = new Responder(context, {
-                  action: 'actors'
+                dis = new Responder(mc, {
+                  action: 'actors',
+                  actor: rc.actor
                 });
+                return dis.post();
               }
           }
         } else {
