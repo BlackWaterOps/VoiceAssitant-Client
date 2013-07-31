@@ -122,7 +122,6 @@
         this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
         this.form.addClass('cancel');
         if (AppState.get('inProgress') === true) {
-          this.log('should disambiguate');
           return this.disambiguate(text);
         } else {
           classifier = new Classifier();
@@ -173,9 +172,7 @@
             text: text,
             types: [type]
           };
-          this.log('disambiguate user response', data);
         } else {
-          this.log('disambiguate rez response');
           action = 'passive';
           context = AppState.get('mainContext');
           field = payload.field;
@@ -191,7 +188,6 @@
           action: action
         });
         dis.on('done', function(model, response, options) {
-          _this.log('disambiguator done', response, field, type);
           return _this.disambiguateResults(response, field, type);
         });
         return dis.post();
@@ -199,7 +195,6 @@
 
       IndexView.prototype.disambiguateResults = function(response, field, type) {
         var datetime;
-        this.log('disambiguate successHandler', response, field, type);
         this.checkDates = true;
         if (AppState.get('debug') === true && AppState.get('inProgress') === true) {
           this.addDebug();
@@ -208,7 +203,6 @@
           if ((response.date != null) || (response.time != null)) {
             datetime = Util.buildDatetime(response.date, response.time);
             response[type] = datetime[type];
-            this.log('done handler', response);
           }
         }
         return AppState.set('mainContext.payload.' + field, response[type]);
@@ -220,15 +214,14 @@
         			to 'REZ' or resolve with the disambiguator
         */
 
-        var datetime, dis, mc, payload, posted, rc, rez;
+        var datetime, dis, mc, payload, posted, rc, rez,
+          _this = this;
         if (response.status != null) {
           switch (response.status.toLowerCase()) {
             case 'disambiguate':
-              this.log('resolver disambiguate', response);
               AppState.set('inProgress', false);
               return this.disambiguate(response);
             case 'in progress':
-              this.log('resolver progress', response);
               AppState.set({
                 inProgress: true,
                 responderContext: response
@@ -236,13 +229,14 @@
               return this.show(response);
             case 'complete':
             case 'completed':
-              this.log('resolver complete', response);
               mc = AppState.get('mainContext');
               rc = AppState.get('responderContext');
               AppState.set({
                 inProgress: false,
                 responderContext: {},
                 mainContext: {}
+              }, {
+                silent: true
               });
               if (response.actor == null) {
                 return this.show(response);
@@ -251,16 +245,17 @@
                   action: 'actors',
                   actor: rc.actor
                 });
+                dis.on('done', function(model, response, options) {
+                  return _this.show(response);
+                });
                 return dis.post();
               }
           }
         } else {
-          this.log('resolver response without status', response, AppState.get('mainContext'));
           payload = response.payload;
           if ((payload != null) && this.checkDates) {
             if ((payload.start_date != null) || (payload.start_time != null)) {
               datetime = Util.buildDatetime(payload.start_date, payload.start_time);
-              this.log('datetime no status', datetime);
               if (payload.start_date != null) {
                 payload.start_date = datetime.date;
               }
@@ -282,8 +277,7 @@
           rez = new Responder(response, {
             action: 'audit'
           });
-          posted = rez.post();
-          return this.log(posted);
+          return posted = rez.post();
         }
       };
 

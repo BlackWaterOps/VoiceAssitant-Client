@@ -101,10 +101,10 @@ define([
 			@form.addClass 'cancel'
 
 			if AppState.get('inProgress') is true
-				@log 'should disambiguate'
+				#@log 'should disambiguate'
 				@disambiguate text
 			else
-				# @log AppState.get 'inProgress'
+				# #@log AppState.get 'inProgress'
 
 				classifier = new Classifier()
 				classifier.fetch(data: query: text)
@@ -142,9 +142,9 @@ define([
 				data = 
 					text: text
 					types: [type]
-				@log 'disambiguate user response', data
+				#@log 'disambiguate user response', data
 			else
-				@log 'disambiguate rez response'
+				#@log 'disambiguate rez response'
 				action = 'passive'
 				context = AppState.get 'mainContext'
 
@@ -159,14 +159,14 @@ define([
 			dis = new Disambiguator(data, action: action)
 
 			dis.on('done', (model, response, options) =>
-				@log 'disambiguator done', response, field, type
+				#@log 'disambiguator done', response, field, type
 				@disambiguateResults response, field, type
 			)
 
 			dis.post()
 
 		disambiguateResults: (response, field, type) =>
-			@log 'disambiguate successHandler', response, field, type
+			#@log 'disambiguate successHandler', response, field, type
 			
 			@checkDates = true
 
@@ -178,7 +178,7 @@ define([
 				
 					response[type] = datetime[type]
 
-					@log 'done handler', response
+					#@log 'done handler', response
 
 			AppState.set 'mainContext.payload.' + field, response[type]
 
@@ -195,12 +195,12 @@ define([
 			if response.status?
 				switch response.status.toLowerCase()
 					when 'disambiguate'
-						@log 'resolver disambiguate', response
+						#@log 'resolver disambiguate', response
 						AppState.set 'inProgress', false
 
 						@disambiguate response
 					when 'in progress'
-						@log 'resolver progress', response
+						#@log 'resolver progress', response
 						
 						# store response so @disambiguate can get to it after @show
 						AppState.set 
@@ -210,7 +210,7 @@ define([
 						# display text to user and get response
 						@show response
 					when 'complete', 'completed'
-						@log 'resolver complete', response
+						#@log 'resolver complete', response
 						
 						mc = AppState.get 'mainContext'
 						rc = AppState.get 'responderContext'
@@ -219,14 +219,20 @@ define([
 							inProgress: false
 							responderContext: { }
 							mainContext: { }
+						, silent: true	
 
 						if not response.actor?
 							@show response
 						else
 							dis = new Responder(mc, action: 'actors', actor: rc.actor)
+
+							dis.on('done', (model, response, options) =>
+								@show response
+							)
+
 							dis.post()
 			else  
-				@log 'resolver response without status', response, AppState.get('mainContext')
+				#@log 'resolver response without status', response, AppState.get('mainContext')
 
 				payload = response.payload
 
@@ -235,7 +241,7 @@ define([
 					if payload.start_date? or payload.start_time?
 						datetime = Util.buildDatetime payload.start_date, payload.start_time
 
-						@log 'datetime no status', datetime
+						#@log 'datetime no status', datetime
 
 						payload.start_date = datetime.date if payload.start_date?
 						payload.start_time = datetime.time if payload.start_time?
@@ -246,11 +252,12 @@ define([
 						payload.end_date = datetime.date if payload.end_date?
 						payload.end_time = datetime.time if payload.end_time?
 				
+
 				AppState.set 'mainContext', response
 
 				rez = new Responder(response, action: 'audit')
 
 				posted = rez.post()
 
-				@log posted
+				#@log posted
 )

@@ -46,7 +46,7 @@
       };
 
       responder.prototype.parse = function(response, options) {
-        if ((response != null) && (response.status != null) && response.status !== 'completed') {
+        if ((response != null) && (response.status != null)) {
           AppState.set('responderContext', response);
         }
         if (this.urlAction != null) {

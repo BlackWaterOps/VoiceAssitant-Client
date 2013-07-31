@@ -30,8 +30,7 @@ define([
 
 		parse: (response, options) ->
 			# take response and set it to responderContext
-			if response? and response.status? and response.status isnt 'completed'
-				AppState.set 'responderContext', response
+			AppState.set('responderContext', response) if response? and response.status?
 
 			# clear out action so we don't get audit/actor confusion
 			@urlAction is null if @urlAction?
