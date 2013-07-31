@@ -74,7 +74,7 @@
         templateName = results.action != null ? results.action : 'bubbleout';
         template = $('#' + templateName + '-template').html();
         template = Handlebars.compile(template);
-        this.board.append(template(results)).scrollTop(this.board.find(':last').offset().top);
+        this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
         if (AppState.get('debug' === true)) {
           this.addDebug(results);
         }
@@ -110,7 +110,7 @@
           results.debug = debugData;
         }
         template = Handlebars.compile($('#debug-template').html());
-        return this.board.find(':last').append(template(results));
+        return this.board.find('.bubble:last').append(template(results));
       };
 
       IndexView.prototype.ask = function(e) {
@@ -119,7 +119,7 @@
         text = input.val();
         input.val('');
         template = Handlebars.compile($('#bubblein-template').html());
-        this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
+        this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
         this.form.addClass('cancel');
         if (AppState.get('inProgress') === true) {
           this.log('should disambiguate');

@@ -280,7 +280,7 @@
         results.debug = this.debugData;
       }
       template = Handlebars.compile($('#debug-template').html());
-      return this.board.find(':last').append(template(results));
+      return this.board.find('.bubble:last').append(template(results));
     };
 
     Please.prototype.ask = function(input) {
@@ -290,7 +290,7 @@
       text = input.val();
       input.val('');
       template = Handlebars.compile($('#bubblein-template').html());
-      this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
+      this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
       if (this.inProgress === true) {
         this.log('should disambiguate');
@@ -342,7 +342,7 @@
       templateName = results.action != null ? results.action : 'bubbleout';
       template = $('#' + templateName + '-template').html();
       template = Handlebars.compile(template);
-      this.board.append(template(results)).scrollTop(this.board.find(':last').offset().top);
+      this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
       if (this.debug === true) {
         this.addDebug(results);
       }

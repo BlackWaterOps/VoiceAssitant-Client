@@ -233,7 +233,7 @@ class Please
 			results.debug = @debugData
 
 		template = Handlebars.compile($('#debug-template').html())
-		@board.find(':last').append(template(results))
+		@board.find('.bubble:last').append(template(results))
 
 	ask: (input) =>
 		input = $(input)
@@ -244,7 +244,7 @@ class Please
 		
 		template = Handlebars.compile($('#bubblein-template').html())
 		
-		@board.append(template(text)).scrollTop(@board.find(':last').offset().top)
+		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
 		
 		$('#input-form').addClass 'cancel'
 
@@ -302,7 +302,7 @@ class Please
 
 		template = Handlebars.compile(template)
 
-		@board.append(template(results)).scrollTop(@board.find(':last').offset().top)
+		@board.append(template(results)).scrollTop(@board.find('.bubble:last').offset().top)
 
 		@addDebug(results) if @debug is true
 			

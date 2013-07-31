@@ -55,7 +55,7 @@ define([
 
 			template = Handlebars.compile(template)
 
-			@board.append(template(results)).scrollTop(@board.find(':last').offset().top)
+			@board.append(template(results)).scrollTop(@board.find('.bubble:last').offset().top)
 
 			@addDebug(results) if AppState.get 'debug' is true
 				
@@ -85,7 +85,7 @@ define([
 				results.debug = debugData
 
 			template = Handlebars.compile($('#debug-template').html())
-			@board.find(':last').append(template(results))
+			@board.find('.bubble:last').append(template(results))
 
 		ask: (e) =>
 			input = $(e)
@@ -96,7 +96,7 @@ define([
 			
 			template = Handlebars.compile($('#bubblein-template').html())
 		
-			@board.append(template(text)).scrollTop(@board.find(':last').offset().top)
+			@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
 
 			@form.addClass 'cancel'
 
