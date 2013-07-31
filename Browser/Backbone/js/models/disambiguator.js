@@ -21,11 +21,11 @@
         types: []
       };
 
-      disambiguator.prototype.urlRoot = 'http://casper.stremor-nli.appspot.com/disambiguate/';
+      disambiguator.prototype.urlRoot = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate/';
 
       disambiguator.prototype.urlAction = null;
 
-      disambiguator.prototype.url = function(action) {
+      disambiguator.prototype.url = function() {
         if (this.urlAction != null) {
           return this.urlRoot + this.urlAction;
         } else {
