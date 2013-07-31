@@ -5,6 +5,7 @@
       'underscore': 'lib/underscore.min',
       'backbone': 'lib/Backbone/backbone',
       'backbone.core': 'lib/Backbone/backbone.min',
+      'backbone.nested': 'lib/Backbone/backbone.nested.min',
       'backbone.lawnchair': 'lib/Backbone/backbone.lawnchair',
       'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min',
       'lawnchair': 'lib/Lawnchair/lawn.clippings',
@@ -24,6 +25,7 @@
         exports: 'Backbone'
       },
       'backbone.lawnchair': ['backbone.core'],
+      'backbone.nested': ['backbone.core'],
       'lawnchair.core': {
         exports: 'Lawnchair'
       },

@@ -1,5 +1,6 @@
 define([
 	'backbone.core', 
+	'backbone.nested',
 	'backbone.lawnchair'
 ], function(Backbone) {
 	Backbone.View.prototype.parent = Backbone.Model.prototype.parent = Backbone.Collection.prototype.parent = function(attribute, options) {

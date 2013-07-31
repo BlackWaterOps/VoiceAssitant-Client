@@ -33,9 +33,10 @@
       };
 
       IndexView.prototype.initialize = function() {
-        this.board = $('#board');
-        this.loader = $('#loader');
-        this.input = $('#main-input');
+        this.board = this.$('#board');
+        this.loader = this.$('#loader');
+        this.input = this.$('#main-input');
+        this.form = this.$('#input-form');
         this.checkDates = false;
         return AppState.on('change:mainContext change:responderContext', this.resolver);
       };
@@ -54,16 +55,7 @@
       };
 
       IndexView.prototype.log = function() {
-        var args, argument, _i, _len;
-        args = [];
-        for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-          argument = arguments[_i];
-          if (typeof argument === 'object') {
-            argument = JSON.stringify(argument);
-          }
-          args.push(argument);
-        }
-        return console.log(args.join(" "));
+        return Util.log(arguments);
       };
 
       IndexView.prototype.getLocation = function() {
@@ -96,7 +88,7 @@
           responderContext: {},
           history: []
         });
-        $('#input-form').removeClass('cancel');
+        this.form.removeClass('cancel');
         this.loader.hide();
         return this.input.focus();
       };
@@ -128,7 +120,8 @@
         input.val('');
         template = Handlebars.compile($('#bubblein-template').html());
         this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
-        if (AppState.get('inProgress' === true)) {
+        this.form.addClass('cancel');
+        if (AppState.get('inProgress') === true) {
           this.log('should disambiguate');
           return this.disambiguate(text);
         } else {
@@ -168,12 +161,13 @@
       };
 
       IndexView.prototype.disambiguate = function(payload) {
-        var action, context, data, dis, field, text, type;
+        var action, context, data, dis, field, text, type,
+          _this = this;
         if (AppState.get('inProgress') === true) {
           action = 'active';
           context = AppState.get('responderContext');
           field = context.field;
-          type = AppState.get('responderContext').type;
+          type = context.type;
           text = payload;
           data = {
             text: text,
@@ -186,7 +180,7 @@
           context = AppState.get('mainContext');
           field = payload.field;
           type = payload.type;
-          text = context.get('payload')[field];
+          text = context.payload[field];
           data = {
             text: text,
             types: [type],
@@ -196,12 +190,16 @@
         dis = new Disambiguator(data, {
           action: action
         });
+        dis.on('done', function(model, response, options) {
+          _this.log('disambiguator done', response, field, type);
+          return _this.disambiguateResults(response, field, type);
+        });
         return dis.post();
       };
 
-      IndexView.prototype.disambiguateResults = function(response) {
-        var context, datetime, payload;
-        this.log('successHandler', results);
+      IndexView.prototype.disambiguateResults = function(response, field, type) {
+        var datetime;
+        this.log('disambiguate successHandler', response, field, type);
         this.checkDates = true;
         if (AppState.get('debug') === true && AppState.get('inProgress') === true) {
           this.addDebug();
@@ -213,11 +211,7 @@
             this.log('done handler', response);
           }
         }
-        context = AppState.get('mainContext');
-        payload = context.payload;
-        payload[field] = response[type];
-        context.payload = payload;
-        return AppState.set('mainContext', context);
+        return AppState.set('mainContext.payload.' + field, response[type]);
       };
 
       IndexView.prototype.resolver = function(model, response, opts) {
@@ -247,7 +241,7 @@
                 inProgress: false,
                 responderContext: {}
               });
-              if (response.actor === null || response.actor === void 0) {
+              if (response.actor == null) {
                 return this.show(response);
               } else {
                 context = AppState.get('mainContext');

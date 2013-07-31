@@ -28,7 +28,7 @@
 
       return appState;
 
-    })(Backbone.Model);
+    })(Backbone.NestedModel);
     return new appState();
   });
 

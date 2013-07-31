@@ -16,15 +16,18 @@ define([
 			'click #cancel': 'cancel'
 
 		initialize: () ->
-			@board = $('#board')
-			@loader = $('#loader')
-			@input = $('#main-input')
-			@checkDates = false
+			@board = @.$('#board')
+			@loader = @.$('#loader')
+			@input = @.$('#main-input')
+			@form = @.$('#input-form')
 
+			@checkDates = false
 			AppState.on 'change:mainContext change:responderContext', @resolver
 			
-			# TODO: figure out best way to get a callback init'd
-			# Disambiguator.on 'sync', @disambiguateResults
+			# before = {"action":"create","model":"hotel_booking","payload":{"duration":null,"start_date":null,"location":null}}
+			# after = {"action":"create","model":"hotel_booking","payload":{"duration":null,"start_date":null,"location":{"city":"scottsdale","state":"az","latitude":33.697268,"dst":false,"time_offset":-7,"zipcode":"85255","longitude":-111.88321}}}
+
+
 
 		render: (options) ->
 			@input.focus()
@@ -39,12 +42,7 @@ define([
 			@getLocation()
 
 		log: =>
-			args = [ ]
-			for argument in arguments
-				argument = JSON.stringify(argument) if typeof argument is 'object'
-				args.push argument
-
-			console.log args.join(" ")
+			Util.log arguments
 
 		getLocation: =>
 			navigator.geolocation.getCurrentPosition @updatePosition
@@ -75,7 +73,7 @@ define([
 				responderContext: { }
 				history: [ ]
 
-			$('#input-form').removeClass 'cancel'
+			@form.removeClass 'cancel'
 			@loader.hide()
 			@input.focus()
 
@@ -105,10 +103,14 @@ define([
 		
 			@board.append(template(text)).scrollTop(@board.find(':last').offset().top)
 
-			if AppState.get 'inProgress' is true
+			@form.addClass 'cancel'
+
+			if AppState.get('inProgress') is true
 				@log 'should disambiguate'
 				@disambiguate text
 			else
+				# @log AppState.get 'inProgress'
+
 				classifier = new Classifier()
 				classifier.fetch(data: query: text)
 
@@ -140,7 +142,7 @@ define([
 				action = 'active'
 				context = AppState.get 'responderContext'
 				field = context.field
-				type = AppState.get('responderContext').type
+				type = context.type
 				text = payload
 				data = 
 					text: text
@@ -153,7 +155,7 @@ define([
 
 				field = payload.field
 				type = payload.type
-				text = context.get('payload')[field]
+				text = context.payload[field]
 				data = 
 					text: text
 					types: [type]
@@ -161,10 +163,15 @@ define([
 
 			dis = new Disambiguator(data, action: action)
 
+			dis.on('done', (model, response, options) =>
+				@log 'disambiguator done', response, field, type
+				@disambiguateResults response, field, type
+			)
+
 			dis.post()
 
-		disambiguateResults: (response) =>
-			@log 'successHandler', results
+		disambiguateResults: (response, field, type) =>
+			@log 'disambiguate successHandler', response, field, type
 			
 			@checkDates = true
 
@@ -178,16 +185,12 @@ define([
 
 					@log 'done handler', response
 
-			context = AppState.get 'mainContext'
+			AppState.set 'mainContext.payload.' + field, response[type]
 
-			payload =  context.payload
-
-			payload[field] = response[type]
-
-			context.payload = payload
+			# payload[field] = response[type]
 
 			# this should trigger resolver!!
-			AppState.set 'mainContext', context
+			# AppState.set 'mainContext', context
 
 		resolver: (model, response, opts) =>
 			###
@@ -218,7 +221,7 @@ define([
 							inProgress: false
 							responderContext: { }
 
-						if response.actor is null or response.actor is undefined
+						if not response.actor?
 							@show response
 						else
 							context = AppState.get('mainContext')

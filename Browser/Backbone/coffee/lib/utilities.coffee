@@ -3,39 +3,25 @@ define([
   'backbone',
   'models/appState'
 ], (_, Backbone, AppState) ->
-	utilities =
+	class Utilities
+		constructor: ->
+			@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
+			@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
+
 		operators:
 			"+": (left, right) -> parseInt(left, 10) + parseInt(right, 10)
 			"-": (left, right) -> parseInt(left, 10) - parseInt(right, 10)
 
-		requestHelper: (endpoint, type, data, successHandler, errorHandler) =>
-			if AppState.sendDeviceInfo is true
-				data.device_info = @buildDeviceInfo()
-				AppState.sendDeviceInfo = false
+		log: =>
+			args = [ ]
+			for argument in arguments
+				argument = JSON.stringify(argument) if typeof argument is 'object'
+				args.push argument
 
-			$.ajax(
-				url: endpoint
-				type: type
-				data: if type is "POST" then JSON.stringify(data) else data 
-				# contentType: "application/json"
-				dataType: "json"
-				timeout: 10000
-				beforeSend: =>
-					console.log endpoint, type, data
-					AppState.set 'requestStatus', 'beforeSend'
-				).done((response) =>
-					AppState.set 'requestStatus', 'done'
-					successHandler(response) if successHandler?
-				).fail((response) =>
-					AppState.set 'requestStatus', 'fail'
-					console.log '* POST fail', response, response.getResponseHeader()
-					errorHandler(response) if errorHandler?
-				).always((response) =>
-					AppState.set 'requestStatus', 'complete'
-				)
-		
+			console.log args.join(" ")
+				
 		weekdayHelper: (dayOfWeek) =>
-			console.log 'weekday helper', dayOfWeek
+			@log 'weekday helper', dayOfWeek
 
 			date = new Date();
 
@@ -51,27 +37,29 @@ define([
 			return date
 
 		fuzzyHelper: (datetime, isDate) =>
-			console.log 'fuzzy helper', datetime, isDate
+			@log 'fuzzy helper', datetime, isDate
 
 			date = new Date()
 
-			console.log 'handle fuzzy date or time'
-			label = null
-			def = null
+			@log 'handle fuzzy date or time'
+			# label = null
+			# def = null
 
 			for key, val of datetime
-				console.log key, val
+				@log key, val
 				label = val if key is 'label'
 				def = val if key is 'default'
 
-			presetLabel = @presets[label]
-			console.log 'presetLabel', presetLabel
-			preference = if presetLabel? then presetLabel else def
+			# presetLabel = @presets[label]
+			# @log 'presetLabel', presetLabel
+			# preference = if presetLabel? then presetLabel else def
 			
-			console.log 'use', preference
+			preference = def
+
+			@log 'use', preference
 			
 			if preference is null
-				console.log 'useTime error' 
+				@log 'useTime error' 
 				return
 
 			splitSym = if isDate is true then '-' else ':'
@@ -90,21 +78,18 @@ define([
 			return date
 		
 		newDateHelper: (datetime) =>
-			@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
-			@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
-
-			console.log 'newDate', datetime
+			@log 'newDate', datetime
 			if datetime.indexOf('now') isnt -1
-				console.log 'is now'
+				@log 'is now'
 				newDate = new Date();
 
 			else if @dateRegex.test(datetime) is true
-				console.log 'is date string'
+				@log 'is date string'
 				split = datetime.split('-')
 				newDate = new Date(split[0], (split[1]-1), split[2])
 
 			else if @timeRegex.test(datetime) is true
-				console.log 'is time'
+				@log 'is time'
 				newDate = new Date();
 				split = datetime.split(':')
 				hours = newDate.getHours()
@@ -119,21 +104,21 @@ define([
 				newDate.setMinutes split[1]
 				newDate.setSeconds split[2]
 
-			console.log 'newDate bottom', newDate
+			@log 'newDate bottom', newDate
 
 			return if newDate is null or newDate is undefined then new Date() else newDate
 
 		datetimeHelper: (dateOrTime, newDate = null) =>
-			console.log dateOrTime
+			@log dateOrTime
 
 			if _.isString(dateOrTime)
-				console.log 'is string'
+				@log 'is string'
 				newDate = @newDateHelper(dateOrTime) if _.isNull(newDate)	
 
 			else if _.isObject(dateOrTime)
-				console.log 'is object'
+				@log 'is object'
 				for action, parsable of dateOrTime
-					console.log 'step 1', action, parsable
+					@log 'step 1', action, parsable
 
 					if action.indexOf('weekday') isnt -1
 						return @weekdayHelper parsable
@@ -146,7 +131,7 @@ define([
 						if _.isArray(parsable) # date partials
 							for item in parsable
 								if _.isNull(newDate) 
-									console.log 'step 2', 'set datetime'
+									@log 'step 2', 'set datetime'
 
 									if _.isString(item) # 'now' or '2013-07-01' 
 										newDate = @newDateHelper item
@@ -160,21 +145,21 @@ define([
 													newDate = @fuzzyHelper itemValue, isDate
 								
 								else if _.isNumber(item) # dates to add to Date object 
-									console.log 'step 3', 'parse array group'
+									@log 'step 3', 'parse array group'
 
 									interval = item
 									
 									if interval is null 
-										console.log 'frag error', interval
+										@log 'frag error', interval
 										return
 
 									if action.indexOf('time') isnt -1
 										curr = newDate.getSeconds()
-										time = operators[operator](curr, interval)
+										time = @operators[operator](curr, interval)
 										newDate.setSeconds(time)
 									else if action.indexOf('date') isnt -1
 										curr = newDate.getDate()
-										date = operators[operator](curr, interval)
+										date = @operators[operator](curr, interval)
 										newDate.setDate(date)
 
 			return newDate
@@ -191,10 +176,10 @@ define([
 		buildDatetime: (date, time) =>
 			dateObj = null
 
-			console.log 'start date parsing'
+			@log 'start date parsing'
 			dateObj = @datetimeHelper(date) if date isnt null 
 			
-			console.log 'start time parsing'
+			@log 'start time parsing'
 			dateObj = @datetimeHelper(time, dateObj) if time isnt null
 
 			dateString = @toISOString(dateObj).split('T')
@@ -210,4 +195,6 @@ define([
 				"longitude": AppState.get('lon')
 				"timestamp": ( clientDate.getTime() / 1000 )
 				"timeoffset": - clientDate.getTimezoneOffset() / 60
+
+	return new Utilities()
 )

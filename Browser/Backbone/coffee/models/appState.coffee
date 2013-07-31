@@ -3,7 +3,7 @@ define([
 	'backbone',
 	'util'
 ], (_, Backbone, Util) ->
-	class appState extends Backbone.Model
+	class appState extends Backbone.NestedModel
 		defaults:
 			debug: false
 			debugData: { }
