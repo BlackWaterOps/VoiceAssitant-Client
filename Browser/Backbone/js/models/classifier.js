@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['underscore', 'backbone', 'models/appState'], function(_, Backbone, AppState) {
+  define(['underscore', 'backbone', 'models/base', 'models/appState'], function(_, Backbone, ModelBase, AppState) {
     var classifer, _ref;
     return classifer = (function(_super) {
       __extends(classifer, _super);
@@ -13,24 +13,23 @@
         return _ref;
       }
 
-      classifer.prototype.urlRoot = 'http://casper-cached.stremor-nli.appspot.com/';
+      classifer.prototype.urlRoot = 'http://casper.stremor-nli.appspot.com/';
+
+      classifer.prototype.fetch = function(query) {
+        var debug;
+        console.log('classifier fetch', query);
+        debug = AppState.get('debug');
+        return Backbone.Model.prototype.fetch.call(this, query);
+      };
 
       classifer.prototype.parse = function(response, options) {
         AppState.set('mainContext', response);
         return response;
       };
 
-      /*
-      		Backbone.lawnchair overrides Backbone.sync but saves a reference to 
-      		the original sync method at Backbone.sync.previous
-      */
-
-
-      classifer.prototype.sync = Backbone.sync.previous;
-
       return classifer;
 
-    })(Backbone.Model);
+    })(ModelBase);
   });
 
 }).call(this);

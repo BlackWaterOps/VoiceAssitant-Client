@@ -14,13 +14,14 @@
       }
 
       appState.prototype.defaults = {
+        debug: false,
+        debugData: {},
         lat: 0.00,
         lon: 0.00,
-        sendDeviceInfo: false,
         requestStatus: '',
         inProgress: false,
-        mainContext: null,
-        responderContext: null,
+        mainContext: {},
+        responderContext: {},
         history: [],
         pos: history.length
       };

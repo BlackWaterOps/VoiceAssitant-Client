@@ -13,59 +13,48 @@
         }
       },
       requestHelper: function(endpoint, type, data, successHandler, errorHandler) {
-        var clientDate;
         if (AppState.sendDeviceInfo === true) {
-          clientDate = new Date();
-          data.device_info = {
-            lat: AppState.lat,
-            lon: AppState.lon,
-            timestamp: clientDate.getTime() / 1000,
-            timeoffset: -clientDate.getTimezoneOffset() / 60
-          };
+          data.device_info = _this.buildDeviceInfo();
           AppState.sendDeviceInfo = false;
-          if (type === "POST") {
-            data = JSON.stringify(data);
-          }
-          return $.ajax({
-            url: endpoint,
-            type: type,
-            data: data,
-            dataType: "json",
-            timeout: 10000,
-            beforeSend: function() {
-              console.log(endpoint, type, data);
-              return AppState.set('requestStatus', 'beforeSend');
-            }
-          }).done(function(response) {
-            AppState.set('requestStatus', 'done');
-            if (successHandler != null) {
-              return successHandler(response);
-            }
-          }).fail(function(response) {
-            AppState.set('requestStatus', 'fail');
-            console.log('* POST fail', response, response.getResponseHeader());
-            if (errorHandler != null) {
-              return errorHandler(response);
-            }
-          }).always(function(response) {
-            return AppState.set('requestStatus', 'complete');
-          });
         }
+        return $.ajax({
+          url: endpoint,
+          type: type,
+          data: type === "POST" ? JSON.stringify(data) : data,
+          dataType: "json",
+          timeout: 10000,
+          beforeSend: function() {
+            console.log(endpoint, type, data);
+            return AppState.set('requestStatus', 'beforeSend');
+          }
+        }).done(function(response) {
+          AppState.set('requestStatus', 'done');
+          if (successHandler != null) {
+            return successHandler(response);
+          }
+        }).fail(function(response) {
+          AppState.set('requestStatus', 'fail');
+          console.log('* POST fail', response, response.getResponseHeader());
+          if (errorHandler != null) {
+            return errorHandler(response);
+          }
+        }).always(function(response) {
+          return AppState.set('requestStatus', 'complete');
+        });
       },
       weekdayHelper: function(dayOfWeek) {
         var currentDate, currentDay, date, offset;
+        console.log('weekday helper', dayOfWeek);
         date = new Date();
         currentDay = date.getDay();
         currentDate = date.getDate();
-        if (currentDay === dayOfWeek) {
-          return date;
-        }
         offset = currentDay < dayOfWeek ? dayOfWeek - currentDay : 7 - (currentDay - dayOfWeek);
         date.setDate(currentDate + offset);
         return date;
       },
       fuzzyHelper: function(datetime, isDate) {
         var date, datetimeArr, def, key, label, preference, presetLabel, splitSym, val;
+        console.log('fuzzy helper', datetime, isDate);
         date = new Date();
         console.log('handle fuzzy date or time');
         label = null;
@@ -101,55 +90,99 @@
         }
         return date;
       },
+      newDateHelper: function(datetime) {
+        var hours, minutes, newDate, seconds, split;
+        _this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
+        _this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
+        console.log('newDate', datetime);
+        if (datetime.indexOf('now') !== -1) {
+          console.log('is now');
+          newDate = new Date();
+        } else if (_this.dateRegex.test(datetime) === true) {
+          console.log('is date string');
+          split = datetime.split('-');
+          newDate = new Date(split[0], split[1] - 1, split[2]);
+        } else if (_this.timeRegex.test(datetime) === true) {
+          console.log('is time');
+          newDate = new Date();
+          split = datetime.split(':');
+          hours = newDate.getHours();
+          minutes = newDate.getMinutes();
+          seconds = newDate.getSeconds();
+          if ((hours > split[0]) || (hours === split[0] && minutes > split[1])) {
+            newDate.setDate(newDate.getDate() + 1);
+          }
+          newDate.setHours(split[0]);
+          newDate.setMinutes(split[1]);
+          newDate.setSeconds(split[2]);
+        }
+        console.log('newDate bottom', newDate);
+        if (newDate === null || newDate === void 0) {
+          return new Date();
+        } else {
+          return newDate;
+        }
+      },
       datetimeHelper: function(dateOrTime, newDate) {
-        var action, curr, date, interval, isDate, item, itemKey, itemType, itemValue, operator, parsable, parsableType, time, _i, _len;
+        var action, curr, date, interval, isDate, item, itemKey, itemValue, operator, parsable, time, _i, _len;
         if (newDate == null) {
           newDate = null;
         }
         console.log(dateOrTime);
-        for (action in dateOrTime) {
-          parsable = dateOrTime[action];
-          console.log('step 1', action, parsable);
-          operator = action.indexOf('add') !== -1 ? '+' : '-';
-          parsableType = Object.prototype.toString.call(parsable);
-          if (parsableType === '[object Array]') {
-            for (_i = 0, _len = parsable.length; _i < _len; _i++) {
-              item = parsable[_i];
-              itemType = Object.prototype.toString.call(item);
-              if (newDate === null) {
-                console.log('step 2', 'set datetime');
-                switch (itemType) {
-                  case 'string':
-                    newDate = item === 'now' ? new Date() : new Date(item);
-                    break;
-                  case '[object Object]':
-                    for (itemKey in item) {
-                      itemValue = item[itemKey];
-                      if (newDate === null) {
-                        if (itemKey.indexOf('weekday') !== -1) {
-                          newDate = _this.weekdayHelper(itemValue);
-                        } else if (itemKey.indexOf('fuzzy') !== -1) {
-                          isDate = itemKey.indexOf('date') !== -1 ? true : false;
-                          newDate = _this.fuzzyHelper(itemValue, isDate);
+        if (_.isString(dateOrTime)) {
+          console.log('is string');
+          if (_.isNull(newDate)) {
+            newDate = _this.newDateHelper(dateOrTime);
+          }
+        } else if (_.isObject(dateOrTime)) {
+          console.log('is object');
+          for (action in dateOrTime) {
+            parsable = dateOrTime[action];
+            console.log('step 1', action, parsable);
+            if (action.indexOf('weekday') !== -1) {
+              return _this.weekdayHelper(parsable);
+            } else if (action.indexOf('fuzzy') !== -1) {
+              isDate = action.indexOf('date') !== -1 ? true : false;
+              return _this.fuzzyHelper(parsable, isDate);
+            } else {
+              operator = action.indexOf('add') !== -1 ? '+' : '-';
+              if (_.isArray(parsable)) {
+                for (_i = 0, _len = parsable.length; _i < _len; _i++) {
+                  item = parsable[_i];
+                  if (_.isNull(newDate)) {
+                    console.log('step 2', 'set datetime');
+                    if (_.isString(item)) {
+                      newDate = _this.newDateHelper(item);
+                    } else if (_.isObject(item)) {
+                      for (itemKey in item) {
+                        itemValue = item[itemKey];
+                        if (newDate === null) {
+                          if (itemKey.indexOf('weekday') !== -1) {
+                            newDate = _this.weekdayHelper(itemValue);
+                          } else if (itemKey.indexOf('fuzzy') !== -1) {
+                            isDate = itemKey.indexOf('date') !== -1 ? true : false;
+                            newDate = _this.fuzzyHelper(itemValue, isDate);
+                          }
                         }
                       }
                     }
-                }
-              } else if (itemType === '[object Number]') {
-                console.log('step 3', 'parse array group');
-                interval = item;
-                if (interval === null) {
-                  console.log('frag error', interval);
-                  return;
-                }
-                if (action.indexOf('time') !== -1) {
-                  curr = newDate.getSeconds();
-                  time = operators[operator](curr, interval);
-                  newDate.setSeconds(time);
-                } else if (action.indexOf('date') !== -1) {
-                  curr = newDate.getDate();
-                  date = operators[operator](curr, interval);
-                  newDate.setDate(date);
+                  } else if (_.isNumber(item)) {
+                    console.log('step 3', 'parse array group');
+                    interval = item;
+                    if (interval === null) {
+                      console.log('frag error', interval);
+                      return;
+                    }
+                    if (action.indexOf('time') !== -1) {
+                      curr = newDate.getSeconds();
+                      time = operators[operator](curr, interval);
+                      newDate.setSeconds(time);
+                    } else if (action.indexOf('date') !== -1) {
+                      curr = newDate.getDate();
+                      date = operators[operator](curr, interval);
+                      newDate.setDate(date);
+                    }
+                  }
                 }
               }
             }
@@ -174,16 +207,26 @@
         dateObj = null;
         console.log('start date parsing');
         if (date !== null) {
-          dateObj = datetimeHelper(date);
+          dateObj = _this.datetimeHelper(date);
         }
         console.log('start time parsing');
         if (time !== null) {
-          dateObj = datetimeHelper(time, dateObj);
+          dateObj = _this.datetimeHelper(time, dateObj);
         }
-        dateString = toISOString(dateObj).split('T');
+        dateString = _this.toISOString(dateObj).split('T');
         return {
           date: dateString[0],
           time: dateString[1]
+        };
+      },
+      buildDeviceInfo: function() {
+        var clientDate, deviceInfo;
+        clientDate = new Date();
+        return deviceInfo = {
+          "latitude": AppState.get('lat'),
+          "longitude": AppState.get('lon'),
+          "timestamp": clientDate.getTime() / 1000,
+          "timeoffset": -clientDate.getTimezoneOffset() / 60
         };
       }
     };

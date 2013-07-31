@@ -5,13 +5,15 @@ define([
 ], (_, Backbone, Util) ->
 	class appState extends Backbone.Model
 		defaults:
+			debug: false
+			debugData: { }
 			lat: 0.00
 			lon: 0.00
-			sendDeviceInfo: false
+			# sendDeviceInfo: false
 			requestStatus: ''
 			inProgress: false
-			mainContext: null # instance of Classifier Model
-			responderContext: null # instance of Responder Model
+			mainContext: { } 
+			responderContext: { }
 			history: [ ]
 			pos: history.length
 

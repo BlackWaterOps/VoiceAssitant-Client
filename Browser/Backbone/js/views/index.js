@@ -4,70 +4,133 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['underscore', 'backbone', 'util', 'models/appState', 'models/classifier', 'models/responder', 'handlebars'], function(_, Backbone, Util, AppState, Classifier, Responder) {
+  define(['underscore', 'backbone', 'util', 'models/appState', 'models/classifier', 'models/responder', 'models/disambiguator', 'handlebars'], function(_, Backbone, Util, AppState, Classifier, Responder, Disambiguator) {
     var IndexView, _ref;
     return IndexView = (function(_super) {
       __extends(IndexView, _super);
 
       function IndexView() {
-        this.requestStatus = __bind(this.requestStatus, this);
         this.resolver = __bind(this.resolver, this);
         this.disambiguateResults = __bind(this.disambiguateResults, this);
         this.disambiguate = __bind(this.disambiguate, this);
+        this.keyup = __bind(this.keyup, this);
+        this.ask = __bind(this.ask, this);
+        this.addDebug = __bind(this.addDebug, this);
+        this.cancel = __bind(this.cancel, this);
         this.show = __bind(this.show, this);
+        this.updatePosition = __bind(this.updatePosition, this);
+        this.getLocation = __bind(this.getLocation, this);
+        this.log = __bind(this.log, this);
         _ref = IndexView.__super__.constructor.apply(this, arguments);
         return _ref;
       }
 
       IndexView.prototype.events = {
         'keyup #main-input': 'keyup',
-        'webkitspeechchange #main-input': 'ask'
+        'webkitspeechchange #main-input': 'ask',
+        'click .expand': 'expand',
+        'click #cancel': 'cancel'
       };
 
       IndexView.prototype.initialize = function() {
         this.board = $('#board');
         this.loader = $('#loader');
-        this.disambiguator = 'http://casper.stremor-nli.appspot.com/disambiguate';
-        this.templates = {
-          bubblein: Handlebars.compile($('#bubblein-template').html()),
-          bubbleout: Handlebars.compile($('#bubbleout-template').html()),
-          simulate: Handlebars.compile($('#simulate-template').html()),
-          shopping: Handlebars.compile($('#shopping-template').html()),
-          images: Handlebars.compile($('#images-template').html()),
-          list: Handlebars.compile($('#list-template').html()),
-          web: Handlebars.compile($('#web-template').html())
-        };
-        AppState.on('change:mainContext', this.resolver);
-        return AppState.on('change:requestStatus', this.requestStatus);
+        this.input = $('#main-input');
+        this.checkDates = false;
+        return AppState.on('change:mainContext change:responderContext', this.resolver);
       };
 
       IndexView.prototype.render = function(options) {
         var init;
+        this.input.focus();
         if (this.board.is(':empty')) {
           init = $('#init');
           init.fadeIn('slow');
-          return setTimeout((function() {
+          setTimeout((function() {
             return init.fadeOut('slow');
           }), 1000);
         }
+        return this.getLocation();
       };
 
-      IndexView.prototype.show = function(data) {
-        this.board.append(this.templates.bubbleout(data)).scrollTop(this.board.height());
+      IndexView.prototype.log = function() {
+        var args, argument, _i, _len;
+        args = [];
+        for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+          argument = arguments[_i];
+          if (typeof argument === 'object') {
+            argument = JSON.stringify(argument);
+          }
+          args.push(argument);
+        }
+        return console.log(args.join(" "));
+      };
+
+      IndexView.prototype.getLocation = function() {
+        return navigator.geolocation.getCurrentPosition(this.updatePosition);
+      };
+
+      IndexView.prototype.updatePosition = function(position) {
+        return AppState.set({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        });
+      };
+
+      IndexView.prototype.show = function(results) {
+        var template, templateName;
+        templateName = results.action != null ? results.action : 'bubbleout';
+        template = $('#' + templateName + '-template').html();
+        template = Handlebars.compile(template);
+        this.board.append(template(results)).scrollTop(this.board.find(':last').offset().top);
+        if (AppState.get('debug' === true)) {
+          this.addDebug(results);
+        }
         return this.loader.hide();
       };
 
+      IndexView.prototype.cancel = function(e) {
+        this.board.empty();
+        AppState.set({
+          mainContext: {},
+          responderContext: {},
+          history: []
+        });
+        $('#input-form').removeClass('cancel');
+        this.loader.hide();
+        return this.input.focus();
+      };
+
+      IndexView.prototype.addDebug = function(results) {
+        var debugDate, template;
+        debugDate = AppState.get('debugData');
+        if (debugData.request != null) {
+          debugData.request = JSON.stringify(debugData.request, null, 4);
+        }
+        if (debugData.response != null) {
+          debugData.response = JSON.stringify(debugData.response, null, 4);
+        }
+        if (!results) {
+          results = {
+            debug: debugData
+          };
+        } else {
+          results.debug = debugData;
+        }
+        template = Handlebars.compile($('#debug-template').html());
+        return this.board.find(':last').append(template(results));
+      };
+
       IndexView.prototype.ask = function(e) {
-        var classifier, dis, input, text;
+        var classifier, input, template, text;
         input = $(e);
         text = input.val();
         input.val('');
-        this.board.append(this.templates.bubblein(text));
-        if (AppState.inProgress === true) {
-          console.log('should disambiguate');
-          return dis = new Disambiguator({
-            text: text
-          });
+        template = Handlebars.compile($('#bubblein-template').html());
+        this.board.append(template(text)).scrollTop(this.board.find(':last').offset().top);
+        if (AppState.get('inProgress' === true)) {
+          this.log('should disambiguate');
+          return this.disambiguate(text);
         } else {
           classifier = new Classifier();
           return classifier.fetch({
@@ -79,71 +142,82 @@
       };
 
       IndexView.prototype.keyup = function(e) {
-        var history, target, value;
+        var history, pos, target, value;
         value = $(e.target).val();
         target = $(e.target);
         history = AppState.get('history');
+        pos = AppState.get('pos');
         switch (e.which) {
           case 13:
             if (value) {
               this.ask(target);
+              return AppState.set('pos', history.length);
             }
-            return AppState.set('pos', history.length);
+            break;
           case 38:
             if (pos > 0) {
-              pos -= 1;
+              AppState.set('pos', pos - 1);
             }
             return target.val(history[pos]);
           case 40:
             if (pos < history.length) {
-              pos += 1;
+              AppState.set('pos', pos + 1);
             }
             return target.val(history[pos]);
         }
       };
 
       IndexView.prototype.disambiguate = function(payload) {
-        var context, data, endpoint, field, text, type;
+        var action, context, data, dis, field, text, type;
         if (AppState.get('inProgress') === true) {
-          endpoint = this.disambiguator + '/active';
+          action = 'active';
           context = AppState.get('responderContext');
           field = context.field;
-          type = AppState.responderContext.type;
+          type = AppState.get('responderContext').type;
           text = payload;
           data = {
             text: text,
             types: [type]
           };
-          console.log('disambiguate user response', data);
+          this.log('disambiguate user response', data);
         } else {
-          console.log('disambiguate rez response');
-          endpoint = this.disambiguator + '/passive';
+          this.log('disambiguate rez response');
+          action = 'passive';
           context = AppState.get('mainContext');
           field = payload.field;
           type = payload.type;
           text = context.get('payload')[field];
           data = {
             text: text,
-            types: [type]
+            types: [type],
+            device_info: Util.buildDeviceInfo()
           };
         }
-        return Util.requestHelper(endpoint, 'POST', data, this.disambiguateResults);
+        dis = new Disambiguator(data, {
+          action: action
+        });
+        return dis.post();
       };
 
       IndexView.prototype.disambiguateResults = function(response) {
         var context, datetime, payload;
+        this.log('successHandler', results);
+        this.checkDates = true;
+        if (AppState.get('debug') === true && AppState.get('inProgress') === true) {
+          this.addDebug();
+        }
         if (response != null) {
-          if (((response.date != null) && typeof response.date === 'object') || ((response.time != null) && typeof response.time === 'object')) {
+          if ((response.date != null) || (response.time != null)) {
             datetime = Util.buildDatetime(response.date, response.time);
             response[type] = datetime[type];
-            console.log('done handler', response);
+            this.log('done handler', response);
           }
-          context = AppState.get('mainContext');
-          payload = context.get('payload');
-          payload[field] = response[type];
-          context.set('payload', payload);
-          return AppState.set('mainContext', context);
         }
+        context = AppState.get('mainContext');
+        payload = context.payload;
+        payload[field] = response[type];
+        context.payload = payload;
+        return AppState.set('mainContext', context);
       };
 
       IndexView.prototype.resolver = function(model, response, opts) {
@@ -152,35 +226,43 @@
         			to 'REZ' or resolve with the disambiguator
         */
 
-        var datetime, dis, payload, responder;
+        var context, datetime, dis, payload, posted, rez;
         if (response.status != null) {
           switch (response.status.toLowerCase()) {
             case 'disambiguate':
-              console.log('resolver disambiguate', response);
-              dis = new Disambiguator();
-              return dis.save(response);
+              this.log('resolver disambiguate', response);
+              AppState.set('inProgress', false);
+              return this.disambiguate(response);
             case 'in progress':
-              console.log('resolver progress', response);
-              this.AppState.set({
+              this.log('resolver progress', response);
+              AppState.set({
                 inProgress: true,
                 responderContext: response
               });
               return this.show(response);
             case 'complete':
             case 'completed':
-              console.log('resolver complete', response);
+              this.log('resolver complete', response);
               AppState.set({
                 inProgress: false,
                 responderContext: {}
               });
-              return this.show(response);
+              if (response.actor === null || response.actor === void 0) {
+                return this.show(response);
+              } else {
+                context = AppState.get('mainContext');
+                return dis = new Responder(context, {
+                  action: 'actors'
+                });
+              }
           }
         } else {
-          console.log('resolver response without status', response, AppState.get('mainContext'));
+          this.log('resolver response without status', response, AppState.get('mainContext'));
           payload = response.payload;
-          if (payload != null) {
-            if (((payload.start_date != null) && typeof payload.start_date === 'object') || ((payload.start_time != null) && typeof payload.start_time === 'object')) {
-              datetime = this.buildDatetime(payload.start_date, payload.start_time);
+          if ((payload != null) && this.checkDates) {
+            if ((payload.start_date != null) || (payload.start_time != null)) {
+              datetime = Util.buildDatetime(payload.start_date, payload.start_time);
+              this.log('datetime no status', datetime);
               if (payload.start_date != null) {
                 payload.start_date = datetime.date;
               }
@@ -188,8 +270,8 @@
                 payload.start_time = datetime.time;
               }
             }
-            if (((payload.end_date != null) && typeof payload.end_date === 'object') || ((payload.end_time != null) && typeof payload.end_time === 'object')) {
-              datetime = this.buildDatetime(payload.end_date, payload.end_time);
+            if ((payload.end_date != null) || (payload.end_time != null)) {
+              datetime = Util.buildDatetime(payload.end_date, payload.end_time);
               if (payload.end_date != null) {
                 payload.end_date = datetime.date;
               }
@@ -199,16 +281,11 @@
             }
           }
           AppState.set('mainContext', response);
-          responder = new Responder();
-          return responder.save(response);
-        }
-      };
-
-      IndexView.prototype.requestStatus = function(model, response, opts) {
-        if (response === 'beforeSend') {
-          return this.loader.show();
-        } else {
-          return this.loader.hide();
+          rez = new Responder(response, {
+            action: 'audit'
+          });
+          posted = rez.post();
+          return this.log(posted);
         }
       };
 

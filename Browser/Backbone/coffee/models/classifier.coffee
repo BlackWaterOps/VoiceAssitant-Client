@@ -1,23 +1,21 @@
 define([
 	'underscore',
 	'backbone',
+	'models/base',
 	'models/appState'
-], (_, Backbone, AppState) ->
-	class classifer extends Backbone.Model		
-		urlRoot: 'http://casper-cached.stremor-nli.appspot.com/'
+], (_, Backbone, ModelBase, AppState) ->
+	class classifer extends ModelBase	
+		urlRoot: 'http://casper.stremor-nli.appspot.com/'
+		
+		fetch: (query) ->
+			console.log 'classifier fetch', query
+			debug = AppState.get 'debug'
 
-		# initialize: (attrs, options) ->
-	
+			Backbone.Model.prototype.fetch.call(this, query)
+
 		parse: (response, options) ->
 			# take response and set it to mainContext
 			AppState.set 'mainContext', response
 
 			return response
-
-		###
-		Backbone.lawnchair overrides Backbone.sync but saves a reference to 
-		the original sync method at Backbone.sync.previous
-		### 
-		sync: Backbone.sync.previous
-
 )
