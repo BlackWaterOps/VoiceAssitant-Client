@@ -2,8 +2,8 @@ class Please
 	constructor: (options) ->
 		@debug = true
 		@debugData = { }
-		@classifier = 'http://casper-cached.stremor-nli.appspot.com/'
-		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/disambiguate'
+		@classifier = 'http://casper-cached.stremor-nli.appspot.com/v1'
+		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate'
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00
