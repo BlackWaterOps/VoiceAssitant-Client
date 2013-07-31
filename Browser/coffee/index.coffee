@@ -255,9 +255,8 @@ class Please
 			data = query: text
 					
 			@requestHelper @classifier, "GET", data, (response) =>
-				if @debug is true
-					@addDebug()
-
+				@addDebug() if @debug is true
+			
 				@resolver response
 
 	keyup: (e) =>	
