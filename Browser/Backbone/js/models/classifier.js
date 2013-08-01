@@ -15,13 +15,6 @@
 
       classifer.prototype.urlRoot = 'http://casper-cached.stremor-nli.appspot.com/v1';
 
-      classifer.prototype.fetch = function(query) {
-        var debug;
-        console.log('classifier fetch', query);
-        debug = AppState.get('debug');
-        return Backbone.Model.prototype.fetch.call(this, query);
-      };
-
       classifer.prototype.parse = function(response, options) {
         AppState.set('mainContext', response);
         return response;
