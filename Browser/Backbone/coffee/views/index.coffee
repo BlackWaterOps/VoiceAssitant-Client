@@ -82,6 +82,10 @@ define([
 			@loader.hide()
 			@input.focus()
 
+		expand: (e) =>
+			e.preventDefault()
+			$(e.target).parent().next().toggle()
+
 		addDebug: =>
 			if AppState.get('debug') is true
 				debugData = AppState.get('debugData')

@@ -16,6 +16,7 @@
         this.keyup = __bind(this.keyup, this);
         this.ask = __bind(this.ask, this);
         this.addDebug = __bind(this.addDebug, this);
+        this.expand = __bind(this.expand, this);
         this.cancel = __bind(this.cancel, this);
         this.show = __bind(this.show, this);
         this.updatePosition = __bind(this.updatePosition, this);
@@ -98,6 +99,11 @@
         this.form.removeClass('cancel');
         this.loader.hide();
         return this.input.focus();
+      };
+
+      IndexView.prototype.expand = function(e) {
+        e.preventDefault();
+        return $(e.target).parent().next().toggle();
       };
 
       IndexView.prototype.addDebug = function() {
