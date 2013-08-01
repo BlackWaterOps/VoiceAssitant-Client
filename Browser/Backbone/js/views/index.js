@@ -224,7 +224,7 @@
         			to 'REZ' or resolve with the disambiguator
         */
 
-        var datetime, disambiguator, mc, payload, rc,
+        var datetime, disambiguator, mc, payload, rc, responder,
           _this = this;
         if (response.status != null) {
           switch (response.status.toLowerCase()) {
@@ -283,7 +283,11 @@
               }
             }
           }
-          return AppState.set('mainContext', response);
+          AppState.set('mainContext', response);
+          responder = new Responder(response, {
+            action: 'audit'
+          });
+          return responder.post();
         }
       };
 

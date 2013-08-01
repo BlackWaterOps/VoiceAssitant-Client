@@ -270,9 +270,9 @@ define([
 
 				AppState.set 'mainContext', response
 
-				#rez = new Responder(response, action: 'audit')
+				responder = new Responder(response, action: 'audit')
 
-				#posted = rez.post()
+				responder.post()
 
 				#@log posted
 )
