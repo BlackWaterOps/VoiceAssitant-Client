@@ -4,7 +4,7 @@
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['underscore', 'backbone', 'util', 'models/appState', 'models/classifier', 'models/responder', 'models/disambiguator', 'handlebars'], function(_, Backbone, Util, AppState, Classifier, Responder, Disambiguator) {
+  define(['util', 'models/appState', 'models/classifier', 'models/responder', 'models/disambiguator', 'handlebars'], function(Util, AppState, Classifier, Responder, Disambiguator) {
     var IndexView, _ref;
     return IndexView = (function(_super) {
       __extends(IndexView, _super);
@@ -52,16 +52,7 @@
             return init.fadeOut('slow');
           }), 1000);
         }
-        this.getLocation();
-        return this.log({
-          results: 'results',
-          data: 'somedata',
-          object: {
-            one: 'one',
-            two: 'two',
-            three: 'three'
-          }
-        }, 'string', ['a', 'b', 'c', 'd']);
+        return this.getLocation();
       };
 
       IndexView.prototype.log = function() {

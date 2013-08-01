@@ -1,13 +1,11 @@
 define([
-	'underscore',
-	'backbone',
 	'util',
 	'models/appState',
 	'models/classifier',
 	'models/responder',
 	'models/disambiguator',
 	'handlebars'
-], (_, Backbone, Util, AppState, Classifier, Responder, Disambiguator) ->
+], (Util, AppState, Classifier, Responder, Disambiguator) ->
 	class IndexView extends Backbone.View
 		events:
 			'keyup #main-input': 'keyup'
@@ -35,16 +33,6 @@ define([
 				), 1000
 
 			@getLocation()
-
-			@log
-				results: 'results'
-				data: 'somedata'
-				object: 
-					one: 'one'
-					two: 'two'
-					three: 'three'
-			, 'string'
-			, ['a','b','c','d']
 
 		log: =>
 			Util.log arguments
