@@ -14,11 +14,10 @@
       }
 
       appState.prototype.defaults = {
-        debug: false,
+        debug: true,
         debugData: {},
         lat: 0.00,
         lon: 0.00,
-        requestStatus: '',
         inProgress: false,
         mainContext: {},
         responderContext: {},

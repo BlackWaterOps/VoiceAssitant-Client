@@ -51,7 +51,16 @@
             return init.fadeOut('slow');
           }), 1000);
         }
-        return this.getLocation();
+        this.getLocation();
+        return this.log({
+          results: 'results',
+          data: 'somedata',
+          object: {
+            one: 'one',
+            two: 'two',
+            three: 'three'
+          }
+        }, 'string', ['a', 'b', 'c', 'd']);
       };
 
       IndexView.prototype.log = function() {
@@ -75,9 +84,7 @@
         template = $('#' + templateName + '-template').html();
         template = Handlebars.compile(template);
         this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
-        if (AppState.get('debug' === true)) {
-          this.addDebug(results);
-        }
+        this.addDebug();
         return this.loader.hide();
       };
 
@@ -93,24 +100,19 @@
         return this.input.focus();
       };
 
-      IndexView.prototype.addDebug = function(results) {
-        var debugDate, template;
-        debugDate = AppState.get('debugData');
-        if (debugData.request != null) {
-          debugData.request = JSON.stringify(debugData.request, null, 4);
+      IndexView.prototype.addDebug = function() {
+        var debugData, template;
+        if (AppState.get('debug') === true) {
+          debugData = AppState.get('debugData');
+          if (debugData.request != null) {
+            debugData.request = JSON.stringify(debugData.request, null, 4);
+          }
+          if (debugData.response != null) {
+            debugData.response = JSON.stringify(debugData.response, null, 4);
+          }
+          template = Handlebars.compile($('#debug-template').html());
+          return this.board.find('.bubble:last').append(template(debugData));
         }
-        if (debugData.response != null) {
-          debugData.response = JSON.stringify(debugData.response, null, 4);
-        }
-        if (!results) {
-          results = {
-            debug: debugData
-          };
-        } else {
-          results.debug = debugData;
-        }
-        template = Handlebars.compile($('#debug-template').html());
-        return this.board.find('.bubble:last').append(template(results));
       };
 
       IndexView.prototype.ask = function(e) {
@@ -126,6 +128,7 @@
           return this.disambiguate(text);
         } else {
           classifier = new Classifier();
+          classifier.on('done', this.addDebug);
           return classifier.fetch({
             data: {
               query: text
@@ -161,7 +164,7 @@
       };
 
       IndexView.prototype.disambiguate = function(payload) {
-        var action, context, data, dis, field, text, type,
+        var action, context, data, disambiguator, field, text, type,
           _this = this;
         if (AppState.get('inProgress') === true) {
           action = 'active';
@@ -185,19 +188,19 @@
             device_info: Util.buildDeviceInfo()
           };
         }
-        dis = new Disambiguator(data, {
+        disambiguator = new Disambiguator(data, {
           action: action
         });
-        dis.on('done', function(model, response, options) {
+        disambiguator.on('done', function(model, response, options) {
           return _this.disambiguateResults(response, field, type);
         });
-        return dis.post();
+        return disambiguator.post();
       };
 
       IndexView.prototype.disambiguateResults = function(response, field, type) {
         var datetime;
         this.checkDates = true;
-        if (AppState.get('debug') === true && AppState.get('inProgress') === true) {
+        if (AppState.get('inProgress') === true) {
           this.addDebug();
         }
         if (response != null) {
@@ -215,7 +218,7 @@
         			to 'REZ' or resolve with the disambiguator
         */
 
-        var datetime, dis, mc, payload, posted, rc, rez,
+        var datetime, disambiguator, mc, payload, rc,
           _this = this;
         if (response.status != null) {
           switch (response.status.toLowerCase()) {
@@ -242,14 +245,14 @@
               if (response.actor == null) {
                 return this.show(response);
               } else {
-                dis = new Responder(mc, {
+                disambiguator = new Responder(mc, {
                   action: 'actors',
                   actor: rc.actor
                 });
-                dis.on('done', function(model, response, options) {
+                disambiguator.on('done', function(model, response, options) {
                   return _this.show(response);
                 });
-                return dis.post();
+                return disambiguator.post();
               }
           }
         } else {
@@ -274,11 +277,7 @@
               }
             }
           }
-          AppState.set('mainContext', response);
-          rez = new Responder(response, {
-            action: 'audit'
-          });
-          return posted = rez.post();
+          return AppState.set('mainContext', response);
         }
       };
 

@@ -22,20 +22,23 @@ define([
 			Backbone.Model.prototype.save.call(this, attributes, options)
 
 		sync: (method, model, options) =>
-			# Util.log 'sync', method, model, options
+			console.log 'sync', method, model, options
 
 			original = Backbone.sync.previous || Backbone.sync
 
 			@setDebugData(
-				request: model.attributes, 
-				endpoint: model.url
+				request: options.data || model.attributes 
+				endpoint: model.url() || model.urlRoot
 			)
-							
+						
 			request = original.call(Backbone, method, model, options)
 			
 			request.done((response, textStatus, jqXHR) =>
 				Util.log 'done', response
-				@setDebugData(response: response, status: textStatus)
+				@setDebugData(
+					response: response
+					status: textStatus
+				)
 				@.trigger 'done', model, response, options
 			).fail((jqXHR, textStatus, errorThrown) =>
 				Util.log 'fail', textStatus

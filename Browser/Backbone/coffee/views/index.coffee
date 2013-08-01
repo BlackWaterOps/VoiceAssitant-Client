@@ -36,6 +36,16 @@ define([
 
 			@getLocation()
 
+			@log
+				results: 'results'
+				data: 'somedata'
+				object: 
+					one: 'one'
+					two: 'two'
+					three: 'three'
+			, 'string'
+			, ['a','b','c','d']
+
 		log: =>
 			Util.log arguments
 
@@ -57,7 +67,7 @@ define([
 
 			@board.append(template(results)).scrollTop(@board.find('.bubble:last').offset().top)
 
-			@addDebug(results) if AppState.get 'debug' is true
+			@addDebug()
 				
 			@loader.hide()
 
@@ -72,20 +82,16 @@ define([
 			@loader.hide()
 			@input.focus()
 
-		addDebug: (results) =>
-			debugDate = AppState.get 'debugData'
+		addDebug: =>
+			if AppState.get('debug') is true
+				debugData = AppState.get('debugData')
 
-			debugData.request = JSON.stringify(debugData.request, null, 4) if debugData.request?
-			debugData.response = JSON.stringify(debugData.response, null, 4) if debugData.response?
-			
-			if !results
-				results = 
-					debug: debugData
-			else
-				results.debug = debugData
-
-			template = Handlebars.compile($('#debug-template').html())
-			@board.find('.bubble:last').append(template(results))
+				debugData.request = JSON.stringify(debugData.request, null, 4) if debugData.request?
+				debugData.response = JSON.stringify(debugData.response, null, 4) if debugData.response?
+				
+				template = Handlebars.compile($('#debug-template').html())
+				
+				@board.find('.bubble:last').append(template(debugData))
 
 		ask: (e) =>
 			input = $(e)
@@ -106,9 +112,12 @@ define([
 				#@log 'should disambiguate'
 				@disambiguate text
 			else
-				# #@log AppState.get 'inProgress'
+				#@log AppState.get 'inProgress'
 
 				classifier = new Classifier()
+
+				classifier.on('done', @addDebug)
+
 				classifier.fetch(data: query: text)
 
 		keyup: (e) =>
@@ -158,21 +167,21 @@ define([
 					types: [type]
 					device_info: Util.buildDeviceInfo()
 
-			dis = new Disambiguator(data, action: action)
+			disambiguator = new Disambiguator(data, action: action)
 
-			dis.on('done', (model, response, options) =>
+			disambiguator.on('done', (model, response, options) =>
 				#@log 'disambiguator done', response, field, type
 				@disambiguateResults response, field, type
 			)
 
-			dis.post()
+			disambiguator.post()
 
 		disambiguateResults: (response, field, type) =>
 			#@log 'disambiguate successHandler', response, field, type
 			
 			@checkDates = true
 
-			@addDebug() if AppState.get('debug') is true and AppState.get('inProgress') is true
+			@addDebug() if AppState.get('inProgress') is true
 				
 			if response?
 				if (response.date? or response.time?)
@@ -226,13 +235,13 @@ define([
 						if not response.actor?
 							@show response
 						else
-							dis = new Responder(mc, action: 'actors', actor: rc.actor)
+							disambiguator = new Responder(mc, action: 'actors', actor: rc.actor)
 
-							dis.on('done', (model, response, options) =>
+							disambiguator.on('done', (model, response, options) =>
 								@show response
 							)
 
-							dis.post()
+							disambiguator.post()
 			else  
 				#@log 'resolver response without status', response, AppState.get('mainContext')
 
@@ -257,9 +266,9 @@ define([
 
 				AppState.set 'mainContext', response
 
-				rez = new Responder(response, action: 'audit')
+				#rez = new Responder(response, action: 'audit')
 
-				posted = rez.post()
+				#posted = rez.post()
 
 				#@log posted
 )

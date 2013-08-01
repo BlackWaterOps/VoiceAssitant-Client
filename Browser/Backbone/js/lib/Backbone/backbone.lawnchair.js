@@ -3,6 +3,7 @@ Backbone.sync = (function() {
     var previous = Backbone.sync;
 
     var sync = function(method, model, options) {
+        console.log('lawnchair sync', model);
         var store = model.lawnchair || model.collection.lawnchair;
         
         var callback = function(record) {

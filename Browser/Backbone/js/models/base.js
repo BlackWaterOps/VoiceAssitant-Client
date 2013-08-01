@@ -40,10 +40,11 @@
       ModelBase.prototype.sync = function(method, model, options) {
         var original, request,
           _this = this;
+        console.log('sync', method, model, options);
         original = Backbone.sync.previous || Backbone.sync;
         this.setDebugData({
-          request: model.attributes,
-          endpoint: model.url
+          request: options.data || model.attributes,
+          endpoint: model.url() || model.urlRoot
         });
         request = original.call(Backbone, method, model, options);
         request.done(function(response, textStatus, jqXHR) {

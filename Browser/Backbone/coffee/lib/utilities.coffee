@@ -14,9 +14,11 @@ define([
 
 		log: =>
 			args = [ ]
+
 			for argument in arguments
-				argument = JSON.stringify(argument) if typeof argument is 'object'
-				args.push argument
+				for item in argument
+					item = JSON.stringify(item) if typeof item is 'object'
+					args.push item
 
 			console.log args.join(" ")
 				
