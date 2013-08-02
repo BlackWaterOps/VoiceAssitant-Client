@@ -28,17 +28,14 @@
       };
 
       Utilities.prototype.log = function() {
-        var args, argument, item, _i, _j, _len, _len1;
+        var args, argument, _i, _len;
         args = [];
         for (_i = 0, _len = arguments.length; _i < _len; _i++) {
           argument = arguments[_i];
-          for (_j = 0, _len1 = argument.length; _j < _len1; _j++) {
-            item = argument[_j];
-            if (typeof item === 'object') {
-              item = JSON.stringify(item);
-            }
-            args.push(item);
+          if (typeof argument === 'object') {
+            argument = JSON.stringify(argument);
           }
+          args.push(argument);
         }
         return console.log(args.join(" "));
       };

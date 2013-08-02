@@ -21,6 +21,7 @@ define([
 
 			@checkDates = false
 			AppState.on 'change:mainContext change:responderContext', @resolver
+			AppState.on 'change:debugData', @addDebug
 
 		render: (options) ->
 			@input.focus()
@@ -55,7 +56,7 @@ define([
 
 			@board.append(template(results)).scrollTop(@board.find('.bubble:last').offset().top)
 
-			@addDebug()
+			# @addDebug()
 				
 			@loader.hide()
 
@@ -74,8 +75,10 @@ define([
 			e.preventDefault()
 			$(e.target).parent().next().toggle()
 
-		addDebug: =>
-			if AppState.get('debug') is true
+		addDebug: (model, response, options) =>
+			console.log response
+
+			if AppState.get('debug') is true and response.status?
 				debugData = AppState.get('debugData')
 
 				debugData.request = JSON.stringify(debugData.request, null, 4) if debugData.request?
@@ -107,8 +110,6 @@ define([
 				#@log AppState.get 'inProgress'
 
 				classifier = new Classifier()
-
-				classifier.on('done', @addDebug)
 
 				classifier.fetch(data: query: text)
 

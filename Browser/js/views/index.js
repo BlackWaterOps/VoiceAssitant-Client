@@ -39,7 +39,8 @@
         this.input = this.$('#main-input');
         this.form = this.$('#input-form');
         this.checkDates = false;
-        return AppState.on('change:mainContext change:responderContext', this.resolver);
+        AppState.on('change:mainContext change:responderContext', this.resolver);
+        return AppState.on('change:debugData', this.addDebug);
       };
 
       IndexView.prototype.render = function(options) {
@@ -76,7 +77,6 @@
         template = $('#' + templateName + '-template').html();
         template = Handlebars.compile(template);
         this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
-        this.addDebug();
         return this.loader.hide();
       };
 
@@ -97,9 +97,10 @@
         return $(e.target).parent().next().toggle();
       };
 
-      IndexView.prototype.addDebug = function() {
+      IndexView.prototype.addDebug = function(model, response, options) {
         var debugData, template;
-        if (AppState.get('debug') === true) {
+        console.log(response);
+        if (AppState.get('debug') === true && (response.status != null)) {
           debugData = AppState.get('debugData');
           if (debugData.request != null) {
             debugData.request = JSON.stringify(debugData.request, null, 4);
@@ -125,7 +126,6 @@
           return this.disambiguate(text);
         } else {
           classifier = new Classifier();
-          classifier.on('done', this.addDebug);
           return classifier.fetch({
             data: {
               query: text

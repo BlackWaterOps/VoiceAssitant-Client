@@ -14,12 +14,10 @@ define([
 
 		log: =>
 			args = [ ]
-
 			for argument in arguments
-				for item in argument
-					item = JSON.stringify(item) if typeof item is 'object'
-					args.push item
-
+				argument = JSON.stringify(argument) if typeof argument is 'object'
+				args.push argument
+				
 			console.log args.join(" ")
 				
 		weekdayHelper: (dayOfWeek) =>

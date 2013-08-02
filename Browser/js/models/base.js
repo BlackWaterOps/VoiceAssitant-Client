@@ -20,11 +20,9 @@
       ModelBase.prototype.debug = AppState.get('debug');
 
       ModelBase.prototype.setDebugData = function(data) {
-        var debugData;
+        data.request = _.omit(data.request, _.keys(data.response));
         if (this.debug === true) {
-          debugData = AppState.get('debugData');
-          _.extend(debugData, data);
-          return AppState.set('debugData', debugData);
+          return AppState.set('debugData', data);
         }
       };
 
@@ -40,16 +38,12 @@
       ModelBase.prototype.sync = function(method, model, options) {
         var original, request,
           _this = this;
-        console.log('sync', method, model, options);
         original = Backbone.sync.previous || Backbone.sync;
-        this.setDebugData({
-          request: options.data || model.attributes,
-          endpoint: model.url() || model.urlRoot
-        });
         request = original.call(Backbone, method, model, options);
         request.done(function(response, textStatus, jqXHR) {
-          Util.log('done', response);
           _this.setDebugData({
+            endpoint: model.url() || model.urlRoot,
+            request: options.data || model.attributes,
             response: response,
             status: textStatus
           });
@@ -57,6 +51,8 @@
         }).fail(function(jqXHR, textStatus, errorThrown) {
           Util.log('fail', textStatus);
           return _this.setDebugData({
+            endpoint: model.url() || model.urlRoot,
+            request: options.data || model.attributes,
             response: errorThrown,
             status: textStatus
           });
