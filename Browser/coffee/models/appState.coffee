@@ -1,8 +1,6 @@
 define([
-	'underscore',
-	'backbone',
 	'util'
-], (_, Backbone, Util) ->
+], (Util) ->
 	class appState extends Backbone.NestedModel
 		defaults:
 			debug: true

@@ -5,7 +5,7 @@ require.config(
 		'backbone.core': 'lib/Backbone/backbone.min'
 		'backbone.nested': 'lib/Backbone/backbone.nested.min'
 		'backbone.lawnchair': 'lib/Backbone/backbone.lawnchair'
-		'jquery': 'https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min'
+		'jquery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min'
 		'lawnchair': 'lib/Lawnchair/lawn.clippings'
 		'lawnchair.core': 'lib/Lawnchair/Lawnchair.min'
 		'lawnchair.webkit': 'lib/Lawnchair/adapters/webkit-sqlite.min'
