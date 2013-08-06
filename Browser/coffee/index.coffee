@@ -253,7 +253,7 @@ class Please
 			results.debug = @debugData
 
 		template = Handlebars.compile($('#debug-template').html())
-		# @board.find('.bubble:last').append(template(results))
+		@board.find('.bubble:last').append(template(results))
 
 	ask: (input) =>
 		input = $(input)

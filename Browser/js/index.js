@@ -293,7 +293,8 @@
       } else {
         results.debug = this.debugData;
       }
-      return template = Handlebars.compile($('#debug-template').html());
+      template = Handlebars.compile($('#debug-template').html());
+      return this.board.find('.bubble:last').append(template(results));
     };
 
     Please.prototype.ask = function(input) {
