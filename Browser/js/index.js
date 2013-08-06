@@ -164,13 +164,12 @@
           text: text,
           types: [type]
         };
-        this.log('disambiguate user response', data);
       } else {
-        this.log('disambiguate rez response');
         endpoint = this.disambiguator + "/passive";
         this.sendDeviceInfo = true;
         field = payload.field;
         type = payload.type;
+        console.log(field, type);
         text = this.mainContext.payload[field];
         data = {
           text: text,
@@ -178,8 +177,7 @@
         };
       }
       successHandler = function(results) {
-        var checkDates, datetime;
-        _this.log('successHandler', results);
+        var checkDates, cursive, datetime, fields;
         checkDates = true;
         if (_this.debug === true && _this.inProgress === true) {
           _this.addDebug();
@@ -191,9 +189,29 @@
             checkDates = false;
             _this.log('successhandler', results);
           }
+          if (field.indexOf('.') !== -1) {
+            fields = field.split('.');
+            cursive = function(obj) {
+              var key, val;
+              for (key in obj) {
+                val = obj[key];
+                if (fields.length > 1 && key === fields[0]) {
+                  fields.shift();
+                  cursive(val);
+                } else if (key === fields[0]) {
+                  obj[key] = results[type];
+                  return;
+                }
+              }
+            };
+            cursive(_this.mainContext);
+          } else {
+            _this.mainContext.payload[field] = results[type];
+          }
+          return _this.resolver(_this.mainContext, checkDates);
+        } else {
+          return console.log('oops no responder response', results);
         }
-        _this.mainContext.payload[field] = results[type];
-        return _this.resolver(_this.mainContext, checkDates);
       };
       return this.requestHelper(endpoint, "POST", data, successHandler);
     };
@@ -211,18 +229,15 @@
       if (response.status != null) {
         switch (response.status.toLowerCase()) {
           case 'disambiguate':
-            this.log('resolver disambiguate', response);
             this.inProgress = false;
             return this.disambiguate(response);
           case 'in progress':
             this.counter = 0;
             this.inProgress = true;
             this.disambigContext = response;
-            this.log('resolver progress', response);
             return this.show(response);
           case 'complete':
           case 'completed':
-            this.log('resolver complete', response);
             this.counter = 0;
             this.inProgress = false;
             this.disambigContext = {};
@@ -233,7 +248,6 @@
             }
         }
       } else {
-        this.log('resolver response without status', response);
         payload = response.payload;
         if ((payload != null) && checkDates) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
@@ -279,8 +293,7 @@
       } else {
         results.debug = this.debugData;
       }
-      template = Handlebars.compile($('#debug-template').html());
-      return this.board.find('.bubble:last').append(template(results));
+      return template = Handlebars.compile($('#debug-template').html());
     };
 
     Please.prototype.ask = function(input) {
@@ -293,7 +306,6 @@
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
       if (this.inProgress === true) {
-        this.log('should disambiguate');
         return this.disambiguate(text);
       } else {
         data = {
@@ -316,19 +328,20 @@
         case 13:
           if (value) {
             this.ask(target);
-            return this.pos = history.length;
+            this.history.push(value);
+            return this.pos = this.history.length;
           }
           break;
         case 38:
           if (this.pos > 0) {
             this.pos -= 1;
           }
-          return target.val(history[this.pos]);
+          return target.val(this.history[this.pos]);
         case 40:
-          if (this.pos < history.length) {
+          if (this.pos < this.history.length) {
             this.pos += 1;
           }
-          return target.val(history[this.pos]);
+          return target.val(this.history[this.pos]);
       }
     };
 
@@ -426,17 +439,13 @@
     Please.prototype.buildDatetime = function(date, time) {
       var dateString, newDate;
       newDate = null;
-      this.log('start date parsing', date);
       if (date !== null && date !== void 0) {
         newDate = this.datetimeHelper(date);
       }
-      this.log('start time parsing', time);
       if (time !== null && time !== void 0) {
         newDate = this.datetimeHelper(time, newDate);
       }
-      this.log('buildDatetime datestring', newDate);
       dateString = this.toISOString(newDate).split('T');
-      this.log('buildDatetime datestring', dateString);
       return {
         date: dateString[0],
         time: dateString[1]
@@ -445,7 +454,6 @@
 
     Please.prototype.weekdayHelper = function(dayOfWeek) {
       var currentDate, currentDay, date, offset;
-      this.log('weekday helper', dayOfWeek);
       date = new Date();
       currentDay = date.getDay();
       currentDate = date.getDate();
@@ -456,14 +464,11 @@
 
     Please.prototype.fuzzyHelper = function(datetime, isDate) {
       var date, datetimeArr, def, key, label, preference, presetLabel, splitSym, val;
-      this.log('fuzzy helper', datetime, isDate);
       date = new Date();
-      this.log('handle fuzzy date or time');
       label = null;
       def = null;
       for (key in datetime) {
         val = datetime[key];
-        this.log(key, val);
         if (key === 'label') {
           label = val;
         }
@@ -472,11 +477,8 @@
         }
       }
       presetLabel = this.presets[label];
-      this.log('presetLabel', presetLabel);
       preference = presetLabel != null ? presetLabel : def;
-      this.log('use', preference);
       if (preference === null) {
-        this.log('useTime error');
         return;
       }
       splitSym = isDate === true ? '-' : ':';
@@ -495,16 +497,12 @@
 
     Please.prototype.newDateHelper = function(datetime) {
       var hours, minutes, newDate, seconds, split;
-      this.log('newDate', datetime);
       if (datetime.indexOf('now') !== -1) {
-        this.log('is now');
         newDate = new Date();
       } else if (this.dateRegex.test(datetime) === true) {
-        this.log('is date string');
         split = datetime.split('-');
         newDate = new Date(split[0], split[1] - 1, split[2]);
       } else if (this.timeRegex.test(datetime) === true) {
-        this.log('is time');
         newDate = new Date();
         split = datetime.split(':');
         hours = newDate.getHours();
@@ -534,16 +532,13 @@
       dateOrTimeType = Object.prototype.toString.call(dateOrTime);
       switch (dateOrTimeType) {
         case '[object String]':
-          this.log('is string');
           if (newDate === null) {
             newDate = this.newDateHelper(dateOrTime);
           }
           break;
         case '[object Object]':
-          this.log('is object');
           for (action in dateOrTime) {
             parsable = dateOrTime[action];
-            this.log('step 1', action, parsable);
             if (action.indexOf('weekday') !== -1) {
               return this.weekdayHelper(parsable);
             } else if (action.indexOf('fuzzy') !== -1) {
@@ -557,7 +552,6 @@
                   item = parsable[_i];
                   itemType = Object.prototype.toString.call(item);
                   if (newDate === null) {
-                    this.log('step 2', 'set datetime');
                     switch (itemType) {
                       case '[object String]':
                         newDate = this.newDateHelper(item);
@@ -576,10 +570,8 @@
                         }
                     }
                   } else if (itemType === '[object Number]') {
-                    this.log('step 3', 'parse array group');
                     interval = item;
                     if (interval === null) {
-                      this.log('frag error', interval);
                       return;
                     }
                     if (action.indexOf('time') !== -1) {
@@ -599,90 +591,6 @@
       }
       return newDate;
     };
-
-    /*   
-    	datetimeHelper: (dateOrTime, newDate = null) =>
-    		@log dateOrTime
-    
-    		for action, parsable of dateOrTime
-    			@log 'step 1', action, parsable
-    
-    			if action.indexOf('fuzzy') is -1
-    				operator = if action.indexOf('add') isnt -1 then '+' else '-'
-    
-    			parsableType = Object.prototype.toString.call(parsable)
-    
-    			if parsableType is '[object Array]' # date partials
-    				for item in parsable
-    					itemType = Object.prototype.toString.call(item);
-    
-    					if newDate is null 
-    						@log 'step 2', 'set datetime'
-    
-    						switch itemType
-    							when '[object String]' # 'now' or '2013-07-01'
-    								newDate = if item is "now" then new Date() else new Date(item)
-    							when '[object Object]' # weekday operator {#weekday:1}
-    								for itemKey, itemValue of item
-    									newDate = @weekdayHelper itemValue if itemKey.indexOf("weekday") isnt -1 and newDate is null
-    					else if itemType is '[object Array]' # dates to add to Date object 
-    						@log 'step 3', 'parse array group'
-    
-    						interval = null
-    						type = null
-    
-    						for frag in item
-    							interval = frag if typeof frag is 'number' and not interval?
-    							type = frag if typeof frag is 'string' and not type?
-    
-    						if interval is null or type is null
-    							@log 'frag error', interval, type
-    							return
-    
-    						if type.indexOf('second') isnt -1
-    							curr = newDate.getSeconds()
-    							time = operators[operator](curr, interval)
-    							newDate.setSeconds(time)
-    						else if type.indexOf('minute') isnt -1
-    							curr = newDate.getMinutes()
-    							time = operators[operator](curr, interval)
-    							newDate.setMinutes(time)
-    						else if type.indexOf('hour') isnt -1
-    							curr = newDate.getHours()
-    							time = operators[operator](curr, interval)
-    							newDate.setHours(time)
-    						else if type.indexOf('day') isnt -1
-    							curr = newDate.getDate()
-    							date = operators[operator](curr, interval)
-    							newDate.setDate(date)
-    
-    			else if parsableType is '[object Object]' # if item is an object we must have a 'special' time
-    				@log 'step 2', 'handle fuzzy date or time'
-    				label = null
-    				def = null
-    
-    				for key, val of parsable
-    					@log key, val
-    					label = val if key is 'label'
-    					def = val if key is 'default'
-    
-    				presetLabel = @presets[label]
-    				@log 'presetLabel', presetLabel
-    				useTime = if presetLabel? then presetLabel else def
-    				@log 'useTime', useTime
-    				if useTime is null
-    					@log 'useTime error' 
-    					return
-    
-    				useTimeArr = useTime.trim().split(':')
-    
-    				newDate.setHours useTimeArr[0]
-    				newDate.setMinutes useTimeArr[1]
-    				newDate.setSeconds useTimeArr[2]
-    
-    		return newDate
-    */
-
 
     return Please;
 

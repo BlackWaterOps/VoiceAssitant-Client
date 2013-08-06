@@ -7,7 +7,8 @@ define([
 	class ModelBase extends Backbone.Model		
 		debug: AppState.get('debug')
 
-		setDebugData: (data) => 
+		setDebugData: (data) =>
+			# this has the potential for omitting needed properties 
 			data.request = _.omit(data.request, _.keys(data.response)) 
 
 			AppState.set('debugData', data) if @debug is true 

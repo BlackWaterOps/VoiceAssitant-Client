@@ -124,17 +124,20 @@ class Please
 				text: text
 				types: [type]
 
-			@log 'disambiguate user response', data
+			# @log 'disambiguate user response', data
 		else
-			@log 'disambiguate rez response'
+			# @log 'disambiguate rez response'
 
 			endpoint = @disambiguator + "/passive"
 
 			@sendDeviceInfo = true
 
 			field = payload.field
+
 			# TODO: handle multi types
 			type = payload.type
+
+			console.log field, type
 
 			text = @mainContext.payload[field]
 
@@ -143,7 +146,7 @@ class Please
 				types: [type]
 
 		successHandler = (results) =>
-			@log 'successHandler', results
+			# @log 'successHandler', results
 			# gross hack to stop the resolver from 
 			checkDates = true
 
@@ -160,9 +163,26 @@ class Please
 
 					@log 'successhandler', results
 
-			@mainContext.payload[field] = results[type]
+
+				if field.indexOf('.') isnt -1
+					fields = field.split('.')
+
+					cursive = (obj) ->
+						for key, val of obj				
+							if fields.length > 1 and key is fields[0]
+								fields.shift()
+								cursive(val)
+							else if key is fields[0]
+								obj[key] = results[type]
+								return
+
+					cursive(@mainContext)
+				else
+					@mainContext.payload[field] = results[type]
 			
-			@resolver @mainContext, checkDates
+				@resolver @mainContext, checkDates
+			else
+				console.log 'oops no responder response', results
 
 		@requestHelper endpoint, "POST", data, successHandler
 
@@ -175,7 +195,7 @@ class Please
 		if response.status?            
 			switch response.status.toLowerCase()
 				when 'disambiguate'
-					@log 'resolver disambiguate', response
+					# @log 'resolver disambiguate', response
 					@inProgress = false
 					@disambiguate response
 				when 'in progress'
@@ -183,11 +203,11 @@ class Please
 					@inProgress = true
 					# store response so @disambiguate can get to it after @show
 					@disambigContext = response
-					@log 'resolver progress', response
+					# @log 'resolver progress', response
 					# display text to user and get response
 					@show response
 				when 'complete', 'completed'
-					@log 'resolver complete', response
+					# @log 'resolver complete', response
 					@counter = 0
 					@inProgress = false
 					@disambigContext = { }
@@ -196,7 +216,7 @@ class Please
 					else
 						@requestHelper @responder + 'actors/' + response.actor, 'POST', @mainContext, @show
 		else  
-			@log 'resolver response without status', response 
+			# @log 'resolver response without status', response 
 			payload = response.payload
 
 			if payload? and checkDates
@@ -233,7 +253,7 @@ class Please
 			results.debug = @debugData
 
 		template = Handlebars.compile($('#debug-template').html())
-		@board.find('.bubble:last').append(template(results))
+		# @board.find('.bubble:last').append(template(results))
 
 	ask: (input) =>
 		input = $(input)
@@ -249,7 +269,7 @@ class Please
 		$('#input-form').addClass 'cancel'
 
 		if @inProgress is true
-			@log 'should disambiguate'
+			# @log 'should disambiguate'
 			@disambiguate text
 		else
 			data = query: text
@@ -268,15 +288,15 @@ class Please
 			when 13
 				if value
 					@ask target
-					# history.push value
-					@pos = history.length
+					@history.push value
+					@pos = @history.length
 			when 38
 				@pos -= 1 if @pos > 0
-				target.val history[@pos]
+				target.val @history[@pos]
 
 			when 40
-				@pos += 1 if @pos < history.length
-				target.val history[@pos]
+				@pos += 1 if @pos < @history.length
+				target.val @history[@pos]
 				
 	expand: (e) =>
 	    e.preventDefault()
@@ -371,24 +391,17 @@ class Please
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		@log 'start date parsing', date
 		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined
 
-		@log 'start time parsing', time
 		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined
 
-		@log 'buildDatetime datestring', newDate
 		dateString = @toISOString(newDate).split('T')
 		
-		@log 'buildDatetime datestring', dateString
-
 		date: dateString[0]
 		time: dateString[1]
 
 	# #date-add: {[{#weekday:1}, [1, 'day']]}
 	weekdayHelper: (dayOfWeek) =>
-		@log 'weekday helper', dayOfWeek
-
 		date = new Date();
 
 		currentDay = date.getDay()
@@ -403,27 +416,19 @@ class Please
 		return date
 
 	fuzzyHelper: (datetime, isDate) =>
-		@log 'fuzzy helper', datetime, isDate
-
 		date = new Date()
 
-		@log 'handle fuzzy date or time'
 		label = null
 		def = null
 
 		for key, val of datetime
-			@log key, val
 			label = val if key is 'label'
 			def = val if key is 'default'
 
 		presetLabel = @presets[label]
-		@log 'presetLabel', presetLabel
 		preference = if presetLabel? then presetLabel else def
-		
-		@log 'use', preference
-		
+				
 		if preference is null
-			@log 'useTime error' 
 			return
 
 		splitSym = if isDate is true then '-' else ':'
@@ -442,18 +447,14 @@ class Please
 		return date
 	
 	newDateHelper: (datetime) =>
-		@log 'newDate', datetime
 		if datetime.indexOf('now') isnt -1
-			@log 'is now'
 			newDate = new Date();
 
 		else if @dateRegex.test(datetime) is true
-			@log 'is date string'
 			split = datetime.split('-')
 			newDate = new Date(split[0], (split[1]-1), split[2])
 
 		else if @timeRegex.test(datetime) is true
-			@log 'is time'
 			newDate = new Date();
 			split = datetime.split(':')
 			hours = newDate.getHours()
@@ -480,15 +481,11 @@ class Please
 
 		switch (dateOrTimeType)
 			when '[object String]'
-				@log 'is string'
 				if newDate is null
 					newDate = @newDateHelper dateOrTime
 
 			when '[object Object]'
-				@log 'is object'
 				for action, parsable of dateOrTime
-					@log 'step 1', action, parsable
-
 					if action.indexOf('weekday') isnt -1
 						return @weekdayHelper parsable
 					else if action.indexOf('fuzzy') isnt -1
@@ -504,8 +501,6 @@ class Please
 								itemType = Object.prototype.toString.call(item);
 
 								if newDate is null 
-									@log 'step 2', 'set datetime'
-
 									switch itemType
 										when '[object String]' # 'now' or '2013-07-01'
 											newDate = @newDateHelper item
@@ -519,12 +514,9 @@ class Please
 														newDate = @fuzzyHelper itemValue, isDate
 								
 								else if itemType is '[object Number]' # dates to add to Date object 
-									@log 'step 3', 'parse array group'
-
 									interval = item
 									
 									if interval is null 
-										@log 'frag error', interval
 										return
 
 									if action.indexOf('time') isnt -1
@@ -537,88 +529,5 @@ class Please
 										newDate.setDate(date)
 
 		return newDate
-	
-	###   
-	datetimeHelper: (dateOrTime, newDate = null) =>
-		@log dateOrTime
-
-		for action, parsable of dateOrTime
-			@log 'step 1', action, parsable
-
-			if action.indexOf('fuzzy') is -1
-				operator = if action.indexOf('add') isnt -1 then '+' else '-'
-
-			parsableType = Object.prototype.toString.call(parsable)
-
-			if parsableType is '[object Array]' # date partials
-				for item in parsable
-					itemType = Object.prototype.toString.call(item);
-
-					if newDate is null 
-						@log 'step 2', 'set datetime'
-
-						switch itemType
-							when '[object String]' # 'now' or '2013-07-01'
-								newDate = if item is "now" then new Date() else new Date(item)
-							when '[object Object]' # weekday operator {#weekday:1}
-								for itemKey, itemValue of item
-									newDate = @weekdayHelper itemValue if itemKey.indexOf("weekday") isnt -1 and newDate is null
-					else if itemType is '[object Array]' # dates to add to Date object 
-						@log 'step 3', 'parse array group'
-
-						interval = null
-						type = null
-
-						for frag in item
-							interval = frag if typeof frag is 'number' and not interval?
-							type = frag if typeof frag is 'string' and not type?
-
-						if interval is null or type is null
-							@log 'frag error', interval, type
-							return
-
-						if type.indexOf('second') isnt -1
-							curr = newDate.getSeconds()
-							time = operators[operator](curr, interval)
-							newDate.setSeconds(time)
-						else if type.indexOf('minute') isnt -1
-							curr = newDate.getMinutes()
-							time = operators[operator](curr, interval)
-							newDate.setMinutes(time)
-						else if type.indexOf('hour') isnt -1
-							curr = newDate.getHours()
-							time = operators[operator](curr, interval)
-							newDate.setHours(time)
-						else if type.indexOf('day') isnt -1
-							curr = newDate.getDate()
-							date = operators[operator](curr, interval)
-							newDate.setDate(date)
-
-			else if parsableType is '[object Object]' # if item is an object we must have a 'special' time
-				@log 'step 2', 'handle fuzzy date or time'
-				label = null
-				def = null
-
-				for key, val of parsable
-					@log key, val
-					label = val if key is 'label'
-					def = val if key is 'default'
-
-				presetLabel = @presets[label]
-				@log 'presetLabel', presetLabel
-				useTime = if presetLabel? then presetLabel else def
-				@log 'useTime', useTime
-				if useTime is null
-					@log 'useTime error' 
-					return
-
-				useTimeArr = useTime.trim().split(':')
-
-				newDate.setHours useTimeArr[0]
-				newDate.setMinutes useTimeArr[1]
-				newDate.setSeconds useTimeArr[2]
-
-		return newDate
-	###
 
 new Please()                    
