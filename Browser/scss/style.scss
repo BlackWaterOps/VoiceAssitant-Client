@@ -220,3 +220,18 @@ div, p, input {
         font-size: 14px;
     }
 }
+
+.cf {
+    *zoom:1;
+}
+
+.cf:before, .cf:after {
+    content: "";
+    display: inline-table;
+    line-height: 0;
+    height: 0;
+}
+
+.cf:after {
+    clear: both;
+}
