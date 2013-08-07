@@ -53,6 +53,14 @@ class Please
 
 		console.log args.join(" ")
 
+	error: =>
+		args = [ ]
+		for argument in arguments
+			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
+			args.push argument
+
+		console.error args.join(" ")	
+
 	store:
 		createCookie: (k, v, d) ->
 			exp = new Date()
@@ -138,8 +146,6 @@ class Please
 
 			# TODO: handle multi types
 			type = payload.type
-
-			console.log field, type
 
 			text = @mainContext.payload[field]
 
@@ -317,7 +323,6 @@ class Please
 	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
 	
 	show: (results) =>
-		console.log results
 		# Handlebars.compile($('#bubblein-template').html())
 		templateName = if results.action? then results.action else 'bubbleout'
 
@@ -382,7 +387,7 @@ class Please
 
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
-			@log endpointMap, "<", response
+			@error endpointMap, "<", response
 			
 			if @debug is true
 				@debugData.status = status

@@ -26,6 +26,7 @@
       this.cancel = __bind(this.cancel, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
+      this.error = __bind(this.error, this);
       this.log = __bind(this.log, this);
       this.init = __bind(this.init, this);
       this.debug = true;
@@ -81,6 +82,19 @@
         args.push(argument);
       }
       return console.log(args.join(" "));
+    };
+
+    Please.prototype.error = function() {
+      var args, argument, _i, _len;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        argument = arguments[_i];
+        if (typeof argument === 'object') {
+          argument = JSON.stringify(argument, null, " ");
+        }
+        args.push(argument);
+      }
+      return console.error(args.join(" "));
     };
 
     Please.prototype.store = {
@@ -171,7 +185,6 @@
         this.sendDeviceInfo = true;
         field = payload.field;
         type = payload.type;
-        console.log(field, type);
         text = this.mainContext.payload[field];
         data = {
           text: text,
@@ -353,7 +366,6 @@
 
     Please.prototype.show = function(results) {
       var template, templateName;
-      console.log(results);
       templateName = results.action != null ? results.action : 'bubbleout';
       template = $('#' + templateName + '-template').html();
       template = Handlebars.compile(template);
@@ -423,7 +435,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        _this.log(endpointMap, "<", response);
+        _this.error(endpointMap, "<", response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
