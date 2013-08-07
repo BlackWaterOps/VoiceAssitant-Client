@@ -1,0 +1,29 @@
+.shopping {
+	background-color: white;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	min-height: 75px;
+	max-height: 225px;
+}
+
+.shopping-item {
+	border-bottom: 1px solid #dfdfdf;
+	padding: 10px 0;
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+}
+
+.shopping-image {
+	display: block;
+	float: left;
+	width: 100px;
+	img {
+		width: 100%;
+	}
+}
+
+.shopping-details {
+	padding-left: 120px;
+}

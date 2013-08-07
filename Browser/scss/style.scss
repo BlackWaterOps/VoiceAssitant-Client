@@ -1,4 +1,10 @@
 @import "mixins.scss";
+@import "templates.scss";
+
+*, *:before, *:after {
+    -webkit-font-smoothing: subpixel-antialiased;
+    @include box-sizing(border-box);
+}
 
 body {
     font-family: "HelveticaNeue-Light", "HelveticaNeue", Arial;
@@ -6,6 +12,20 @@ body {
     margin: 0;
     background-color: #1f2122;
     overflow: hidden;
+}
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
+}
+a img {
+    border: none;
 }
 div, p, input {
     margin: 0px;
@@ -17,7 +37,7 @@ div, p, input {
 }
 #input-form.cancel {
     #main-input {
-            padding-right: 85px;
+        padding-right: 85px;
     }
 
     .cancel-btn {
@@ -228,7 +248,7 @@ div, p, input {
 
 .cf:before, .cf:after {
     content: "";
-    display: inline-table;
+    display: table;
     line-height: 0;
     height: 0;
 }

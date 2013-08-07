@@ -44,6 +44,25 @@
             </ul>
         </script>
 
+        <script id="shopping-template" type="text/x-handlebars-template">
+            <div class="bubble shopping">
+                <ul>
+                    {{#each this}}
+                    <li class="shopping-item cf">
+                        <a class="shopping-image" href="{{url}}">
+                            <img src="{{image}}" />
+                        </a>
+                        
+                        <div class="shopping-details">
+                            <p><a href="{{url}}">{{title}}</a></p>
+                            <p>{{price}}</p>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </script>
+
         <script id="images-template" type="text/x-handlebars-template">
             <div class="images">
                 {{#each url}}
