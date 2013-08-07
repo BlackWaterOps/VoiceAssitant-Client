@@ -48,7 +48,7 @@ class Please
 	log: =>
 		args = [ ]
 		for argument in arguments
-			argument = JSON.stringify(argument) if typeof argument is 'object'
+			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
 			args.push argument
 
 		console.log args.join(" ")
@@ -124,9 +124,11 @@ class Please
 				text: text
 				types: [type]
 
-			# @log 'disambiguate user response', data
+			console.log 'user response', field, type
+
+			#@log 'disambiguate user response', data
 		else
-			# @log 'disambiguate rez response'
+			#@log 'disambiguate rez response'
 
 			endpoint = @disambiguator + "/passive"
 
@@ -146,7 +148,7 @@ class Please
 				types: [type]
 
 		successHandler = (results) =>
-			# @log 'successHandler', results
+			# #@log 'successHandler', results
 			# gross hack to stop the resolver from 
 			checkDates = true
 
@@ -161,7 +163,7 @@ class Please
 
 					checkDates = false
 
-					@log 'successhandler', results
+					#@log 'successhandler', results
 
 
 				if field.indexOf('.') isnt -1
@@ -195,7 +197,7 @@ class Please
 		if response.status?            
 			switch response.status.toLowerCase()
 				when 'disambiguate'
-					# @log 'resolver disambiguate', response
+					# #@log 'resolver disambiguate', response
 					@inProgress = false
 					@disambiguate response
 				when 'in progress'
@@ -203,11 +205,11 @@ class Please
 					@inProgress = true
 					# store response so @disambiguate can get to it after @show
 					@disambigContext = response
-					# @log 'resolver progress', response
+					# #@log 'resolver progress', response
 					# display text to user and get response
 					@show response
 				when 'complete', 'completed'
-					# @log 'resolver complete', response
+					# #@log 'resolver complete', response
 					@counter = 0
 					@inProgress = false
 					@disambigContext = { }
@@ -216,14 +218,14 @@ class Please
 					else
 						@requestHelper @responder + 'actors/' + response.actor, 'POST', @mainContext, @show
 		else  
-			# @log 'resolver response without status', response 
+			# #@log 'resolver response without status', response 
 			payload = response.payload
 
 			if payload? and checkDates
 				if payload.start_date? or payload.start_time?
 					datetime = @buildDatetime payload.start_date, payload.start_time
 
-					@log 'datetime no status', datetime
+					#@log 'datetime no status', datetime
 
 					payload.start_date = datetime.date if payload.start_date?
 					payload.start_time = datetime.time if payload.start_time?
@@ -269,7 +271,7 @@ class Please
 		$('#input-form').addClass 'cancel'
 
 		if @inProgress is true
-			# @log 'should disambiguate'
+			# #@log 'should disambiguate'
 			@disambiguate text
 		else
 			data = query: text
@@ -308,7 +310,7 @@ class Please
 	#     )
 
 	#     doneHandler = (response) =>
-	#         @log '* POST success'
+	#         #@log '* POST success'
 	#         @board.append(@templates.simulate(response)).scrollTop(@board.height());
 	#         @loader.hide();
 
@@ -327,6 +329,17 @@ class Please
 		@addDebug(results) if @debug is true
 			
 		@loader.hide()
+
+	mapper: (key) =>
+		map = false
+		if key.indexOf(@classifier) isnt -1
+			map = "Casper"
+		else if key.indexOf(@disambiguator) isnt -1
+			map = "Disambiguator"
+		else if key.indexOf(@responder) isnt -1
+			map = "Rez"
+		
+		return map
 
 	buildDeviceInfo: =>
 		clientDate = new Date()
@@ -348,6 +361,8 @@ class Please
 				type: type
 				request: data
 
+		endpointMap = @mapper(endpoint) 
+
 		$.ajax(
 			url: endpoint
 			type: type
@@ -356,16 +371,17 @@ class Please
 			dataType: "json"
 			timeout: 10000
 			beforeSend: =>
-				@log endpoint, type, data
+				@log endpointMap, ">", data
 				@loader.show()
 		).done((response, status) =>
+			@log endpointMap, "<", response
 			if @debug is true
 				@debugData.status = status
 				@debugData.response = response
 
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
-			@log '* POST fail', response
+			@log endpointMap, "<", response
 			
 			if @debug is true
 				@debugData.status = status
@@ -469,13 +485,13 @@ class Please
 			newDate.setMinutes split[1]
 			newDate.setSeconds split[2]
 
-		@log 'newDate bottom', newDate
+		#@log 'newDate bottom', newDate
 
 		return if newDate is null or newDate is undefined then new Date() else newDate
 
 	# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
 	datetimeHelper: (dateOrTime, newDate = null) =>
-		@log dateOrTime
+		#@log dateOrTime
 
 		dateOrTimeType = Object.prototype.toString.call(dateOrTime)
 

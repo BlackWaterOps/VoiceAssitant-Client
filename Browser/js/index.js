@@ -15,6 +15,7 @@
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
+      this.mapper = __bind(this.mapper, this);
       this.show = __bind(this.show, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
@@ -75,7 +76,7 @@
       for (_i = 0, _len = arguments.length; _i < _len; _i++) {
         argument = arguments[_i];
         if (typeof argument === 'object') {
-          argument = JSON.stringify(argument);
+          argument = JSON.stringify(argument, null, " ");
         }
         args.push(argument);
       }
@@ -164,6 +165,7 @@
           text: text,
           types: [type]
         };
+        console.log('user response', field, type);
       } else {
         endpoint = this.disambiguator + "/passive";
         this.sendDeviceInfo = true;
@@ -187,7 +189,6 @@
             datetime = _this.buildDatetime(results.date, results.time);
             results[type] = datetime[type];
             checkDates = false;
-            _this.log('successhandler', results);
           }
           if (field.indexOf('.') !== -1) {
             fields = field.split('.');
@@ -252,7 +253,6 @@
         if ((payload != null) && checkDates) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
             datetime = this.buildDatetime(payload.start_date, payload.start_time);
-            this.log('datetime no status', datetime);
             if (payload.start_date != null) {
               payload.start_date = datetime.date;
             }
@@ -363,6 +363,19 @@
       return this.loader.hide();
     };
 
+    Please.prototype.mapper = function(key) {
+      var map;
+      map = false;
+      if (key.indexOf(this.classifier) !== -1) {
+        map = "Casper";
+      } else if (key.indexOf(this.disambiguator) !== -1) {
+        map = "Disambiguator";
+      } else if (key.indexOf(this.responder) !== -1) {
+        map = "Rez";
+      }
+      return map;
+    };
+
     Please.prototype.buildDeviceInfo = function() {
       var clientDate, deviceInfo;
       clientDate = new Date();
@@ -375,7 +388,8 @@
     };
 
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
-      var _this = this;
+      var endpointMap,
+        _this = this;
       if (this.sendDeviceInfo === true) {
         data.device_info = this.buildDeviceInfo();
         this.sendDeviceInfo = false;
@@ -387,6 +401,7 @@
           request: data
         };
       }
+      endpointMap = this.mapper(endpoint);
       return $.ajax({
         url: endpoint,
         type: type,
@@ -394,10 +409,11 @@
         dataType: "json",
         timeout: 10000,
         beforeSend: function() {
-          _this.log(endpoint, type, data);
+          _this.log(endpointMap, ">", data);
           return _this.loader.show();
         }
       }).done(function(response, status) {
+        _this.log(endpointMap, "<", response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -406,7 +422,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        _this.log('* POST fail', response);
+        _this.log(endpointMap, "<", response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -516,7 +532,6 @@
         newDate.setMinutes(split[1]);
         newDate.setSeconds(split[2]);
       }
-      this.log('newDate bottom', newDate);
       if (newDate === null || newDate === void 0) {
         return new Date();
       } else {
@@ -529,7 +544,6 @@
       if (newDate == null) {
         newDate = null;
       }
-      this.log(dateOrTime);
       dateOrTimeType = Object.prototype.toString.call(dateOrTime);
       switch (dateOrTimeType) {
         case '[object String]':
