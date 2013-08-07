@@ -138,6 +138,7 @@ div, p, input {
 
         pre {
             white-space: pre;
+            word-wrap: break-word; 
             font-family: "Monaco", "Courier New", monospace;
             font-size: 14px;
         }
