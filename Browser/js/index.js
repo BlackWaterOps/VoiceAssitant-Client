@@ -366,23 +366,28 @@
 
     Please.prototype.show = function(results) {
       var template, templateBase, templateData, templateName, templateType;
-      templateName = templateType = 'bubbleout';
-      templateData = results.simple;
+      templateName = 'bubbleout';
+      templateData = results.show.simple;
+      template = $('#' + templateName + '-template');
+      template = Handlebars.compile(template.html());
+      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+      if (this.debug === true) {
+        this.addDebug(results);
+      }
       if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
         templateData = results.show.structured.items;
         template = results.show.structured.template.split(':');
         templateBase = template[0];
         templateType = template[1];
         templateName = template[2] != null ? template[2] : templateType;
-      }
-      template = $('#' + templateType + '-template');
-      if (template.length === 0) {
-        template = $('#' + templateBase + '-template');
-      }
-      template = Handlebars.compile(template.html());
-      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
-      if (this.debug === true) {
-        this.addDebug(results);
+        template = $('#' + templateType + '-template');
+        if (template.length === 0) {
+          template = $('#' + templateBase + '-template');
+        }
+        if (template.length > 0) {
+          template = Handlebars.compile(template.html());
+          this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+        }
       }
       return this.loader.hide();
     };

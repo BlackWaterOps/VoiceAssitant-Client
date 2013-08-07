@@ -323,10 +323,17 @@ class Please
 	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
 	
 	show: (results) =>
+		templateName = 'bubbleout'
+		templateData = results.show.simple
 
-		templateName = templateType = 'bubbleout'
-		templateData = results.simple
+		template = $('#' + templateName + '-template')
+		
+		template = Handlebars.compile(template.html())
 
+		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
+
+		@addDebug(results) if @debug is true
+		
 		if results.show? and results.show.structured? and results.show.structured.template?
 			templateData = results.show.structured.items
 			template = results.show.structured.template.split(':')
@@ -334,16 +341,15 @@ class Please
 			templateType = template[1]
 			templateName = if template[2]? then template[2] else templateType
 
-		template = $('#' + templateType + '-template')
+			template = $('#' + templateType + '-template')
 
-		template = $('#' + templateBase + '-template') if template.length is 0
-		
-		template = Handlebars.compile(template.html())
+			template = $('#' + templateBase + '-template') if template.length is 0
 
-		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
+			if template.length > 0
+				template = Handlebars.compile(template.html())
 
-		@addDebug(results) if @debug is true
-			
+				@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
+
 		@loader.hide()
 
 	mapper: (key) =>
