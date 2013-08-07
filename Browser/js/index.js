@@ -353,6 +353,7 @@
 
     Please.prototype.show = function(results) {
       var template, templateName;
+      console.log(results);
       templateName = results.action != null ? results.action : 'bubbleout';
       template = $('#' + templateName + '-template').html();
       template = Handlebars.compile(template);

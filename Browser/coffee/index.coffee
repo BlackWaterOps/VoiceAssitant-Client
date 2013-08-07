@@ -317,6 +317,7 @@ class Please
 	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
 	
 	show: (results) =>
+		console.log results
 		# Handlebars.compile($('#bubblein-template').html())
 		templateName = if results.action? then results.action else 'bubbleout'
 
