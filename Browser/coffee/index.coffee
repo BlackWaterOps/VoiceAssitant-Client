@@ -327,9 +327,9 @@ class Please
 		templateName = templateType = 'bubbleout'
 		templateData = results.simple
 
-		if results.structured? and results.structured.template?
-			templateData = results.structured.items
-			template = results.structured.template.split(':')
+		if results.show? and results.show.structured? and results.show.structured.template?
+			templateData = results.show.structured.items
+			template = results.show.structured.template.split(':')
 			templateBase = template[0]
 			templateType = template[1]
 			templateName = if template[2]? then template[2] else templateType

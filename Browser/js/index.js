@@ -368,9 +368,9 @@
       var template, templateBase, templateData, templateName, templateType;
       templateName = templateType = 'bubbleout';
       templateData = results.simple;
-      if ((results.structured != null) && (results.structured.template != null)) {
-        templateData = results.structured.items;
-        template = results.structured.template.split(':');
+      if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
+        templateData = results.show.structured.items;
+        template = results.show.structured.template.split(':');
         templateBase = template[0];
         templateType = template[1];
         templateName = template[2] != null ? template[2] : templateType;
