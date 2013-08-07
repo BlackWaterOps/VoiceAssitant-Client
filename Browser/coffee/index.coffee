@@ -323,14 +323,24 @@ class Please
 	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
 	
 	show: (results) =>
-		# Handlebars.compile($('#bubblein-template').html())
-		templateName = if results.action? then results.action else 'bubbleout'
 
-		template = $('#' + templateName + '-template').html()
+		templateName = templateType = 'bubbleout'
+		templateData = results.simple
 
-		template = Handlebars.compile(template)
+		if results.structured? and results.structured.template?
+			templateData = results.structured.items
+			template = results.structured.template.split(':')
+			templateBase = template[0]
+			templateType = template[1]
+			templateName = if template[2]? then template[2] else templateType
 
-		@board.append(template(results)).scrollTop(@board.find('.bubble:last').offset().top)
+		template = $('#' + templateType + '-template')
+
+		template = $('#' + templateBase + '-template') if template.length is 0
+		
+		template = Handlebars.compile(template.html())
+
+		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
 		@addDebug(results) if @debug is true
 			
@@ -387,7 +397,7 @@ class Please
 
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
-			@error endpointMap, "<", response
+			@error endpointMap, "<", (if response.responseJSON? then response.responseJSON else response)
 			
 			if @debug is true
 				@debugData.status = status

@@ -365,11 +365,22 @@
     };
 
     Please.prototype.show = function(results) {
-      var template, templateName;
-      templateName = results.action != null ? results.action : 'bubbleout';
-      template = $('#' + templateName + '-template').html();
-      template = Handlebars.compile(template);
-      this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
+      var template, templateBase, templateData, templateName, templateType;
+      templateName = templateType = 'bubbleout';
+      templateData = results.simple;
+      if ((results.structured != null) && (results.structured.template != null)) {
+        templateData = results.structured.items;
+        template = results.structured.template.split(':');
+        templateBase = template[0];
+        templateType = template[1];
+        templateName = template[2] != null ? template[2] : templateType;
+      }
+      template = $('#' + templateType + '-template');
+      if (template.length === 0) {
+        template = $('#' + templateBase + '-template');
+      }
+      template = Handlebars.compile(template.html());
+      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
       if (this.debug === true) {
         this.addDebug(results);
       }
@@ -435,7 +446,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        _this.error(endpointMap, "<", response);
+        _this.error(endpointMap, "<", (response.responseJSON != null ? response.responseJSON : response));
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
