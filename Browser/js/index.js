@@ -15,6 +15,7 @@
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
+      this.mapper = __bind(this.mapper, this);
       this.show = __bind(this.show, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
@@ -25,6 +26,7 @@
       this.cancel = __bind(this.cancel, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
+      this.error = __bind(this.error, this);
       this.log = __bind(this.log, this);
       this.init = __bind(this.init, this);
       this.debug = true;
@@ -75,11 +77,24 @@
       for (_i = 0, _len = arguments.length; _i < _len; _i++) {
         argument = arguments[_i];
         if (typeof argument === 'object') {
-          argument = JSON.stringify(argument);
+          argument = JSON.stringify(argument, null, " ");
         }
         args.push(argument);
       }
       return console.log(args.join(" "));
+    };
+
+    Please.prototype.error = function() {
+      var args, argument, _i, _len;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        argument = arguments[_i];
+        if (typeof argument === 'object') {
+          argument = JSON.stringify(argument, null, " ");
+        }
+        args.push(argument);
+      }
+      return console.error(args.join(" "));
     };
 
     Please.prototype.store = {
@@ -164,12 +179,12 @@
           text: text,
           types: [type]
         };
+        console.log('user response', field, type);
       } else {
         endpoint = this.disambiguator + "/passive";
         this.sendDeviceInfo = true;
         field = payload.field;
         type = payload.type;
-        console.log(field, type);
         text = this.mainContext.payload[field];
         data = {
           text: text,
@@ -187,7 +202,6 @@
             datetime = _this.buildDatetime(results.date, results.time);
             results[type] = datetime[type];
             checkDates = false;
-            _this.log('successhandler', results);
           }
           if (field.indexOf('.') !== -1) {
             fields = field.split('.');
@@ -252,7 +266,6 @@
         if ((payload != null) && checkDates) {
           if ((payload.start_date != null) || (payload.start_time != null)) {
             datetime = this.buildDatetime(payload.start_date, payload.start_time);
-            this.log('datetime no status', datetime);
             if (payload.start_date != null) {
               payload.start_date = datetime.date;
             }
@@ -293,7 +306,8 @@
       } else {
         results.debug = this.debugData;
       }
-      return template = Handlebars.compile($('#debug-template').html());
+      template = Handlebars.compile($('#debug-template').html());
+      return this.board.find('.bubble:last').append(template(results));
     };
 
     Please.prototype.ask = function(input) {
@@ -351,15 +365,44 @@
     };
 
     Please.prototype.show = function(results) {
-      var template, templateName;
-      templateName = results.action != null ? results.action : 'bubbleout';
-      template = $('#' + templateName + '-template').html();
-      template = Handlebars.compile(template);
-      this.board.append(template(results)).scrollTop(this.board.find('.bubble:last').offset().top);
+      var template, templateBase, templateData, templateName, templateType;
+      templateName = 'bubbleout';
+      templateData = results.show.simple;
+      template = $('#' + templateName + '-template');
+      template = Handlebars.compile(template.html());
+      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
       if (this.debug === true) {
         this.addDebug(results);
       }
+      if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
+        templateData = results.show.structured.items;
+        template = results.show.structured.template.split(':');
+        templateBase = template[0];
+        templateType = template[1];
+        templateName = template[2] != null ? template[2] : templateType;
+        template = $('#' + templateType + '-template');
+        if (template.length === 0) {
+          template = $('#' + templateBase + '-template');
+        }
+        if (template.length > 0) {
+          template = Handlebars.compile(template.html());
+          this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+        }
+      }
       return this.loader.hide();
+    };
+
+    Please.prototype.mapper = function(key) {
+      var map;
+      map = false;
+      if (key.indexOf(this.classifier) !== -1) {
+        map = "Casper";
+      } else if (key.indexOf(this.disambiguator) !== -1) {
+        map = "Disambiguator";
+      } else if (key.indexOf(this.responder) !== -1) {
+        map = "Rez";
+      }
+      return map;
     };
 
     Please.prototype.buildDeviceInfo = function() {
@@ -374,7 +417,8 @@
     };
 
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
-      var _this = this;
+      var endpointMap,
+        _this = this;
       if (this.sendDeviceInfo === true) {
         data.device_info = this.buildDeviceInfo();
         this.sendDeviceInfo = false;
@@ -386,6 +430,7 @@
           request: data
         };
       }
+      endpointMap = this.mapper(endpoint);
       return $.ajax({
         url: endpoint,
         type: type,
@@ -393,10 +438,11 @@
         dataType: "json",
         timeout: 10000,
         beforeSend: function() {
-          _this.log(endpoint, type, data);
+          _this.log(endpointMap, ">", data);
           return _this.loader.show();
         }
       }).done(function(response, status) {
+        _this.log(endpointMap, "<", response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -405,7 +451,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        _this.log('* POST fail', response);
+        _this.error(endpointMap, "<", (response.responseJSON != null ? response.responseJSON : response));
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -515,7 +561,6 @@
         newDate.setMinutes(split[1]);
         newDate.setSeconds(split[2]);
       }
-      this.log('newDate bottom', newDate);
       if (newDate === null || newDate === void 0) {
         return new Date();
       } else {
@@ -528,7 +573,6 @@
       if (newDate == null) {
         newDate = null;
       }
-      this.log(dateOrTime);
       dateOrTimeType = Object.prototype.toString.call(dateOrTime);
       switch (dateOrTimeType) {
         case '[object String]':

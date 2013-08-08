@@ -1,4 +1,42 @@
-/* line 3, ../scss/style.scss */
+/* line 1, ../scss/templates.scss */
+.shopping {
+  background-color: white;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  min-height: 75px;
+  max-height: 225px; }
+
+/* line 9, ../scss/templates.scss */
+.shopping-item {
+  border-bottom: 1px solid #dfdfdf;
+  padding: 10px 0; }
+  /* line 12, ../scss/templates.scss */
+  .shopping-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0; }
+
+/* line 18, ../scss/templates.scss */
+.shopping-image {
+  display: block;
+  float: left;
+  width: 100px; }
+  /* line 22, ../scss/templates.scss */
+  .shopping-image img {
+    width: 100%; }
+
+/* line 27, ../scss/templates.scss */
+.shopping-details {
+  padding-left: 120px; }
+
+/* line 4, ../scss/style.scss */
+*, *:before, *:after {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/* line 9, ../scss/style.scss */
 body {
   font-family: "HelveticaNeue-Light", "HelveticaNeue", Arial;
   padding: 0;
@@ -6,24 +44,41 @@ body {
   background-color: #1f2122;
   overflow: hidden; }
 
-/* line 10, ../scss/style.scss */
+/* line 16, ../scss/style.scss */
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+/* line 21, ../scss/style.scss */
+a {
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
+
+/* line 27, ../scss/style.scss */
+a img {
+  border: none; }
+
+/* line 30, ../scss/style.scss */
 div, p, input {
   margin: 0px; }
 
-/* line 13, ../scss/style.scss */
+/* line 33, ../scss/style.scss */
 .wrapper {
   width: 480px;
   margin: 0 auto;
   text-align: left; }
 
-/* line 19, ../scss/style.scss */
+/* line 39, ../scss/style.scss */
 #input-form.cancel #main-input {
   padding-right: 85px; }
-/* line 23, ../scss/style.scss */
+/* line 43, ../scss/style.scss */
 #input-form.cancel .cancel-btn {
   right: 0; }
 
-/* line 28, ../scss/style.scss */
+/* line 48, ../scss/style.scss */
 #main-input {
   font-size: 46px;
   padding: 7px 5px 7px 5px;
@@ -43,11 +98,11 @@ div, p, input {
   -o-transition: .2s ease-in-out;
   transition: .2s ease-in-out; }
 
-/* line 43, ../scss/style.scss */
+/* line 63, ../scss/style.scss */
 #main-input:focus {
   outline: none; }
 
-/* line 46, ../scss/style.scss */
+/* line 66, ../scss/style.scss */
 .cancel-btn {
   position: fixed;
   bottom: 0;
@@ -72,7 +127,7 @@ div, p, input {
   -o-transition: .2s ease-in-out;
   transition: .2s ease-in-out; }
 
-/* line 63, ../scss/style.scss */
+/* line 83, ../scss/style.scss */
 #board {
   position: absolute;
   top: 0;
@@ -81,7 +136,7 @@ div, p, input {
   bottom: 70px;
   overflow: auto; }
 
-/* line 71, ../scss/style.scss */
+/* line 91, ../scss/style.scss */
 .bubble {
   width: 100%;
   padding: 15px;
@@ -94,19 +149,19 @@ div, p, input {
   -ms-box-sizing: border-box;
   box-sizing: border-box; }
 
-/* line 80, ../scss/style.scss */
+/* line 100, ../scss/style.scss */
 .in {
   background-color: #e2e2e2;
   text-align: right;
   color: #333; }
 
-/* line 86, ../scss/style.scss */
+/* line 106, ../scss/style.scss */
 .out {
   background-color: white;
   color: #c5185e;
   text-align: left; }
 
-/* line 92, ../scss/style.scss */
+/* line 112, ../scss/style.scss */
 .out ul {
   font-size: 16px;
   list-style-type: none;
@@ -114,19 +169,19 @@ div, p, input {
   -moz-column-count: 5;
   -webkit-column-count: 5; }
 
-/* line 101, ../scss/style.scss */
+/* line 121, ../scss/style.scss */
 .debug .underspeak {
   font-size: 14px;
   color: #555;
   font-weight: lighter;
   text-align: left; }
-/* line 108, ../scss/style.scss */
+/* line 128, ../scss/style.scss */
 .debug b, .debug strong {
   margin-left: 10px; }
-  /* line 111, ../scss/style.scss */
+  /* line 131, ../scss/style.scss */
   .debug b:nth-child(1), .debug strong:nth-child(1) {
     margin-left: 1px; }
-/* line 116, ../scss/style.scss */
+/* line 136, ../scss/style.scss */
 .debug .expand, .debug .simulate {
   border: solid #bbb 1px;
   background: #ddd;
@@ -136,7 +191,7 @@ div, p, input {
   text-decoration: none;
   font-size: 11px;
   cursor: pointer; }
-/* line 127, ../scss/style.scss */
+/* line 147, ../scss/style.scss */
 .debug .data {
   font-size: 12px;
   font-family: "Monaco", "Courier New", monospace;
@@ -148,18 +203,19 @@ div, p, input {
   margin-top: 15px;
   padding-top: 10px;
   text-align: left; }
-  /* line 139, ../scss/style.scss */
+  /* line 159, ../scss/style.scss */
   .debug .data pre {
     white-space: pre;
+    word-wrap: break-word;
     font-family: "Monaco", "Courier New", monospace;
     font-size: 14px; }
 
-/* line 147, ../scss/style.scss */
+/* line 168, ../scss/style.scss */
 .extLink {
   display: block;
   text-align: right; }
 
-/* line 152, ../scss/style.scss */
+/* line 173, ../scss/style.scss */
 #loader {
   position: absolute;
   left: 17px;
@@ -167,30 +223,30 @@ div, p, input {
   z-index: 999;
   display: none; }
 
-/* line 160, ../scss/style.scss */
+/* line 181, ../scss/style.scss */
 .images {
   text-align: center;
   padding: 5px; }
-  /* line 164, ../scss/style.scss */
+  /* line 185, ../scss/style.scss */
   .images img {
     border: solid white 2px;
     box-shadow: 0 0 10px black;
     margin: 5px;
     max-width: 250px; }
 
-/* line 172, ../scss/style.scss */
+/* line 193, ../scss/style.scss */
 .webpage {
   padding: 20px;
   text-align: center;
   background: white; }
-  /* line 177, ../scss/style.scss */
+  /* line 198, ../scss/style.scss */
   .webpage iframe {
     width: 100%;
     min-height: 400px;
     border: solid #ccc 1px;
     box-shadow: inset 0 0 5px #ccc; }
 
-/* line 185, ../scss/style.scss */
+/* line 206, ../scss/style.scss */
 .i {
   position: absolute;
   top: 9px;
@@ -204,11 +260,11 @@ div, p, input {
   text-decoration: none;
   font-size: 22px;
   z-index: 999999; }
-  /* line 199, ../scss/style.scss */
+  /* line 220, ../scss/style.scss */
   .i:hover {
     background: black; }
 
-/* line 204, ../scss/style.scss */
+/* line 225, ../scss/style.scss */
 #init {
   position: absolute;
   top: 40%;
@@ -216,12 +272,27 @@ div, p, input {
   color: #aaa;
   display: none;
   text-align: center; }
-  /* line 212, ../scss/style.scss */
+  /* line 233, ../scss/style.scss */
   #init h1 {
     font-weight: normal;
     margin: 0;
     padding: 0;
     font-size: 48px; }
-  /* line 219, ../scss/style.scss */
+  /* line 240, ../scss/style.scss */
   #init .subtitle {
     font-size: 14px; }
+
+/* line 245, ../scss/style.scss */
+.cf {
+  *zoom: 1; }
+
+/* line 249, ../scss/style.scss */
+.cf:before, .cf:after {
+  content: "";
+  display: table;
+  line-height: 0;
+  height: 0; }
+
+/* line 256, ../scss/style.scss */
+.cf:after {
+  clear: both; }
