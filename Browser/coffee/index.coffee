@@ -150,7 +150,7 @@ class Please
 			text = payload
 
 			data = 
-				text: text
+				payload: text
 				types: [type]
 
 			#@log 'disambiguate user response', data
@@ -177,12 +177,7 @@ class Please
 			data = 
 				types: [type]
 				type: type
-
-			# temp fix. will be payload in the future
-			if personalData is true
-				data.payload = text
-			else
-				data.text = text
+				payload: text
 
 		successHandler = (results) =>
 			# #@log 'successHandler', results

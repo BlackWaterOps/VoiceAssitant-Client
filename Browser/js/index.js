@@ -211,7 +211,7 @@
         type = this.disambigContext.type;
         text = payload;
         data = {
-          text: text,
+          payload: text,
           types: [type]
         };
       } else {
@@ -230,13 +230,9 @@
         }
         data = {
           types: [type],
-          type: type
+          type: type,
+          payload: text
         };
-        if (personalData === true) {
-          data.payload = text;
-        } else {
-          data.text = text;
-        }
       }
       successHandler = function(results) {
         var checkDates, datetime;
