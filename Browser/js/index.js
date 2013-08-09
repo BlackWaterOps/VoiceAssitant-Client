@@ -235,7 +235,7 @@
         };
       }
       successHandler = function(results) {
-        var checkDates, datetime;
+        var checkDates, datetime, request;
         checkDates = true;
         if (_this.debug === true && _this.inProgress === true) {
           _this.addDebug();
@@ -251,7 +251,11 @@
           } else {
             _this.mainContext.payload[field] = results[type];
           }
-          return _this.resolver(_this.mainContext, checkDates);
+          request = $.extend({}, _this.mainContext);
+          if (results.unused_tokens != null) {
+            request.unused_tokens = results.unused_tokens;
+          }
+          return _this.resolver(request, checkDates);
         } else {
           return console.log('oops no responder response', results);
         }

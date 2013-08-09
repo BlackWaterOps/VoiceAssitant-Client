@@ -142,7 +142,7 @@ class Please
 	disambiguate: (payload, personalData = false) =>
 		if @inProgress is true
 			endpoint = @disambiguator + "/active"
-
+			
 			field = @disambigContext.field
 
 			type = @disambigContext.type
@@ -156,10 +156,9 @@ class Please
 			#@log 'disambiguate user response', data
 		else
 			#@log 'disambiguate rez response'
-
 			if personalData is true
-				endpoint = @personal
 				# in the future we'll need to send a userid for personal data 
+				endpoint = @personal
 			else 
 				endpoint = @disambiguator + "/passive"
 				@sendDeviceInfo = true
@@ -181,13 +180,14 @@ class Please
 
 		successHandler = (results) =>
 			# #@log 'successHandler', results
-			# gross hack to stop the resolver from 
+			# gross hack to stop the resolver from running buildDatetime on already built dates/times
 			checkDates = true
 
 			if @debug is true and @inProgress is true
 				@addDebug()
 				
 			if results?
+				# find & replace date time fields
 				if results.date? or results.time?
 					datetime = @buildDatetime(results.date, results.time)
 				
@@ -195,14 +195,18 @@ class Please
 
 					checkDates = false
 
-					#@log 'successhandler', results
-
+				# find & replace the specific field indicated in the response 
 				if field.indexOf('.') isnt -1
 					@findOrReplace(field, results[type])
 				else
 					@mainContext.payload[field] = results[type]
 			
-				@resolver @mainContext, checkDates
+				# clone 'mainContext' so we don't pollute with unused_tokens
+				request = $.extend({}, @mainContext)
+				
+				request.unused_tokens = results.unused_tokens if results.unused_tokens?
+				
+				@resolver request, checkDates
 			else
 				console.log 'oops no responder response', results
 
