@@ -23,6 +23,7 @@
       this.addDebug = __bind(this.addDebug, this);
       this.resolver = __bind(this.resolver, this);
       this.disambiguate = __bind(this.disambiguate, this);
+      this.findOrReplace = __bind(this.findOrReplace, this);
       this.cancel = __bind(this.cancel, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
@@ -33,6 +34,7 @@
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/v1';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate';
+      this.personal = 'http://stremor-pud.appspot.com/disambiguate';
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
@@ -167,9 +169,42 @@
       return this.input.focus();
     };
 
-    Please.prototype.disambiguate = function(payload) {
+    Please.prototype.findOrReplace = function(field, type) {
+      var cursive, fields, found;
+      if (type == null) {
+        type = null;
+      }
+      fields = field.split('.');
+      found = null;
+      cursive = function(obj) {
+        var key, val;
+        for (key in obj) {
+          val = obj[key];
+          if (fields.length > 1 && key === fields[0]) {
+            fields.shift();
+            cursive(val);
+          } else if (key === fields[0]) {
+            if (type === null) {
+              found = obj[key];
+            } else {
+              obj[key] = type;
+            }
+            return;
+          }
+        }
+      };
+      cursive(this.mainContext);
+      if (found != null) {
+        return found;
+      }
+    };
+
+    Please.prototype.disambiguate = function(payload, personalData) {
       var data, endpoint, field, successHandler, text, type,
         _this = this;
+      if (personalData == null) {
+        personalData = false;
+      }
       if (this.inProgress === true) {
         endpoint = this.disambiguator + "/active";
         field = this.disambigContext.field;
@@ -179,20 +214,32 @@
           text: text,
           types: [type]
         };
-        console.log('user response', field, type);
       } else {
-        endpoint = this.disambiguator + "/passive";
-        this.sendDeviceInfo = true;
+        if (personalData === true) {
+          endpoint = this.personal;
+        } else {
+          endpoint = this.disambiguator + "/passive";
+          this.sendDeviceInfo = true;
+        }
         field = payload.field;
         type = payload.type;
-        text = this.mainContext.payload[field];
+        if (field.indexOf('.') !== -1) {
+          text = this.findOrReplace(field);
+        } else {
+          text = this.mainContext.payload[field];
+        }
         data = {
-          text: text,
-          types: [type]
+          types: [type],
+          type: type
         };
+        if (personalData === true) {
+          data.payload = text;
+        } else {
+          data.text = text;
+        }
       }
       successHandler = function(results) {
-        var checkDates, cursive, datetime, fields;
+        var checkDates, datetime;
         checkDates = true;
         if (_this.debug === true && _this.inProgress === true) {
           _this.addDebug();
@@ -204,21 +251,7 @@
             checkDates = false;
           }
           if (field.indexOf('.') !== -1) {
-            fields = field.split('.');
-            cursive = function(obj) {
-              var key, val;
-              for (key in obj) {
-                val = obj[key];
-                if (fields.length > 1 && key === fields[0]) {
-                  fields.shift();
-                  cursive(val);
-                } else if (key === fields[0]) {
-                  obj[key] = results[type];
-                  return;
-                }
-              }
-            };
-            cursive(_this.mainContext);
+            _this.findOrReplace(field, results[type]);
           } else {
             _this.mainContext.payload[field] = results[type];
           }
@@ -241,10 +274,13 @@
       */
 
       if (response.status != null) {
+        this.inProgress = false;
         switch (response.status.toLowerCase()) {
           case 'disambiguate':
-            this.inProgress = false;
             return this.disambiguate(response);
+          case 'disambiguate:personal':
+            console.log('disambiguate personal');
+            return this.disambiguate(response, true);
           case 'in progress':
             this.counter = 0;
             this.inProgress = true;
@@ -253,7 +289,6 @@
           case 'complete':
           case 'completed':
             this.counter = 0;
-            this.inProgress = false;
             this.disambigContext = {};
             if (response.actor === null || response.actor === void 0) {
               return this.show(response);
@@ -401,6 +436,8 @@
         map = "Disambiguator";
       } else if (key.indexOf(this.responder) !== -1) {
         map = "Rez";
+      } else if (key.indexOf(this.personal) !== -1) {
+        map = "Pud";
       }
       return map;
     };

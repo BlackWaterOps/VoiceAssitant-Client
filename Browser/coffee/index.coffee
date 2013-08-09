@@ -4,6 +4,7 @@ class Please
 		@debugData = { }
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/v1'
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate'
+		@personal = 'http://stremor-pud.appspot.com/disambiguate'
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00
@@ -118,7 +119,27 @@ class Please
 		@loader.hide()
 		@input.focus()
 
-	disambiguate: (payload) =>
+	findOrReplace: (field, type = null) =>
+		fields = field.split('.')
+		found = null
+
+		cursive = (obj) ->
+			for key, val of obj		
+				if fields.length > 1 and key is fields[0]
+					fields.shift()
+					cursive(val)
+				else if key is fields[0]
+					if type is null
+						found = obj[key]
+					else
+						obj[key] = type
+					return
+
+		cursive(@mainContext)
+
+		return found if found?
+
+	disambiguate: (payload, personalData = false) =>
 		if @inProgress is true
 			endpoint = @disambiguator + "/active"
 
@@ -132,26 +153,36 @@ class Please
 				text: text
 				types: [type]
 
-			console.log 'user response', field, type
-
 			#@log 'disambiguate user response', data
 		else
 			#@log 'disambiguate rez response'
 
-			endpoint = @disambiguator + "/passive"
-
-			@sendDeviceInfo = true
+			if personalData is true
+				endpoint = @personal
+				# in the future we'll need to send a userid for personal data 
+			else 
+				endpoint = @disambiguator + "/passive"
+				@sendDeviceInfo = true
 
 			field = payload.field
 
 			# TODO: handle multi types
 			type = payload.type
 
-			text = @mainContext.payload[field]
+			if field.indexOf('.') isnt -1
+				text = @findOrReplace(field)
+			else
+				text = @mainContext.payload[field]	
 
 			data = 
-				text: text
 				types: [type]
+				type: type
+
+			# temp fix. will be payload in the future
+			if personalData is true
+				data.payload = text
+			else
+				data.text = text
 
 		successHandler = (results) =>
 			# #@log 'successHandler', results
@@ -171,20 +202,8 @@ class Please
 
 					#@log 'successhandler', results
 
-
 				if field.indexOf('.') isnt -1
-					fields = field.split('.')
-
-					cursive = (obj) ->
-						for key, val of obj				
-							if fields.length > 1 and key is fields[0]
-								fields.shift()
-								cursive(val)
-							else if key is fields[0]
-								obj[key] = results[type]
-								return
-
-					cursive(@mainContext)
+					@findOrReplace(field, results[type])
 				else
 					@mainContext.payload[field] = results[type]
 			
@@ -200,12 +219,15 @@ class Please
 		here is where we need to make checks of whether to pass along data
 		to 'REZ' or resolve with the disambiguator
 		###
-		if response.status?            
+		if response.status?
+			@inProgress = false           
 			switch response.status.toLowerCase()
 				when 'disambiguate'
 					# #@log 'resolver disambiguate', response
-					@inProgress = false
 					@disambiguate response
+				when 'disambiguate:personal'
+					console.log 'disambiguate personal'
+					@disambiguate response, true
 				when 'in progress'
 					@counter = 0
 					@inProgress = true
@@ -217,7 +239,6 @@ class Please
 				when 'complete', 'completed'
 					# #@log 'resolver complete', response
 					@counter = 0
-					@inProgress = false
 					@disambigContext = { }
 					if response.actor is null or response.actor is undefined
 						@show response
@@ -360,7 +381,9 @@ class Please
 			map = "Disambiguator"
 		else if key.indexOf(@responder) isnt -1
 			map = "Rez"
-		
+		else if key.indexOf(@personal) isnt -1
+			map = "Pud"
+
 		return map
 
 	buildDeviceInfo: =>
