@@ -239,6 +239,8 @@ class Please
 						@show response
 					else
 						@requestHelper @responder + 'actors/' + response.actor, 'POST', @mainContext, @show
+				when 'error'
+					@show(response)
 		else  
 			# #@log 'resolver response without status', response 
 			payload = response.payload

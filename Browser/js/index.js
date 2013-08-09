@@ -291,6 +291,9 @@
             } else {
               return this.requestHelper(this.responder + 'actors/' + response.actor, 'POST', this.mainContext, this.show);
             }
+            break;
+          case 'error':
+            return this.show(response);
         }
       } else {
         payload = response.payload;
