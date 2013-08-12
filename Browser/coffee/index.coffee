@@ -8,8 +8,6 @@ class Please
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00
-		@sendDeviceInfo = false
-		@inProgress = false
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
@@ -20,12 +18,15 @@ class Please
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
-	
+		
+		@currentState = 'init'
+
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
 		@presets = 
 			'after work': '18:00:00'
 			'breakfast': '7:30:00'
 			'lunch': '12:00:00'
+		
 		@init()
 	init: =>
 		@input.focus()
@@ -45,22 +46,85 @@ class Please
 			), 1000
 
 		@getLocation()
+		@registerListeners()
 
-	log: =>
-		args = [ ]
-		for argument in arguments
-			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
-			args.push argument
+	registerListeners: =>
+		$(document)
+		.on('init', @auditor)
+		.on('disambiguate', @disambiguatePassive)
+		.on('disambiguate:personal', @disambiguatePersonal)
+		.on('disambiguate:active', @disambiguateActive)
+		.on('inprogress', @show)
+		.on('completed', @actor)
+		.on('error', @show)
+		.on('debug', @addDebug)
 
-		console.log args.join(" ")
+	ask: (input) =>
+		input = $(input)
 
-	error: =>
-		args = [ ]
-		for argument in arguments
-			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
-			args.push argument
+		text = input.val()
 
-		console.error args.join(" ")	
+		input.val('')
+		
+		template = Handlebars.compile($('#bubblein-template').html())
+		
+		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
+		
+		$('#input-form').addClass 'cancel'
+
+		# TODO: CHECK CURRENT STATE INSTEAD
+		if @currentState is 'inprogress'
+			# @disambiguate text
+			$(document).trigger(
+				type: 'disambiguate:active'
+				response: text
+			)
+		else
+			data = query: text
+					
+			@requestHelper @classifier, "GET", data, (response) =>				
+				# addDebug()
+				# @resolver response
+	
+				$(document)
+				.trigger($.Event('debug'))
+				.trigger(
+					type: 'init'
+					response: response
+				)	
+
+	keyup: (e) =>	
+		value = $(e.target).val()
+
+		target = $(e.target)
+
+		switch e.which
+			when 13
+				if value
+					@ask target
+					@history.push value
+					@pos = @history.length
+			when 38
+				@pos -= 1 if @pos > 0
+				target.val @history[@pos]
+
+			when 40
+				@pos += 1 if @pos < @history.length
+				target.val @history[@pos]
+				
+	expand: (e) =>
+	    e.preventDefault()
+	    $(e.target).parent().next().toggle()
+
+	cancel: (e) =>
+		@board.empty()
+		@mainContext = { }
+		@disambigContext = { }
+		@history = [ ]
+
+		$('#input-form').removeClass 'cancel'
+		@loader.hide()
+		@input.focus()
 
 	store:
 		createCookie: (k, v, d) ->
@@ -102,249 +166,150 @@ class Please
 			else
 				createCookie k, v, -1
 	
-	getLocation: =>
-		navigator.geolocation.getCurrentPosition @updatePosition
-	
-	updatePosition: (position) =>
-		@lat = position.coords.latitude
-		@lon = position.coords.longitude
-	
-	cancel: (e) =>
-		@board.empty()
-		@mainContext = { }
-		@disambigContext = { }
-		@history = [ ]
-
-		$('#input-form').removeClass 'cancel'
-		@loader.hide()
-		@input.focus()
-
-	findOrReplace: (field, type = null) =>
-		fields = field.split('.')
-		found = null
-
-		cursive = (obj) ->
-			for key, val of obj		
-				if fields.length > 1 and key is fields[0]
-					fields.shift()
-					cursive(val)
-				else if key is fields[0]
-					if type is null
-						found = obj[key]
-					else
-						obj[key] = type
-					return
-
-		cursive(@mainContext)
-
-		return found if found?
-
-	disambiguate: (payload, personalData = false) =>
-		if @inProgress is true
-			endpoint = @disambiguator + "/active"
-
-			field = @disambigContext.field
-
-			type = @disambigContext.type
+	disambiguateSuccessHandler: (response, field, type) =>
+		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
 			
-			text = payload
+		if response?
+			# find & replace date time fields
+			@replaceDates(response)
 
-			data = 
-				text: text
-				types: [type]
-
-			#@log 'disambiguate user response', data
-		else
-			#@log 'disambiguate rez response'
-
-			if personalData is true
-				endpoint = @personal
-				# in the future we'll need to send a userid for personal data 
-			else 
-				endpoint = @disambiguator + "/passive"
-				@sendDeviceInfo = true
-
-			field = payload.field
-
-			# TODO: handle multi types
-			type = payload.type
-
+			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
-				text = @findOrReplace(field)
+				@findOrReplace(field, response[type])
 			else
-				text = @mainContext.payload[field]	
-
-			data = 
-				types: [type]
-				type: type
-
-			# temp fix. will be payload in the future
-			if personalData is true
-				data.payload = text
-			else
-				data.text = text
-
-		successHandler = (results) =>
-			# #@log 'successHandler', results
-			# gross hack to stop the resolver from 
-			checkDates = true
-
-			if @debug is true and @inProgress is true
-				@addDebug()
-				
-			if results?
-				if results.date? or results.time?
-					datetime = @buildDatetime(results.date, results.time)
-				
-					results[type] = datetime[type]
-
-					checkDates = false
-
-					#@log 'successhandler', results
-
-				if field.indexOf('.') isnt -1
-					@findOrReplace(field, results[type])
-				else
-					@mainContext.payload[field] = results[type]
+				@mainContext.payload[field] = response[type]
+		
+			# clone 'mainContext' so we don't pollute with unused_tokens
+			request = $.extend({}, @mainContext)
 			
-				@resolver @mainContext, checkDates
-			else
-				console.log 'oops no responder response', results
+			request.unused_tokens = response.unused_tokens if response.unused_tokens?
+			
+			@auditor(request)
+		else
+			console.log 'oops no responder response', results
 
-		@requestHelper endpoint, "POST", data, successHandler
+	disambiguateActive: (e) =>
+		field = @disambigContext.field
 
-	# TODO: resolver logic can be split into two function, classifier responses & responder responses
-	resolver: (response, checkDates = true) =>
-		###
-		here is where we need to make checks of whether to pass along data
-		to 'REZ' or resolve with the disambiguator
-		###
-		if response.status?
-			@inProgress = false           
-			switch response.status.toLowerCase()
-				when 'disambiguate'
-					# #@log 'resolver disambiguate', response
-					@disambiguate response
-				when 'disambiguate:personal'
-					console.log 'disambiguate personal'
-					@disambiguate response, true
-				when 'in progress'
-					@counter = 0
-					@inProgress = true
-					# store response so @disambiguate can get to it after @show
-					@disambigContext = response
-					# #@log 'resolver progress', response
-					# display text to user and get response
-					@show response
-				when 'complete', 'completed'
-					# #@log 'resolver complete', response
-					@counter = 0
-					@disambigContext = { }
-					if response.actor is null or response.actor is undefined
-						@show response
-					else
-						@requestHelper @responder + 'actors/' + response.actor, 'POST', @mainContext, @show
-		else  
-			# #@log 'resolver response without status', response 
-			payload = response.payload
+		type = @disambigContext.type
+		
+		text = e.response
 
-			if payload? and checkDates
-				if payload.start_date? or payload.start_time?
-					datetime = @buildDatetime payload.start_date, payload.start_time
+		postData = 
+			payload: text
+			types: [type]
 
-					#@log 'datetime no status', datetime
+		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
+			@disambiguateSuccessHandler(response, field, type)
+		)
 
-					payload.start_date = datetime.date if payload.start_date?
-					payload.start_time = datetime.time if payload.start_time?
+	disambiguatePersonal: (e) =>
+		# in the future we'll need to send a userid for personal data 
+		data = e.response
 
-				if payload.end_date? or payload.end_time?
-					datetime = @buildDatetime payload.end_date, payload.end_time
+		field = data.field
 
-					payload.end_date = datetime.date if payload.end_date?
-					payload.end_time = datetime.time if payload.end_time?
+		# TODO: handle multi types?
+		type = data.type
 
+		if field.indexOf('.') isnt -1
+			text = @findOrReplace(field)
+		else
+			text = @mainContext.payload[field]	
 
-			# this needs to be an append and not an override
-			@mainContext = response
+		postData = 
+			types: [type]
+			type: type
+			payload: text
 
-			@counter++
+		@requestHelper(@personal, 'POST', postData, (response) =>
+			@disambiguateSuccessHandler(response, field, type)
+		)
 
-			@requestHelper @responder + 'audit' , "POST", response, @resolver if @counter < 3
+	disambiguatePassive: (e) =>	
+		data = e.response
 
-	addDebug: (results) =>
+		field = data.field
+
+		# TODO: handle multi types
+		type = data.type
+
+		if field.indexOf('.') isnt -1
+			text = @findOrReplace(field)
+		else
+			text = @mainContext.payload[field]	
+
+		postData = 
+			types: [type]
+			type: type
+			payload: text
+
+		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
+			@disambiguateSuccessHandler(response, field, type)
+		)
+
+	# NOTE: data can be a jquery event object or a plain object
+	auditor: (data) =>
+		response = if data instanceof $.Event then data.response else data
+
+		@mainContext = response
+
+		payload = response.payload
+
+		@replaceDates(payload) if payload?
+
+		# this needs to be an append and not an override
+		@mainContext = response
+
+		@counter++
+
+		@requestHelper(@responder + 'audit' , 'POST', response, @responderSuccessHandler) if @counter < 3
+
+	responderSuccessHandler: (response) =>
+		@counter = 0
+
+		@currentState = response.status.replace(' ', '')
+
+		@disambigContext = response if @currentState is 'inprogress'
+
+		$(document).trigger(
+			type: @currentState
+			response: response
+		)
+
+	actor: (e) =>
+		@disambigContext = { }
+
+		data = e.response
+		
+		if data.actor is null or data.actor is undefined
+			@show(data)
+		else
+			@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @show)
+	
+	addDebug: (e) =>
+		return if @debug is false
+
 		@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
 		@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
 		
+		results = e.response
+
 		if !results
 			results = 
-				debug:@debugData
+				debug: @debugData
 		else
 			results.debug = @debugData
 
 		template = Handlebars.compile($('#debug-template').html())
 		@board.find('.bubble:last').append(template(results))
 
-	ask: (input) =>
-		input = $(input)
-
-		text = input.val()
-
-		input.val('')
-		
-		template = Handlebars.compile($('#bubblein-template').html())
-		
-		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
-		
-		$('#input-form').addClass 'cancel'
-
-		if @inProgress is true
-			# #@log 'should disambiguate'
-			@disambiguate text
-		else
-			data = query: text
-					
-			@requestHelper @classifier, "GET", data, (response) =>
-				@addDebug() if @debug is true
-			
-				@resolver response
-
-	keyup: (e) =>	
-		value = $(e.target).val()
-
-		target = $(e.target)
-
-		switch e.which
-			when 13
-				if value
-					@ask target
-					@history.push value
-					@pos = @history.length
-			when 38
-				@pos -= 1 if @pos > 0
-				target.val @history[@pos]
-
-			when 40
-				@pos += 1 if @pos < @history.length
-				target.val @history[@pos]
-				
-	expand: (e) =>
-	    e.preventDefault()
-	    $(e.target).parent().next().toggle()
-
-	# simulate: (e) =>
-	#     data = JSON.stringify(
-	#         data: @lastResponse
-	#     )
-
-	#     doneHandler = (response) =>
-	#         #@log '* POST success'
-	#         @board.append(@templates.simulate(response)).scrollTop(@board.height());
-	#         @loader.hide();
-
-	#     @requestHelper 'http://stremor-va.appspot.com/simulate', data, doneHandler
-	
+	# NOTE: results can be a jquery event object or a plain object
 	show: (results) =>
+		results = results.response if results instanceof $.Event
+
 		templateName = 'bubbleout'
+		
 		templateData = results.show.simple
 
 		template = $('#' + templateName + '-template')
@@ -353,8 +318,11 @@ class Please
 
 		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
-		@addDebug(results) if @debug is true
-		
+		$(document).trigger(
+			type: 'debug'
+			response: results
+		)
+
 		if results.show? and results.show.structured? and results.show.structured.template?
 			templateData = results.show.structured.items
 			template = results.show.structured.template.split(':')
@@ -373,7 +341,34 @@ class Please
 
 		@loader.hide()
 
-	mapper: (key) =>
+	getLocation: =>
+		navigator.geolocation.getCurrentPosition @updatePosition
+	
+	updatePosition: (position) =>
+		@lat = position.coords.latitude
+		@lon = position.coords.longitude
+	
+	findOrReplace: (field, type = null) =>
+		fields = field.split('.')
+		found = null
+
+		cursive = (obj) ->
+			for key, val of obj		
+				if fields.length > 1 and key is fields[0]
+					fields.shift()
+					cursive(val)
+				else if key is fields[0]
+					if type is null
+						found = obj[key]
+					else
+						obj[key] = type
+					return
+
+		cursive(@mainContext)
+
+		return found
+
+	nameMap: (key) =>
 		map = false
 		if key.indexOf(@classifier) isnt -1
 			map = "Casper"
@@ -396,17 +391,15 @@ class Please
 			"timeoffset": - clientDate.getTimezoneOffset() / 60
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
-		if @sendDeviceInfo is true
-			data.device_info = @buildDeviceInfo()
-			@sendDeviceInfo = false
-
+		data.device_info = @buildDeviceInfo() if @currentState is 'disambiguate'
+	
 		if @debug is true
 			@debugData = 
 				endpoint: endpoint
 				type: type
 				request: data
 
-		endpointMap = @mapper(endpoint) 
+		endpointName = @nameMap(endpoint) 
 
 		$.ajax(
 			url: endpoint
@@ -416,17 +409,18 @@ class Please
 			dataType: "json"
 			timeout: 10000
 			beforeSend: =>
-				@log endpointMap, ">", data
+				@log endpointName, ">", data
 				@loader.show()
 		).done((response, status) =>
-			@log endpointMap, "<", response
+			@log endpointName, "<", response
+			
 			if @debug is true
 				@debugData.status = status
 				@debugData.response = response
 
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
-			@error endpointMap, "<", (if response.responseJSON? then response.responseJSON else response)
+			@error endpointName, "<", (if response.responseJSON? then response.responseJSON else response)
 			
 			if @debug is true
 				@debugData.status = status
@@ -449,12 +443,31 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
+	replaceDates: (payload) =>
+		if payload.start_date? or payload.start_time?
+			datetime = @buildDatetime(payload.start_date, payload.start_time)
+
+			payload.start_date = datetime.date if payload.start_date?
+			payload.start_time = datetime.time if payload.start_time?
+
+		if payload.end_date? or payload.end_time?
+			datetime = @buildDatetime(payload.end_date, payload.end_time)
+
+			payload.end_date = datetime.date if payload.end_date?
+			payload.end_time = datetime.time if payload.end_time?	
+
+		if payload.date? or payload.time?
+			datetime = @buildDatetime(payload.date, payload.time)
+
+			payload.date = datetime.date if payload.date?
+			payload.time = datetime.time if payload.time?
+
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined
+		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and dateRegex.test(date) is false
 
-		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined
+		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and timeRegex.test(time) is false
 
 		dateString = @toISOString(newDate).split('T')
 		
@@ -590,5 +603,21 @@ class Please
 										newDate.setDate(date)
 
 		return newDate
+
+	log: =>
+		args = [ ]
+		for argument in arguments
+			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
+			args.push argument
+
+		console.log args.join(" ")
+
+	error: =>
+		args = [ ]
+		for argument in arguments
+			argument = JSON.stringify(argument, null, " ") if typeof argument is 'object'
+			args.push argument
+
+		console.error args.join(" ")
 
 new Please()                    
