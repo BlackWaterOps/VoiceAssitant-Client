@@ -239,9 +239,10 @@
       });
     };
 
-    Please.prototype.disambiguatePersonal = function(data) {
-      var field, postData, text, type,
+    Please.prototype.disambiguatePersonal = function(e) {
+      var data, field, postData, text, type,
         _this = this;
+      data = e.response;
       field = data.field;
       type = data.type;
       if (field.indexOf('.') !== -1) {
@@ -259,9 +260,10 @@
       });
     };
 
-    Please.prototype.disambiguatePassive = function(data) {
-      var field, postData, text, type,
+    Please.prototype.disambiguatePassive = function(e) {
+      var data, field, postData, text, type,
         _this = this;
+      data = e.response;
       field = data.field;
       type = data.type;
       if (field.indexOf('.') !== -1) {

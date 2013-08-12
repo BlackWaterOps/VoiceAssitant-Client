@@ -205,9 +205,10 @@ class Please
 			@disambiguateSuccessHandler(response, field, type)
 		)
 
-	disambiguatePersonal: (data) =>
+	disambiguatePersonal: (e) =>
 		# in the future we'll need to send a userid for personal data 
-	
+		data = e.response
+
 		field = data.field
 
 		# TODO: handle multi types?
@@ -227,9 +228,8 @@ class Please
 			@disambiguateSuccessHandler(response, field, type)
 		)
 
-	disambiguatePassive: (data) =>	
-		# use events to determine current state
-		# @sendDeviceInfo = true
+	disambiguatePassive: (e) =>	
+		data = e.response
 
 		field = data.field
 
