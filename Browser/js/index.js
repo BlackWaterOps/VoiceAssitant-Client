@@ -93,7 +93,6 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
-      console.log(this.currentState);
       if (this.currentState === 'inprogress') {
         return $(document).trigger({
           type: 'disambiguate:active',
@@ -283,7 +282,6 @@
     Please.prototype.auditor = function(data) {
       var payload, response;
       response = data instanceof $.Event ? data.response : data;
-      console.log('auditor', response);
       this.mainContext = response;
       payload = response.payload;
       if (payload != null) {
@@ -344,7 +342,6 @@
       if (results instanceof $.Event) {
         results = results.response;
       }
-      console.log('show', results);
       templateName = 'bubbleout';
       templateData = results.show.simple;
       template = $('#' + templateName + '-template');
@@ -446,7 +443,6 @@
         };
       }
       endpointName = this.nameMap(endpoint);
-      console.log(data);
       return $.ajax({
         url: endpoint,
         type: type,

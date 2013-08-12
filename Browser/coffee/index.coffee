@@ -72,8 +72,6 @@ class Please
 		
 		$('#input-form').addClass 'cancel'
 
-		console.log @currentState
-
 		# TODO: CHECK CURRENT STATE INSTEAD
 		if @currentState is 'inprogress'
 			# @disambiguate text
@@ -256,8 +254,6 @@ class Please
 	auditor: (data) =>
 		response = if data instanceof $.Event then data.response else data
 
-		console.log 'auditor', response
-
 		@mainContext = response
 
 		payload = response.payload
@@ -308,8 +304,6 @@ class Please
 
 	show: (results) =>
 		results = results.response if results instanceof $.Event
-
-		console.log 'show', results
 
 		templateName = 'bubbleout'
 		templateData = results.show.simple
@@ -399,8 +393,6 @@ class Please
 				request: data
 
 		endpointName = @nameMap(endpoint) 
-
-		console.log data
 
 		$.ajax(
 			url: endpoint
