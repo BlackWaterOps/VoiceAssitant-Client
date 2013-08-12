@@ -308,8 +308,10 @@
       });
     };
 
-    Please.prototype.actor = function(data) {
+    Please.prototype.actor = function(e) {
+      var data;
       this.disambigContext = {};
+      data = e.response;
       if (data.actor === null || data.actor === void 0) {
         return this.show(data);
       } else {

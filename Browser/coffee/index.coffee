@@ -184,8 +184,6 @@ class Please
 			
 			request.unused_tokens = response.unused_tokens if response.unused_tokens?
 			
-			# needs to go to appropriate handler, probably classifierSuccessHandler
-			# @resolver request, checkDates
 			@auditor(request)
 		else
 			console.log 'oops no responder response', results
@@ -250,7 +248,7 @@ class Please
 			@disambiguateSuccessHandler(response, field, type)
 		)
 
-	# NOTE: response can be a jquery event object or a plain object
+	# NOTE: data can be a jquery event object or a plain object
 	auditor: (data) =>
 		response = if data instanceof $.Event then data.response else data
 
@@ -279,9 +277,11 @@ class Please
 			response: response
 		)
 
-	actor: (data) =>
+	actor: (e) =>
 		@disambigContext = { }
 
+		data = e.response
+		
 		if data.actor is null or data.actor is undefined
 			@show(data)
 		else
@@ -294,7 +294,7 @@ class Please
 		@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
 		
 		results = e.response
-		
+
 		if !results
 			results = 
 				debug: @debugData
@@ -304,10 +304,12 @@ class Please
 		template = Handlebars.compile($('#debug-template').html())
 		@board.find('.bubble:last').append(template(results))
 
+	# NOTE: results can be a jquery event object or a plain object
 	show: (results) =>
 		results = results.response if results instanceof $.Event
 
 		templateName = 'bubbleout'
+		
 		templateData = results.show.simple
 
 		template = $('#' + templateName + '-template')
