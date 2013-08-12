@@ -463,13 +463,12 @@ class Please
 			payload.date = datetime.date if payload.date?
 			payload.time = datetime.time if payload.time?
 
-	# TODO: add regex checks to prevent build on dates already built
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined
+		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and dateRegex.test(date) is false
 
-		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined
+		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and timeRegex.test(time) is false
 
 		dateString = @toISOString(newDate).split('T')
 		
