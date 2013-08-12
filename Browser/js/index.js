@@ -205,7 +205,7 @@
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
       var request;
       if (this.currentState === 'inprogress') {
-        this.addDebug();
+        $(document).trigger($.Event('debug'));
       }
       if (response != null) {
         this.replaceDates(response);
@@ -317,8 +317,8 @@
       }
     };
 
-    Please.prototype.addDebug = function(results) {
-      var template;
+    Please.prototype.addDebug = function(e) {
+      var results, template;
       if (this.debug === false) {
         return;
       }
@@ -328,6 +328,7 @@
       if (this.debugData.response != null) {
         this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
       }
+      results = e.response;
       if (!results) {
         results = {
           debug: this.debugData
@@ -349,7 +350,10 @@
       template = $('#' + templateName + '-template');
       template = Handlebars.compile(template.html());
       this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
-      this.addDebug(results);
+      $(document).trigger({
+        type: 'debug',
+        response: results
+      });
       if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
         templateData = results.show.structured.items;
         template = results.show.structured.template.split(':');

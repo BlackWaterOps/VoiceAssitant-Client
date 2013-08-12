@@ -167,7 +167,7 @@ class Please
 				createCookie k, v, -1
 	
 	disambiguateSuccessHandler: (response, field, type) =>
-		@addDebug() if @currentState is 'inprogress'	
+		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
 			
 		if response?
 			# find & replace date time fields
@@ -287,15 +287,17 @@ class Please
 		else
 			@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @show)
 	
-	addDebug: (results) =>
+	addDebug: (e) =>
 		return if @debug is false
 
 		@debugData.request = JSON.stringify(@debugData.request, null, 4) if @debugData.request?
 		@debugData.response = JSON.stringify(@debugData.response, null, 4) if @debugData.response?
 		
+		results = e.response
+		
 		if !results
 			results = 
-				debug:@debugData
+				debug: @debugData
 		else
 			results.debug = @debugData
 
@@ -314,8 +316,11 @@ class Please
 
 		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
-		@addDebug(results)
-		
+		$(document).trigger(
+			type: 'debug'
+			response: results
+		)
+
 		if results.show? and results.show.structured? and results.show.structured.template?
 			templateData = results.show.structured.items
 			template = results.show.structured.template.split(':')
