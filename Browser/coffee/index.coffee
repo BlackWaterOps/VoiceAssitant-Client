@@ -252,13 +252,10 @@ class Please
 	auditor: (data) =>
 		response = if data instanceof $.Event then data.response else data
 
-		@mainContext = response
-
 		payload = response.payload
 
 		@replaceDates(payload) if payload?
 
-		# this needs to be an append and not an override
 		@mainContext = response
 
 		@counter++

@@ -284,7 +284,6 @@
     Please.prototype.auditor = function(data) {
       var payload, response;
       response = data instanceof $.Event ? data.response : data;
-      this.mainContext = response;
       payload = response.payload;
       if (payload != null) {
         this.replaceDates(payload);
