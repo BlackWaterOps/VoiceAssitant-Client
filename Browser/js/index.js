@@ -7,28 +7,35 @@
     var operators;
 
     function Please(options) {
+      this.error = __bind(this.error, this);
+      this.log = __bind(this.log, this);
       this.datetimeHelper = __bind(this.datetimeHelper, this);
       this.newDateHelper = __bind(this.newDateHelper, this);
       this.fuzzyHelper = __bind(this.fuzzyHelper, this);
       this.weekdayHelper = __bind(this.weekdayHelper, this);
       this.buildDatetime = __bind(this.buildDatetime, this);
+      this.replaceDates = __bind(this.replaceDates, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
-      this.mapper = __bind(this.mapper, this);
+      this.nameMap = __bind(this.nameMap, this);
+      this.findOrReplace = __bind(this.findOrReplace, this);
+      this.updatePosition = __bind(this.updatePosition, this);
+      this.getLocation = __bind(this.getLocation, this);
       this.show = __bind(this.show, this);
+      this.addDebug = __bind(this.addDebug, this);
+      this.actor = __bind(this.actor, this);
+      this.responderSuccessHandler = __bind(this.responderSuccessHandler, this);
+      this.auditor = __bind(this.auditor, this);
+      this.disambiguatePassive = __bind(this.disambiguatePassive, this);
+      this.disambiguatePersonal = __bind(this.disambiguatePersonal, this);
+      this.disambiguateActive = __bind(this.disambiguateActive, this);
+      this.disambiguateSuccessHandler = __bind(this.disambiguateSuccessHandler, this);
+      this.cancel = __bind(this.cancel, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
       this.ask = __bind(this.ask, this);
-      this.addDebug = __bind(this.addDebug, this);
-      this.resolver = __bind(this.resolver, this);
-      this.disambiguate = __bind(this.disambiguate, this);
-      this.findOrReplace = __bind(this.findOrReplace, this);
-      this.cancel = __bind(this.cancel, this);
-      this.updatePosition = __bind(this.updatePosition, this);
-      this.getLocation = __bind(this.getLocation, this);
-      this.error = __bind(this.error, this);
-      this.log = __bind(this.log, this);
+      this.registerListeners = __bind(this.registerListeners, this);
       this.init = __bind(this.init, this);
       this.debug = true;
       this.debugData = {};
@@ -38,8 +45,6 @@
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
-      this.sendDeviceInfo = false;
-      this.inProgress = false;
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
@@ -50,6 +55,7 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
+      this.currentState = 'init';
       this.presets = {
         'after work': '18:00:00',
         'breakfast': '7:30:00',
@@ -70,33 +76,80 @@
           return init.fadeOut('slow');
         }), 1000);
       }
-      return this.getLocation();
+      this.getLocation();
+      return this.registerListeners();
     };
 
-    Please.prototype.log = function() {
-      var args, argument, _i, _len;
-      args = [];
-      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-        argument = arguments[_i];
-        if (typeof argument === 'object') {
-          argument = JSON.stringify(argument, null, " ");
-        }
-        args.push(argument);
-      }
-      return console.log(args.join(" "));
+    Please.prototype.registerListeners = function() {
+      return $(document).on('init', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
     };
 
-    Please.prototype.error = function() {
-      var args, argument, _i, _len;
-      args = [];
-      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-        argument = arguments[_i];
-        if (typeof argument === 'object') {
-          argument = JSON.stringify(argument, null, " ");
-        }
-        args.push(argument);
+    Please.prototype.ask = function(input) {
+      var data, template, text,
+        _this = this;
+      input = $(input);
+      text = input.val();
+      input.val('');
+      template = Handlebars.compile($('#bubblein-template').html());
+      this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
+      $('#input-form').addClass('cancel');
+      console.log(this.currentState);
+      if (this.currentState === 'inprogress') {
+        return $(document).trigger({
+          type: 'disambiguate:active',
+          response: text
+        });
+      } else {
+        data = {
+          query: text
+        };
+        return this.requestHelper(this.classifier, "GET", data, function(response) {
+          return $(document).trigger($.Event('debug')).trigger({
+            type: 'init',
+            response: response
+          });
+        });
       }
-      return console.error(args.join(" "));
+    };
+
+    Please.prototype.keyup = function(e) {
+      var target, value;
+      value = $(e.target).val();
+      target = $(e.target);
+      switch (e.which) {
+        case 13:
+          if (value) {
+            this.ask(target);
+            this.history.push(value);
+            return this.pos = this.history.length;
+          }
+          break;
+        case 38:
+          if (this.pos > 0) {
+            this.pos -= 1;
+          }
+          return target.val(this.history[this.pos]);
+        case 40:
+          if (this.pos < this.history.length) {
+            this.pos += 1;
+          }
+          return target.val(this.history[this.pos]);
+      }
+    };
+
+    Please.prototype.expand = function(e) {
+      e.preventDefault();
+      return $(e.target).parent().next().toggle();
+    };
+
+    Please.prototype.cancel = function(e) {
+      this.board.empty();
+      this.mainContext = {};
+      this.disambigContext = {};
+      this.history = [];
+      $('#input-form').removeClass('cancel');
+      this.loader.hide();
+      return this.input.focus();
     };
 
     Please.prototype.store = {
@@ -150,6 +203,172 @@
       }
     };
 
+    Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
+      var request;
+      if (this.currentState === 'inprogress') {
+        this.addDebug();
+      }
+      if (response != null) {
+        this.replaceDates(response);
+        if (field.indexOf('.') !== -1) {
+          this.findOrReplace(field, response[type]);
+        } else {
+          this.mainContext.payload[field] = response[type];
+        }
+        request = $.extend({}, this.mainContext);
+        if (response.unused_tokens != null) {
+          request.unused_tokens = response.unused_tokens;
+        }
+        return this.auditor(request);
+      } else {
+        return console.log('oops no responder response', results);
+      }
+    };
+
+    Please.prototype.disambiguateActive = function(e) {
+      var field, postData, text, type,
+        _this = this;
+      field = this.disambigContext.field;
+      type = this.disambigContext.type;
+      text = e.response;
+      postData = {
+        payload: text,
+        types: [type]
+      };
+      return this.requestHelper(this.disambiguator + '/active', 'POST', postData, function(response) {
+        return _this.disambiguateSuccessHandler(response, field, type);
+      });
+    };
+
+    Please.prototype.disambiguatePersonal = function(data) {
+      var field, postData, text, type,
+        _this = this;
+      field = data.field;
+      type = data.type;
+      if (field.indexOf('.') !== -1) {
+        text = this.findOrReplace(field);
+      } else {
+        text = this.mainContext.payload[field];
+      }
+      postData = {
+        types: [type],
+        type: type,
+        payload: text
+      };
+      return this.requestHelper(this.personal, 'POST', postData, function(response) {
+        return _this.disambiguateSuccessHandler(response, field, type);
+      });
+    };
+
+    Please.prototype.disambiguatePassive = function(data) {
+      var field, postData, text, type,
+        _this = this;
+      field = data.field;
+      type = data.type;
+      if (field.indexOf('.') !== -1) {
+        text = this.findOrReplace(field);
+      } else {
+        text = this.mainContext.payload[field];
+      }
+      postData = {
+        types: [type],
+        type: type,
+        payload: text
+      };
+      return this.requestHelper(this.disambiguator + '/passive', 'POST', postData, function(response) {
+        return _this.disambiguateSuccessHandler(response, field, type);
+      });
+    };
+
+    Please.prototype.auditor = function(data) {
+      var payload, response;
+      response = data instanceof $.Event ? data.response : data;
+      console.log('auditor', response);
+      this.mainContext = response;
+      payload = response.payload;
+      if (payload != null) {
+        this.replaceDates(payload);
+      }
+      this.mainContext = response;
+      this.counter++;
+      if (this.counter < 3) {
+        return this.requestHelper(this.responder + 'audit', 'POST', response, this.responderSuccessHandler);
+      }
+    };
+
+    Please.prototype.responderSuccessHandler = function(response) {
+      this.counter = 0;
+      this.currentState = response.status.replace(' ', '');
+      if (this.currentState === 'inprogress') {
+        this.disambigContext = response;
+      }
+      return $(document).trigger({
+        type: this.currentState,
+        response: response
+      });
+    };
+
+    Please.prototype.actor = function(data) {
+      this.disambigContext = {};
+      if (data.actor === null || data.actor === void 0) {
+        return this.show(data);
+      } else {
+        return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+      }
+    };
+
+    Please.prototype.addDebug = function(results) {
+      var template;
+      if (this.debug === false) {
+        return;
+      }
+      if (this.debugData.request != null) {
+        this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
+      }
+      if (this.debugData.response != null) {
+        this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
+      }
+      if (!results) {
+        results = {
+          debug: this.debugData
+        };
+      } else {
+        results.debug = this.debugData;
+      }
+      template = Handlebars.compile($('#debug-template').html());
+      return this.board.find('.bubble:last').append(template(results));
+    };
+
+    Please.prototype.show = function(results) {
+      var template, templateBase, templateData, templateName, templateType;
+      if (results instanceof $.Event) {
+        results = results.response;
+      }
+      console.log('show', results);
+      templateName = 'bubbleout';
+      templateData = results.show.simple;
+      template = $('#' + templateName + '-template');
+      template = Handlebars.compile(template.html());
+      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+      this.addDebug(results);
+      if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
+        templateData = results.show.structured.items;
+        template = results.show.structured.template.split(':');
+        templateBase = template[0];
+        templateType = template[1];
+        templateName = template[2] != null ? template[2] : templateType;
+        template = $('#' + templateType + '-template');
+        if (template.length === 0) {
+          template = $('#' + templateBase + '-template');
+        }
+        if (template.length > 0) {
+          template = Handlebars.compile(template.html());
+          this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+        }
+      }
+      return this.loader.hide();
+    };
+
     Please.prototype.getLocation = function() {
       return navigator.geolocation.getCurrentPosition(this.updatePosition);
     };
@@ -157,16 +376,6 @@
     Please.prototype.updatePosition = function(position) {
       this.lat = position.coords.latitude;
       return this.lon = position.coords.longitude;
-    };
-
-    Please.prototype.cancel = function(e) {
-      this.board.empty();
-      this.mainContext = {};
-      this.disambigContext = {};
-      this.history = [];
-      $('#input-form').removeClass('cancel');
-      this.loader.hide();
-      return this.input.focus();
     };
 
     Please.prototype.findOrReplace = function(field, type) {
@@ -194,243 +403,10 @@
         }
       };
       cursive(this.mainContext);
-      if (found != null) {
-        return found;
-      }
+      return found;
     };
 
-    Please.prototype.disambiguate = function(payload, personalData) {
-      var data, endpoint, field, successHandler, text, type,
-        _this = this;
-      if (personalData == null) {
-        personalData = false;
-      }
-      if (this.inProgress === true) {
-        endpoint = this.disambiguator + "/active";
-        field = this.disambigContext.field;
-        type = this.disambigContext.type;
-        text = payload;
-        data = {
-          payload: text,
-          types: [type]
-        };
-      } else {
-        if (personalData === true) {
-          endpoint = this.personal;
-        } else {
-          endpoint = this.disambiguator + "/passive";
-          this.sendDeviceInfo = true;
-        }
-        field = payload.field;
-        type = payload.type;
-        if (field.indexOf('.') !== -1) {
-          text = this.findOrReplace(field);
-        } else {
-          text = this.mainContext.payload[field];
-        }
-        data = {
-          types: [type],
-          type: type,
-          payload: text
-        };
-      }
-      successHandler = function(results) {
-        var checkDates, datetime, request;
-        checkDates = true;
-        if (_this.debug === true && _this.inProgress === true) {
-          _this.addDebug();
-        }
-        if (results != null) {
-          if ((results.date != null) || (results.time != null)) {
-            datetime = _this.buildDatetime(results.date, results.time);
-            results[type] = datetime[type];
-            checkDates = false;
-          }
-          if (field.indexOf('.') !== -1) {
-            _this.findOrReplace(field, results[type]);
-          } else {
-            _this.mainContext.payload[field] = results[type];
-          }
-          request = $.extend({}, _this.mainContext);
-          if (results.unused_tokens != null) {
-            request.unused_tokens = results.unused_tokens;
-          }
-          return _this.resolver(request, checkDates);
-        } else {
-          return console.log('oops no responder response', results);
-        }
-      };
-      return this.requestHelper(endpoint, "POST", data, successHandler);
-    };
-
-    Please.prototype.resolver = function(response, checkDates) {
-      var datetime, payload;
-      if (checkDates == null) {
-        checkDates = true;
-      }
-      /*
-      		here is where we need to make checks of whether to pass along data
-      		to 'REZ' or resolve with the disambiguator
-      */
-
-      if (response.status != null) {
-        this.inProgress = false;
-        switch (response.status.toLowerCase()) {
-          case 'disambiguate':
-            return this.disambiguate(response);
-          case 'disambiguate:personal':
-            console.log('disambiguate personal');
-            return this.disambiguate(response, true);
-          case 'in progress':
-            this.counter = 0;
-            this.inProgress = true;
-            this.disambigContext = response;
-            return this.show(response);
-          case 'complete':
-          case 'completed':
-            this.counter = 0;
-            this.disambigContext = {};
-            if (response.actor === null || response.actor === void 0) {
-              return this.show(response);
-            } else {
-              return this.requestHelper(this.responder + 'actors/' + response.actor, 'POST', this.mainContext, this.show);
-            }
-            break;
-          case 'error':
-            return this.show(response);
-        }
-      } else {
-        payload = response.payload;
-        if ((payload != null) && checkDates) {
-          if ((payload.start_date != null) || (payload.start_time != null)) {
-            datetime = this.buildDatetime(payload.start_date, payload.start_time);
-            if (payload.start_date != null) {
-              payload.start_date = datetime.date;
-            }
-            if (payload.start_time != null) {
-              payload.start_time = datetime.time;
-            }
-          }
-          if ((payload.end_date != null) || (payload.end_time != null)) {
-            datetime = this.buildDatetime(payload.end_date, payload.end_time);
-            if (payload.end_date != null) {
-              payload.end_date = datetime.date;
-            }
-            if (payload.end_time != null) {
-              payload.end_time = datetime.time;
-            }
-          }
-        }
-        this.mainContext = response;
-        this.counter++;
-        if (this.counter < 3) {
-          return this.requestHelper(this.responder + 'audit', "POST", response, this.resolver);
-        }
-      }
-    };
-
-    Please.prototype.addDebug = function(results) {
-      var template;
-      if (this.debugData.request != null) {
-        this.debugData.request = JSON.stringify(this.debugData.request, null, 4);
-      }
-      if (this.debugData.response != null) {
-        this.debugData.response = JSON.stringify(this.debugData.response, null, 4);
-      }
-      if (!results) {
-        results = {
-          debug: this.debugData
-        };
-      } else {
-        results.debug = this.debugData;
-      }
-      template = Handlebars.compile($('#debug-template').html());
-      return this.board.find('.bubble:last').append(template(results));
-    };
-
-    Please.prototype.ask = function(input) {
-      var data, template, text,
-        _this = this;
-      input = $(input);
-      text = input.val();
-      input.val('');
-      template = Handlebars.compile($('#bubblein-template').html());
-      this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
-      $('#input-form').addClass('cancel');
-      if (this.inProgress === true) {
-        return this.disambiguate(text);
-      } else {
-        data = {
-          query: text
-        };
-        return this.requestHelper(this.classifier, "GET", data, function(response) {
-          if (_this.debug === true) {
-            _this.addDebug();
-          }
-          return _this.resolver(response);
-        });
-      }
-    };
-
-    Please.prototype.keyup = function(e) {
-      var target, value;
-      value = $(e.target).val();
-      target = $(e.target);
-      switch (e.which) {
-        case 13:
-          if (value) {
-            this.ask(target);
-            this.history.push(value);
-            return this.pos = this.history.length;
-          }
-          break;
-        case 38:
-          if (this.pos > 0) {
-            this.pos -= 1;
-          }
-          return target.val(this.history[this.pos]);
-        case 40:
-          if (this.pos < this.history.length) {
-            this.pos += 1;
-          }
-          return target.val(this.history[this.pos]);
-      }
-    };
-
-    Please.prototype.expand = function(e) {
-      e.preventDefault();
-      return $(e.target).parent().next().toggle();
-    };
-
-    Please.prototype.show = function(results) {
-      var template, templateBase, templateData, templateName, templateType;
-      templateName = 'bubbleout';
-      templateData = results.show.simple;
-      template = $('#' + templateName + '-template');
-      template = Handlebars.compile(template.html());
-      this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
-      if (this.debug === true) {
-        this.addDebug(results);
-      }
-      if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
-        templateData = results.show.structured.items;
-        template = results.show.structured.template.split(':');
-        templateBase = template[0];
-        templateType = template[1];
-        templateName = template[2] != null ? template[2] : templateType;
-        template = $('#' + templateType + '-template');
-        if (template.length === 0) {
-          template = $('#' + templateBase + '-template');
-        }
-        if (template.length > 0) {
-          template = Handlebars.compile(template.html());
-          this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
-        }
-      }
-      return this.loader.hide();
-    };
-
-    Please.prototype.mapper = function(key) {
+    Please.prototype.nameMap = function(key) {
       var map;
       map = false;
       if (key.indexOf(this.classifier) !== -1) {
@@ -457,11 +433,10 @@
     };
 
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
-      var endpointMap,
+      var endpointName,
         _this = this;
-      if (this.sendDeviceInfo === true) {
+      if (this.currentState === 'disambiguate') {
         data.device_info = this.buildDeviceInfo();
-        this.sendDeviceInfo = false;
       }
       if (this.debug === true) {
         this.debugData = {
@@ -470,7 +445,8 @@
           request: data
         };
       }
-      endpointMap = this.mapper(endpoint);
+      endpointName = this.nameMap(endpoint);
+      console.log(data);
       return $.ajax({
         url: endpoint,
         type: type,
@@ -478,11 +454,11 @@
         dataType: "json",
         timeout: 10000,
         beforeSend: function() {
-          _this.log(endpointMap, ">", data);
+          _this.log(endpointName, ">", data);
           return _this.loader.show();
         }
       }).done(function(response, status) {
-        _this.log(endpointMap, "<", response);
+        _this.log(endpointName, "<", response);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -491,7 +467,7 @@
           return doneHandler(response);
         }
       }).fail(function(response, status) {
-        _this.error(endpointMap, "<", (response.responseJSON != null ? response.responseJSON : response));
+        _this.error(endpointName, "<", (response.responseJSON != null ? response.responseJSON : response));
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -520,6 +496,37 @@
         return r;
       };
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
+    };
+
+    Please.prototype.replaceDates = function(payload) {
+      var datetime;
+      if ((payload.start_date != null) || (payload.start_time != null)) {
+        datetime = this.buildDatetime(payload.start_date, payload.start_time);
+        if (payload.start_date != null) {
+          payload.start_date = datetime.date;
+        }
+        if (payload.start_time != null) {
+          payload.start_time = datetime.time;
+        }
+      }
+      if ((payload.end_date != null) || (payload.end_time != null)) {
+        datetime = this.buildDatetime(payload.end_date, payload.end_time);
+        if (payload.end_date != null) {
+          payload.end_date = datetime.date;
+        }
+        if (payload.end_time != null) {
+          payload.end_time = datetime.time;
+        }
+      }
+      if ((payload.date != null) || (payload.time != null)) {
+        datetime = this.buildDatetime(payload.date, payload.time);
+        if (payload.date != null) {
+          payload.date = datetime.date;
+        }
+        if (payload.time != null) {
+          return payload.time = datetime.time;
+        }
+      }
     };
 
     Please.prototype.buildDatetime = function(date, time) {
@@ -674,6 +681,32 @@
           }
       }
       return newDate;
+    };
+
+    Please.prototype.log = function() {
+      var args, argument, _i, _len;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        argument = arguments[_i];
+        if (typeof argument === 'object') {
+          argument = JSON.stringify(argument, null, " ");
+        }
+        args.push(argument);
+      }
+      return console.log(args.join(" "));
+    };
+
+    Please.prototype.error = function() {
+      var args, argument, _i, _len;
+      args = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        argument = arguments[_i];
+        if (typeof argument === 'object') {
+          argument = JSON.stringify(argument, null, " ");
+        }
+        args.push(argument);
+      }
+      return console.error(args.join(" "));
     };
 
     return Please;
