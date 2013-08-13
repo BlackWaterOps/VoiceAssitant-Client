@@ -502,9 +502,8 @@
     };
 
     Please.prototype.replaceDates = function(payload) {
-      var date, datetime, datetimes, pair, time, _i, _len, _results;
+      var date, datetime, datetimes, pair, time, _i, _len;
       datetimes = [['date', 'time'], ['start_date', 'start_time'], ['end_date', 'end_time']];
-      _results = [];
       for (_i = 0, _len = datetimes.length; _i < _len; _i++) {
         pair = datetimes[_i];
         date = pair[0];
@@ -516,18 +515,11 @@
               payload[date] = datetime.date;
             }
             if (payload[time] != null) {
-              _results.push(payload[time] = datetime.time);
-            } else {
-              _results.push(void 0);
+              payload[time] = datetime.time;
             }
-          } else {
-            _results.push(void 0);
           }
-        } else {
-          _results.push(void 0);
         }
       }
-      return _results;
     };
 
     Please.prototype.buildDatetime = function(date, time) {

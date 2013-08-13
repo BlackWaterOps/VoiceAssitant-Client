@@ -459,6 +459,8 @@ class Please
 					payload[date] = datetime.date if payload[date]?
 					payload[time] = datetime.time if payload[time]?
 
+		return
+		
 	buildDatetime: (date, time) =>
 		newDate = null
 
