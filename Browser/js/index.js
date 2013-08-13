@@ -284,7 +284,6 @@
     Please.prototype.auditor = function(data) {
       var payload, response;
       response = data instanceof $.Event ? data.response : data;
-      this.mainContext = response;
       payload = response.payload;
       if (payload != null) {
         this.replaceDates(payload);
@@ -414,10 +413,10 @@
     Please.prototype.nameMap = function(key) {
       var map;
       map = false;
-      if (key.indexOf(this.classifier) !== -1) {
-        map = "Casper";
-      } else if (key.indexOf(this.disambiguator) !== -1) {
+      if (key.indexOf(this.disambiguator) !== -1) {
         map = "Disambiguator";
+      } else if (key.indexOf(this.classifier) !== -1) {
+        map = "Casper";
       } else if (key.indexOf(this.responder) !== -1) {
         map = "Rez";
       } else if (key.indexOf(this.personal) !== -1) {
@@ -503,44 +502,45 @@
     };
 
     Please.prototype.replaceDates = function(payload) {
-      var datetime;
-      if ((payload.start_date != null) || (payload.start_time != null)) {
-        datetime = this.buildDatetime(payload.start_date, payload.start_time);
-        if (payload.start_date != null) {
-          payload.start_date = datetime.date;
-        }
-        if (payload.start_time != null) {
-          payload.start_time = datetime.time;
-        }
-      }
-      if ((payload.end_date != null) || (payload.end_time != null)) {
-        datetime = this.buildDatetime(payload.end_date, payload.end_time);
-        if (payload.end_date != null) {
-          payload.end_date = datetime.date;
-        }
-        if (payload.end_time != null) {
-          payload.end_time = datetime.time;
-        }
-      }
-      if ((payload.date != null) || (payload.time != null)) {
-        datetime = this.buildDatetime(payload.date, payload.time);
-        if (payload.date != null) {
-          payload.date = datetime.date;
-        }
-        if (payload.time != null) {
-          return payload.time = datetime.time;
+      var date, datetime, datetimes, pair, time, _i, _len, _results;
+      datetimes = [['date', 'time'], ['start_date', 'start_time'], ['end_date', 'end_time']];
+      _results = [];
+      for (_i = 0, _len = datetimes.length; _i < _len; _i++) {
+        pair = datetimes[_i];
+        date = pair[0];
+        time = pair[1];
+        if ((payload[date] != null) || (payload[time] != null)) {
+          datetime = this.buildDatetime(payload[date], payload[time]);
+          if (datetime != null) {
+            if (payload[date] != null) {
+              payload[date] = datetime.date;
+            }
+            if (payload[time] != null) {
+              _results.push(payload[time] = datetime.time);
+            } else {
+              _results.push(void 0);
+            }
+          } else {
+            _results.push(void 0);
+          }
+        } else {
+          _results.push(void 0);
         }
       }
+      return _results;
     };
 
     Please.prototype.buildDatetime = function(date, time) {
       var dateString, newDate;
       newDate = null;
-      if (date !== null && date !== void 0 && dateRegex.test(date) === false) {
+      if (date !== null && date !== void 0 && this.dateRegex.test(date) === false) {
         newDate = this.datetimeHelper(date);
       }
-      if (time !== null && time !== void 0 && timeRegex.test(time) === false) {
+      if (time !== null && time !== void 0 && this.timeRegex.test(time) === false) {
         newDate = this.datetimeHelper(time, newDate);
+      }
+      if (newDate == null) {
+        return;
       }
       dateString = this.toISOString(newDate).split('T');
       return {

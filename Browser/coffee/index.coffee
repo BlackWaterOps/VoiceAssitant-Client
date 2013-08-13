@@ -252,13 +252,11 @@ class Please
 	auditor: (data) =>
 		response = if data instanceof $.Event then data.response else data
 
-		@mainContext = response
-
 		payload = response.payload
 
 		@replaceDates(payload) if payload?
 
-		# this needs to be an append and not an override
+		# this should only be set for init requests not disambiguate responses
 		@mainContext = response
 
 		@counter++
@@ -370,10 +368,10 @@ class Please
 
 	nameMap: (key) =>
 		map = false
-		if key.indexOf(@classifier) isnt -1
-			map = "Casper"
-		else if key.indexOf(@disambiguator) isnt -1
+		if key.indexOf(@disambiguator) isnt -1
 			map = "Disambiguator"
+		else if key.indexOf(@classifier) isnt -1
+			map = "Casper"
 		else if key.indexOf(@responder) isnt -1
 			map = "Rez"
 		else if key.indexOf(@personal) isnt -1
@@ -443,31 +441,33 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
+	# TODO: refactor into array of object and loop
 	replaceDates: (payload) =>
-		if payload.start_date? or payload.start_time?
-			datetime = @buildDatetime(payload.start_date, payload.start_time)
+		datetimes = [
+			['date', 'time']
+			['start_date', 'start_time']
+			['end_date', 'end_time']
+		]
 
-			payload.start_date = datetime.date if payload.start_date?
-			payload.start_time = datetime.time if payload.start_time?
+		for pair in datetimes
+			date = pair[0]
+			time = pair[1]
 
-		if payload.end_date? or payload.end_time?
-			datetime = @buildDatetime(payload.end_date, payload.end_time)
+			if payload[date]? or payload[time]?
+				datetime = @buildDatetime(payload[date], payload[time])
 
-			payload.end_date = datetime.date if payload.end_date?
-			payload.end_time = datetime.time if payload.end_time?	
-
-		if payload.date? or payload.time?
-			datetime = @buildDatetime(payload.date, payload.time)
-
-			payload.date = datetime.date if payload.date?
-			payload.time = datetime.time if payload.time?
+				if datetime?
+					payload[date] = datetime.date if payload[date]?
+					payload[time] = datetime.time if payload[time]?
 
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and dateRegex.test(date) is false
+		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and @dateRegex.test(date) is false
 
-		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and timeRegex.test(time) is false
+		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and @timeRegex.test(time) is false
+
+		return if not newDate?
 
 		dateString = @toISOString(newDate).split('T')
 		
