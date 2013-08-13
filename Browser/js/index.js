@@ -502,40 +502,32 @@
     };
 
     Please.prototype.replaceDates = function(payload) {
-      var datetime;
-      if ((payload.start_date != null) || (payload.start_time != null)) {
-        datetime = this.buildDatetime(payload.start_date, payload.start_time);
-        if (datetime != null) {
-          if (payload.start_date != null) {
-            payload.start_date = datetime.date;
+      var date, datetime, datetimes, pair, time, _i, _len, _results;
+      datetimes = [['date', 'time'], ['start_date', 'start_time'], ['end_date', 'end_time']];
+      _results = [];
+      for (_i = 0, _len = datetimes.length; _i < _len; _i++) {
+        pair = datetimes[_i];
+        date = pair[0];
+        time = pair[1];
+        if ((payload[date] != null) || (payload[time] != null)) {
+          datetime = this.buildDatetime(payload[date], payload[time]);
+          if (datetime != null) {
+            if (payload[date] != null) {
+              payload[date] = datetime.date;
+            }
+            if (payload[time] != null) {
+              _results.push(payload[time] = datetime.time);
+            } else {
+              _results.push(void 0);
+            }
+          } else {
+            _results.push(void 0);
           }
-          if (payload.start_time != null) {
-            payload.start_time = datetime.time;
-          }
+        } else {
+          _results.push(void 0);
         }
       }
-      if ((payload.end_date != null) || (payload.end_time != null)) {
-        datetime = this.buildDatetime(payload.end_date, payload.end_time);
-        if (datetime != null) {
-          if (payload.end_date != null) {
-            payload.end_date = datetime.date;
-          }
-          if (payload.end_time != null) {
-            payload.end_time = datetime.time;
-          }
-        }
-      }
-      if ((payload.date != null) || (payload.time != null)) {
-        datetime = this.buildDatetime(payload.date, payload.time);
-        if (datetime != null) {
-          if (payload.date != null) {
-            payload.date = datetime.date;
-          }
-          if (payload.time != null) {
-            return payload.time = datetime.time;
-          }
-        }
-      }
+      return _results;
     };
 
     Please.prototype.buildDatetime = function(date, time) {

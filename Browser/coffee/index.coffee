@@ -443,26 +443,22 @@ class Please
 
 	# TODO: refactor into array of object and loop
 	replaceDates: (payload) =>
-		if payload.start_date? or payload.start_time?
-			datetime = @buildDatetime(payload.start_date, payload.start_time)
+		datetimes = [
+			['date', 'time']
+			['start_date', 'start_time']
+			['end_date', 'end_time']
+		]
 
-			if datetime?
-				payload.start_date = datetime.date if payload.start_date?
-				payload.start_time = datetime.time if payload.start_time?
+		for pair in datetimes
+			date = pair[0]
+			time = pair[1]
 
-		if payload.end_date? or payload.end_time?
-			datetime = @buildDatetime(payload.end_date, payload.end_time)
+			if payload[date]? or payload[time]?
+				datetime = @buildDatetime(payload[date], payload[time])
 
-			if datetime?
-				payload.end_date = datetime.date if payload.end_date?
-				payload.end_time = datetime.time if payload.end_time?	
-
-		if payload.date? or payload.time?
-			datetime = @buildDatetime(payload.date, payload.time)
-
-			if datetime?
-				payload.date = datetime.date if payload.date?
-				payload.time = datetime.time if payload.time?
+				if datetime?
+					payload[date] = datetime.date if payload[date]?
+					payload[time] = datetime.time if payload[time]?
 
 	buildDatetime: (date, time) =>
 		newDate = null
