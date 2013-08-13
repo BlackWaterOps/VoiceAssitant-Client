@@ -535,10 +535,10 @@
     Please.prototype.buildDatetime = function(date, time) {
       var dateString, newDate;
       newDate = null;
-      if (date !== null && date !== void 0 && dateRegex.test(date) === false) {
+      if (date !== null && date !== void 0 && this.dateRegex.test(date) === false) {
         newDate = this.datetimeHelper(date);
       }
-      if (time !== null && time !== void 0 && timeRegex.test(time) === false) {
+      if (time !== null && time !== void 0 && this.timeRegex.test(time) === false) {
         newDate = this.datetimeHelper(time, newDate);
       }
       dateString = this.toISOString(newDate).split('T');

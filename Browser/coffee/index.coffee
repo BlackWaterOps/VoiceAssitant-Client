@@ -463,9 +463,9 @@ class Please
 	buildDatetime: (date, time) =>
 		newDate = null
 
-		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and dateRegex.test(date) is false
+		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and @dateRegex.test(date) is false
 
-		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and timeRegex.test(time) is false
+		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and @timeRegex.test(time) is false
 
 		dateString = @toISOString(newDate).split('T')
 		
