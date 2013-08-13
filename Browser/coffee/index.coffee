@@ -256,6 +256,7 @@ class Please
 
 		@replaceDates(payload) if payload?
 
+		# this should only be set for init requests not disambiguate responses
 		@mainContext = response
 
 		@counter++
@@ -367,10 +368,10 @@ class Please
 
 	nameMap: (key) =>
 		map = false
-		if key.indexOf(@classifier) isnt -1
-			map = "Casper"
-		else if key.indexOf(@disambiguator) isnt -1
+		if key.indexOf(@disambiguator) isnt -1
 			map = "Disambiguator"
+		else if key.indexOf(@classifier) isnt -1
+			map = "Casper"
 		else if key.indexOf(@responder) isnt -1
 			map = "Rez"
 		else if key.indexOf(@personal) isnt -1

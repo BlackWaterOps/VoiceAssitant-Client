@@ -413,10 +413,10 @@
     Please.prototype.nameMap = function(key) {
       var map;
       map = false;
-      if (key.indexOf(this.classifier) !== -1) {
-        map = "Casper";
-      } else if (key.indexOf(this.disambiguator) !== -1) {
+      if (key.indexOf(this.disambiguator) !== -1) {
         map = "Disambiguator";
+      } else if (key.indexOf(this.classifier) !== -1) {
+        map = "Casper";
       } else if (key.indexOf(this.responder) !== -1) {
         map = "Rez";
       } else if (key.indexOf(this.personal) !== -1) {
