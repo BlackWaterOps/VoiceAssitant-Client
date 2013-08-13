@@ -441,24 +441,28 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
+	# TODO: refactor into array of object and loop
 	replaceDates: (payload) =>
 		if payload.start_date? or payload.start_time?
 			datetime = @buildDatetime(payload.start_date, payload.start_time)
 
-			payload.start_date = datetime.date if payload.start_date?
-			payload.start_time = datetime.time if payload.start_time?
+			if datetime?
+				payload.start_date = datetime.date if payload.start_date?
+				payload.start_time = datetime.time if payload.start_time?
 
 		if payload.end_date? or payload.end_time?
 			datetime = @buildDatetime(payload.end_date, payload.end_time)
 
-			payload.end_date = datetime.date if payload.end_date?
-			payload.end_time = datetime.time if payload.end_time?	
+			if datetime?
+				payload.end_date = datetime.date if payload.end_date?
+				payload.end_time = datetime.time if payload.end_time?	
 
 		if payload.date? or payload.time?
 			datetime = @buildDatetime(payload.date, payload.time)
 
-			payload.date = datetime.date if payload.date?
-			payload.time = datetime.time if payload.time?
+			if datetime?
+				payload.date = datetime.date if payload.date?
+				payload.time = datetime.time if payload.time?
 
 	buildDatetime: (date, time) =>
 		newDate = null
@@ -466,6 +470,8 @@ class Please
 		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and @dateRegex.test(date) is false
 
 		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and @timeRegex.test(time) is false
+
+		return if not newDate?
 
 		dateString = @toISOString(newDate).split('T')
 		

@@ -505,29 +505,35 @@
       var datetime;
       if ((payload.start_date != null) || (payload.start_time != null)) {
         datetime = this.buildDatetime(payload.start_date, payload.start_time);
-        if (payload.start_date != null) {
-          payload.start_date = datetime.date;
-        }
-        if (payload.start_time != null) {
-          payload.start_time = datetime.time;
+        if (datetime != null) {
+          if (payload.start_date != null) {
+            payload.start_date = datetime.date;
+          }
+          if (payload.start_time != null) {
+            payload.start_time = datetime.time;
+          }
         }
       }
       if ((payload.end_date != null) || (payload.end_time != null)) {
         datetime = this.buildDatetime(payload.end_date, payload.end_time);
-        if (payload.end_date != null) {
-          payload.end_date = datetime.date;
-        }
-        if (payload.end_time != null) {
-          payload.end_time = datetime.time;
+        if (datetime != null) {
+          if (payload.end_date != null) {
+            payload.end_date = datetime.date;
+          }
+          if (payload.end_time != null) {
+            payload.end_time = datetime.time;
+          }
         }
       }
       if ((payload.date != null) || (payload.time != null)) {
         datetime = this.buildDatetime(payload.date, payload.time);
-        if (payload.date != null) {
-          payload.date = datetime.date;
-        }
-        if (payload.time != null) {
-          return payload.time = datetime.time;
+        if (datetime != null) {
+          if (payload.date != null) {
+            payload.date = datetime.date;
+          }
+          if (payload.time != null) {
+            return payload.time = datetime.time;
+          }
         }
       }
     };
@@ -540,6 +546,9 @@
       }
       if (time !== null && time !== void 0 && this.timeRegex.test(time) === false) {
         newDate = this.datetimeHelper(time, newDate);
+      }
+      if (newDate == null) {
+        return;
       }
       dateString = this.toISOString(newDate).split('T');
       return {
