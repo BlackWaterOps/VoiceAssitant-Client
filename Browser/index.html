@@ -67,8 +67,8 @@
 
         <script id="images-template" type="text/x-handlebars-template">
             <div class="images">
-                {{#each url}}
-                    <img src="{{this}}" />
+                {{#each this}}
+                <img src="{{this}}" />
                 {{/each}}
             </div>
         </script>

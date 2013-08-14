@@ -331,7 +331,7 @@ class Please
 			template = $('#' + templateType + '-template')
 
 			template = $('#' + templateBase + '-template') if template.length is 0
-
+			
 			if template.length > 0
 				template = Handlebars.compile(template.html())
 
@@ -441,7 +441,6 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
-	# TODO: refactor into array of object and loop
 	replaceDates: (payload) =>
 		datetimes = [
 			['date', 'time']
@@ -460,6 +459,8 @@ class Please
 					payload[date] = datetime.date if payload[date]?
 					payload[time] = datetime.time if payload[time]?
 
+		return
+		
 	buildDatetime: (date, time) =>
 		newDate = null
 
