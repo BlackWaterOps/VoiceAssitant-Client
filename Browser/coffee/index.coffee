@@ -331,7 +331,7 @@ class Please
 			template = $('#' + templateType + '-template')
 
 			template = $('#' + templateBase + '-template') if template.length is 0
-
+			
 			if template.length > 0
 				template = Handlebars.compile(template.html())
 

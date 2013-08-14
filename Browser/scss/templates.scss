@@ -27,3 +27,20 @@
 .shopping-details {
 	padding-left: 120px;
 }
+
+.images {
+    //text-align: center;
+    //padding: 5px;
+    min-height: 200px;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    img {
+        border: solid white 2px;
+        box-shadow: 0 0 10px black;
+        margin: 5px;
+        max-width: 250px;
+    }
+}
