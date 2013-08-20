@@ -335,7 +335,7 @@ class Please
 			if template.length > 0
 				template = Handlebars.compile(template.html())
 
-				@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
+				@board.find('.bubble:last').append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
 		@loader.hide()
 
