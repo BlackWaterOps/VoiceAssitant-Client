@@ -367,7 +367,7 @@
         }
         if (template.length > 0) {
           template = Handlebars.compile(template.html());
-          this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
+          this.board.find('.bubble:last').append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
         }
       }
       return this.loader.hide();
