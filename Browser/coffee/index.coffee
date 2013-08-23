@@ -121,6 +121,7 @@ class Please
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
+		@currentState = 'init'
 
 		$('#input-form').removeClass 'cancel'
 		@loader.hide()
@@ -197,6 +198,7 @@ class Please
 
 		postData = 
 			payload: text
+			type: type
 			types: [type]
 
 		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
