@@ -146,6 +146,7 @@
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
+      this.currentState = 'init';
       $('#input-form').removeClass('cancel');
       this.loader.hide();
       return this.input.focus();
@@ -232,6 +233,7 @@
       text = e.response;
       postData = {
         payload: text,
+        type: type,
         types: [type]
       };
       return this.requestHelper(this.disambiguator + '/active', 'POST', postData, function(response) {
