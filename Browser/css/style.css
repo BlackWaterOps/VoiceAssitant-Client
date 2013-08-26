@@ -179,9 +179,7 @@ div, p, input {
 .out ul {
   font-size: 16px;
   list-style-type: none;
-  column-count: 5;
-  -moz-column-count: 5;
-  -webkit-column-count: 5; }
+  column-count: 5; }
 
 /* line 121, ../scss/style.scss */
 .debug .underspeak {

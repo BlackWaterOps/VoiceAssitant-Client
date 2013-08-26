@@ -348,8 +348,8 @@
       if (results instanceof $.Event) {
         results = results.response;
       }
-      templateName = 'bubbleout';
       templateData = results.show.simple;
+      templateName = templateData.link != null ? 'link' : 'bubbleout';
       template = $('#' + templateName + '-template');
       template = Handlebars.compile(template.html());
       this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);

@@ -307,9 +307,9 @@ class Please
 	show: (results) =>
 		results = results.response if results instanceof $.Event
 
-		templateName = 'bubbleout'
-		
 		templateData = results.show.simple
+
+		templateName = if templateData.link? then 'link' else 'bubbleout'		
 
 		template = $('#' + templateName + '-template')
 		
