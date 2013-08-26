@@ -149,6 +149,7 @@
       this.currentState = 'init';
       $('#input-form').removeClass('cancel');
       this.loader.hide();
+      this.counter = 0;
       return this.input.focus();
     };
 
@@ -298,7 +299,6 @@
     };
 
     Please.prototype.responderSuccessHandler = function(response) {
-      this.counter = 0;
       this.currentState = response.status.replace(' ', '');
       if (this.currentState === 'inprogress') {
         this.disambigContext = response;
@@ -372,7 +372,8 @@
           this.board.find('.bubble:last').append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
         }
       }
-      return this.loader.hide();
+      this.loader.hide();
+      return this.counter = 0;
     };
 
     Please.prototype.getLocation = function() {

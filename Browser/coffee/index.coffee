@@ -125,6 +125,7 @@ class Please
 
 		$('#input-form').removeClass 'cancel'
 		@loader.hide()
+		@counter = 0
 		@input.focus()
 
 	store:
@@ -266,8 +267,6 @@ class Please
 		@requestHelper(@responder + 'audit' , 'POST', response, @responderSuccessHandler) if @counter < 3
 
 	responderSuccessHandler: (response) =>
-		@counter = 0
-
 		@currentState = response.status.replace(' ', '')
 
 		@disambigContext = response if @currentState is 'inprogress'
@@ -340,6 +339,7 @@ class Please
 				@board.find('.bubble:last').append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
 		@loader.hide()
+		@counter = 0
 
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
