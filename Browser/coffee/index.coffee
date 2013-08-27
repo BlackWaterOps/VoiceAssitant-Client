@@ -4,7 +4,7 @@ class Please
 		@debugData = { }
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/v1'
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate'
-		@personal = 'http://stremor-pud.appspot.com/disambiguate'
+		@personal = 'http://stremor-pud.appspot.com/v1/disambiguate'
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00

@@ -42,7 +42,7 @@
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/v1';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate';
-      this.personal = 'http://stremor-pud.appspot.com/disambiguate';
+      this.personal = 'http://stremor-pud.appspot.com/v1/disambiguate';
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
