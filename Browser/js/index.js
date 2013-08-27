@@ -15,6 +15,7 @@
       this.weekdayHelper = __bind(this.weekdayHelper, this);
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.replaceDates = __bind(this.replaceDates, this);
+      this.replaceLocation = __bind(this.replaceLocation, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
@@ -41,7 +42,7 @@
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/v1';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate';
-      this.personal = 'http://stremor-pud.appspot.com/disambiguate';
+      this.personal = 'http://stremor-pud.appspot.com/v1/disambiguate';
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
@@ -210,6 +211,7 @@
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
+        this.replaceLocation(response);
         this.replaceDates(response);
         if (field.indexOf('.') !== -1) {
           this.findOrReplace(field, response[type]);
@@ -288,6 +290,9 @@
       var payload, response;
       response = data instanceof $.Event ? data.response : data;
       payload = response.payload;
+      if (payload != null) {
+        this.replaceLocation(payload);
+      }
       if (payload != null) {
         this.replaceDates(payload);
       }
@@ -502,6 +507,15 @@
         return r;
       };
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
+    };
+
+    Please.prototype.replaceLocation = function(payload) {
+      if ((payload != null) && (payload.location != null)) {
+        switch (payload.location) {
+          case '#current_location':
+            payload.location = this.buildDeviceInfo();
+        }
+      }
     };
 
     Please.prototype.replaceDates = function(payload) {
