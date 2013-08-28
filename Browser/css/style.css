@@ -1,5 +1,5 @@
 /* line 1, ../scss/templates.scss */
-.shopping {
+.template-data {
   background-color: white;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -7,40 +7,85 @@
   max-height: 225px; }
 
 /* line 9, ../scss/templates.scss */
-.shopping-item {
+.template-item {
   border-bottom: 1px solid #dfdfdf;
   padding: 10px 0; }
   /* line 12, ../scss/templates.scss */
-  .shopping-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0; }
+  .template-item:last-child {
+    border-bottom: none; }
 
 /* line 18, ../scss/templates.scss */
+.shopping-item:last-child {
+  padding-bottom: 0; }
+
+/* line 23, ../scss/templates.scss */
 .shopping-image {
   display: block;
   float: left;
   width: 100px; }
-  /* line 22, ../scss/templates.scss */
+  /* line 27, ../scss/templates.scss */
   .shopping-image img {
     width: 100%; }
 
-/* line 27, ../scss/templates.scss */
+/* line 32, ../scss/templates.scss */
 .shopping-details {
   padding-left: 120px; }
 
-/* line 31, ../scss/templates.scss */
+/* line 36, ../scss/templates.scss */
 .images {
   min-height: 200px;
   width: 100%;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap; }
-  /* line 40, ../scss/templates.scss */
+  /* line 45, ../scss/templates.scss */
   .images img {
     border: solid white 2px;
     box-shadow: 0 0 10px black;
     margin: 5px;
     max-width: 250px; }
+
+/* line 53, ../scss/templates.scss */
+.news-item {
+  margin-bottom: 10px; }
+  /* line 55, ../scss/templates.scss */
+  .news-item:last-child {
+    margin-bottom: 0; }
+
+/* line 60, ../scss/templates.scss */
+.news-title, .news-summary {
+  font-weight: normal; }
+
+/* line 64, ../scss/templates.scss */
+.news-title {
+  font-size: 20px;
+  padding: 0;
+  margin: 0;
+  font-family: 'Trebuchet MS'; }
+
+/* line 71, ../scss/templates.scss */
+.news-pubdate, .news-source {
+  display: inline-block;
+  width: 49%;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  padding-top: 4px;
+  margin-bottom: 6px; }
+
+/* line 81, ../scss/templates.scss */
+.news-pubdate {
+  text-align: left; }
+
+/* line 85, ../scss/templates.scss */
+.news-source {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
+
+/* line 91, ../scss/templates.scss */
+.news-summary {
+  line-height: 20px; }
 
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
