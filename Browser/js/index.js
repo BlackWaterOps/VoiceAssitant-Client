@@ -705,7 +705,7 @@
 
     Please.prototype.elapsedTimeHelper = function(dateString) {
       var dd, dt, hh, min, mm, origPubdate, origPubtime, pTime, pubdate, pubtime, ut, yy;
-      dt = new Date(dateString.replace(/[T|Z]/g, ' '));
+      dt = new Date(dateString);
       mm = dt.getMonth() + 1;
       dd = dt.getDate();
       yy = dt.getFullYear();

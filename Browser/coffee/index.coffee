@@ -624,8 +624,8 @@ class Please
 
 		return newDate
 
-	elapsedTimeHelper: (dateString) =>		
-		dt = new Date(dateString.replace(/[T|Z]/g, ' '))
+	elapsedTimeHelper: (dateString) =>
+		dt = new Date(dateString)
 		mm = dt.getMonth() + 1
 		dd = dt.getDate()
 		yy = dt.getFullYear()
