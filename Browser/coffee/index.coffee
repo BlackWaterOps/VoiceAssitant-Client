@@ -19,6 +19,11 @@ class Please
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
 		
+		Handlebars.registerHelper('elapsedTime', (dateString) =>
+			results = @elapsedTimeHelper(dateString)
+			return results.newDate + ' ' + results.newTime 
+		)
+		
 		@currentState = 'init'
 
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
@@ -618,6 +623,47 @@ class Please
 										newDate.setDate(date)
 
 		return newDate
+
+	elapsedTimeHelper: (dateString) =>		
+		dt = new Date(dateString.replace(/[T|Z]/g, ' '))
+		mm = dt.getMonth() + 1
+		dd = dt.getDate()
+		yy = dt.getFullYear()
+		hh = dt.getHours()
+		min = dt.getMinutes()
+		
+		mm = ("0" + mm) if mm < 10
+		dd = ("0" + dd) if dd < 10
+
+		# new addition to parseDate
+		hh = (hh - 12) if hh > 12
+		hh = ("0" + hh) if hh < 10
+		# end new addition
+		min = ("0" + min) if min < 10
+		
+		pubdate = mm + "/" + dd + "/" + yy
+		pubtime = hh + ":" + min
+		origPubdate = pubdate
+		origPubtime = pubtime
+
+		ut = new Date()
+
+		if (ut.getTime() - dt.getTime()) < 86400000
+			pubdate = ""
+			pTime = Math.round((((ut.getTime() - dt.getTime()) / 1000) / 60))
+			if pTime < 60
+				pubtime = "About " + pTime + " minutes ago"
+			else
+				pTime = Math.round((pTime / 60))
+				if pTime is 1
+					pubtime = "About " + pTime + " hour ago"
+				else
+					pubtime = "About " + pTime + " hours ago"
+		
+		oldDate: origPubtime
+		oldTime: origPubdate
+		newDate: pubdate
+		newTime: pubtime 
 
 	log: =>
 		args = [ ]
