@@ -1,4 +1,4 @@
-.shopping {
+.template-data {
 	background-color: white;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -6,11 +6,16 @@
 	max-height: 225px;
 }
 
-.shopping-item {
+.template-item {
 	border-bottom: 1px solid #dfdfdf;
 	padding: 10px 0;
 	&:last-child {
 		border-bottom: none;
+	}
+}
+
+.shopping-item {
+	&:last-child {
 		padding-bottom: 0;
 	}
 }
@@ -43,4 +48,46 @@
         margin: 5px;
         max-width: 250px;
     }
+}
+
+.news-item {
+	margin-bottom: 10px;	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.news-title, .news-summary {
+	font-weight: normal;
+}
+
+.news-title {
+	font-size: 20px;
+	padding: 0;
+	margin: 0;
+	font-family: 'Trebuchet MS';
+}
+
+.news-pubdate, .news-source {
+	display: inline-block;
+	width: 49%;
+	text-align: right;
+	color: rgba(0,0,0,.6);
+	font-size: 12px;
+	padding-top: 4px;
+	margin-bottom: 6px;
+}
+
+.news-pubdate {
+	text-align: left;
+}
+
+.news-source {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.news-summary {
+	line-height: 20px;
 }

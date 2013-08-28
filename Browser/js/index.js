@@ -9,6 +9,7 @@
     function Please(options) {
       this.error = __bind(this.error, this);
       this.log = __bind(this.log, this);
+      this.elapsedTimeHelper = __bind(this.elapsedTimeHelper, this);
       this.datetimeHelper = __bind(this.datetimeHelper, this);
       this.newDateHelper = __bind(this.newDateHelper, this);
       this.fuzzyHelper = __bind(this.fuzzyHelper, this);
@@ -38,6 +39,7 @@
       this.ask = __bind(this.ask, this);
       this.registerListeners = __bind(this.registerListeners, this);
       this.init = __bind(this.init, this);
+      var _this = this;
       this.debug = true;
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/v1';
@@ -56,6 +58,11 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
+      Handlebars.registerHelper('elapsedTime', function(dateString) {
+        var results;
+        results = _this.elapsedTimeHelper(dateString);
+        return results.newDate + ' ' + results.newTime;
+      });
       this.currentState = 'init';
       this.presets = {
         'after work': '18:00:00',
@@ -694,6 +701,56 @@
           }
       }
       return newDate;
+    };
+
+    Please.prototype.elapsedTimeHelper = function(dateString) {
+      var dd, dt, hh, min, mm, origPubdate, origPubtime, pTime, pubdate, pubtime, ut, yy;
+      dt = new Date(dateString);
+      mm = dt.getMonth() + 1;
+      dd = dt.getDate();
+      yy = dt.getFullYear();
+      hh = dt.getHours();
+      min = dt.getMinutes();
+      if (mm < 10) {
+        mm = "0" + mm;
+      }
+      if (dd < 10) {
+        dd = "0" + dd;
+      }
+      if (hh > 12) {
+        hh = hh - 12;
+      }
+      if (hh < 10) {
+        hh = "0" + hh;
+      }
+      if (min < 10) {
+        min = "0" + min;
+      }
+      pubdate = mm + "/" + dd + "/" + yy;
+      pubtime = hh + ":" + min;
+      origPubdate = pubdate;
+      origPubtime = pubtime;
+      ut = new Date();
+      if ((ut.getTime() - dt.getTime()) < 86400000) {
+        pubdate = "";
+        pTime = Math.round(((ut.getTime() - dt.getTime()) / 1000) / 60);
+        if (pTime < 60) {
+          pubtime = "About " + pTime + " minutes ago";
+        } else {
+          pTime = Math.round(pTime / 60);
+          if (pTime === 1) {
+            pubtime = "About " + pTime + " hour ago";
+          } else {
+            pubtime = "About " + pTime + " hours ago";
+          }
+        }
+      }
+      return {
+        oldDate: origPubtime,
+        oldTime: origPubdate,
+        newDate: pubdate,
+        newTime: pubtime
+      };
     };
 
     Please.prototype.log = function() {

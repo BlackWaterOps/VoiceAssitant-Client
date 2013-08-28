@@ -47,10 +47,10 @@
         </script>
 
         <script id="shopping-template" type="text/x-handlebars-template">
-            <div class="bubble shopping">
+            <div class="bubble template-data">
                 <ul>
                     {{#each this}}
-                    <li class="shopping-item cf">
+                    <li class="template-item shopping-item cf">
                         <a class="shopping-image" href="{{url}}">
                             <img src="{{image}}" />
                         </a>
@@ -86,6 +86,21 @@
             </div>
         </script>
         
+        <script id="news-template" type="text/x-handlebars-template">
+            <div class="bubble template-data">
+                <ul>
+                    {{#each this}}
+                    <li class="template-item news-item">
+                        <h2 class="news-title">{{title}}</h2>
+                        <p class="news-pubdate">{{elapsedTime date}}</p>
+                        <p class="news-source">{{source}}</p>
+                        <p class="news-summary">{{summary}}</p>
+                    </li>
+                    {{/each}}
+                </ul> 
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">
