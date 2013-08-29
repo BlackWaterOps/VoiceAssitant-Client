@@ -175,6 +175,8 @@ class Please
 				createCookie k, v, -1
 	
 	replaceContext: (e) =>
+		@counter = 0
+		
 		response = e.response
 
 		@mainContext = response.data

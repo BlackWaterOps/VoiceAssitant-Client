@@ -215,6 +215,7 @@
 
     Please.prototype.replaceContext = function(e) {
       var response;
+      this.counter = 0;
       response = e.response;
       this.mainContext = response.data;
       return this.auditor(this.mainContext);
