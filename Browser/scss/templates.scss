@@ -91,3 +91,50 @@
 .news-summary {
 	line-height: 20px;
 }
+
+.flights {
+	margin-top: 15px;
+
+	h2, h3, h4 {
+		margin: 0;
+	}
+
+	h2 {
+		font-size: 30px;
+		text-align: center;
+		line-height: 2.5em;
+		color: #333;
+	}
+
+	h3 {
+		background-color: #cdcdcd;
+		color: #343434;
+		padding: 5px 15px;
+	}
+
+	h4 {
+		text-transform: uppercase;
+		color: #b4b4b4;
+		font-size: .875em;
+	}
+}
+
+.flight-info {
+	padding: 10px;
+}
+
+.flights-info-item {
+	display: inline-block;
+	width: 33%;
+}
+
+.flights-route {
+	background-color: #f1f1f1;
+	@include border-side-radius(5px, "top");
+}
+
+.flights-status {
+	background-color: #334;
+	text-align: center;
+	line-height: 3.5em;
+}

@@ -87,6 +87,54 @@
 .news-summary {
   line-height: 20px; }
 
+/* line 95, ../scss/templates.scss */
+.flights {
+  margin-top: 15px; }
+  /* line 98, ../scss/templates.scss */
+  .flights h2, .flights h3, .flights h4 {
+    margin: 0; }
+  /* line 102, ../scss/templates.scss */
+  .flights h2 {
+    font-size: 30px;
+    text-align: center;
+    line-height: 2.5em;
+    color: #333; }
+  /* line 109, ../scss/templates.scss */
+  .flights h3 {
+    background-color: #cdcdcd;
+    color: #343434;
+    padding: 5px 15px; }
+  /* line 115, ../scss/templates.scss */
+  .flights h4 {
+    text-transform: uppercase;
+    color: #b4b4b4;
+    font-size: .875em; }
+
+/* line 122, ../scss/templates.scss */
+.flight-info {
+  padding: 10px; }
+
+/* line 126, ../scss/templates.scss */
+.flights-info-item {
+  display: inline-block;
+  width: 33%; }
+
+/* line 131, ../scss/templates.scss */
+.flights-route {
+  background-color: #f1f1f1;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-topleft: 5px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px; }
+
+/* line 136, ../scss/templates.scss */
+.flights-status {
+  background-color: #334;
+  text-align: center;
+  line-height: 3.5em; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;
