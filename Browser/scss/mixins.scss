@@ -3,6 +3,37 @@
      -moz-border-radius: $radius;
           border-radius: $radius;
 }
+@mixin border-side-radius($radius, $side) {
+  @if $side == "top" {
+    -webkit-border-top-right-radius: #{$radius};
+     -webkit-border-top-left-radius: #{$radius};
+            -moz-border-radius-topright: #{$radius};
+             -moz-border-radius-topleft: #{$radius};
+                border-top-right-radius: #{$radius};
+                 border-top-left-radius: #{$radius};
+  } @else if $side == "bottom" {
+    -webkit-border-bottom-right-radius: #{$radius};
+     -webkit-border-bottom-left-radius: #{$radius};
+            -moz-border-radius-bottomright: #{$radius};
+             -moz-border-radius-bottomleft: #{$radius};
+                border-bottom-right-radius: #{$radius};
+                 border-bottom-left-radius: #{$radius};
+  } @else if $side == "left" {
+    -webkit-border-bottom-left-radius: #{$radius};
+       -webkit-border-top-left-radius: #{$radius};
+            -moz-border-radius-bottomleft: #{$radius};
+               -moz-border-radius-topleft: #{$radius};
+                border-bottom-left-radius: #{$radius};
+                   border-top-left-radius: #{$radius};
+  } @else if $side == "right" {
+    -webkit-border-bottom-right-radius: #{$radius};
+       -webkit-border-top-right-radius: #{$radius};
+            -moz-border-radius-bottomright: #{$radius};
+               -moz-border-radius-topright: #{$radius};
+                border-bottom-right-radius: #{$radius};
+                   border-top-right-radius: #{$radius};
+  }  
+}
 @mixin box-sizing($boxmodel) {
   -webkit-box-sizing: $boxmodel;
      -moz-box-sizing: $boxmodel;

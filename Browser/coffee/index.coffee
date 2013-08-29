@@ -59,6 +59,7 @@ class Please
 		.on('disambiguate', @disambiguatePassive)
 		.on('disambiguate:personal', @disambiguatePersonal)
 		.on('disambiguate:active', @disambiguateActive)
+		.on('restart', @replaceContext)
 		.on('inprogress', @show)
 		.on('completed', @actor)
 		.on('error', @show)
@@ -173,6 +174,15 @@ class Please
 			else
 				createCookie k, v, -1
 	
+	replaceContext: (e) =>
+		@counter = 0
+		
+		response = e.response
+
+		@mainContext = response.data
+
+		@auditor(@mainContext)
+
 	disambiguateSuccessHandler: (response, field, type) =>
 		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
 			

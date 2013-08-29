@@ -101,6 +101,50 @@
             </div>
         </script>
 
+        <script id="flights-template" type="text/x-handlebars-template">
+            <div class="flights">
+                {{#each this}}
+                <div class="flights-route">
+                    <h2>
+                        <span>({{origin.airport_name}})</span>
+                        {{origin.airport_code}} &rarr; {{destination.airport_code}}
+                        <span>({{destination.airport_name}})</span>
+                    </h2>
+                </div>
+
+                <div class="flights-status">
+                    <p>{{status}} {{on_time}}</p>
+                </div>
+
+                <h3>Departure <span>({{origin.airport_name}})</span></h3>
+
+                <div class="flight-info flights-departure-info">
+                    <div class="flights-info-item">
+                        <h4>Filed</h4>
+                        <p>{{schedule.filed_departure}}</p>
+                    </div>
+                    <div class="flights-info-item">
+                        <h4>Actual</h4>
+                        <p>{{schedule.actual_departure}}</p>
+                    </div>
+                </div>
+                
+                <h3>Arrival <span></span></h3>
+
+                <div class="flight-info flights-arrival-info">
+                    <div class="flights-info-item">
+                        <h4>Estimated</h4>
+                        <p>{{schedule.estimated_arrival}}</p>
+                    </div>
+                    <div class="flights-info-item">
+                        <h4>Actual</h4>
+                        <p>{{schedule.actual_arrival}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">

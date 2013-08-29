@@ -33,6 +33,7 @@
       this.disambiguatePersonal = __bind(this.disambiguatePersonal, this);
       this.disambiguateActive = __bind(this.disambiguateActive, this);
       this.disambiguateSuccessHandler = __bind(this.disambiguateSuccessHandler, this);
+      this.replaceContext = __bind(this.replaceContext, this);
       this.cancel = __bind(this.cancel, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
@@ -89,7 +90,7 @@
     };
 
     Please.prototype.registerListeners = function() {
-      return $(document).on('init', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
+      return $(document).on('init', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('restart', this.replaceContext).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
     };
 
     Please.prototype.ask = function(input) {
@@ -210,6 +211,14 @@
           return createCookie(k, v, -1);
         }
       }
+    };
+
+    Please.prototype.replaceContext = function(e) {
+      var response;
+      this.counter = 0;
+      response = e.response;
+      this.mainContext = response.data;
+      return this.auditor(this.mainContext);
     };
 
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
