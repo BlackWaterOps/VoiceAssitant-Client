@@ -131,12 +131,13 @@ namespace Please2
         {
             base.OnNavigatedTo(e);
 
-            /* shopping results test
+            /*
+            // shopping results test
             string shoppingResults = "[{\"title\":\"Melissa & Doug Princess Soft Toys Skimmer Dolphin\",\"price\":\"$10.14\",\"image\":\"http://ecx.images-amazon.com/images/I/517I0gXrKIL._SL160_.jpg\",\"url\":\"http://www.amazon.com/Melissa-Doug-Princess-Skimmer-Dolphin/dp/B004PBF1WW%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB004PBF1WW\"},{\"title\":\"Gifts & Decor Spun Glass Dolphin Carousel Mirrored Base Figurine\",\"price\":\"$11.98\",\"image\":\"http://ecx.images-amazon.com/images/I/41REHPZ2Z4L._SL160_.jpg\",\"url\":\"http://www.amazon.com/Gifts-Decor-Carousel-Mirrored-Figurine/dp/B008YQ4Q70%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB008YQ4Q70\"},{\"title\":\"Dolphin Browser v8.7\",\"price\":\"$0.00\",\"image\":\"http://ecx.images-amazon.com/images/I/61wD8OVpjBL._SL160_.png\",\"url\":\"http://www.amazon.com/MoboTap-Inc-Dolphin-Browser-v8-7/dp/B0090C0VVC%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0090C0VVC\"}]";
 
             App.ShoppingViewModel.ShoppingResults = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(shoppingResults);
 
-            NavigationService.Navigate(new Uri("/ShoppingPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Pages/ShoppingPage.xaml", UriKind.Relative));
 
             return;
             */
@@ -721,6 +722,8 @@ namespace Please2
                 {
                     case "shopping":
                     case "product":
+                        Debug.WriteLine("shopping/products results");
+                   
                         if (structured.ContainsKey("items"))
                         {
                             var shoppingData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(SerializeData(structured["items"]));
@@ -729,7 +732,7 @@ namespace Please2
 
                             App.ShoppingViewModel.ShoppingResults = shoppingData;
 
-                            NavigationService.Navigate(new Uri("/ShoppingPage.xaml?template=" + structured["template"], UriKind.Relative));
+                            NavigationService.Navigate(new Uri("/Pages/ShoppingPage.xaml?template=" + structured["template"], UriKind.Relative));
                         }
                         break;
 
@@ -745,7 +748,7 @@ namespace Please2
 
                             App.EventsViewModel.EventResults = eventData;
 
-                            NavigationService.Navigate(new Uri("/EventPage.xaml?template=" + structured["template"], UriKind.Relative));
+                            NavigationService.Navigate(new Uri("/Pages/EventPage.xaml?template=" + structured["template"], UriKind.Relative));
                         }
                         break;
 
