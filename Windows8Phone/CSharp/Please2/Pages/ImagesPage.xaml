@@ -1,0 +1,99 @@
+﻿<phone:PhoneApplicationPage
+    x:Name="PageRoot"
+    x:Class="Please2.Pages.ImagesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <phone:LongListSelector x:Name="ImagesThumbnail" Visibility="Collapsed" LayoutMode="Grid" GridCellSize="145,145" ItemsSource="{Binding Images}" HorizontalContentAlignment="Center">
+                <phone:LongListSelector.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="5">
+                            <Image Source="{Binding}" Tap="Image_Tap" Stretch="UniformToFill"/>
+                            <!--
+                            <Border Background="Black" Opacity=".75">
+                                <TextBlock Text="{Binding title}"/>
+                            </Border>
+                            -->
+                        </Grid>
+                    </DataTemplate>
+                </phone:LongListSelector.ItemTemplate>
+            </phone:LongListSelector>
+                        
+            <ListBox 
+                x:Name="ImagesFull"
+                MaxHeight="300"
+                Background="DarkGray"
+                ItemsSource="{Binding Images}" 
+                ScrollViewer.VerticalScrollBarVisibility="Disabled" 
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ManipulationDelta="ImagesFull_ManipulationDelta"
+                Visibility="Visible">
+                <ListBox.RenderTransform>
+                    <CompositeTransform x:Name="ListTransform"/>
+                </ListBox.RenderTransform>
+                  
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+               
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <Viewbox Stretch="Fill">
+                                <Image 
+                                    Source="{Binding}" 
+                                    Width="{Binding ScreenWidth, ElementName=PageRoot}" 
+                                    Stretch="UniformToFill" 
+                                    >
+                                    <Image.RenderTransform>
+                                        <ScaleTransform x:Name="xform"/>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Viewbox>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <ViewportControl x:Name="viewport" 
+                             Visibility="Collapsed"
+                             ManipulationStarted="OnManipulationStarted" 
+                             ManipulationDelta="OnManipulationDelta"   
+                             ManipulationCompleted="OnManipulationCompleted" 
+                             ViewportChanged="viewport_ViewportChanged">
+                <Canvas x:Name="canvas">
+                    <Image x:Name="ImageSingle" Source="{Binding SingleImage}"   
+                            RenderTransformOrigin="0,0" CacheMode="BitmapCache" 
+                           ImageOpened="OnImageOpened">
+                        <Image.RenderTransform>
+                            <ScaleTransform x:Name="xform"/>
+                        </Image.RenderTransform>
+                    </Image>
+                </Canvas>
+            </ViewportControl>
+        </Grid>
+    </Grid>
+    
+</phone:PhoneApplicationPage>
