@@ -36,6 +36,8 @@ namespace Please2.Util
                 }
             }
 
+            Debug.WriteLine(Method);
+
             var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
 
             var result = await task;

@@ -158,6 +158,33 @@ namespace Please2.Util
             return null;
         }
     }
+
+    public class EntityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            string text = (string)value;
+
+            var map = new Dictionary<string, string>()
+            {
+                {"\n", "&#10;"},
+                {"\r", "&#13;"}
+            };
+
+            foreach (var item in map)
+            {
+                text.Replace(item.Key, item.Value);
+            }
+
+            return text;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     /*
     public class WeatherConverter : IValueConverter
     {

@@ -43,18 +43,19 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkGray">
             <TextBox x:Name="ManualInput" Width="480" KeyDown="OnKeyDown" GotFocus="ManualInputGotFocus" LostFocus="ManualInputLostFocus" Visibility="Collapsed"/>
         </StackPanel>
-        
+
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Grid x:Name="InputGrid" Visibility="Visible">
+                <!--
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="150"/>
                     <RowDefinition Height="85"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
-                <Rectangle Grid.Row="1" Fill="#c5185e" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped" />
+                
+                <Rectangle Grid.Row="1" Fill="#c5185e" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped"/>
 
                 <Image Grid.Row="1" Source="/Assets/microphone.png" HorizontalAlignment="Center" VerticalAlignment="Center" Height="100"/>
 
@@ -70,8 +71,30 @@
                      KeyUp="SpeakTextBox_KeyUp" 
                      GotFocus="SpeakTextBox_GotFocus" 
                      LostFocus="SpeakTextBox_LostFocus"/>
+                -->
+
+                <StackPanel VerticalAlignment="Center">
+                    <Rectangle Fill="#c5185e" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped"/>
+
+                    <TextBox 
+                     Name="SpeakTextBox" 
+                     Background="DarkGray" 
+                     Margin="-12,0" 
+                     Padding="5"
+                     Text="eg. Book a hotel"
+                     BorderBrush="DarkGray" 
+                     HorizontalAlignment="Stretch" 
+                     HorizontalContentAlignment="Stretch" 
+                     VerticalContentAlignment="Center"
+                     KeyUp="SpeakTextBox_KeyUp" 
+                     GotFocus="SpeakTextBox_GotFocus" 
+                     LostFocus="SpeakTextBox_LostFocus"/>
+                </StackPanel>
+
+                <Image Source="/Assets/microphone.png" HorizontalAlignment="Center" Height="100" Margin="178,295,178,373"/>
+
             </Grid>
-            
+
             <!--
             <DataTemplate x:Key="DefaultDataTemplate">
                 <StackPanel Margin="0">
@@ -84,21 +107,21 @@
                 </StackPanel>
             </DataTemplate>
             -->
-            
+
             <Grid x:Name="DialogGrid" Visibility="Collapsed">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="85"/>
                     </Grid.RowDefinitions>
-                    
+
                     <ListBox x:Name="DialogList" Grid.Row="0" ItemsSource="{Binding DialogList}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                             </Style>
                         </ListBox.ItemContainerStyle>
-    
+
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <c4f:ChatBubble 
@@ -118,7 +141,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                     
+
                     <!--
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Background="{StaticResource PhoneForegroundBrush}">
                         <TextBox Width="300"/>
@@ -139,12 +162,13 @@
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="True" x:Name="AppControl">
+        <shell:ApplicationBar IsVisible="False" x:Name="AppControl">
             <!--
             <shell:ApplicationBarIconButton x:Name="PreferencesButton" IconUri="/Assets/add.png" Text="Add" Click="PreferencesButton_Click"/>
             <shell:ApplicationBarIconButton x:Name="RemindersButton" IconUri="/Assets/add.png" Text="Add" Click="RemindersButton_Click"/>
             -->
             <shell:ApplicationBarIconButton x:Name="SpeakButton" IconUri="/Assets/microphone.png" Text="Add" Click="Microphone_Tapped"/>
+            <shell:ApplicationBarIconButton x:Name="CancelButton" IconUri="/Assets/close.png" Text="Cancel" Click="CancelButton_Click"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem x:Name="InputToggle" Text="Show Input" Click="InputMenuItem"/>
             </shell:ApplicationBar.MenuItems>
