@@ -303,7 +303,7 @@ class Please
 		if data.actor is null or data.actor is undefined
 			@show(data)
 		else
-			if data.actor.indexOf('private')
+			if data.actor.indexOf('private') isnt -1
 				data.actor = data.actor.replace('private:', '')
 
 				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @show)

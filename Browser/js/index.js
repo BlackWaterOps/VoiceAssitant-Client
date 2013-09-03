@@ -337,7 +337,7 @@
       if (data.actor === null || data.actor === void 0) {
         return this.show(data);
       } else {
-        if (data.actor.indexOf('private')) {
+        if (data.actor.indexOf('private') !== -1) {
           data.actor = data.actor.replace('private:', '');
           return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
         } else {
