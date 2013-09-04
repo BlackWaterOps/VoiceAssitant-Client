@@ -415,8 +415,11 @@ class Please
 			"timeoffset": - clientDate.getTimezoneOffset() / 60
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
-		data.device_info = @buildDeviceInfo() if @currentState is 'disambiguate'
-	
+		if endpoint.indexOf(@disambiguator) isnt -1 and endpoint.indexOf('passive') isnt -1
+			console.log endpoint
+			data = $.extend({}, data)
+			data.device_info = @buildDeviceInfo()
+
 		if @debug is true
 			@debugData = 
 				endpoint: endpoint

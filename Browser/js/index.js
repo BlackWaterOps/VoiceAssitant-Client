@@ -468,7 +468,9 @@
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
       var endpointName,
         _this = this;
-      if (this.currentState === 'disambiguate') {
+      if (endpoint.indexOf(this.disambiguator) !== -1 && endpoint.indexOf('passive') !== -1) {
+        console.log(endpoint);
+        data = $.extend({}, data);
         data.device_info = this.buildDeviceInfo();
       }
       if (this.debug === true) {
