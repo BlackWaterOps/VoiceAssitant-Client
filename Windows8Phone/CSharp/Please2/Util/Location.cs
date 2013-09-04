@@ -38,26 +38,26 @@ namespace Please2.Util
         
         private static void OnPositionChanged(Geolocator sender, PositionChangedEventArgs e)
         {
-            if (currentPosition == null)
+            try
             {
-                currentPosition = new Dictionary<string, object>();
+                geoPosition = e.Position;
+
+                var lat = e.Position.Coordinate.Latitude;
+                var lon =  e.Position.Coordinate.Longitude;
+
+                SetCurrentLocation(lat, lon);         
             }
-
-            geoPosition = e.Position;
-
-            currentPosition.Add("latitude", e.Position.Coordinate.Latitude.ToString("0.00"));
-            currentPosition.Add("longitude", e.Position.Coordinate.Longitude.ToString("0.00"));
+            catch (Exception err)
+            {
+                Debug.WriteLine("geoPosition Failure");
+                Debug.WriteLine(err.Message);
+            }
         }
 
         private static void OnStatusChanged(Geolocator sender, StatusChangedEventArgs e)
         {
-            Debug.WriteLine(e.Status);
-
-            if (currentPosition == null)
-            {
-                currentPosition = new Dictionary<string, object>();
-            }
-
+            Debug.WriteLine("location status: " + e.Status);
+            
             string statusText;
 
             switch (e.Status)
@@ -104,12 +104,19 @@ namespace Please2.Util
                     break;
             }
 
-            try
+            if (currentPosition == null)
             {
-                currentPosition.Add("status", e.Status);
-                currentPosition.Add("statusText", statusText);
+                currentPosition = new Dictionary<string, object>()
+                {
+                    {"status", e.Status},
+                    {"statusText", statusText}
+                };
             }
-            catch (Exception err) { }
+            else
+            {
+                currentPosition["status"] = e.Status;
+                currentPosition["statusText"] = statusText;
+            }
         }
 
         /// <summary>
@@ -121,12 +128,7 @@ namespace Please2.Util
         /// </summary>
         /// <returns>Dictionary<string, string></returns>
         public static async Task<Dictionary<string, object>> GetGeolocation(uint accuracy = 50, uint interval = 600000, int maxAge = 5, int timeout = 10)
-        {
-            if (currentPosition == null)
-            {
-                currentPosition = new Dictionary<string, object>();
-            }
-                       
+        {            
             try
             {
                 geolocator.DesiredAccuracyInMeters = accuracy;
@@ -140,8 +142,10 @@ namespace Please2.Util
                     timeout: TimeSpan.FromSeconds(timeout)
                 ).AsTask(token);
 
-                currentPosition.Add("latitude", geoPosition.Coordinate.Latitude.ToString("0.00"));
-                currentPosition.Add("longitude", geoPosition.Coordinate.Longitude.ToString("0.00"));
+                var lat = geoPosition.Coordinate.Latitude;
+                var lon = geoPosition.Coordinate.Longitude;
+
+                SetCurrentLocation(lat, lon);
             }
             catch (Exception err)
             {
@@ -199,6 +203,23 @@ namespace Please2.Util
         public static bool IsLocationEnabled()
         {
             return (geolocator.LocationStatus != PositionStatus.Disabled);
+        }
+
+        private static void SetCurrentLocation(double lat, double lon)
+        {
+            if (currentPosition == null)
+            {
+                currentPosition = new Dictionary<string, object>() 
+                {
+                    {"latitude", lat},
+                    {"longitude", lon}
+                };
+            }
+            else
+            {
+                currentPosition["latitude"] = lat;
+                currentPosition["longitude"] = lon;
+            }
         }
     }
 }

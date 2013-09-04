@@ -45,7 +45,7 @@
       this.debugData = {};
       this.classifier = 'http://casper-cached.stremor-nli.appspot.com/v1';
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate';
-      this.personal = 'http://stremor-pud.appspot.com/v1/disambiguate';
+      this.personal = 'http://stremor-pud.appspot.com/v1/';
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 0.00;
       this.lon = 0.00;
@@ -276,7 +276,7 @@
         type: type,
         payload: text
       };
-      return this.requestHelper(this.personal, 'POST', postData, function(response) {
+      return this.requestHelper(this.personal + 'disambiguate', 'POST', postData, function(response) {
         return _this.disambiguateSuccessHandler(response, field, type);
       });
     };
@@ -337,7 +337,12 @@
       if (data.actor === null || data.actor === void 0) {
         return this.show(data);
       } else {
-        return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+        if (data.actor.indexOf('private') !== -1) {
+          data.actor = data.actor.replace('private:', '');
+          return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+        } else {
+          return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+        }
       }
     };
 
@@ -370,7 +375,13 @@
         results = results.response;
       }
       templateData = results.show.simple;
-      templateName = templateData.link != null ? 'link' : 'bubbleout';
+      if (templateData.link != null) {
+        templateName = 'link';
+      } else if (templateData.image != null) {
+        templateName = 'image';
+      } else {
+        templateName = 'bubbleout';
+      }
       template = $('#' + templateName + '-template');
       template = Handlebars.compile(template.html());
       this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
@@ -463,7 +474,9 @@
     Please.prototype.requestHelper = function(endpoint, type, data, doneHandler) {
       var endpointName,
         _this = this;
-      if (this.currentState === 'disambiguate') {
+      if (endpoint.indexOf(this.disambiguator) !== -1 && endpoint.indexOf('passive') !== -1) {
+        console.log(endpoint);
+        data = $.extend({}, data);
         data.device_info = this.buildDeviceInfo();
       }
       if (this.debug === true) {
@@ -479,7 +492,7 @@
         type: type,
         data: type === "POST" ? JSON.stringify(data) : data,
         dataType: "json",
-        timeout: 10000,
+        timeout: 20000,
         beforeSend: function() {
           _this.log(endpointName, ">", data);
           return _this.loader.show();

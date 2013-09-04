@@ -4,7 +4,7 @@ class Please
 		@debugData = { }
 		@classifier = 'http://casper-cached.stremor-nli.appspot.com/v1'
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate'
-		@personal = 'http://stremor-pud.appspot.com/v1/disambiguate'
+		@personal = 'http://stremor-pud.appspot.com/v1/'
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 0.00
 		@lon = 0.00
@@ -243,7 +243,7 @@ class Please
 			type: type
 			payload: text
 
-		@requestHelper(@personal, 'POST', postData, (response) =>
+		@requestHelper(@personal + 'disambiguate', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
 		)
 
@@ -303,7 +303,12 @@ class Please
 		if data.actor is null or data.actor is undefined
 			@show(data)
 		else
-			@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @show)
+			if data.actor.indexOf('private') isnt -1
+				data.actor = data.actor.replace('private:', '')
+
+				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @show)
+			else
+				@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @show)
 	
 	addDebug: (e) =>
 		return if @debug is false
@@ -328,7 +333,12 @@ class Please
 
 		templateData = results.show.simple
 
-		templateName = if templateData.link? then 'link' else 'bubbleout'		
+		if templateData.link?
+			templateName = 'link'
+		else if templateData.image?
+			templateName = 'image'
+		else
+			templateName = 'bubbleout'
 
 		template = $('#' + templateName + '-template')
 		
@@ -410,8 +420,11 @@ class Please
 			"timeoffset": - clientDate.getTimezoneOffset() / 60
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
-		data.device_info = @buildDeviceInfo() if @currentState is 'disambiguate'
-	
+		if endpoint.indexOf(@disambiguator) isnt -1 and endpoint.indexOf('passive') isnt -1
+			console.log endpoint
+			data = $.extend({}, data)
+			data.device_info = @buildDeviceInfo()
+
 		if @debug is true
 			@debugData = 
 				endpoint: endpoint
@@ -426,7 +439,7 @@ class Please
 			data: if type is "POST" then JSON.stringify(data) else data 
 			# contentType: "application/json"
 			dataType: "json"
-			timeout: 10000
+			timeout: 20000
 			beforeSend: =>
 				@log endpointName, ">", data
 				@loader.show()

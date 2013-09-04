@@ -278,6 +278,7 @@
         <util:ChatBubbleConverter x:Key="ChatBubbleConverter"/>
         <util:PrettyDateConverter x:Key="PrettyDateConverter"/>
         <util:VisibilityConverter x:Key="VisibilityConverter"/>
+        <util:EntityConverter x:Key="EntityConverter"/>
 
     </Application.Resources>
 
