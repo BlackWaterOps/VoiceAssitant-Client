@@ -333,7 +333,12 @@ class Please
 
 		templateData = results.show.simple
 
-		templateName = if templateData.link? then 'link' else 'bubbleout'		
+		if templateData.link?
+			templateName = 'link'
+		else if templateData.image?
+			templateName = 'image'
+		else
+			templateName = 'bubbleout'
 
 		template = $('#' + templateName + '-template')
 		

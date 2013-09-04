@@ -375,7 +375,13 @@
         results = results.response;
       }
       templateData = results.show.simple;
-      templateName = templateData.link != null ? 'link' : 'bubbleout';
+      if (templateData.link != null) {
+        templateName = 'link';
+      } else if (templateData.image != null) {
+        templateName = 'image';
+      } else {
+        templateName = 'bubbleout';
+      }
       template = $('#' + templateName + '-template');
       template = Handlebars.compile(template.html());
       this.board.append(template(templateData)).scrollTop(this.board.find('.bubble:last').offset().top);
