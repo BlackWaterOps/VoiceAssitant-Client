@@ -131,6 +131,17 @@
 		color: #b4b4b4;
 		font-size: .875em;
 	}
+
+	.formatted-time {
+		display: block;
+		font-size: 1.5em;
+		color: #333;
+	}
+
+	.formatted-date {
+		font-size: .875em;
+		font-weight: normal;
+	}
 }
 
 .flight-info {
@@ -140,17 +151,19 @@
 .flights-info-item {
 	display: inline-block;
 	width: 33%;
+	vertical-align: top;
+	color: #666;
 }
 
 .flights-route {
-	background-color: #f1f1f1;
-	@include border-side-radius(5px, "top");
+	//background-color: #f1f1f1;
+	//@include border-side-radius(5px, "top");
 }
 
 .flights-status {
-	background-color: #334;
+	line-height: 1.5em;
 	text-align: center;
-	line-height: 3.5em;
+	color: #333;
 }
 
 // MOVIE STYLES

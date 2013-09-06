@@ -9,6 +9,7 @@
     function Please(options) {
       this.error = __bind(this.error, this);
       this.log = __bind(this.log, this);
+      this.formatDate = __bind(this.formatDate, this);
       this.elapsedTimeHelper = __bind(this.elapsedTimeHelper, this);
       this.datetimeHelper = __bind(this.datetimeHelper, this);
       this.newDateHelper = __bind(this.newDateHelper, this);
@@ -63,6 +64,23 @@
         var results;
         results = _this.elapsedTimeHelper(dateString);
         return results.newDate + ' ' + results.newTime;
+      });
+      Handlebars.registerHelper('flightDates', function(dateString, options) {
+        var am, day, dd, formatted, hh, min, mm, mon, result, yy;
+        if (dateString == null) {
+          return "--";
+        }
+        formatted = _this.formatDate(dateString);
+        am = formatted.am;
+        mm = formatted.month;
+        dd = formatted.date;
+        yy = formatted.year;
+        hh = formatted.hours;
+        min = formatted.minutes;
+        day = formatted.dayOfWeek;
+        mon = formatted.monthOfYear;
+        result = "<span class=\"formatted-time\">" + hh + ":" + min + "</span><span class=\"formatted-date\">" + day + ", " + mon + " " + dd + ", " + yy + "</span>";
+        return new Handlebars.SafeString(result);
       });
       this.currentState = 'init';
       this.presets = {
@@ -723,36 +741,39 @@
     };
 
     Please.prototype.elapsedTimeHelper = function(dateString) {
-      var dd, dt, hh, min, mm, origPubdate, origPubtime, pTime, pubdate, pubtime, ut, yy;
-      dt = new Date(dateString);
-      mm = dt.getMonth() + 1;
-      dd = dt.getDate();
-      yy = dt.getFullYear();
-      hh = dt.getHours();
-      min = dt.getMinutes();
-      if (mm < 10) {
-        mm = "0" + mm;
-      }
-      if (dd < 10) {
-        dd = "0" + dd;
-      }
-      if (hh > 12) {
-        hh = hh - 12;
-      }
-      if (hh < 10) {
-        hh = "0" + hh;
-      }
-      if (min < 10) {
-        min = "0" + min;
-      }
-      pubdate = mm + "/" + dd + "/" + yy;
-      pubtime = hh + ":" + min;
+      var dTime, dt, formatted, origPubdate, origPubtime, pTime, pubdate, pubtime, uTime, ut;
+      formatted = formatDate(dateString);
+      /*
+      		mm = dt.getMonth() + 1
+      		dd = dt.getDate()
+      		yy = dt.getFullYear()
+      		hh = dt.getHours()
+      		min = dt.getMinutes()
+      		
+      		mm = ("0" + mm) if mm < 10
+      		dd = ("0" + dd) if dd < 10
+      
+      		# new addition to parseDate
+      		hh = (hh - 12) if hh > 12
+      		hh = ("0" + hh) if hh < 10
+      		# end new addition
+      		min = ("0" + min) if min < 10
+      
+      		pubdate = mm + "/" + dd + "/" + yy
+      		pubtime = hh + ":" + min
+      */
+
+      pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year;
+      pubtime = formatted.hours + ":" + formatted.minutes;
       origPubdate = pubdate;
       origPubtime = pubtime;
+      dt = new Date(dateString);
       ut = new Date();
-      if ((ut.getTime() - dt.getTime()) < 86400000) {
+      dTime = dt.getTime();
+      uTime = ut.getTime();
+      if ((uTime - dTime) < 86400000) {
         pubdate = "";
-        pTime = Math.round(((ut.getTime() - dt.getTime()) / 1000) / 60);
+        pTime = Math.round(((uTime - dTime) / 1000) / 60);
         if (pTime < 60) {
           pubtime = "About " + pTime + " minutes ago";
         } else {
@@ -769,6 +790,46 @@
         oldTime: origPubdate,
         newDate: pubdate,
         newTime: pubtime
+      };
+    };
+
+    Please.prototype.formatDate = function(dateString) {
+      var am, date, day, daysOfTheWeek, dd, dt, hh, min, mm, monthsOfTheYear, yy;
+      monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      dt = new Date(dateString);
+      mm = dt.getMonth() + 1;
+      dd = dt.getDate();
+      yy = dt.getFullYear();
+      hh = dt.getHours();
+      min = dt.getMinutes();
+      day = dt.getDay();
+      if (mm < 10) {
+        mm = "0" + mm;
+      }
+      if (dd < 10) {
+        dd = "0" + dd;
+      }
+      am = hh > 12 ? "pm" : "am";
+      if (hh > 12) {
+        hh = hh - 12;
+      }
+      if (hh < 10) {
+        hh = "0" + hh;
+      }
+      if (min < 10) {
+        min = "0" + min;
+      }
+      return date = {
+        year: yy,
+        month: mm,
+        monthOfYear: monthsOfTheYear[dt.getMonth()],
+        date: dd,
+        day: day,
+        dayOfWeek: daysOfTheWeek[day],
+        hours: hh,
+        minutes: min,
+        am: am
       };
     };
 

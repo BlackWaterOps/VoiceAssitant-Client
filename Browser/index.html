@@ -122,19 +122,19 @@
                 </div>
 
                 <div class="flights-status">
-                    <p>{{status}} {{on_time}}</p>
+                    <p>Status: {{status}} {{on_time}}</p>
                 </div>
 
-                <h3>Departure <span>({{origin.airport_name}})</span></h3>
+                <h3>Departure</h3>
 
                 <div class="flight-info flights-departure-info">
                     <div class="flights-info-item">
                         <h4>Filed</h4>
-                        <p>{{schedule.filed_departure}}</p>
+                        <p>{{flightDates schedule.filed_departure}}</p>
                     </div>
                     <div class="flights-info-item">
                         <h4>Actual</h4>
-                        <p>{{schedule.actual_departure}}</p>
+                        <p>{{flightDates schedule.actual_departure}}</p>
                     </div>
                 </div>
                 
@@ -143,11 +143,11 @@
                 <div class="flight-info flights-arrival-info">
                     <div class="flights-info-item">
                         <h4>Estimated</h4>
-                        <p>{{schedule.estimated_arrival}}</p>
+                        <p>{{flightDates schedule.estimated_arrival}}</p>
                     </div>
                     <div class="flights-info-item">
                         <h4>Actual</h4>
-                        <p>{{schedule.actual_arrival}}</p>
+                        <p>{{flightDates schedule.actual_arrival}}</p>
                     </div>
                 </div>
                 {{/each}}
