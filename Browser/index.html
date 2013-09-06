@@ -51,13 +51,15 @@
                 <ul>
                     {{#each this}}
                     <li class="template-item shopping-item cf">
-                        <a class="shopping-image" href="{{url}}">
+                        <a class="template-item-image" href="{{url}}">
                             <img src="{{image}}" />
                         </a>
                         
-                        <div class="shopping-details">
-                            <p><a href="{{url}}">{{title}}</a></p>
-                            <p>{{price}}</p>
+                        <div class="template-item-details">
+                            <p class="template-item-title">
+                                <a href="{{url}}">{{title}}</a>
+                            </p>
+                            <p class="shopping-price">{{price}}</p>
                         </div>
                     </li>
                     {{/each}}
@@ -149,6 +151,26 @@
                     </div>
                 </div>
                 {{/each}}
+            </div>
+        </script>
+
+        <script id="movies-template" type="text/x-handlebars-template">
+            <div class="bubble template-data">
+                <ul>
+                    {{#each data}}
+                    <li class="template-item movie-item cf">
+                        <img class="template-item-image" src="{{image}}" />
+                        
+                        <div class="template-item-details">
+                            <p class="template-item-title">{{title}}</p>
+                            <p>
+                                <span class="movie-rating">{{mpaa_rating}}</span>
+                                <span class="movie-score">{{ratings.critics_score}}%</span>
+                            </p>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
             </div>
         </script>
 

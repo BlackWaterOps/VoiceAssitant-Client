@@ -14,56 +14,66 @@
   .template-item:last-child {
     border-bottom: none; }
 
-/* line 18, ../scss/templates.scss */
+/* line 17, ../scss/templates.scss */
+.template-item-image {
+  display: inline-block;
+  min-width: 100px; }
+  /* line 20, ../scss/templates.scss */
+  .template-item-image img {
+    width: 100%; }
+
+/* line 25, ../scss/templates.scss */
+.template-item-title {
+  font-size: 1.125em;
+  margin-bottom: 10px; }
+
+/* line 30, ../scss/templates.scss */
+.template-item-details {
+  display: inline-block;
+  margin-left: 20px;
+  vertical-align: top; }
+
+/* line 38, ../scss/templates.scss */
 .shopping-item:last-child {
   padding-bottom: 0; }
 
-/* line 23, ../scss/templates.scss */
-.shopping-image {
-  display: block;
-  float: left;
-  width: 100px; }
-  /* line 27, ../scss/templates.scss */
-  .shopping-image img {
-    width: 100%; }
+/* line 43, ../scss/templates.scss */
+.shopping-price {
+  font-weight: normal; }
 
-/* line 32, ../scss/templates.scss */
-.shopping-details {
-  padding-left: 120px; }
-
-/* line 36, ../scss/templates.scss */
+/* line 48, ../scss/templates.scss */
 .images {
   min-height: 200px;
   width: 100%;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap; }
-  /* line 45, ../scss/templates.scss */
+  /* line 57, ../scss/templates.scss */
   .images img {
     border: solid white 2px;
     box-shadow: 0 0 10px black;
     margin: 5px;
     max-width: 250px; }
 
-/* line 53, ../scss/templates.scss */
+/* line 66, ../scss/templates.scss */
 .news-item {
   margin-bottom: 10px; }
-  /* line 55, ../scss/templates.scss */
+  /* line 68, ../scss/templates.scss */
   .news-item:last-child {
     margin-bottom: 0; }
 
-/* line 60, ../scss/templates.scss */
+/* line 73, ../scss/templates.scss */
 .news-title, .news-summary {
   font-weight: normal; }
 
-/* line 64, ../scss/templates.scss */
+/* line 77, ../scss/templates.scss */
 .news-title {
   font-size: 20px;
   padding: 0;
   margin: 0;
   font-family: 'Trebuchet MS'; }
 
-/* line 71, ../scss/templates.scss */
+/* line 84, ../scss/templates.scss */
 .news-pubdate, .news-source {
   display: inline-block;
   width: 49%;
@@ -73,53 +83,53 @@
   padding-top: 4px;
   margin-bottom: 6px; }
 
-/* line 81, ../scss/templates.scss */
+/* line 94, ../scss/templates.scss */
 .news-pubdate {
   text-align: left; }
 
-/* line 85, ../scss/templates.scss */
+/* line 98, ../scss/templates.scss */
 .news-source {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; }
 
-/* line 91, ../scss/templates.scss */
+/* line 104, ../scss/templates.scss */
 .news-summary {
   line-height: 20px; }
 
-/* line 95, ../scss/templates.scss */
+/* line 109, ../scss/templates.scss */
 .flights {
   margin-top: 15px; }
-  /* line 98, ../scss/templates.scss */
+  /* line 112, ../scss/templates.scss */
   .flights h2, .flights h3, .flights h4 {
     margin: 0; }
-  /* line 102, ../scss/templates.scss */
+  /* line 116, ../scss/templates.scss */
   .flights h2 {
     font-size: 30px;
     text-align: center;
     line-height: 2.5em;
     color: #333; }
-  /* line 109, ../scss/templates.scss */
+  /* line 123, ../scss/templates.scss */
   .flights h3 {
     background-color: #cdcdcd;
     color: #343434;
     padding: 5px 15px; }
-  /* line 115, ../scss/templates.scss */
+  /* line 129, ../scss/templates.scss */
   .flights h4 {
     text-transform: uppercase;
     color: #b4b4b4;
     font-size: .875em; }
 
-/* line 122, ../scss/templates.scss */
+/* line 136, ../scss/templates.scss */
 .flight-info {
   padding: 10px; }
 
-/* line 126, ../scss/templates.scss */
+/* line 140, ../scss/templates.scss */
 .flights-info-item {
   display: inline-block;
   width: 33%; }
 
-/* line 131, ../scss/templates.scss */
+/* line 145, ../scss/templates.scss */
 .flights-route {
   background-color: #f1f1f1;
   -webkit-border-top-right-radius: 5px;
@@ -129,11 +139,20 @@
   border-top-right-radius: 5px;
   border-top-left-radius: 5px; }
 
-/* line 136, ../scss/templates.scss */
+/* line 150, ../scss/templates.scss */
 .flights-status {
   background-color: #334;
   text-align: center;
   line-height: 3.5em; }
+
+/* line 157, ../scss/templates.scss */
+.movie-rating {
+  border: 1px solid #ccc;
+  padding: 4px; }
+
+/* line 162, ../scss/templates.scss */
+.movie-score {
+  font-weight: normal; }
 
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
