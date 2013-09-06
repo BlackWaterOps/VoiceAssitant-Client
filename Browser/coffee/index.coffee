@@ -218,7 +218,6 @@ class Please
 		postData = 
 			payload: text
 			type: type
-			types: [type]
 
 		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
@@ -230,7 +229,6 @@ class Please
 
 		field = data.field
 
-		# TODO: handle multi types?
 		type = data.type
 
 		if field.indexOf('.') isnt -1
@@ -239,7 +237,6 @@ class Please
 			text = @mainContext.payload[field]	
 
 		postData = 
-			types: [type]
 			type: type
 			payload: text
 
@@ -252,7 +249,6 @@ class Please
 
 		field = data.field
 
-		# TODO: handle multi types
 		type = data.type
 
 		if field.indexOf('.') isnt -1
@@ -261,7 +257,6 @@ class Please
 			text = @mainContext.payload[field]	
 
 		postData = 
-			types: [type]
 			type: type
 			payload: text
 

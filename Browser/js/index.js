@@ -252,8 +252,7 @@
       text = e.response;
       postData = {
         payload: text,
-        type: type,
-        types: [type]
+        type: type
       };
       return this.requestHelper(this.disambiguator + '/active', 'POST', postData, function(response) {
         return _this.disambiguateSuccessHandler(response, field, type);
@@ -272,7 +271,6 @@
         text = this.mainContext.payload[field];
       }
       postData = {
-        types: [type],
         type: type,
         payload: text
       };
@@ -293,7 +291,6 @@
         text = this.mainContext.payload[field];
       }
       postData = {
-        types: [type],
         type: type,
         payload: text
       };

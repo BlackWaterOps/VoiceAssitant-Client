@@ -14,56 +14,66 @@
   .template-item:last-child {
     border-bottom: none; }
 
-/* line 18, ../scss/templates.scss */
+/* line 17, ../scss/templates.scss */
+.template-item-image {
+  display: inline-block;
+  min-width: 100px; }
+  /* line 20, ../scss/templates.scss */
+  .template-item-image img {
+    width: 100%; }
+
+/* line 25, ../scss/templates.scss */
+.template-item-title {
+  font-size: 1.125em;
+  margin-bottom: 10px; }
+
+/* line 30, ../scss/templates.scss */
+.template-item-details {
+  display: inline-block;
+  margin-left: 20px;
+  vertical-align: top; }
+
+/* line 38, ../scss/templates.scss */
 .shopping-item:last-child {
   padding-bottom: 0; }
 
-/* line 23, ../scss/templates.scss */
-.shopping-image {
-  display: block;
-  float: left;
-  width: 100px; }
-  /* line 27, ../scss/templates.scss */
-  .shopping-image img {
-    width: 100%; }
+/* line 43, ../scss/templates.scss */
+.shopping-price {
+  font-weight: normal; }
 
-/* line 32, ../scss/templates.scss */
-.shopping-details {
-  padding-left: 120px; }
-
-/* line 36, ../scss/templates.scss */
+/* line 48, ../scss/templates.scss */
 .images {
   min-height: 200px;
   width: 100%;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap; }
-  /* line 45, ../scss/templates.scss */
+  /* line 57, ../scss/templates.scss */
   .images img {
     border: solid white 2px;
     box-shadow: 0 0 10px black;
     margin: 5px;
     max-width: 250px; }
 
-/* line 53, ../scss/templates.scss */
+/* line 66, ../scss/templates.scss */
 .news-item {
   margin-bottom: 10px; }
-  /* line 55, ../scss/templates.scss */
+  /* line 68, ../scss/templates.scss */
   .news-item:last-child {
     margin-bottom: 0; }
 
-/* line 60, ../scss/templates.scss */
+/* line 73, ../scss/templates.scss */
 .news-title, .news-summary {
   font-weight: normal; }
 
-/* line 64, ../scss/templates.scss */
+/* line 77, ../scss/templates.scss */
 .news-title {
   font-size: 20px;
   padding: 0;
   margin: 0;
   font-family: 'Trebuchet MS'; }
 
-/* line 71, ../scss/templates.scss */
+/* line 84, ../scss/templates.scss */
 .news-pubdate, .news-source {
   display: inline-block;
   width: 49%;
@@ -73,53 +83,53 @@
   padding-top: 4px;
   margin-bottom: 6px; }
 
-/* line 81, ../scss/templates.scss */
+/* line 94, ../scss/templates.scss */
 .news-pubdate {
   text-align: left; }
 
-/* line 85, ../scss/templates.scss */
+/* line 98, ../scss/templates.scss */
 .news-source {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; }
 
-/* line 91, ../scss/templates.scss */
+/* line 104, ../scss/templates.scss */
 .news-summary {
   line-height: 20px; }
 
-/* line 95, ../scss/templates.scss */
+/* line 109, ../scss/templates.scss */
 .flights {
   margin-top: 15px; }
-  /* line 98, ../scss/templates.scss */
+  /* line 112, ../scss/templates.scss */
   .flights h2, .flights h3, .flights h4 {
     margin: 0; }
-  /* line 102, ../scss/templates.scss */
+  /* line 116, ../scss/templates.scss */
   .flights h2 {
     font-size: 30px;
     text-align: center;
     line-height: 2.5em;
     color: #333; }
-  /* line 109, ../scss/templates.scss */
+  /* line 123, ../scss/templates.scss */
   .flights h3 {
     background-color: #cdcdcd;
     color: #343434;
     padding: 5px 15px; }
-  /* line 115, ../scss/templates.scss */
+  /* line 129, ../scss/templates.scss */
   .flights h4 {
     text-transform: uppercase;
     color: #b4b4b4;
     font-size: .875em; }
 
-/* line 122, ../scss/templates.scss */
+/* line 136, ../scss/templates.scss */
 .flight-info {
   padding: 10px; }
 
-/* line 126, ../scss/templates.scss */
+/* line 140, ../scss/templates.scss */
 .flights-info-item {
   display: inline-block;
   width: 33%; }
 
-/* line 131, ../scss/templates.scss */
+/* line 145, ../scss/templates.scss */
 .flights-route {
   background-color: #f1f1f1;
   -webkit-border-top-right-radius: 5px;
@@ -129,11 +139,20 @@
   border-top-right-radius: 5px;
   border-top-left-radius: 5px; }
 
-/* line 136, ../scss/templates.scss */
+/* line 150, ../scss/templates.scss */
 .flights-status {
   background-color: #334;
   text-align: center;
   line-height: 3.5em; }
+
+/* line 157, ../scss/templates.scss */
+.movie-rating {
+  border: 1px solid #ccc;
+  padding: 4px; }
+
+/* line 162, ../scss/templates.scss */
+.movie-score {
+  font-weight: normal; }
 
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
@@ -274,53 +293,58 @@ div, p, input {
   list-style-type: none;
   column-count: 5; }
 
-/* line 121, ../scss/style.scss */
-.debug .underspeak {
-  font-size: 14px;
-  color: #555;
-  font-weight: lighter;
-  text-align: left; }
-/* line 128, ../scss/style.scss */
-.debug b, .debug strong {
-  margin-left: 10px; }
-  /* line 131, ../scss/style.scss */
-  .debug b:nth-child(1), .debug strong:nth-child(1) {
-    margin-left: 1px; }
-/* line 136, ../scss/style.scss */
-.debug .expand, .debug .simulate {
-  border: solid #bbb 1px;
-  background: #ddd;
-  padding: 0 7px;
-  margin-left: 10px;
-  color: inherit;
-  text-decoration: none;
-  font-size: 11px;
-  cursor: pointer; }
-/* line 147, ../scss/style.scss */
-.debug .data {
-  font-size: 12px;
-  font-family: "Monaco", "Courier New", monospace;
-  font-weight: normal;
-  margin-top: 5px;
-  color: #555;
-  display: none;
-  border-top: solid #ccc 1px;
-  margin-top: 15px;
-  padding-top: 10px;
-  text-align: left; }
-  /* line 159, ../scss/style.scss */
-  .debug .data pre {
-    white-space: pre;
-    word-wrap: break-word;
+/* line 120, ../scss/style.scss */
+.debug {
+  margin-top: 10px; }
+  /* line 123, ../scss/style.scss */
+  .debug .underspeak {
+    font-size: 14px;
+    color: #555;
+    font-weight: lighter;
+    text-align: left; }
+  /* line 130, ../scss/style.scss */
+  .debug b, .debug strong {
+    margin-left: 10px; }
+    /* line 133, ../scss/style.scss */
+    .debug b:nth-child(1), .debug strong:nth-child(1) {
+      margin-left: 1px; }
+  /* line 138, ../scss/style.scss */
+  .debug .expand, .debug .simulate {
+    border: solid #bbb 1px;
+    background: #ddd;
+    padding: 0 7px;
+    margin-left: 10px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 11px;
+    cursor: pointer; }
+  /* line 149, ../scss/style.scss */
+  .debug .data {
+    font-size: 12px;
     font-family: "Monaco", "Courier New", monospace;
-    font-size: 14px; }
+    font-weight: normal;
+    margin-top: 5px;
+    color: #555;
+    display: none;
+    border-top: solid #ccc 1px;
+    margin-top: 15px;
+    padding-top: 10px;
+    text-align: left; }
+    /* line 161, ../scss/style.scss */
+    .debug .data pre {
+      white-space: pre;
+      word-wrap: break-word;
+      font-family: "Monaco", "Courier New", monospace;
+      font-size: 14px; }
 
-/* line 168, ../scss/style.scss */
+/* line 170, ../scss/style.scss */
 .extLink {
   display: block;
-  text-align: right; }
+  text-align: right;
+  color: #37c;
+  font-size: .875em; }
 
-/* line 173, ../scss/style.scss */
+/* line 177, ../scss/style.scss */
 #loader {
   position: absolute;
   left: 17px;
@@ -328,19 +352,19 @@ div, p, input {
   z-index: 999;
   display: none; }
 
-/* line 181, ../scss/style.scss */
+/* line 185, ../scss/style.scss */
 .webpage {
   padding: 20px;
   text-align: center;
   background: white; }
-  /* line 186, ../scss/style.scss */
+  /* line 190, ../scss/style.scss */
   .webpage iframe {
     width: 100%;
     min-height: 400px;
     border: solid #ccc 1px;
     box-shadow: inset 0 0 5px #ccc; }
 
-/* line 194, ../scss/style.scss */
+/* line 198, ../scss/style.scss */
 .i {
   position: absolute;
   top: 9px;
@@ -354,11 +378,11 @@ div, p, input {
   text-decoration: none;
   font-size: 22px;
   z-index: 999999; }
-  /* line 208, ../scss/style.scss */
+  /* line 212, ../scss/style.scss */
   .i:hover {
     background: black; }
 
-/* line 213, ../scss/style.scss */
+/* line 217, ../scss/style.scss */
 #init {
   position: absolute;
   top: 40%;
@@ -366,27 +390,27 @@ div, p, input {
   color: #aaa;
   display: none;
   text-align: center; }
-  /* line 221, ../scss/style.scss */
+  /* line 225, ../scss/style.scss */
   #init h1 {
     font-weight: normal;
     margin: 0;
     padding: 0;
     font-size: 48px; }
-  /* line 228, ../scss/style.scss */
+  /* line 232, ../scss/style.scss */
   #init .subtitle {
     font-size: 14px; }
 
-/* line 233, ../scss/style.scss */
+/* line 237, ../scss/style.scss */
 .cf {
   *zoom: 1; }
 
-/* line 237, ../scss/style.scss */
+/* line 241, ../scss/style.scss */
 .cf:before, .cf:after {
   content: "";
   display: table;
   line-height: 0;
   height: 0; }
 
-/* line 244, ../scss/style.scss */
+/* line 248, ../scss/style.scss */
 .cf:after {
   clear: both; }
