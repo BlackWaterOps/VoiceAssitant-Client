@@ -118,6 +118,8 @@ div, p, input {
 }
 
 .debug {
+    margin-top: 10px;
+    
     .underspeak {
         font-size: 14px;
         color: #555;
@@ -168,6 +170,8 @@ div, p, input {
 .extLink {
     display: block;
     text-align: right;
+    color: #37c;
+    font-size: .875em;
 }
 
 #loader {
