@@ -214,6 +214,8 @@ class Please
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
+				console.log 'fields', field, response[type]
+
 				@findOrReplace(field, response[type])
 			else
 				@mainContext.payload[field] = response[type]
@@ -396,15 +398,19 @@ class Please
 		found = null
 
 		cursive = (obj) ->
-			for key, val of obj		
+			for key, val of obj	
 				if fields.length > 1 and key is fields[0]
 					fields.shift()
 					cursive(val)
 				else if key is fields[0]
+
 					if type is null
 						found = obj[key]
 					else
 						obj[key] = type
+					return
+				else if not obj[fields[0]]? and type isnt null
+					obj[fields[0]] = type
 					return
 
 		cursive(@mainContext)

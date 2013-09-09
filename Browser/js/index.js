@@ -248,6 +248,7 @@
         this.replaceLocation(response);
         this.replaceDates(response);
         if (field.indexOf('.') !== -1) {
+          console.log('fields', field, response[type]);
           this.findOrReplace(field, response[type]);
         } else {
           this.mainContext.payload[field] = response[type];
@@ -452,6 +453,9 @@
             } else {
               obj[key] = type;
             }
+            return;
+          } else if ((obj[fields[0]] == null) && type !== null) {
+            obj[fields[0]] = type;
             return;
           }
         }
