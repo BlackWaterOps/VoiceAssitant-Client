@@ -119,38 +119,39 @@
     text-transform: uppercase;
     color: #b4b4b4;
     font-size: .875em; }
+  /* line 135, ../scss/templates.scss */
+  .flights .formatted-time {
+    display: block;
+    font-size: 1.5em;
+    color: #333; }
+  /* line 141, ../scss/templates.scss */
+  .flights .formatted-date {
+    font-size: .875em;
+    font-weight: normal; }
 
-/* line 136, ../scss/templates.scss */
+/* line 147, ../scss/templates.scss */
 .flight-info {
   padding: 10px; }
 
-/* line 140, ../scss/templates.scss */
+/* line 151, ../scss/templates.scss */
 .flights-info-item {
   display: inline-block;
-  width: 33%; }
+  width: 33%;
+  vertical-align: top;
+  color: #666; }
 
-/* line 145, ../scss/templates.scss */
-.flights-route {
-  background-color: #f1f1f1;
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-top-left-radius: 5px;
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-topleft: 5px;
-  border-top-right-radius: 5px;
-  border-top-left-radius: 5px; }
-
-/* line 150, ../scss/templates.scss */
+/* line 163, ../scss/templates.scss */
 .flights-status {
-  background-color: #334;
+  line-height: 1.5em;
   text-align: center;
-  line-height: 3.5em; }
+  color: #333; }
 
-/* line 157, ../scss/templates.scss */
+/* line 170, ../scss/templates.scss */
 .movie-rating {
   border: 1px solid #ccc;
   padding: 4px; }
 
-/* line 162, ../scss/templates.scss */
+/* line 175, ../scss/templates.scss */
 .movie-score {
   font-weight: normal; }
 

@@ -24,6 +24,25 @@ class Please
 			return results.newDate + ' ' + results.newTime 
 		)
 		
+		Handlebars.registerHelper('flightDates', (dateString, options) =>
+			return "--" if not dateString?
+			
+			formatted = @formatDate(dateString)
+
+			am = formatted.am
+			mm = formatted.month
+			dd = formatted.date
+			yy = formatted.year
+			hh = formatted.hours
+			min = formatted.minutes
+			day = formatted.dayOfWeek
+			mon = formatted.monthOfYear
+
+			result = "<span class=\"formatted-time\">" + hh + ":" + min + "</span><span class=\"formatted-date\">" + day + ", " + mon + " " + dd + ", " + yy + "</span>" 
+			
+			new Handlebars.SafeString(result)
+		)
+
 		@currentState = 'init'
 
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
@@ -195,6 +214,8 @@ class Please
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
+				console.log 'fields', field, response[type]
+
 				@findOrReplace(field, response[type])
 			else
 				@mainContext.payload[field] = response[type]
@@ -377,15 +398,19 @@ class Please
 		found = null
 
 		cursive = (obj) ->
-			for key, val of obj		
+			for key, val of obj	
 				if fields.length > 1 and key is fields[0]
 					fields.shift()
 					cursive(val)
 				else if key is fields[0]
+
 					if type is null
 						found = obj[key]
 					else
 						obj[key] = type
+					return
+				else if not obj[fields[0]]? and type isnt null
+					obj[fields[0]] = type
 					return
 
 		cursive(@mainContext)
@@ -643,7 +668,9 @@ class Please
 		return newDate
 
 	elapsedTimeHelper: (dateString) =>
-		dt = new Date(dateString)
+		formatted = formatDate(dateString)
+
+		###
 		mm = dt.getMonth() + 1
 		dd = dt.getDate()
 		yy = dt.getFullYear()
@@ -658,17 +685,26 @@ class Please
 		hh = ("0" + hh) if hh < 10
 		# end new addition
 		min = ("0" + min) if min < 10
-		
+
 		pubdate = mm + "/" + dd + "/" + yy
 		pubtime = hh + ":" + min
+		###
+
+		pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year 
+		pubtime = formatted.hours + ":" + formatted.minutes
+
 		origPubdate = pubdate
 		origPubtime = pubtime
 
+		dt = new Date(dateString)
 		ut = new Date()
 
-		if (ut.getTime() - dt.getTime()) < 86400000
+		dTime = dt.getTime()
+		uTime = ut.getTime()
+
+		if (uTime - dTime) < 86400000
 			pubdate = ""
-			pTime = Math.round((((ut.getTime() - dt.getTime()) / 1000) / 60))
+			pTime = Math.round((((uTime - dTime) / 1000) / 60))
 			if pTime < 60
 				pubtime = "About " + pTime + " minutes ago"
 			else
@@ -681,7 +717,40 @@ class Please
 		oldDate: origPubtime
 		oldTime: origPubdate
 		newDate: pubdate
-		newTime: pubtime 
+		newTime: pubtime 		
+
+	formatDate: (dateString) =>
+		monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+		
+		daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+		dt = new Date(dateString)
+		
+		mm = dt.getMonth() + 1
+		dd = dt.getDate()
+		yy = dt.getFullYear()
+		hh = dt.getHours()
+		min = dt.getMinutes()
+		day = dt.getDay()
+
+		mm = ("0" + mm) if mm < 10
+		dd = ("0" + dd) if dd < 10
+
+		am = if (hh > 12) then "pm" else "am"
+		hh = (hh - 12) if hh > 12
+		hh = ("0" + hh) if hh < 10
+		min = ("0" + min) if min < 10
+
+		date = 
+			year: yy
+			month: mm
+			monthOfYear: monthsOfTheYear[dt.getMonth()]
+			date: dd
+			day: day
+			dayOfWeek: daysOfTheWeek[day]
+			hours: hh
+			minutes: min
+			am: am
 
 	log: =>
 		args = [ ]
