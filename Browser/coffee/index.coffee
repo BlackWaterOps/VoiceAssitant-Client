@@ -398,20 +398,26 @@ class Please
 		found = null
 
 		cursive = (obj) ->
-			for key, val of obj	
-				if fields.length > 1 and key is fields[0]
-					fields.shift()
-					cursive(val)
-				else if key is fields[0]
-
-					if type is null
-						found = obj[key]
-					else
-						obj[key] = type
-					return
-				else if not obj[fields[0]]? and type isnt null
-					obj[fields[0]] = type
-					return
+			if Object.keys(obj).length is 0
+				obj[fields[0]] = type if type isnt null
+			else
+				for key, val of obj
+					console.log 'foreach', key, val
+					if fields.length > 1 and key is fields[0]
+						console.log 'cursive', fields, obj
+						fields.shift()
+						cursive(val)
+					else if key is fields[0]
+						console.log 'found key', key, fields[0]
+						if type is null
+							found = obj[key]
+						else
+							obj[key] = type
+						return
+					else if not obj[fields[0]]? and type isnt null
+						console.log 'field not in object', fields[0]
+						obj[fields[0]] = type
+						return
 
 		cursive(@mainContext)
 

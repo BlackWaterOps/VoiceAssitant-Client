@@ -442,21 +442,31 @@
       found = null;
       cursive = function(obj) {
         var key, val;
-        for (key in obj) {
-          val = obj[key];
-          if (fields.length > 1 && key === fields[0]) {
-            fields.shift();
-            cursive(val);
-          } else if (key === fields[0]) {
-            if (type === null) {
-              found = obj[key];
-            } else {
-              obj[key] = type;
+        if (Object.keys(obj).length === 0) {
+          if (type !== null) {
+            return obj[fields[0]] = type;
+          }
+        } else {
+          for (key in obj) {
+            val = obj[key];
+            console.log('foreach', key, val);
+            if (fields.length > 1 && key === fields[0]) {
+              console.log('cursive', fields, obj);
+              fields.shift();
+              cursive(val);
+            } else if (key === fields[0]) {
+              console.log('found key', key, fields[0]);
+              if (type === null) {
+                found = obj[key];
+              } else {
+                obj[key] = type;
+              }
+              return;
+            } else if ((obj[fields[0]] == null) && type !== null) {
+              console.log('field not in object', fields[0]);
+              obj[fields[0]] = type;
+              return;
             }
-            return;
-          } else if ((obj[fields[0]] == null) && type !== null) {
-            obj[fields[0]] = type;
-            return;
           }
         }
       };
