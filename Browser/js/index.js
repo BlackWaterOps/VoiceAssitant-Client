@@ -18,6 +18,7 @@
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.replaceDates = __bind(this.replaceDates, this);
       this.replaceLocation = __bind(this.replaceLocation, this);
+      this.clientOperations = __bind(this.clientOperations, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
@@ -247,8 +248,7 @@
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
-        this.replaceLocation(response);
-        this.replaceDates(response);
+        this.clientOperations(response);
         if (field.indexOf('.') !== -1) {
           this.replace(field, response[type]);
         } else {
@@ -324,10 +324,7 @@
       response = data instanceof $.Event ? data.response : data;
       payload = response.payload;
       if (payload != null) {
-        this.replaceLocation(payload);
-      }
-      if (payload != null) {
-        this.replaceDates(payload);
+        this.clientOperations(payload);
       }
       this.mainContext = response;
       this.counter++;
@@ -557,6 +554,11 @@
         return r;
       };
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
+    };
+
+    Please.prototype.clientOperations = function(payload) {
+      this.replaceLocation(payload);
+      return this.replaceDates(payload);
     };
 
     Please.prototype.replaceLocation = function(payload) {

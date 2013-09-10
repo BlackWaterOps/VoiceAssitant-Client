@@ -206,11 +206,7 @@ class Please
 		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
 			
 		if response?
-			# replace location operators
-			@replaceLocation(response)
-
-			# find & replace date time fields
-			@replaceDates(response)
+			@clientOperations(response)
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
@@ -292,8 +288,7 @@ class Please
 
 		payload = response.payload
 
-		@replaceLocation(payload) if payload?
-		@replaceDates(payload) if payload?
+		@clientOperations(payload) if payload?
 
 		# this should only be set for init requests not disambiguate responses
 		@mainContext = response
@@ -501,6 +496,13 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
+	clientOperations: (payload) =>
+		# replace location operators			
+		@replaceLocation(payload)
+
+		# find & replace date time fields
+		@replaceDates(payload)
+
 	replaceLocation: (payload) =>
 		if payload? and payload.location?
 			switch payload.location
@@ -528,7 +530,7 @@ class Please
 					payload[time] = datetime.time if payload[time]?
 
 		return
-		
+	
 	buildDatetime: (date, time) =>
 		newDate = null
 
