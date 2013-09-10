@@ -749,26 +749,6 @@
     Please.prototype.elapsedTimeHelper = function(dateString) {
       var dTime, dt, formatted, origPubdate, origPubtime, pTime, pubdate, pubtime, uTime, ut;
       formatted = formatDate(dateString);
-      /*
-      		mm = dt.getMonth() + 1
-      		dd = dt.getDate()
-      		yy = dt.getFullYear()
-      		hh = dt.getHours()
-      		min = dt.getMinutes()
-      		
-      		mm = ("0" + mm) if mm < 10
-      		dd = ("0" + dd) if dd < 10
-      
-      		# new addition to parseDate
-      		hh = (hh - 12) if hh > 12
-      		hh = ("0" + hh) if hh < 10
-      		# end new addition
-      		min = ("0" + min) if min < 10
-      
-      		pubdate = mm + "/" + dd + "/" + yy
-      		pubtime = hh + ":" + min
-      */
-
       pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year;
       pubtime = formatted.hours + ":" + formatted.minutes;
       origPubdate = pubdate;
