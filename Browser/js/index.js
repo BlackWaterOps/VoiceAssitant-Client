@@ -22,7 +22,9 @@
       this.requestHelper = __bind(this.requestHelper, this);
       this.buildDeviceInfo = __bind(this.buildDeviceInfo, this);
       this.nameMap = __bind(this.nameMap, this);
-      this.findOrReplace = __bind(this.findOrReplace, this);
+      this.replace = __bind(this.replace, this);
+      this.find = __bind(this.find, this);
+      this.reduce = __bind(this.reduce, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
       this.show = __bind(this.show, this);
@@ -248,8 +250,7 @@
         this.replaceLocation(response);
         this.replaceDates(response);
         if (field.indexOf('.') !== -1) {
-          console.log('fields', field, response[type]);
-          this.findOrReplace(field, response[type]);
+          this.replace(field, response[type]);
         } else {
           this.mainContext.payload[field] = response[type];
         }
@@ -285,7 +286,7 @@
       field = data.field;
       type = data.type;
       if (field.indexOf('.') !== -1) {
-        text = this.findOrReplace(field);
+        text = this.find(field);
       } else {
         text = this.mainContext.payload[field];
       }
@@ -305,7 +306,7 @@
       field = data.field;
       type = data.type;
       if (field.indexOf('.') !== -1) {
-        text = this.findOrReplace(field);
+        text = this.find(field);
       } else {
         text = this.mainContext.payload[field];
       }
@@ -433,45 +434,37 @@
       return this.lon = position.coords.longitude;
     };
 
-    Please.prototype.findOrReplace = function(field, type) {
-      var cursive, fields, found;
-      if (type == null) {
-        type = null;
+    Please.prototype.reduce = function(fun, iterable, initial) {
+      if (iterable.length > 0) {
+        initial = fun(initial, iterable[0]);
+        return this.reduce(fun, iterable.slice(1), initial);
+      } else {
+        return initial;
       }
+    };
+
+    Please.prototype.find = function(field) {
+      var fields,
+        _this = this;
       fields = field.split('.');
-      found = null;
-      cursive = function(obj) {
-        var key, val;
-        if (Object.keys(obj).length === 0) {
-          if (type !== null) {
-            return obj[fields[0]] = type;
-          }
-        } else {
-          for (key in obj) {
-            val = obj[key];
-            console.log('foreach', key, val);
-            if (fields.length > 1 && key === fields[0]) {
-              console.log('cursive', fields, obj);
-              fields.shift();
-              cursive(val);
-            } else if (key === fields[0]) {
-              console.log('found key', key, fields[0]);
-              if (type === null) {
-                found = obj[key];
-              } else {
-                obj[key] = type;
-              }
-              return;
-            } else if ((obj[fields[0]] == null) && type !== null) {
-              console.log('field not in object', fields[0]);
-              obj[fields[0]] = type;
-              return;
-            }
-          }
-        }
-      };
-      cursive(this.mainContext);
-      return found;
+      if ('function' === typeof Array.prototype.reduce) {
+        return fields.reduce(function(prevVal, currVal, index, array) {
+          return prevVal[currVal];
+        }, this.mainContext);
+      } else {
+        return this.reduce(function(obj, key) {
+          return obj[key];
+        }, fields, this.mainContext);
+      }
+    };
+
+    Please.prototype.replace = function(field, type) {
+      var fields, last, obj;
+      fields = field.split('.');
+      last = fields.pop();
+      field = fields.join('.');
+      obj = this.find(field);
+      return obj[last] = type;
     };
 
     Please.prototype.nameMap = function(key) {
@@ -504,7 +497,6 @@
       var endpointName,
         _this = this;
       if (endpoint.indexOf(this.disambiguator) !== -1 && endpoint.indexOf('passive') !== -1) {
-        console.log(endpoint);
         data = $.extend({}, data);
         data.device_info = this.buildDeviceInfo();
       }

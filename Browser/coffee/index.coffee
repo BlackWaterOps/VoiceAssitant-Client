@@ -138,8 +138,8 @@ class Please
 				target.val @history[@pos]
 				
 	expand: (e) =>
-	    e.preventDefault()
-	    $(e.target).parent().next().toggle()
+		e.preventDefault()
+		$(e.target).parent().next().toggle()
 
 	cancel: (e) =>
 		@board.empty()
@@ -214,9 +214,8 @@ class Please
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
-				console.log 'fields', field, response[type]
-
-				@findOrReplace(field, response[type])
+				@replace(field, response[type])
+				# @findOrReplace(field, response[type])
 			else
 				@mainContext.payload[field] = response[type]
 		
@@ -253,7 +252,8 @@ class Please
 		type = data.type
 
 		if field.indexOf('.') isnt -1
-			text = @findOrReplace(field)
+			text = @find(field)
+			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
 
@@ -273,7 +273,8 @@ class Please
 		type = data.type
 
 		if field.indexOf('.') isnt -1
-			text = @findOrReplace(field)
+			text = @find(field)
+			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
 
@@ -393,35 +394,35 @@ class Please
 		@lat = position.coords.latitude
 		@lon = position.coords.longitude
 	
-	findOrReplace: (field, type = null) =>
+	reduce: (fun, iterable, initial) =>
+		if iterable.length > 0
+			initial = fun(initial, iterable[0])
+			return @reduce(fun, iterable.slice(1), initial)
+		else
+			return initial
+ 
+	find: (field) =>
 		fields = field.split('.')
-		found = null
+		
+		if 'function' is typeof Array.prototype.reduce
+			fields.reduce((prevVal, currVal, index, array) =>
+				return prevVal[currVal]
+			, @mainContext)
+		else
+			@reduce((obj, key) =>
+				return obj[key]
+			, fields, @mainContext)
 
-		cursive = (obj) ->
-			if Object.keys(obj).length is 0
-				obj[fields[0]] = type if type isnt null
-			else
-				for key, val of obj
-					console.log 'foreach', key, val
-					if fields.length > 1 and key is fields[0]
-						console.log 'cursive', fields, obj
-						fields.shift()
-						cursive(val)
-					else if key is fields[0]
-						console.log 'found key', key, fields[0]
-						if type is null
-							found = obj[key]
-						else
-							obj[key] = type
-						return
-					else if not obj[fields[0]]? and type isnt null
-						console.log 'field not in object', fields[0]
-						obj[fields[0]] = type
-						return
+	replace: (field, type) =>
+		fields = field.split('.')
 
-		cursive(@mainContext)
+		last = fields.pop()
 
-		return found
+		field = fields.join('.')
+
+		obj = @find(field)
+
+		return obj[last] = type		
 
 	nameMap: (key) =>
 		map = false
@@ -447,7 +448,6 @@ class Please
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
 		if endpoint.indexOf(@disambiguator) isnt -1 and endpoint.indexOf('passive') isnt -1
-			console.log endpoint
 			data = $.extend({}, data)
 			data.device_info = @buildDeviceInfo()
 
