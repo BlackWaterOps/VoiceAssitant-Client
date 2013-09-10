@@ -138,8 +138,8 @@ class Please
 				target.val @history[@pos]
 				
 	expand: (e) =>
-	    e.preventDefault()
-	    $(e.target).parent().next().toggle()
+		e.preventDefault()
+		$(e.target).parent().next().toggle()
 
 	cancel: (e) =>
 		@board.empty()
@@ -214,9 +214,8 @@ class Please
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
-				console.log 'fields', field, response[type]
-
-				@findOrReplace(field, response[type])
+				@replace(field, response[type])
+				# @findOrReplace(field, response[type])
 			else
 				@mainContext.payload[field] = response[type]
 		
@@ -253,7 +252,8 @@ class Please
 		type = data.type
 
 		if field.indexOf('.') isnt -1
-			text = @findOrReplace(field)
+			text = @find(field)
+			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
 
@@ -273,7 +273,8 @@ class Please
 		type = data.type
 
 		if field.indexOf('.') isnt -1
-			text = @findOrReplace(field)
+			text = @find(field)
+			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
 
@@ -393,29 +394,35 @@ class Please
 		@lat = position.coords.latitude
 		@lon = position.coords.longitude
 	
-	findOrReplace: (field, type = null) =>
+	reduce: (fun, iterable, initial) =>
+		if iterable.length > 0
+			initial = fun(initial, iterable[0])
+			return @reduce(fun, iterable.slice(1), initial)
+		else
+			return initial
+ 
+	find: (field) =>
 		fields = field.split('.')
-		found = null
+		
+		if 'function' is typeof Array.prototype.reduce
+			fields.reduce((prevVal, currVal, index, array) =>
+				return prevVal[currVal]
+			, @mainContext)
+		else
+			@reduce((obj, key) =>
+				return obj[key]
+			, fields, @mainContext)
 
-		cursive = (obj) ->
-			for key, val of obj	
-				if fields.length > 1 and key is fields[0]
-					fields.shift()
-					cursive(val)
-				else if key is fields[0]
+	replace: (field, type) =>
+		fields = field.split('.')
 
-					if type is null
-						found = obj[key]
-					else
-						obj[key] = type
-					return
-				else if not obj[fields[0]]? and type isnt null
-					obj[fields[0]] = type
-					return
+		last = fields.pop()
 
-		cursive(@mainContext)
+		field = fields.join('.')
 
-		return found
+		obj = @find(field)
+
+		return obj[last] = type		
 
 	nameMap: (key) =>
 		map = false
@@ -441,7 +448,6 @@ class Please
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
 		if endpoint.indexOf(@disambiguator) isnt -1 and endpoint.indexOf('passive') isnt -1
-			console.log endpoint
 			data = $.extend({}, data)
 			data.device_info = @buildDeviceInfo()
 
@@ -669,26 +675,6 @@ class Please
 
 	elapsedTimeHelper: (dateString) =>
 		formatted = formatDate(dateString)
-
-		###
-		mm = dt.getMonth() + 1
-		dd = dt.getDate()
-		yy = dt.getFullYear()
-		hh = dt.getHours()
-		min = dt.getMinutes()
-		
-		mm = ("0" + mm) if mm < 10
-		dd = ("0" + dd) if dd < 10
-
-		# new addition to parseDate
-		hh = (hh - 12) if hh > 12
-		hh = ("0" + hh) if hh < 10
-		# end new addition
-		min = ("0" + min) if min < 10
-
-		pubdate = mm + "/" + dd + "/" + yy
-		pubtime = hh + ":" + min
-		###
 
 		pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year 
 		pubtime = formatted.hours + ":" + formatted.minutes
