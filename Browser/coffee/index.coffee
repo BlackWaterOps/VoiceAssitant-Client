@@ -206,11 +206,7 @@ class Please
 		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
 			
 		if response?
-			# replace location operators
-			@replaceLocation(response)
-
-			# find & replace date time fields
-			@replaceDates(response)
+			@clientOperations(response)
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
@@ -274,13 +270,15 @@ class Please
 
 		if field.indexOf('.') isnt -1
 			text = @find(field)
+
 			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
-
+		
 		postData = 
 			type: type
 			payload: text
+
 
 		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
@@ -292,8 +290,7 @@ class Please
 
 		payload = response.payload
 
-		@replaceLocation(payload) if payload?
-		@replaceDates(payload) if payload?
+		@clientOperations(payload) if payload?
 
 		# this should only be set for init requests not disambiguate responses
 		@mainContext = response
@@ -406,11 +403,11 @@ class Please
 		
 		if 'function' is typeof Array.prototype.reduce
 			fields.reduce((prevVal, currVal, index, array) =>
-				return prevVal[currVal]
+				return prevVal[currVal] || null
 			, @mainContext)
 		else
 			@reduce((obj, key) =>
-				return obj[key]
+				return obj[key] || null
 			, fields, @mainContext)
 
 	replace: (field, type) =>
@@ -501,6 +498,13 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
+	clientOperations: (payload) =>
+		# replace location operators			
+		@replaceLocation(payload)
+
+		# find & replace date time fields
+		@replaceDates(payload)
+
 	replaceLocation: (payload) =>
 		if payload? and payload.location?
 			switch payload.location
@@ -528,7 +532,7 @@ class Please
 					payload[time] = datetime.time if payload[time]?
 
 		return
-		
+	
 	buildDatetime: (date, time) =>
 		newDate = null
 
