@@ -446,11 +446,11 @@
       fields = field.split('.');
       if ('function' === typeof Array.prototype.reduce) {
         return fields.reduce(function(prevVal, currVal, index, array) {
-          return prevVal[currVal];
+          return prevVal[currVal] || null;
         }, this.mainContext);
       } else {
         return this.reduce(function(obj, key) {
-          return obj[key];
+          return obj[key] || null;
         }, fields, this.mainContext);
       }
     };

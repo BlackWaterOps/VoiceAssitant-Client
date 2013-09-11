@@ -270,13 +270,15 @@ class Please
 
 		if field.indexOf('.') isnt -1
 			text = @find(field)
+
 			# text = @findOrReplace(field)
 		else
 			text = @mainContext.payload[field]	
-
+		
 		postData = 
 			type: type
 			payload: text
+
 
 		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
@@ -401,11 +403,11 @@ class Please
 		
 		if 'function' is typeof Array.prototype.reduce
 			fields.reduce((prevVal, currVal, index, array) =>
-				return prevVal[currVal]
+				return prevVal[currVal] || null
 			, @mainContext)
 		else
 			@reduce((obj, key) =>
-				return obj[key]
+				return obj[key] || null
 			, fields, @mainContext)
 
 	replace: (field, type) =>
