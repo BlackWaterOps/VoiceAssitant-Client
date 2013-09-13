@@ -107,7 +107,11 @@
         }), 1000);
       }
       this.getLocation();
-      return this.registerListeners();
+      this.registerListeners();
+      return speak("this is a test", {
+        pitch: 30,
+        speed: 145
+      });
     };
 
     Please.prototype.registerListeners = function() {
@@ -419,7 +423,10 @@
         }
       }
       this.loader.hide();
-      return this.counter = 0;
+      this.counter = 0;
+      if (typeof speak !== "undefined" && speak !== null) {
+        return speak(results.speak);
+      }
     };
 
     Please.prototype.getLocation = function() {
