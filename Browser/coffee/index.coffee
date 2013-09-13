@@ -74,11 +74,6 @@ class Please
 		@getLocation()
 		@registerListeners()
 
-		speak("this is a test", 
-			pitch: 30
-			speed: 145
-		)
-
 	registerListeners: =>
 		$(document)
 		.on('init', @auditor)
@@ -391,8 +386,11 @@ class Please
 		@loader.hide()
 		@counter = 0
 
-		if speak? and @disableSpeech is false
-			speak(results.speak)
+		if 'function' is typeof speak and @disableSpeech is false
+			speak(results.speak,
+				pitch: 30
+				speed: 145
+			)
 
 
 	getLocation: =>
