@@ -18,7 +18,8 @@ class Please
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
-		
+		@disableSpeech = true
+
 		Handlebars.registerHelper('elapsedTime', (dateString) =>
 			results = @elapsedTimeHelper(dateString)
 			return results.newDate + ' ' + results.newTime 
@@ -390,7 +391,7 @@ class Please
 		@loader.hide()
 		@counter = 0
 
-		if speak?
+		if speak? and @disableSpeech is false
 			speak(results.speak)
 
 

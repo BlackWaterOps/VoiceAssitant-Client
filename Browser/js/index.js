@@ -63,6 +63,7 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
+      this.disableSpeech = true;
       Handlebars.registerHelper('elapsedTime', function(dateString) {
         var results;
         results = _this.elapsedTimeHelper(dateString);
@@ -424,7 +425,7 @@
       }
       this.loader.hide();
       this.counter = 0;
-      if (typeof speak !== "undefined" && speak !== null) {
+      if ((typeof speak !== "undefined" && speak !== null) && this.disableSpeech === false) {
         return speak(results.speak);
       }
     };
