@@ -52,6 +52,7 @@ class Please
 			'lunch': '12:00:00'
 		
 		@init()
+
 	init: =>
 		@input.focus()
 		.on('webkitspeechchange', @ask)
@@ -71,6 +72,11 @@ class Please
 
 		@getLocation()
 		@registerListeners()
+
+		speak("this is a test", 
+			pitch: 30
+			speed: 145
+		)
 
 	registerListeners: =>
 		$(document)
@@ -383,6 +389,10 @@ class Please
 
 		@loader.hide()
 		@counter = 0
+
+		if speak?
+			speak(results.speak)
+
 
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
