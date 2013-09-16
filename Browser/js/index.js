@@ -757,7 +757,7 @@
 
     Please.prototype.elapsedTimeHelper = function(dateString) {
       var dTime, dt, formatted, origPubdate, origPubtime, pTime, pubdate, pubtime, uTime, ut;
-      formatted = formatDate(dateString);
+      formatted = this.formatDate(dateString);
       pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year;
       pubtime = formatted.hours + ":" + formatted.minutes;
       origPubdate = pubdate;

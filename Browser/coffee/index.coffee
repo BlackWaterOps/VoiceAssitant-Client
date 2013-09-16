@@ -687,7 +687,7 @@ class Please
 		return newDate
 
 	elapsedTimeHelper: (dateString) =>
-		formatted = formatDate(dateString)
+		formatted = @formatDate(dateString)
 
 		pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year 
 		pubtime = formatted.hours + ":" + formatted.minutes
