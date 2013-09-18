@@ -6,8 +6,8 @@ class Please
 		@disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate'
 		@personal = 'http://stremor-pud.appspot.com/v1/'
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
-		@lat = 0.00
-		@lon = 0.00
+		@lat = 33.4930947
+		@lon = -111.928558
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
