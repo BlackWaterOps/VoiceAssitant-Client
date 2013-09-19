@@ -584,9 +584,7 @@
       prepend = data.unused_tokens.join(" ");
       field = data.prepend_to;
       payloadField = this.mainContext.payload[field];
-      if (payloadField == null) {
-        payloadField = "";
-      }
+      payloadField = payloadField == null ? "" : " " + payloadField;
       return this.mainContext.payload[field] = prepend + payloadField;
     };
 

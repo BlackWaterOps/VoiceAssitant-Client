@@ -539,7 +539,7 @@ class Please
 
 		payloadField = @mainContext.payload[field]
 
-		payloadField = "" if not payloadField?
+		payloadField = if not payloadField? then "" else " " + payloadField
 
 		@mainContext.payload[field] = prepend + payloadField
 
