@@ -87,6 +87,16 @@
         result = "<span class=\"formatted-time\">" + hh + ":" + min + "</span><span class=\"formatted-date\">" + day + ", " + mon + " " + dd + ", " + yy + "</span>";
         return new Handlebars.SafeString(result);
       });
+      Handlebars.registerHelper('eventDates', function(dateString) {
+        var day, dd, formatted, mm, mon, yy;
+        formatted = _this.formatDate(dateString);
+        mm = formatted.month;
+        dd = formatted.date;
+        yy = formatted.year;
+        day = formatted.dayOfWeek;
+        mon = formatted.monthOfYear;
+        return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy;
+      });
       this.currentState = 'init';
       this.presets = {
         'after work': '18:00:00',
