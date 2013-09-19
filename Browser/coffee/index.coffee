@@ -219,9 +219,7 @@ class Please
 		
 			# clone 'mainContext' so we don't pollute with unused_tokens
 			request = $.extend({}, @mainContext)
-			
-			request.unused_tokens = response.unused_tokens if response.unused_tokens?
-			
+						
 			@auditor(request)
 		else
 			console.log 'oops no responder response', results
@@ -392,7 +390,6 @@ class Please
 				speed: 145
 			)
 
-
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
 	
@@ -507,12 +504,29 @@ class Please
 		( dateObj.getFullYear() + '-' + pad( dateObj.getMonth() + 1 ) + '-' + pad( dateObj.getDate() ) + 'T' + pad( dateObj.getHours() ) + ':' + pad( dateObj.getMinutes() ) + ':' + pad( dateObj.getSeconds() ) )
 		# + '.' + String( (dateObj.getMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
 
-	clientOperations: (payload) =>
+	# Note: 
+	# data represents the payload object in response to classification
+	# and represents the entire response object in response to disambiguation
+	clientOperations: (data) =>
 		# replace location operators			
-		@replaceLocation(payload)
+		@replaceLocation(data)
 
 		# find & replace date time fields
-		@replaceDates(payload)
+		@replaceDates(data)
+
+		# prepend (potential) unused_tokens to payload.{field}
+		@prependTo(data) if data.unused_tokens?		
+
+	prependTo: (data) =>
+		prepend = data.unused_tokens.join(" ")
+
+		field = data.prepend_to
+
+		payloadField = @mainContext.payload[field]
+
+		payloadField = "" if not payloadField?
+
+		@mainContext.payload[field] = prepend + payloadField
 
 	replaceLocation: (payload) =>
 		if payload? and payload.location?

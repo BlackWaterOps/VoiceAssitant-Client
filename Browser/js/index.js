@@ -18,6 +18,7 @@
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.replaceDates = __bind(this.replaceDates, this);
       this.replaceLocation = __bind(this.replaceLocation, this);
+      this.prependTo = __bind(this.prependTo, this);
       this.clientOperations = __bind(this.clientOperations, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
@@ -256,9 +257,6 @@
           this.mainContext.payload[field] = response[type];
         }
         request = $.extend({}, this.mainContext);
-        if (response.unused_tokens != null) {
-          request.unused_tokens = response.unused_tokens;
-        }
         return this.auditor(request);
       } else {
         return console.log('oops no responder response', results);
@@ -563,9 +561,23 @@
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
     };
 
-    Please.prototype.clientOperations = function(payload) {
-      this.replaceLocation(payload);
-      return this.replaceDates(payload);
+    Please.prototype.clientOperations = function(data) {
+      this.replaceLocation(data);
+      this.replaceDates(data);
+      if (data.unused_tokens != null) {
+        return this.prependTo(data);
+      }
+    };
+
+    Please.prototype.prependTo = function(data) {
+      var field, payloadField, prepend;
+      prepend = data.unused_tokens.join(" ");
+      field = data.prepend_to;
+      payloadField = this.mainContext.payload[field];
+      if (payloadField == null) {
+        payloadField = "";
+      }
+      return this.mainContext.payload[field] = prepend + payloadField;
     };
 
     Please.prototype.replaceLocation = function(payload) {
