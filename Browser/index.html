@@ -161,7 +161,7 @@
         <script id="movies-template" type="text/x-handlebars-template">
             <div class="bubble template-data">
                 <ul>
-                    {{#each data}}
+                    {{#each this}}
                     <li class="template-item movie-item cf">
                         <img class="template-item-image" src="{{image}}" />
                         
@@ -182,7 +182,7 @@
             <div class="bubble template-data">
                 <ul>
                     {{#each this}}
-                    <li class="template-item movie-item cf">
+                    <li class="template-item event-item cf">
                         <img class="template-item-image event-image" src="{{image}}" />
                         
                         <div class="template-item-details">
