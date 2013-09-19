@@ -44,6 +44,21 @@ class Please
 			new Handlebars.SafeString(result)
 		)
 
+		Handlebars.registerHelper('eventDates', (dateString) =>
+			# "ddd, MMM d, yyyy"
+            # Wed, Jan 5, 2013 
+
+			formatted = @formatDate(dateString)
+
+			mm = formatted.month
+			dd = formatted.date
+			yy = formatted.year
+			day = formatted.dayOfWeek
+			mon = formatted.monthOfYear
+
+			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
+		)
+
 		@currentState = 'init'
 
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs

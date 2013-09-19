@@ -155,6 +155,18 @@
 .movie-score {
   font-weight: normal; }
 
+/* line 180, ../scss/templates.scss */
+.event-image {
+  min-height: 100px; }
+
+/* line 184, ../scss/templates.scss */
+.event-time, .event-address {
+  font-weight: normal; }
+
+/* line 188, ../scss/templates.scss */
+.event-time {
+  color: #999; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;

@@ -178,6 +178,24 @@
             </div>
         </script>
 
+        <script id="events-template" type="text/x-handlebars-template">
+            <div class="bubble template-data">
+                <ul>
+                    {{#each this}}
+                    <li class="template-item movie-item cf">
+                        <img class="template-item-image event-image" src="{{image}}" />
+                        
+                        <div class="template-item-details">
+                            <p class="template-item-title">{{title}}</p>
+                            <p class="event-time">{{eventDates start_time}}</p>
+                            <p class="event-address">{{location.address}}</p>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </script>        
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">
