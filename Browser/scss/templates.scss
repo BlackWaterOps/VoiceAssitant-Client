@@ -9,13 +9,15 @@
 .template-item {
 	border-bottom: 1px solid #dfdfdf;
 	padding: 10px 0;
+	position: relative;
 	&:last-child {
 		border-bottom: none;
 	}
 }
 
 .template-item-image {
-	display: inline-block;
+	//display: inline-block;
+	float: left;
 	min-width: 100px;
 	img {
 		width: 100%;
@@ -28,8 +30,9 @@
 }
 
 .template-item-details {
-	display: inline-block;
-	margin-left: 20px;
+	//display: inline-block;
+	//margin-left: 20px;
+	padding-left: 120px;
 	vertical-align: top;
 }
 
@@ -167,6 +170,12 @@
 }
 
 // MOVIE STYLES
+.movie-item {
+	.template-item-details {
+		padding-left: 140px;
+	}
+}
+
 .movie-rating {
 	border: 1px solid #ccc;
 	padding: 4px;
@@ -177,6 +186,12 @@
 }
 
 // EVENT STYLES
+.event-item {
+	.template-item-details {
+		padding-left: 140px;
+	}
+}
+
 .event-image {
 	min-height: 100px;
 }
