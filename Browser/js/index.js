@@ -18,6 +18,7 @@
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.replaceDates = __bind(this.replaceDates, this);
       this.replaceLocation = __bind(this.replaceLocation, this);
+      this.prependTo = __bind(this.prependTo, this);
       this.clientOperations = __bind(this.clientOperations, this);
       this.toISOString = __bind(this.toISOString, this);
       this.requestHelper = __bind(this.requestHelper, this);
@@ -51,8 +52,8 @@
       this.disambiguator = 'http://casper-cached.stremor-nli.appspot.com/v1/disambiguate';
       this.personal = 'http://stremor-pud.appspot.com/v1/';
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
-      this.lat = 0.00;
-      this.lon = 0.00;
+      this.lat = 33.4930947;
+      this.lon = -111.928558;
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
@@ -63,6 +64,7 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
+      this.disableSpeech = true;
       Handlebars.registerHelper('elapsedTime', function(dateString) {
         var results;
         results = _this.elapsedTimeHelper(dateString);
@@ -107,11 +109,7 @@
         }), 1000);
       }
       this.getLocation();
-      this.registerListeners();
-      return speak("this is a test", {
-        pitch: 30,
-        speed: 145
-      });
+      return this.registerListeners();
     };
 
     Please.prototype.registerListeners = function() {
@@ -259,9 +257,6 @@
           this.mainContext.payload[field] = response[type];
         }
         request = $.extend({}, this.mainContext);
-        if (response.unused_tokens != null) {
-          request.unused_tokens = response.unused_tokens;
-        }
         return this.auditor(request);
       } else {
         return console.log('oops no responder response', results);
@@ -424,8 +419,11 @@
       }
       this.loader.hide();
       this.counter = 0;
-      if (typeof speak !== "undefined" && speak !== null) {
-        return speak(results.speak);
+      if ('function' === typeof speak && this.disableSpeech === false) {
+        return speak(results.speak, {
+          pitch: 30,
+          speed: 145
+        });
       }
     };
 
@@ -563,9 +561,23 @@
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
     };
 
-    Please.prototype.clientOperations = function(payload) {
-      this.replaceLocation(payload);
-      return this.replaceDates(payload);
+    Please.prototype.clientOperations = function(data) {
+      this.replaceLocation(data);
+      this.replaceDates(data);
+      if (data.unused_tokens != null) {
+        return this.prependTo(data);
+      }
+    };
+
+    Please.prototype.prependTo = function(data) {
+      var field, payloadField, prepend;
+      prepend = data.unused_tokens.join(" ");
+      field = data.prepend_to;
+      payloadField = this.mainContext.payload[field];
+      if (payloadField == null) {
+        payloadField = "";
+      }
+      return this.mainContext.payload[field] = prepend + payloadField;
     };
 
     Please.prototype.replaceLocation = function(payload) {
@@ -757,7 +769,7 @@
 
     Please.prototype.elapsedTimeHelper = function(dateString) {
       var dTime, dt, formatted, origPubdate, origPubtime, pTime, pubdate, pubtime, uTime, ut;
-      formatted = formatDate(dateString);
+      formatted = this.formatDate(dateString);
       pubdate = formatted.month + "/" + formatted.date + "/" + formatted.year;
       pubtime = formatted.hours + ":" + formatted.minutes;
       origPubdate = pubdate;
