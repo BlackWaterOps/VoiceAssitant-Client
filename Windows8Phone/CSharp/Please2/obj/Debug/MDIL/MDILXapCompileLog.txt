@@ -1,13 +1,21 @@
 Compile filter specified.  Only the following files will be processed:
 c:\users\jeff schifano\documents\visual studio 2012\projects\please2\please2\bin\debug\mdil\please2.dll
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\BindableApplicationBar.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\BindableApplicationBar.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Coding4Fun.Toolkit.Controls.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Coding4Fun.Toolkit.Controls.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Facebook.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Facebook.dll is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\GalaSoft.MvvmLight.Extras.WP8.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\GalaSoft.MvvmLight.Extras.WP8.dll is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\GalaSoft.MvvmLight.WP8.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\GalaSoft.MvvmLight.WP8.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Phone.Controls.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Phone.Controls.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Phone.Controls.Toolkit.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Phone.Controls.Toolkit.dll is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Practices.ServiceLocation.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Microsoft.Practices.ServiceLocation.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Newtonsoft.Json.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Newtonsoft.Json.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Please2.dll
@@ -18,5 +26,9 @@ MDIL image C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\
 
 
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Please2.dll output C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\MDIL\Please2.dll
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\System.Windows.Interactivity.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\System.Windows.Interactivity.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\WMAppManifest.xml
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\WMAppManifest.xml is not in the compile filter. Skipping.
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\WPControls.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\WPControls.dll is not in the compile filter. Skipping.

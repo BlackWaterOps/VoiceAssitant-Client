@@ -15,7 +15,7 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    class MainViewModel : ViewModelBase
+    public class MainViewModel : NotificationBase
     {
         private ObservableCollection<DialogModel> _dialogList;
         public ObservableCollection<DialogModel> DialogList

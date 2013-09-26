@@ -138,7 +138,7 @@
     <value>Data Source=isostore:/Please2.sdf</value>
   </data>
   <data name="PudEndpoint" xml:space="preserve">
-    <value>http://stremor-pud.appspot.com/v1/disambiguate</value>
+    <value>http://stremor-pud.appspot.com/v1/</value>
   </data>
   <data name="Apier" xml:space="preserve">
     <value>http://stremor-apier.appspot.com/</value>

@@ -196,6 +196,27 @@
             </div>
         </script>        
 
+         <script id="real_estate-template" type="text/x-handlebars-template">
+            <div class="bubble template-data">
+                <ul>
+                    {{#each this}}
+                    <li class="template-item real-estate-item cf">
+                        <a href="{{url}}">
+                            <img class="template-item-image real-estate-image" src="{{images.[0].src}}" />
+                        </a>
+                        <div class="template-item-details">
+                            <p class="template-item-title">
+                                <a href="{{url}}">{{title}}</a>
+                            </p>
+                            <p class="real-estate-address">{{location.address}}, {{location.name}} {{location.state}}</p>
+                            <p class="real-estate-attr">{{attributes.price_display}}</p>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </script>     
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">

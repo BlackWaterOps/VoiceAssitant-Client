@@ -7,8 +7,35 @@ using System.Windows.Media;
 
 using Coding4Fun.Toolkit.Controls;
 
+using Please2.Models;
+
 namespace Please2.Util
 {
+    public class ListResultsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var type = value.GetType();
+
+            Debug.WriteLine("list results converter");
+            Debug.WriteLine(type);
+
+            /*
+            if (type == typeof(ShoppingModel))
+            {
+
+            }
+            */
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class BackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -71,11 +98,11 @@ namespace Please2.Util
 
             if (sender == "user")
             {
-                align = HorizontalAlignment.Left;
+                align = HorizontalAlignment.Right;
             }
             else
             {
-                align = HorizontalAlignment.Right;
+                align = HorizontalAlignment.Left;
             }
 
             return align;
@@ -97,11 +124,11 @@ namespace Please2.Util
 
             if (sender == "user")
             {
-                dir = ChatBubbleDirection.LowerLeft;
+                dir = ChatBubbleDirection.LowerRight;
             }
             else
             {
-                dir = ChatBubbleDirection.LowerRight;
+                dir = ChatBubbleDirection.UpperLeft;
             }
 
             return dir;
@@ -185,7 +212,96 @@ namespace Please2.Util
         }
     }
 
-    /*
+    // TODO: try to merge with background converter and pass param to indicate type of conversion needed
+    public class NotificationBackgroundConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            DateTime beginDate = (DateTime)value;
+
+            DateTime now = DateTime.Now;
+
+            string background = "#daa520"; // goldenrod
+
+            if (beginDate.Date == now.Date)
+            {
+                background = "#f7301e"; // red
+            }
+            else if (beginDate.Date == now.AddDays(1).Date)
+            {
+                background = "#ff4500"; // orangered
+            }
+
+            return background;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    // TODO: try to merge with PrettyDateConverter
+    public class NotificationDateConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            DateTime beginDate = (DateTime)value;
+
+            DateTime now = DateTime.Now;
+
+            string date;
+
+            if (beginDate.Date == now.Date)
+            {
+                date = "today ";
+            }
+            else if (beginDate.Date == now.AddDays(1).Date)
+            {
+                date = "tomorrow ";
+            }
+            else
+            {
+                date = beginDate.ToString("dddd, MMMM d, yyyy ");
+            }
+
+            return date + beginDate.ToString("@ h:mm tt");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class NotificationOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            DateTime beginDate = (DateTime)value;
+
+            DateTime now = DateTime.Now;
+
+            double opacity = .5;
+
+            if (beginDate.Date == now.Date)
+            {
+                opacity = 1.0;
+            }
+            else if (beginDate.Date == now.AddDays(1).Date)
+            {
+                opacity = .75;
+            }
+
+            return opacity;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+   
     public class WeatherConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -224,6 +340,10 @@ namespace Please2.Util
                     {
                         // set icon to appropriate image brush name
                         icon = conditionList.Key;
+
+                        // there's no point to have the images defined as brushes in app.xaml
+                        // make the dict keys the name of the image
+                        return new Uri("/Assets/Weather/" + icon + ".png", UriKind.Relative);
                     }
                 }
             }
@@ -236,5 +356,4 @@ namespace Please2.Util
             return null;
         }
     }
-    */
 }

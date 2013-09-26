@@ -27,6 +27,9 @@ namespace Please2.Util
             // if we have post/put data, write it to the request stream
             if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
             {
+                Debug.WriteLine("POST DATA");
+                Debug.WriteLine(requestData);
+
                 byte[] data = Encoding.UTF8.GetBytes(requestData);
                 req.ContentLength = data.Length;
 
@@ -36,11 +39,10 @@ namespace Please2.Util
                 }
             }
 
-            Debug.WriteLine(Method);
-
             var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
 
             var result = await task;
+
             var resp = result;
             var stream = resp.GetResponseStream();
             var sr = new System.IO.StreamReader(stream);
@@ -77,17 +79,38 @@ namespace Please2.Util
 
         public async Task<T> DoRequestJsonAsync<T>(String uri, String requestData = "")
         {
-            var ret = await DoRequestAsync(uri, requestData);
-            var response = await ret.ReadToEndAsync();
-
-            Debug.WriteLine(response.ToString());
-
             var jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response, jsonSettings);
+            try
+            {
+                var ret = await DoRequestAsync(uri, requestData);
+                var response = await ret.ReadToEndAsync();
+
+                Debug.WriteLine("RESPONSE DATA");
+                Debug.WriteLine(response.ToString());
+
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response, jsonSettings);
+            }
+            catch (WebException err)
+            {
+                var resp = (HttpWebResponse)err.Response;
+
+                if (resp.StatusCode != HttpStatusCode.OK)
+                {
+                    var stream = resp.GetResponseStream();
+
+                    var reader = new System.IO.StreamReader(stream);
+
+                    var errResp = reader.ReadToEnd();
+
+                    return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(errResp, jsonSettings);
+                }
+
+                return default(T);
+            }
         }
     }
 }

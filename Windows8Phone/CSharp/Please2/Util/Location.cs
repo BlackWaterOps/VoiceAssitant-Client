@@ -18,6 +18,8 @@ namespace Please2.Util
 
         private static CancellationTokenSource _cts = null;
 
+        private static bool isTracking = false;
+
         private static Geoposition geoPosition;
         public static Geoposition GeoPosition
         {
@@ -173,10 +175,16 @@ namespace Please2.Util
         /// </summary>
         public static void StartTrackingGeolocation(double threshold = 50, uint reportInterval = 300000)
         {
-            geolocator.MovementThreshold = threshold;
-            geolocator.ReportInterval = reportInterval;
-            geolocator.PositionChanged += new Windows.Foundation.TypedEventHandler<Geolocator, PositionChangedEventArgs>(OnPositionChanged);
-            geolocator.StatusChanged += new Windows.Foundation.TypedEventHandler<Geolocator, StatusChangedEventArgs>(OnStatusChanged);
+            if (isTracking == false)
+            {
+                Debug.WriteLine("start tracking");
+                geolocator.MovementThreshold = threshold;
+                geolocator.ReportInterval = reportInterval;
+                geolocator.PositionChanged += new Windows.Foundation.TypedEventHandler<Geolocator, PositionChangedEventArgs>(OnPositionChanged);
+                geolocator.StatusChanged += new Windows.Foundation.TypedEventHandler<Geolocator, StatusChangedEventArgs>(OnStatusChanged);
+
+                isTracking = true;
+            }
         }
 
         /// <summary>
@@ -186,6 +194,8 @@ namespace Please2.Util
         {
             geolocator.PositionChanged -= new Windows.Foundation.TypedEventHandler<Geolocator, PositionChangedEventArgs>(OnPositionChanged);
             geolocator.StatusChanged -= new Windows.Foundation.TypedEventHandler<Geolocator, StatusChangedEventArgs>(OnStatusChanged);
+
+            isTracking = false;
         }
 
         /// <summary>

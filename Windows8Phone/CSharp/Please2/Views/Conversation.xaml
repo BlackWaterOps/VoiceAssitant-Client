@@ -1,0 +1,90 @@
+﻿<local:ViewBase
+    x:Class="Please2.Views.Conversation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:local="clr-namespace:Please2.Views"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True"
+    DataContext="{Binding ConversationViewModel, Source={StaticResource Locator}}">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkGray">
+            <TextBox x:Name="ManualInput" Width="480" KeyDown="OnKeyDown" Visibility="Collapsed"/>
+        </StackPanel>
+        
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel Grid.Row="1" Margin="12,17,0,28">
+            <TextBlock Text="please" Style="{StaticResource AppTitle}"/>
+            <TextBlock Text="conversation" Margin="9,-7,0,0" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{Binding SubTitle}"/>
+        </StackPanel>
+ 
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="85"/>
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="DialogList" Grid.Row="0" ItemsSource="{Binding DialogList}" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <c4f:ChatBubble 
+                                    Background="{Binding sender, Converter={StaticResource BackgroundConverter}}" 
+                                    BorderThickness="0" 
+                                    BorderBrush="{Binding sender, Converter={StaticResource BackgroundConverter}}"
+                                    MaxWidth="400"
+                                    Margin="0,0,0,10" 
+                                    Padding="20" 
+                                    HorizontalContentAlignment="Stretch"
+                                    HorizontalAlignment="{Binding sender, Converter={StaticResource AlignmentConverter}}" 
+                                    ChatBubbleDirection="{Binding sender, Converter={StaticResource ChatBubbleConverter}}">
+                                <StackPanel x:Name="StackTest">
+                                    <TextBlock Text="{Binding message}"
+                                               Foreground="White" 
+                                               TextWrapping="Wrap"/>
+                                    <HyperlinkButton Content="Click for more" 
+                                                     TargetName="_blank" 
+                                                     Visibility="{Binding link, Converter={StaticResource VisibilityConverter}}" 
+                                                     NavigateUri="{Binding link}" 
+                                                     Foreground="#0000ee" 
+                                                     HorizontalAlignment="Right"/>
+                                </StackPanel>
+                            </c4f:ChatBubble>
+
+                            <toolkit:ContextMenuService.ContextMenu>
+                                <toolkit:ContextMenu Name="BubbleContextMenu">
+                                    <toolkit:MenuItem Header="Copy" Click="ContextMenuItem_Click"/>
+                                </toolkit:ContextMenu>
+                            </toolkit:ContextMenuService.ContextMenu>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</local:ViewBase>

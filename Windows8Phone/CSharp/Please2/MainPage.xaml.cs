@@ -19,13 +19,14 @@ using Windows.Foundation;
 using Windows.Phone.Speech.Recognition;
 using Windows.Phone.Speech.Synthesis;
 
+using LinqToVisualTree;
+
 using Please2.Models;
 using Please2.Resources;
 using Please2.Util;
 using Please2.ViewModels;
 
 using Newtonsoft.Json;
-
 
 // TODO: rename mainContext to requestState
 // TODO: check for location permission and alert user with message
@@ -58,6 +59,8 @@ namespace Please2
         ApplicationBarIconButton micBtn;
 
         int counter = 0;
+
+        List<ShoppingModel> shoppingTest;
 
         // Constructor
         public MainPage()
@@ -126,16 +129,34 @@ namespace Please2
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
+
+            //var myTest = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>("{\"action\":\"create\",\"model\":\"hotel_booking\",\"payload\":{\"duration\":null,\"start_date\":null,\"location\":null}}");
+
+            // Find("payload.location.city");
+
+            // PREPEND_TO TEST
+            //var test = "{\"action\": \"create\",\"model\": \"email\",\"payload\": {\"message\": \"test\",\"contact\": {\"candidates\": [\"brandon\",\"this\",\"is\",\"a\"],\"prepend_to\": \"message\"}}}";
+            //mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(test);
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            /*
             // shopping results test
-            string shoppingResults = "[{\"title\":\"Melissa & Doug Princess Soft Toys Skimmer Dolphin\",\"price\":\"$10.14\",\"image\":\"http://ecx.images-amazon.com/images/I/517I0gXrKIL._SL160_.jpg\",\"url\":\"http://www.amazon.com/Melissa-Doug-Princess-Skimmer-Dolphin/dp/B004PBF1WW%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB004PBF1WW\"},{\"title\":\"Gifts & Decor Spun Glass Dolphin Carousel Mirrored Base Figurine\",\"price\":\"$11.98\",\"image\":\"http://ecx.images-amazon.com/images/I/41REHPZ2Z4L._SL160_.jpg\",\"url\":\"http://www.amazon.com/Gifts-Decor-Carousel-Mirrored-Figurine/dp/B008YQ4Q70%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB008YQ4Q70\"},{\"title\":\"Dolphin Browser v8.7\",\"price\":\"$0.00\",\"image\":\"http://ecx.images-amazon.com/images/I/61wD8OVpjBL._SL160_.png\",\"url\":\"http://www.amazon.com/MoboTap-Inc-Dolphin-Browser-v8-7/dp/B0090C0VVC%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0090C0VVC\"}]";
+            string shoppingResults = "{\"structured\":{\"items\":[{\"title\":\"Melissa & Doug Princess Soft Toys Skimmer Dolphin\",\"price\":\"$10.14\",\"image\":\"http://ecx.images-amazon.com/images/I/517I0gXrKIL._SL160_.jpg\",\"url\":\"http://www.amazon.com/Melissa-Doug-Princess-Skimmer-Dolphin/dp/B004PBF1WW%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB004PBF1WW\"},{\"title\":\"Gifts & Decor Spun Glass Dolphin Carousel Mirrored Base Figurine\",\"price\":\"$11.98\",\"image\":\"http://ecx.images-amazon.com/images/I/41REHPZ2Z4L._SL160_.jpg\",\"url\":\"http://www.amazon.com/Gifts-Decor-Carousel-Mirrored-Figurine/dp/B008YQ4Q70%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB008YQ4Q70\"},{\"title\":\"Dolphin Browser v8.7\",\"price\":\"$0.00\",\"image\":\"http://ecx.images-amazon.com/images/I/61wD8OVpjBL._SL160_.png\",\"url\":\"http://www.amazon.com/MoboTap-Inc-Dolphin-Browser-v8-7/dp/B0090C0VVC%3FSubscriptionId%3D016S53A6N2MY0NZRTAR2%26tag%3Ditemsid-20%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB0090C0VVC\"}]}}";
 
+            var test = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(shoppingResults);
+
+            var structure = (Newtonsoft.Json.Linq.JObject)test["structured"];
+
+            var items = structure["items"];
+
+            var l = items.ToObject<List<ShoppingModel>>();
+
+            Debug.WriteLine(l.First().title);
+            
+            /*
             App.ShoppingViewModel.ShoppingResults = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(shoppingResults);
 
             NavigationService.Navigate(new Uri("/Pages/ShoppingPage.xaml", UriKind.Relative));
@@ -169,7 +190,7 @@ namespace Please2
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.ToString());
+                Debug.WriteLine(err.Message);
             }
         }
 
@@ -188,6 +209,11 @@ namespace Please2
             currentState.PropertyChanged += OnStateChanged;
 
             viewModel.DialogList.Clear();
+        }
+
+        protected void PairButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Views/PeerFinder.xaml", UriKind.Relative));
         }
 
         protected void PreferencesButton_Click(object sender, EventArgs e)
@@ -211,6 +237,8 @@ namespace Please2
         {
             if (e.Key.Equals(System.Windows.Input.Key.Enter))
             {
+                // this.Focus(); // hide keyboard
+
                 string query = SpeakTextBox.Text;
 
                 SpeakTextBox.Text = String.Empty;
@@ -259,6 +287,8 @@ namespace Please2
                 var testInput = ManualInput.Text;
 
                 ManualInput.Text = String.Empty;
+
+                disableSpeech = true;
 
                 HandleUserInput(testInput);
             }
@@ -355,7 +385,7 @@ namespace Please2
                 }
                 else
                 {
-                    Debug.WriteLine(err.ToString());
+                    Debug.WriteLine(err.Message);
                     return;
                     // textBlock.Text = "Error: " + err.Message;
                 }
@@ -378,13 +408,15 @@ namespace Please2
             }
         }
 
+
         protected void Show(ResponderModel response)
         {
             string show = null;
-            // parse and pass to Show
-            if (response.show.simple.ContainsKey("text"))
+            var simple = response.show.simple;
+
+            if (simple.ContainsKey("text") && simple["text"] != null)
             {
-                show = (string)response.show.simple["text"];
+                show = (string)simple["text"];
             }
 
             Show("please", response.speak, show);
@@ -406,7 +438,7 @@ namespace Please2
             }
         }
 
-        protected void Show(string type, string speak = "", object show = null, string link = null)
+        protected async void Show(string type, string speak = "", object show = null, string link = null)
         {
             try
             {
@@ -424,13 +456,13 @@ namespace Please2
                 {
                     viewModel.AddDialog(type, show, link);
                     ShowDialog();
-                    //ScrollTo();
+                    ScrollTo();
                 }
 
                 // say response
                 if (type.ToLower() == "please" && speak != "" && disableSpeech == false)
                 {
-                    synthesizer.SpeakTextAsync(speak);
+                    await synthesizer.SpeakTextAsync(speak);
                 }
 
                 // reset counter
@@ -443,37 +475,9 @@ namespace Please2
             }
         }
 
-        protected async Task<Dictionary<string, object>> GetDeviceInfo()
+        protected void MessageError(string message)
         {
-            Dictionary<string, object> deviceInfo = new Dictionary<string, object>()
-            {
-                {"latitude", ""},
-                {"longitude", ""}
-            };
-
-            deviceInfo["timestamp"] = Please2.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
-            deviceInfo["timeoffset"] = DateTimeOffset.Now.Offset.Hours;
-
-            Dictionary<string, object> geolocation = Please2.Util.Location.CurrentPosition;
-            // geo fell down so 'manually' get geolocation
-            if (geolocation == null)
-            {
-                geolocation = await Please2.Util.Location.GetGeolocation();
-            }
-
-            if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
-            {
-                deviceInfo["latitude"] = geolocation["latitude"];
-                deviceInfo["longitude"] = geolocation["longitude"];
-            }
-            else if (geolocation.ContainsKey("error"))
-            {
-                // ran into error acquiring geolocation
-                // prob wanna throw an exception in the Location object
-                Debug.WriteLine(geolocation["error"]);
-            }
-
-            return deviceInfo;
+            MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
         }
 
         private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -515,47 +519,30 @@ namespace Please2
                     case "error":
                         Show((ResponderModel)currentState.Response);
                         break;
+
+                    case "exception":
+                        Debug.WriteLine("error status detected");
+                        MessageError((string)currentState.Response);
+                        break;
                 }
             }
-        }
-
-        protected async Task<T> RequestHelper<T>(string endpoint, string method, object data = null)
-        {
-            var req = new Request();
-
-            req.Method = method;
-
-            SystemTray.ProgressIndicator.IsVisible = true;
-
-            T response;
-
-            if (method.ToLower() == "get") 
-            {
-                response = await req.DoRequestJsonAsync<T>(endpoint);
-            }
-            else 
-            {
-                req.ContentType = "application/json";
-
-                response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data));
-            }
-
-            SystemTray.ProgressIndicator.IsVisible = false;
-
-            return response;
         }
 
         protected async Task Classify(string query)
         {
             try
-            {
-                //var req = new Request();
-
-                //var classifierResults = await req.DoRequestJsonAsync<ClassifierModel>(AppResources.ClassifierEndpoint + "?query=" + query);
-           
+            {           
                 var classifierResults = await RequestHelper<ClassifierModel>((AppResources.ClassifierEndpoint + "?query=" + query), "GET");
 
-                await Auditor(classifierResults);
+                if (classifierResults.error != null && classifierResults.error.code > 200)
+                {
+                    currentState.Response = classifierResults.error.message;
+                    currentState.State = "exception";
+                }
+                else
+                {
+                    await Auditor(classifierResults);
+                }
             }
             catch (Exception err)
             {
@@ -582,13 +569,7 @@ namespace Please2
             postData.types = types;
 
             try
-            {
-                //var req = new Request();
-
-                //req.Method = "POST";
-                //req.ContentType = "application/json";
-
-                //Dictionary<string, object> response = await req.DoRequestJsonAsync<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/active", SerializeData(postData));
+            {                
                 Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/active", "POST", postData);
 
                 // hand off response to disambig response handler
@@ -640,15 +621,6 @@ namespace Please2
             postData.types = types;
             postData.device_info = deviceInfo;
 
-            //var req = new Request();
-
-            //req.Method = "POST";
-            //req.ContentType = "application/json";
-
-            //Debug.WriteLine("disambiguate passive");
-            //Debug.WriteLine(SerializeData(postData));
- 
-            //Dictionary<string, object> response = await req.DoRequestJsonAsync<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", SerializeData(postData));
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", "POST", postData);
   
             // hand off response to disambig response handler
@@ -682,13 +654,7 @@ namespace Please2
             postData.type = type;
             postData.types = types;
 
-            //var req = new Request();
-
-            //req.Method = "POST";
-            //req.ContentType = "application/json";
-
-            //Dictionary<string, object> response = await req.DoRequestJsonAsync<Dictionary<string, object>>(AppResources.PudEndpoint, SerializeData(postData));
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.PudEndpoint, "POST", postData);
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.PudEndpoint + "disambiguate", "POST", postData);
             
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -698,42 +664,52 @@ namespace Please2
         {
             if (response != null)
             {
-                //response = ReplaceLocation(response);
-
-                response = BuildDateTime(response);
-
-                if (response.ContainsKey(type))
+                if (response.ContainsKey("error"))
                 {
-                    if (field.Contains("."))
+                    var er = (ErrorModel)response["error"];
+                    if (er.code > 200)
                     {
-                        FindOrReplace(field, response[type]);
-                    }
-                    else
-                    {
-                        mainContext.payload[field] = response[type];
+                        currentState.Response = er.message;
+                        currentState.State = "exception";
                     }
                 }
                 else
                 {
-                    Debug.WriteLine("Disambiguation response is missing type");
+                    response = await DoClientOperations(response);
+
+                    if (response.ContainsKey(type))
+                    {
+                        if (field.Contains("."))
+                        {
+                            FindOrReplace(field, response[type]);
+                        }
+                        else
+                        {
+                            mainContext.payload[field] = response[type];
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Disambiguation response is missing type");
+                    }
+
+                    // clone mainContext so we don't pollute with unused_tokens
+                    Dictionary<string, object> request = new Dictionary<string, object>();
+
+                    request.Add("action", mainContext.action);
+                    request.Add("model", mainContext.model);
+                    request.Add("payload", mainContext.payload);
+
+                    if (response.ContainsKey("unused_tokens"))
+                    {
+                        request.Add("unused_tokens", response["unused_tokens"]);
+                    }
+
+                    Debug.WriteLine("Disambiguate Response");
+                    Debug.WriteLine(SerializeData(request));
+
+                    await Auditor(request);
                 }
-
-                // clone mainContext so we don't pollute with unused_tokens
-                Dictionary<string, object> request = new Dictionary<string, object>();
-
-                request.Add("action", mainContext.action);
-                request.Add("model", mainContext.model);
-                request.Add("payload", mainContext.payload);
-
-                if (response.ContainsKey("unused_tokens"))
-                {
-                    request.Add("unused_tokens", response["unused_tokens"]);
-                }
-
-                Debug.WriteLine("Disambiguate Response");
-                Debug.WriteLine(SerializeData(request));
-
-                await Auditor(request);
             }
             else
             {
@@ -775,14 +751,8 @@ namespace Please2
             {
                 var payload = (Dictionary<string, object>)data["payload"];
 
-                //data["payload"] = ReplaceLocation(payload);
-                data["payload"] = BuildDateTime(payload);
+                data["payload"] = await DoClientOperations(payload);
             }
-
-            //var req = new Request();
-
-            //req.Method = "POST";
-            //req.ContentType = "application/json";
 
             Debug.WriteLine("auditor request");
             Debug.WriteLine(SerializeData(mainContext));
@@ -791,17 +761,24 @@ namespace Please2
 
             if (counter < 3)
             {
-                //ResponderModel response = await req.DoRequestJsonAsync<ResponderModel>(AppResources.ResponderEndpoint + "audit", SerializeData(mainContext));
                 ResponderModel response = await RequestHelper<ResponderModel>(AppResources.ResponderEndpoint + "audit", "POST", mainContext);
 
-                string state = response.status.Replace(" ", "");
+                if (response.error != null)
+                {
+                    currentState.Response = response.error.msg;
+                    currentState.State = "exception";
+                }
+                else
+                {
+                    string state = response.status.Replace(" ", "");
 
-                if (state == "inprogress")
-                    tempContext = response;
+                    if (state == "inprogress")
+                        tempContext = response;
 
-                // create event and trigger based on status
-                currentState.Response = response;
-                currentState.State = state;
+                    // create event and trigger based on status
+                    currentState.Response = response;
+                    currentState.State = state;
+                }
             }
         } 
 
@@ -809,19 +786,41 @@ namespace Please2
         {
             string actor = data.actor;
 
-            //var req = new Request();
+            string endpoint;
 
-            //req.Method = "POST";
-            //req.ContentType = "application/json";
+            if (actor != null)
+            {
+                if (actor.Contains("private:"))
+                {
+                    endpoint = AppResources.PudEndpoint + "actors/" + actor.Replace("private:", "");
+                }
+                else
+                {
+                    endpoint = AppResources.ResponderEndpoint + "actors/" + actor;
 
-            Debug.WriteLine("Actor");
-            Debug.WriteLine(SerializeData(mainContext));
+                    ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
 
-            //var response = await req.DoRequestJsonAsync<ActorModel>(AppResources.ResponderEndpoint + "actors/" + actor, SerializeData(mainContext));
-            var response = await RequestHelper<ActorModel>(AppResources.ResponderEndpoint + "actors/" + actor, "POST", mainContext);
-            
-            Show(response.show, response.speak);
-            
+                    Debug.WriteLine("Actor");
+                    Debug.WriteLine(SerializeData(response));
+
+                    if (response.error != null)
+                    {
+                        currentState.Response = response.error.msg;
+                        currentState.State = "exception";
+                    }
+                    else
+                    {
+                        Show(response.show, response.speak);
+                    }
+                }
+            }
+            else
+            {
+                Show(data.show, data.speak);
+            }
+
+            return;
+
             /*
             if (response.show.structured != null && response.show.structured.ContainsKey("template"))
             {
@@ -833,25 +832,25 @@ namespace Please2
                 {
                     case "shopping":
                     case "product":
-                        Debug.WriteLine("shopping/products results");
-                   
-                        if (structured.ContainsKey("items"))
+                        try
                         {
-                            var shoppingData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(SerializeData(structured["items"]));
+                            if (structured.ContainsKey("items"))
+                            {
+                                App.ShoppingViewModel.SetShoppingResults(structured["items"]);
 
-                            App.ShoppingViewModel.ShoppingResults = shoppingData;
-
-                            NavigationService.Navigate(new Uri("/Pages/ShoppingPage.xaml?template=" + structured["template"], UriKind.Relative));
+                                NavigationService.Navigate(new Uri("/Pages/ShoppingPage.xaml?template=" + structured["template"], UriKind.Relative));
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            MessageBox.Show(err.Message);
                         }
                         break;
 
                     case "event":
+                        if (structured.ContainsKey("items"))
                         {
-                            var eventData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<EventModel>>(SerializeData(structured["items"]));
-
-                            Debug.WriteLine(SerializeData(eventData));
-
-                            App.EventsViewModel.EventResults = eventData;
+                            App.EventsViewModel.SetEventResults(structured["items"]);
 
                             NavigationService.Navigate(new Uri("/Pages/EventPage.xaml?template=" + structured["template"], UriKind.Relative));
                         }
@@ -859,29 +858,93 @@ namespace Please2
 
                     default:
                         // show text
-                        Actor(response.show);
+                        //Show(response.show, response.speak);
                         break;
                 }
             }
             else
             {
-                Actor(response.show);
+                //Show(response.show, response.speak);
             }
-            */
+             */
         }
 
         #region helpers
+        protected async Task<T> RequestHelper<T>(string endpoint, string method, object data = null)
+        {
+            var req = new Request();
 
-       
+            req.Method = method;
 
-        // if type is null, it's a find. 
-        // if type has a value, it's a replace
-        protected object FindOrReplace(string field, object type = null)
+            SystemTray.ProgressIndicator.IsVisible = true;
+
+            T response;
+
+            if (method.ToLower() == "get")
+            {
+                response = await req.DoRequestJsonAsync<T>(endpoint);   
+            }
+            else
+            {
+                req.ContentType = "application/json";
+
+                response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data));
+            }
+
+            SystemTray.ProgressIndicator.IsVisible = false;
+
+            return response;
+        }
+
+        protected async Task<Dictionary<string, object>> DoClientOperations(Dictionary<string, object> response)
+        {
+            response = await ReplaceLocation(response);
+            response = BuildDateTime(response);
+            response = PrependTo(response);
+
+            return response;
+        }
+
+        protected Dictionary<string, object> PrependTo(Dictionary<string, object> data)
+        {
+            if (!data.ContainsKey("unused_tokens"))
+            {
+                return data;
+            }
+
+            var prepend = (string)((Newtonsoft.Json.Linq.JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
+
+            var field = (string)data["prepend_to"];
+
+            var payloadField = "";
+
+            if (mainContext.payload.ContainsKey(field) && mainContext.payload[field] != null)
+            {
+                payloadField = " " + (string)mainContext.payload[field];
+            }
+
+            mainContext.payload[field] = prepend + payloadField;
+
+            return data;
+        }
+
+        /*
+        protected void Replace(string field, object type)
         {
             var fields = field.Split('.').ToList();
 
-            // turn our context into a jobject we can work with
-            var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(mainContext));
+
+        }
+        */
+
+        /*
+        protected void Find(string field)
+        {
+            var fields = field.Split('.').ToList();
+
+            var myTest = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>("{\"action\":\"create\",\"model\":\"hotel_booking\",\"payload\":{\"duration\":null,\"start_date\":null,\"location\":null}}");
+
+            var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(myTest));
 
             var stackToVisit = new Stack<Newtonsoft.Json.Linq.JObject>();
 
@@ -890,49 +953,107 @@ namespace Please2
             // keep visiting iterating until the stack of dictionaries to visit is empty
             while (stackToVisit.Count > 0)
             {
-                var nextObject = stackToVisit.Pop();
+                var next = stackToVisit.Pop();
 
-                if (nextObject != null)
+                var res = fields.Aggregate((a, b) =>
                 {
-                    foreach (var keyValuePair in nextObject)
+                    return 
+                });
+            }
+
+            Debug.WriteLine(res);
+
+        }
+        */
+
+        // if type is null, it's a find. 
+        // if type has a value, it's a replace
+        // TODO: REFACTOR THIS POS. SPLIT FIND AND REPLACE INTO TWO SEPERATE METHODS
+        protected object FindOrReplace(string field, object type = null)
+        {
+            try
+            {
+                Debug.WriteLine("find or replace");
+                Debug.WriteLine(SerializeData(mainContext));
+
+                var fields = field.Split('.').ToList();
+
+                // turn our context into a jobject we can work with
+                var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(mainContext));
+
+                var stackToVisit = new Stack<Newtonsoft.Json.Linq.JObject>();
+
+                stackToVisit.Push(jObject);
+
+                // keep visiting iterating until the stack of dictionaries to visit is empty
+                while (stackToVisit.Count > 0)
+                {
+                    var nextObject = stackToVisit.Pop();
+
+                    if (nextObject != null)
                     {
-                        if (fields.Count() > 1 && keyValuePair.Key == fields.First())
+                        if (nextObject.Count == 0)
                         {
-                            fields.RemoveAt(0);
-                            stackToVisit.Push(keyValuePair.Value as Newtonsoft.Json.Linq.JObject);
-                        }
-                        else if (keyValuePair.Key == fields.First())
-                        {
-                            if (type == null)
+
+                            if (type != null)
                             {
-                                return (object)nextObject[keyValuePair.Key];
+                                nextObject.Add(fields.First(), Newtonsoft.Json.Linq.JToken.FromObject(type));
                             }
-                            else
+                        }
+                        else
+                        {
+                            for (int i = 0; i < nextObject.Count; i++)
                             {
-                                try
+                                var keyValuePair = nextObject.ElementAt<KeyValuePair<string, Newtonsoft.Json.Linq.JToken>>(i);
+
+                                if (fields.Count() > 1 && keyValuePair.Key == fields.First())
                                 {
-                                    nextObject[keyValuePair.Key] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                                    fields.RemoveAt(0);
+                                    stackToVisit.Push(keyValuePair.Value as Newtonsoft.Json.Linq.JObject);
                                 }
-                                catch (Exception err)
+                                else if (keyValuePair.Key == fields.First())
                                 {
-                                    Debug.WriteLine(err.Message);
+                                    if (type == null)
+                                    {
+                                        return (object)nextObject[keyValuePair.Key];
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            nextObject[keyValuePair.Key] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                                        }
+                                        catch (Exception err)
+                                        {
+                                            Debug.WriteLine(err.Message);
+                                        }
+                                    }
+                                }
+                                else if (nextObject[fields.First()] == null && type != null)
+                                {
+                                    nextObject.Add(fields.First(), Newtonsoft.Json.Linq.JToken.FromObject(type));
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // turn our jobject back into the proper context model
-            if (type != null)
+                // turn our jobject back into the proper context model
+                if (type != null)
+                {
+                    mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(jObject));
+                }
+
+                return null;
+            }
+            catch (Exception err)
             {
-                mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(jObject));
+                Debug.WriteLine(err.Message);
+                return null;
             }
-
-            return null;
         }
 
-        protected Dictionary<string, object> ReplaceLocation(Dictionary<string, object> payload)
+        protected async Task<Dictionary<string, object>> ReplaceLocation(Dictionary<string, object> payload)
         {
             try
             {
@@ -944,7 +1065,7 @@ namespace Please2
                         if (location.Contains("current_location"))
                         {
                             //Debug.WriteLine(SerializeData(GetDeviceInfo()));
-                            payload["location"] = GetDeviceInfo();
+                            payload["location"] = await GetDeviceInfo();
                         }
                     }
                 }
@@ -1062,12 +1183,45 @@ namespace Please2
             return data;
         }
 
+        protected async Task<Dictionary<string, object>> GetDeviceInfo()
+        {
+            Dictionary<string, object> deviceInfo = new Dictionary<string, object>()
+            {
+                {"latitude", ""},
+                {"longitude", ""}
+            };
+
+            deviceInfo["timestamp"] = Please2.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
+            deviceInfo["timeoffset"] = DateTimeOffset.Now.Offset.Hours;
+
+            Dictionary<string, object> geolocation = Please2.Util.Location.CurrentPosition;
+            // geo fell down so 'manually' get geolocation
+            if (geolocation == null)
+            {
+                geolocation = await Please2.Util.Location.GetGeolocation();
+            }
+
+            if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
+            {
+                deviceInfo["latitude"] = geolocation["latitude"];
+                deviceInfo["longitude"] = geolocation["longitude"];
+            }
+            else if (geolocation.ContainsKey("error"))
+            {
+                // ran into error acquiring geolocation
+                // prob wanna throw an exception in the Location object
+                Debug.WriteLine(geolocation["error"]);
+            }
+
+            return deviceInfo;
+        }
+
         protected string SerializeData(object data)
         {
             var jsonSettings = new JsonSerializerSettings();
 
-            jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+            jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
+            jsonSettings.NullValueHandling = NullValueHandling.Include;
 
             return Newtonsoft.Json.JsonConvert.SerializeObject(data, jsonSettings);
         }
@@ -1089,14 +1243,14 @@ namespace Please2
 
         protected void ScrollTo()
         {
-            var child = VisualTreeHelper.GetChild(DialogList, 0);
+            // get last item
+            var index = viewModel.DialogList.Count - 1;
 
-            if (child is ScrollViewer)
+            var enumerable = DialogList.Descendants<ScrollViewer>().Cast<ScrollViewer>();
+
+            if (enumerable.Count() > 0)
             {
-                var scrollViewer = child as ScrollViewer;
-
-                // get last item
-                var index = viewModel.DialogList.Count - 1;
+                var scrollViewer = enumerable.Single();
 
                 scrollViewer.ScrollToVerticalOffset(index);
                 scrollViewer.UpdateLayout();
@@ -1104,5 +1258,13 @@ namespace Please2
         }
         #endregion
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = (sender as MenuItem).DataContext as DialogModel;
+
+            Debug.WriteLine(dialog.message);
+
+            Clipboard.SetText((string)dialog.message);
+        }
     }
 }

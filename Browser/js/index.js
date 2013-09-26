@@ -31,6 +31,7 @@
       this.getLocation = __bind(this.getLocation, this);
       this.show = __bind(this.show, this);
       this.addDebug = __bind(this.addDebug, this);
+      this.actorResponseHandler = __bind(this.actorResponseHandler, this);
       this.actor = __bind(this.actor, this);
       this.responderSuccessHandler = __bind(this.responderSuccessHandler, this);
       this.auditor = __bind(this.auditor, this);
@@ -97,7 +98,11 @@
         mon = formatted.monthOfYear;
         return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy;
       });
-      this.currentState = 'init';
+      this.currentState = {
+        status: 'init',
+        response: null,
+        origin: null
+      };
       this.presets = {
         'after work': '18:00:00',
         'breakfast': '7:30:00',
@@ -135,11 +140,18 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
-      if (this.currentState === 'inprogress') {
-        return $(document).trigger({
-          type: 'disambiguate:active',
-          response: text
-        });
+      if (this.currentState.state === 'inprogress') {
+        if (this.currentState.origin === 'actor') {
+          return $(document).trigger({
+            type: 'completed',
+            response: null
+          });
+        } else {
+          return $(document).trigger({
+            type: 'disambiguate:active',
+            response: text
+          });
+        }
       } else {
         data = {
           query: text
@@ -343,12 +355,15 @@
     };
 
     Please.prototype.responderSuccessHandler = function(response) {
-      this.currentState = response.status.replace(' ', '');
+      this.currentState = {
+        state: response.status.replace(' ', ''),
+        origin: 'auditor'
+      };
       if (this.currentState === 'inprogress') {
         this.disambigContext = response;
       }
       return $(document).trigger({
-        type: this.currentState,
+        type: this.currentState.state,
         response: response
       });
     };
@@ -362,10 +377,25 @@
       } else {
         if (data.actor.indexOf('private') !== -1) {
           data.actor = data.actor.replace('private:', '');
-          return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+          return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
         } else {
-          return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.show);
+          return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
         }
+      }
+    };
+
+    Please.prototype.actorResponseHandler = function(response) {
+      if (response.status != null) {
+        this.currentState = {
+          state: response.status.replace(' ', ''),
+          origin: 'actor'
+        };
+        return $(document).trigger({
+          type: this.currentState.state,
+          response: response
+        });
+      } else {
+        return this.show(response);
       }
     };
 
@@ -584,9 +614,7 @@
       prepend = data.unused_tokens.join(" ");
       field = data.prepend_to;
       payloadField = this.mainContext.payload[field];
-      if (payloadField == null) {
-        payloadField = "";
-      }
+      payloadField = payloadField == null ? "" : " " + payloadField;
       return this.mainContext.payload[field] = prepend + payloadField;
     };
 

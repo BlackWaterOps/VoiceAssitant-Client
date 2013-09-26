@@ -13,9 +13,10 @@
       <Capability Name="ID_CAP_MICROPHONE" />
       <Capability Name="ID_CAP_MAP" />
       <Capability Name="ID_CAP_LOCATION" />
+      <Capability Name="ID_CAP_PROXIMITY" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+      <DefaultTask Name="_default" NavigationPage="MainPage2.xaml" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="Please2Token" TaskName="_default">
