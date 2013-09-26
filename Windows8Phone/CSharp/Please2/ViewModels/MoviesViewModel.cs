@@ -13,7 +13,7 @@ using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class MoviesViewModel : ViewModelBase
+    public class MoviesViewModel : NotificationBase
     {
         private string endpoint =  AppResources.Apier + "movies/";
 

@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -47,34 +48,8 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Grid x:Name="InputGrid" Visibility="Visible">
-                <!--
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="150"/>
-                    <RowDefinition Height="85"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <Rectangle Grid.Row="1" Fill="#c5185e" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped"/>
-
-                <Image Grid.Row="1" Source="/Assets/microphone.png" HorizontalAlignment="Center" VerticalAlignment="Center" Height="100"/>
-
-                <TextBox Grid.Row="2" 
-                     Name="SpeakTextBox" 
-                     Background="DarkGray" 
-                     Margin="-12,0"
-                     Text="eg. Book a hotel"
-                     BorderBrush="Transparent" 
-                     HorizontalAlignment="Stretch" 
-                     HorizontalContentAlignment="Stretch" 
-                     VerticalContentAlignment="Center"
-                     KeyUp="SpeakTextBox_KeyUp" 
-                     GotFocus="SpeakTextBox_GotFocus" 
-                     LostFocus="SpeakTextBox_LostFocus"/>
-                -->
-
                 <StackPanel VerticalAlignment="Center">
-                    <Rectangle Fill="#c5185e" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped"/>
+                    <Rectangle Fill="#1ec0c3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="100" Tap="Microphone_Tapped"/>
 
                     <TextBox 
                      Name="SpeakTextBox" 
@@ -91,7 +66,7 @@
                      LostFocus="SpeakTextBox_LostFocus"/>
                 </StackPanel>
 
-                <Image Source="/Assets/microphone.png" HorizontalAlignment="Center" Height="100" Margin="178,295,178,373"/>
+                <Image Source="/Assets/microphone.png" HorizontalAlignment="Center" Height="100" Margin="178,295,178,373" Tap="Microphone_Tapped"/>
 
             </Grid>
 
@@ -115,7 +90,7 @@
                         <RowDefinition Height="85"/>
                     </Grid.RowDefinitions>
 
-                    <ListBox x:Name="DialogList" Grid.Row="0" ItemsSource="{Binding DialogList}">
+                    <ListBox x:Name="DialogList" Grid.Row="0" ItemsSource="{Binding DialogList}" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -124,20 +99,27 @@
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <c4f:ChatBubble 
-                                Background="{Binding sender, Converter={StaticResource BackgroundConverter}}" 
-                                BorderThickness="0" 
-                                BorderBrush="{Binding sender, Converter={StaticResource BackgroundConverter}}" 
-                                Style="{StaticResource RoundedChatBubble}" 
-                                Margin="0,0,0,10" Padding="20,10" 
-                                MaxWidth="300" 
-                                HorizontalAlignment="{Binding sender, Converter={StaticResource AlignmentConverter}}" 
-                                ChatBubbleDirection="{Binding sender, Converter={StaticResource ChatBubbleConverter}}">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding message}" Foreground="{Binding sender, Converter={StaticResource ForegroundConverter}}" TextWrapping="Wrap" Style="{StaticResource RobotoFont}"/>
-                                        <HyperlinkButton Content="Click for more" TargetName="_blank" Visibility="{Binding link, Converter={StaticResource VisibilityConverter}}" NavigateUri="{Binding link}" Foreground="#0000ee" HorizontalAlignment="Right"/>
-                                    </StackPanel>
-                                </c4f:ChatBubble>
+                                <Grid>
+                                    <c4f:ChatBubble 
+                                    Background="{Binding sender, Converter={StaticResource BackgroundConverter}}" 
+                                    BorderThickness="0" 
+                                    BorderBrush="{Binding sender, Converter={StaticResource BackgroundConverter}}"
+                                    MaxWidth="400"
+                                    Margin="0,0,0,10" Padding="20,10" 
+                                    HorizontalAlignment="{Binding sender, Converter={StaticResource AlignmentConverter}}" 
+                                    ChatBubbleDirection="{Binding sender, Converter={StaticResource ChatBubbleConverter}}">
+                                        <StackPanel x:Name="StackTest">
+                                            <TextBlock Text="{Binding message}" Foreground="{Binding sender, Converter={StaticResource ForegroundConverter}}" TextWrapping="Wrap"/>
+                                            <HyperlinkButton Content="Click for more" TargetName="_blank" Visibility="{Binding link, Converter={StaticResource VisibilityConverter}}" NavigateUri="{Binding link}" Foreground="#0000ee" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </c4f:ChatBubble>
+                                    
+                                    <toolkit:ContextMenuService.ContextMenu>
+                                        <toolkit:ContextMenu Name="BubbleContextMenu">
+                                            <toolkit:MenuItem Header="Copy" Click="MenuItem_Click"/>
+                                        </toolkit:ContextMenu>
+                                    </toolkit:ContextMenuService.ContextMenu>
+                                </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
@@ -163,12 +145,8 @@
 
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar IsVisible="False" x:Name="AppControl">
-            <!--
-            <shell:ApplicationBarIconButton x:Name="PreferencesButton" IconUri="/Assets/add.png" Text="Add" Click="PreferencesButton_Click"/>
-            <shell:ApplicationBarIconButton x:Name="RemindersButton" IconUri="/Assets/add.png" Text="Add" Click="RemindersButton_Click"/>
-            -->
-            <shell:ApplicationBarIconButton x:Name="SpeakButton" IconUri="/Assets/microphone.png" Text="Add" Click="Microphone_Tapped"/>
-            <shell:ApplicationBarIconButton x:Name="CancelButton" IconUri="/Assets/close.png" Text="Cancel" Click="CancelButton_Click"/>
+            <shell:ApplicationBarIconButton x:Name="SpeakButton" IconUri="/Assets/microphone.png" Text="add" Click="Microphone_Tapped"/>
+            <shell:ApplicationBarIconButton x:Name="CancelButton" IconUri="/Assets/close.png" Text="cancel" Click="CancelButton_Click"/>
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem x:Name="InputToggle" Text="Show Input" Click="InputMenuItem"/>
             </shell:ApplicationBar.MenuItems>

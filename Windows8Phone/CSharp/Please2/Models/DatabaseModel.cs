@@ -16,6 +16,7 @@ namespace Please2.Models
 
         public Table<PreferenceItem> Preferences;
         public Table<Alarm> Alarms;
+        public Table<Note> Notes;
     }
 
     [Table]
@@ -77,6 +78,70 @@ namespace Please2.Models
                     NotifyPropertyChanging("Value");
                     _value = value;
                     NotifyPropertyChanged("Value");
+                }
+            }
+        }
+    }
+
+    [Table]
+    public class Note : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+
+        private string _note;
+
+        [Column]
+        public string Note
+        {
+            get
+            {
+                return _note;
+            }
+            set
+            {
+                if (_note != value)
+                {
+                    NotifyPropertyChanging("Note");
+                    _note = value;
+                    NotifyPropertyChanged("Note");
+                }
+            }
+        }
+
+        private DateTime _time;
+
+        [Column]
+        public DateTime Time
+        {
+            get
+            {
+                return _time;
+            }
+            set
+            {
+                if (_time != value)
+                {
+                    NotifyPropertyChanging("Time");
+                    _time = value;
+                    NotifyPropertyChanged("Time");
                 }
             }
         }

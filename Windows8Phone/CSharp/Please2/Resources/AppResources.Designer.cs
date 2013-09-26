@@ -97,7 +97,7 @@ namespace Please2.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/disambiguate.
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/.
         /// </summary>
         public static string PudEndpoint {
             get {

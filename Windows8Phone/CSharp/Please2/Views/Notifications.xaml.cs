@@ -1,0 +1,121 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
+
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Scheduler;
+using Microsoft.Phone.Shell;
+
+using Please2.Models;
+using Please2.ViewModels;
+
+namespace Please2.Views
+{
+    public partial class Notifications : PhoneApplicationPage
+    {
+        NotificationsViewModel viewModel = new NotificationsViewModel();
+        
+        public Notifications()
+        {
+            InitializeComponent();
+
+            DataContext = viewModel;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            SetReminderPanel();
+            SetAlarmPanel();
+        }
+
+        #region Reminders
+        protected void SetReminderPanel()
+        {
+            if (viewModel.Reminders.Count == 0)
+            {
+                RemindersList.Visibility = Visibility.Collapsed;
+                RemindersEmpty.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RemindersEmpty.Visibility = Visibility.Collapsed;
+                RemindersList.Visibility = Visibility.Visible;
+            }
+        }
+
+        protected void ReminderButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Pages/ReminderPage.xaml", UriKind.Relative));
+        }
+
+        protected void ReminderItem_Tapped(object sender, EventArgs e)
+        {
+            var reminder = (sender as FrameworkElement).DataContext as Reminder;
+
+            NavigationService.Navigate(new Uri("/Pages/ReminderPage.xaml?name=" + reminder.Name, UriKind.Relative));
+        }
+
+        protected void ReminderToggle_Click(object sender, EventArgs e)
+        {
+            var reminder = (sender as FrameworkElement).DataContext as Reminder;
+            
+            //TODO: need to find a way to "disable" a reminder
+
+        }
+        #endregion
+
+        #region Alarms
+        protected void SetAlarmPanel()
+        {
+            if (viewModel.Alarms.Count == 0)
+            {
+                AlarmsList.Visibility = Visibility.Collapsed;
+                AlarmsEmpty.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                AlarmsEmpty.Visibility = Visibility.Collapsed;
+                AlarmsList.Visibility = Visibility.Visible;
+            }
+        }
+
+        protected void AlarmButton_Click(object sender, EventArgs e)
+        {
+            NavigationService.Navigate(new Uri("/Pages/AlarmPage.xaml", UriKind.Relative));
+        }
+
+        protected void AlarmItem_Tapped(object sender, EventArgs e)
+        {
+            var alarm = (sender as FrameworkElement).DataContext as Please2.Models.Alarm;
+
+            NavigationService.Navigate(new Uri("/Pages/AlarmPage.xaml?id=" + alarm.ID, UriKind.Relative));
+        }
+
+        protected void AlarmToggle_Click(object sender, EventArgs e)
+        {
+            var alarm = (sender as FrameworkElement).DataContext as Please2.Models.Alarm;
+
+            alarm.IsEnabled = false;
+            // might need to update the DB. ie. db.SubmitChanges();
+
+            foreach (var name in alarm.Names)
+            {
+                var action = ScheduledActionService.Find(name);
+
+                if (action != null)
+                {
+                    var al = (Microsoft.Phone.Scheduler.Alarm)action;
+
+                    // TODO: need to find a way to "disable" an alarm
+                }
+            }
+        }
+        #endregion
+    }
+}

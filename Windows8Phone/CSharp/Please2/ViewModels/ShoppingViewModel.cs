@@ -8,21 +8,37 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    public class ShoppingViewModel : ViewModelBase
+    public class ShoppingViewModel : NotificationBase
     {
-        private List<ShoppingModel> _shoppingResults;
+        private List<ShoppingModel> shoppingResults;
         public List<ShoppingModel> ShoppingResults
         {
-            get { return _shoppingResults; }
-            set { _shoppingResults = value; }
+            get { return shoppingResults; }
+            set { shoppingResults = value; }
         }
 
         // type: amazon, bestbuy, walmart, etc.
-        private string _shoppingType;
+        private string shoppingType;
         public string ShoppingType
         {
-            get { return _shoppingType; }
-            set { _shoppingType = value; }
+            get { return shoppingType; }
+            set { shoppingType = value; }
+        }
+
+        private string shoppingQuery;
+        public string ShoppingQuery
+        {
+            get { return shoppingQuery; }
+            set { shoppingQuery = value; }
+        }
+
+        public void SetShoppingResults(object items)
+        {
+            if (ShoppingResults == null)
+                ShoppingResults = new List<ShoppingModel>();
+
+            //ShoppingResults = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(SerializeData(items));
+            ShoppingResults = (List<ShoppingModel>)items;
         }
     }
 }

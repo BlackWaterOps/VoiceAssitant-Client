@@ -10,7 +10,7 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    public class EventsViewModel : ViewModelBase
+    public class EventsViewModel : NotificationBase
     {
         private List<EventModel> _eventResults;
         public List<EventModel> EventResults
@@ -41,6 +41,15 @@ namespace Please2.ViewModels
             }
 
             EventResults = list;
+        }
+
+        public void SetEventResults(object items)
+        {
+            if (EventResults == null)
+                EventResults = new List<EventModel>();
+
+            //EventResults = Newtonsoft.Json.JsonConvert.DeserializeObject<List<EventModel>>(SerializeData(items));
+            EventResults = (List<EventModel>)items;
         }
     }
 }

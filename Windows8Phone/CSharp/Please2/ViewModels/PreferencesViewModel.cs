@@ -10,7 +10,7 @@ using Please2.Resources;
 
 namespace Please2.ViewModels
 {
-    class PreferencesViewModel : ViewModelBase
+    class PreferencesViewModel : NotificationBase
     {
         DatabaseModel db;
 
