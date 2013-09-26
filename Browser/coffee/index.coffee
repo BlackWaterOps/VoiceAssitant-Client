@@ -59,7 +59,11 @@ class Please
 			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
 		)
 
-		@currentState = 'init'
+		# TODO: needs to be an object that contains an origin prop
+		@currentState = 
+			status: 'init'
+			response: null
+			origin: null
 
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
 		@presets = 
@@ -114,13 +118,18 @@ class Please
 		
 		$('#input-form').addClass 'cancel'
 
-		# TODO: CHECK CURRENT STATE INSTEAD
-		if @currentState is 'inprogress'
-			# @disambiguate text
-			$(document).trigger(
-				type: 'disambiguate:active'
-				response: text
-			)
+		if @currentState.state is 'inprogress'
+			if @currentState.origin is 'actor'
+				# TODO: need to know what object should be used for response. @mainContext??
+				$(document).trigger(
+					type: 'completed'
+					response: null
+				)
+			else
+				$(document).trigger(
+					type: 'disambiguate:active'
+					response: text
+				)
 		else
 			data = query: text
 					
@@ -315,12 +324,14 @@ class Please
 		@requestHelper(@responder + 'audit' , 'POST', response, @responderSuccessHandler) if @counter < 3
 
 	responderSuccessHandler: (response) =>
-		@currentState = response.status.replace(' ', '')
+		@currentState = 
+			state: response.status.replace(' ', '')
+			origin: 'auditor'
 
 		@disambigContext = response if @currentState is 'inprogress'
 
 		$(document).trigger(
-			type: @currentState
+			type: @currentState.state
 			response: response
 		)
 
@@ -335,10 +346,23 @@ class Please
 			if data.actor.indexOf('private') isnt -1
 				data.actor = data.actor.replace('private:', '')
 
-				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @show)
+				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
 			else
-				@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @show)
+				@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
 	
+	actorResponseHandler: (response) =>
+		if response.status?
+			@currentState = 
+				state: response.status.replace(' ', '')
+				origin: 'actor'
+
+			$(document).trigger(
+				type: @currentState.state
+				response: response
+			)
+		else
+			@show(response)
+
 	addDebug: (e) =>
 		return if @debug is false
 
