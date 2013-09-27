@@ -18,7 +18,7 @@ class Please
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
-		@disableSpeech = true
+		@disableSpeech = false
 
 		Handlebars.registerHelper('elapsedTime', (dateString) =>
 			results = @elapsedTimeHelper(dateString)
@@ -46,7 +46,7 @@ class Please
 
 		Handlebars.registerHelper('eventDates', (dateString) =>
 			# "ddd, MMM d, yyyy"
-            # Wed, Jan 5, 2013 
+			# Wed, Jan 5, 2013 
 
 			formatted = @formatDate(dateString)
 
@@ -59,10 +59,8 @@ class Please
 			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
 		)
 
-		# TODO: needs to be an object that contains an origin prop
 		@currentState = 
 			status: 'init'
-			response: null
 			origin: null
 
 		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
@@ -172,7 +170,9 @@ class Please
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
-		@currentState = 'init'
+		@currentState = 
+			state: 'init'
+			origin: null
 
 		$('#input-form').removeClass 'cancel'
 		@loader.hide()
@@ -229,7 +229,7 @@ class Please
 		@auditor(@mainContext)
 
 	disambiguateSuccessHandler: (response, field, type) =>
-		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
+		$(document).trigger($.Event('debug')) if @currentState.state is 'inprogress'	
 			
 		if response?
 			@clientOperations(response)
@@ -328,7 +328,7 @@ class Please
 			state: response.status.replace(' ', '')
 			origin: 'auditor'
 
-		@disambigContext = response if @currentState is 'inprogress'
+		@disambigContext = response if @currentState.state is 'inprogress'
 
 		$(document).trigger(
 			type: @currentState.state
@@ -422,12 +422,6 @@ class Please
 
 		@loader.hide()
 		@counter = 0
-
-		if 'function' is typeof speak and @disableSpeech is false
-			speak(results.speak,
-				pitch: 30
-				speed: 145
-			)
 
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition

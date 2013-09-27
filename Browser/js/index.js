@@ -65,7 +65,7 @@
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
-      this.disableSpeech = true;
+      this.disableSpeech = false;
       Handlebars.registerHelper('elapsedTime', function(dateString) {
         var results;
         results = _this.elapsedTimeHelper(dateString);
@@ -100,7 +100,6 @@
       });
       this.currentState = {
         status: 'init',
-        response: null,
         origin: null
       };
       this.presets = {
@@ -200,7 +199,10 @@
       this.mainContext = {};
       this.disambigContext = {};
       this.history = [];
-      this.currentState = 'init';
+      this.currentState = {
+        state: 'init',
+        origin: null
+      };
       $('#input-form').removeClass('cancel');
       this.loader.hide();
       this.counter = 0;
@@ -268,7 +270,7 @@
 
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
       var request;
-      if (this.currentState === 'inprogress') {
+      if (this.currentState.state === 'inprogress') {
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
@@ -359,7 +361,7 @@
         state: response.status.replace(' ', ''),
         origin: 'auditor'
       };
-      if (this.currentState === 'inprogress') {
+      if (this.currentState.state === 'inprogress') {
         this.disambigContext = response;
       }
       return $(document).trigger({
@@ -458,13 +460,7 @@
         }
       }
       this.loader.hide();
-      this.counter = 0;
-      if ('function' === typeof speak && this.disableSpeech === false) {
-        return speak(results.speak, {
-          pitch: 30,
-          speed: 145
-        });
-      }
+      return this.counter = 0;
     };
 
     Please.prototype.getLocation = function() {
