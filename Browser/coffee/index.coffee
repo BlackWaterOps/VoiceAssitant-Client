@@ -116,7 +116,7 @@ class Please
 		
 		$('#input-form').addClass 'cancel'
 
-		if @currentState.state is 'inprogress'
+		if @currentState.state is 'inprogress' or @currentState.state is 'error'
 			if @currentState.origin is 'actor'
 				# TODO: need to know what object should be used for response. @mainContext??
 				$(document).trigger(
@@ -229,7 +229,8 @@ class Please
 		@auditor(@mainContext)
 
 	disambiguateSuccessHandler: (response, field, type) =>
-		$(document).trigger($.Event('debug')) if @currentState.state is 'inprogress'	
+		if @currentState.state is 'inprogress' or @currentState.state is 'error'
+			$(document).trigger($.Event('debug'))	
 			
 		if response?
 			@clientOperations(response)

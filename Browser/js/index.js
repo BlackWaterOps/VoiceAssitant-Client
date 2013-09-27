@@ -139,7 +139,7 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
-      if (this.currentState.state === 'inprogress') {
+      if (this.currentState.state === 'inprogress' || this.currentState.state === 'error') {
         if (this.currentState.origin === 'actor') {
           return $(document).trigger({
             type: 'completed',
@@ -270,7 +270,7 @@
 
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
       var request;
-      if (this.currentState.state === 'inprogress') {
+      if (this.currentState.state === 'inprogress' || this.currentState.state === 'error') {
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
