@@ -460,7 +460,12 @@
         }
       }
       this.loader.hide();
-      return this.counter = 0;
+      this.counter = 0;
+      return window.top.postMessage({
+        action: 'speak',
+        speak: results.speak,
+        options: {}
+      }, '*');
     };
 
     Please.prototype.getLocation = function() {

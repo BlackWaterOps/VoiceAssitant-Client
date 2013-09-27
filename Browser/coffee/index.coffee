@@ -424,6 +424,12 @@ class Please
 		@loader.hide()
 		@counter = 0
 
+		window.top.postMessage(
+			action: 'speak',
+			speak: results.speak
+			options: {}
+		, '*')
+
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
 	
