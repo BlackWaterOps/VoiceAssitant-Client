@@ -1,4 +1,4 @@
-class Please
+class window.Please
 	constructor: (options) ->
 		@debug = true
 		@debugData = { }
@@ -18,8 +18,55 @@ class Please
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
-		@disableSpeech = true
+		@disableSpeech = false
 
+		@currentState = 
+			status: null
+			origin: null
+
+		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
+		@presets = 
+			'after work': '18:00:00'
+			'breakfast': '7:30:00'
+			'lunch': '12:00:00'
+		
+		@init()
+
+	init: =>
+		@getLocation()
+		@registerHandlebarHelpers()
+		@registerListeners()
+
+		@input.focus()
+		.on('webkitspeechchange', @ask)
+		.on('keyup', @keyup)
+
+		$('body').on('click', '.expand', @expand)
+		#.on('click', '.simulate', @simulate)
+		
+		$('#cancel').on('click', @cancel)
+
+		if (@board.is(':empty'))
+			init = $('#init')
+			init.fadeIn('slow');
+			setTimeout (->
+				init.fadeOut 'slow'
+			), 1000
+
+	registerListeners: =>
+		$(document)
+		.on('init', @classify)
+		.on('audit', @auditor)
+		.on('disambiguate', @disambiguatePassive)
+		.on('disambiguate:personal', @disambiguatePersonal)
+		.on('disambiguate:active', @disambiguateActive)
+		.on('restart', @replaceContext)
+		.on('inprogress', @show)
+		.on('completed', @actor)
+		.on('error', @show)
+		.on('debug', @addDebug)
+
+	registerHandlebarHelpers: =>
 		Handlebars.registerHelper('elapsedTime', (dateString) =>
 			results = @elapsedTimeHelper(dateString)
 			return results.newDate + ' ' + results.newTime 
@@ -46,7 +93,7 @@ class Please
 
 		Handlebars.registerHelper('eventDates', (dateString) =>
 			# "ddd, MMM d, yyyy"
-            # Wed, Jan 5, 2013 
+			# Wed, Jan 5, 2013 
 
 			formatted = @formatDate(dateString)
 
@@ -59,52 +106,6 @@ class Please
 			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
 		)
 
-		# TODO: needs to be an object that contains an origin prop
-		@currentState = 
-			status: 'init'
-			response: null
-			origin: null
-
-		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
-		@presets = 
-			'after work': '18:00:00'
-			'breakfast': '7:30:00'
-			'lunch': '12:00:00'
-		
-		@init()
-
-	init: =>
-		@input.focus()
-		.on('webkitspeechchange', @ask)
-		.on('keyup', @keyup)
-
-		$('body').on('click', '.expand', @expand)
-		#.on('click', '.simulate', @simulate)
-		
-		$('#cancel').on('click', @cancel)
-
-		if (@board.is(':empty'))
-			init = $('#init')
-			init.fadeIn('slow');
-			setTimeout (->
-				init.fadeOut 'slow'
-			), 1000
-
-		@getLocation()
-		@registerListeners()
-
-	registerListeners: =>
-		$(document)
-		.on('init', @auditor)
-		.on('disambiguate', @disambiguatePassive)
-		.on('disambiguate:personal', @disambiguatePersonal)
-		.on('disambiguate:active', @disambiguateActive)
-		.on('restart', @replaceContext)
-		.on('inprogress', @show)
-		.on('completed', @actor)
-		.on('error', @show)
-		.on('debug', @addDebug)
-
 	ask: (input) =>
 		input = $(input)
 
@@ -116,9 +117,9 @@ class Please
 		
 		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
 		
-		$('#input-form').addClass 'cancel'
+		$('#input-form').addClass('cancel')
 
-		if @currentState.state is 'inprogress'
+		if @currentState.state is 'inprogress' or @currentState.state is 'error'
 			if @currentState.origin is 'actor'
 				# TODO: need to know what object should be used for response. @mainContext??
 				$(document).trigger(
@@ -131,18 +132,10 @@ class Please
 					response: text
 				)
 		else
-			data = query: text
-					
-			@requestHelper @classifier, "GET", data, (response) =>				
-				# addDebug()
-				# @resolver response
-	
-				$(document)
-				.trigger($.Event('debug'))
-				.trigger(
-					type: 'init'
-					response: response
-				)	
+			$(document).trigger(
+				type: 'init'
+				response: text
+			)
 
 	keyup: (e) =>	
 		value = $(e.target).val()
@@ -172,7 +165,9 @@ class Please
 		@mainContext = { }
 		@disambigContext = { }
 		@history = [ ]
-		@currentState = 'init'
+		@currentState = 
+			state: null
+			origin: null
 
 		$('#input-form').removeClass 'cancel'
 		@loader.hide()
@@ -228,8 +223,23 @@ class Please
 
 		@auditor(@mainContext)
 
+	classify: (e) =>
+		query = if e instanceof $.Event then e.response else e
+
+		data = query: query
+					
+		@requestHelper(@classifier, "GET", data, (response) =>
+			$(document)
+			.trigger($.Event('debug'))
+			.trigger(
+				type: 'audit'
+				response: response
+			)
+		)
+
 	disambiguateSuccessHandler: (response, field, type) =>
-		$(document).trigger($.Event('debug')) if @currentState is 'inprogress'	
+		if @currentState.state is 'inprogress' or @currentState.state is 'error'
+			$(document).trigger($.Event('debug'))	
 			
 		if response?
 			@clientOperations(response)
@@ -328,7 +338,7 @@ class Please
 			state: response.status.replace(' ', '')
 			origin: 'auditor'
 
-		@disambigContext = response if @currentState is 'inprogress'
+		@disambigContext = response if @currentState.state is 'inprogress'
 
 		$(document).trigger(
 			type: @currentState.state
@@ -422,12 +432,12 @@ class Please
 
 		@loader.hide()
 		@counter = 0
-
-		if 'function' is typeof speak and @disableSpeech is false
-			speak(results.speak,
-				pitch: 30
-				speed: 145
-			)
+		
+		window.top.postMessage(
+			action: 'speak',
+			speak: results.speak
+			options: {}
+		, '*')
 
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition
