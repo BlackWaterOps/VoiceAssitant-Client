@@ -234,6 +234,61 @@ div, p, input {
     }
 }
 
+/********  PhoneGap only **********/
+
+.control {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    text-align: center;
+    .micbutton {
+        display: block;
+        width: 100px;
+        margin: 0 auto;
+        cursor: pointer;
+        position: relative;
+        &:before, &:after {
+            content: "";
+            position: absolute;
+            background-color: #303336;
+            height: 130px;
+            width: 130px;
+            z-index: -9;
+            top: -15px;
+            left: -15px;
+            border-radius: 50%;
+        }
+        &:after {
+            -webkit-box-shadow: 0 -2px 8px 5px rgba(0,0,0,.35);
+            z-index: -999;
+        }
+
+    }
+    &:before {
+        content: "";
+        position: absolute;
+        left:0;
+        right:0px;
+        top: -30px;
+        height: 90px;
+        z-index: -99;
+    }
+    &:after {
+        content: "";
+        position: absolute;
+        left:0;
+        right:0;
+        top: 20px;
+        background-color: #303336;
+        -webkit-box-shadow: 0 -2px 8px 5px rgba(0,0,0,.35);
+        height: 85px;
+        z-index: -99;
+    }
+}
+
 .cf {
     *zoom:1;
 }

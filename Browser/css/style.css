@@ -425,17 +425,70 @@ div, p, input {
   #init .subtitle {
     font-size: 14px; }
 
-/* line 237, ../scss/style.scss */
+/********  PhoneGap only **********/
+/* line 239, ../scss/style.scss */
+.control {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  text-align: center; }
+  /* line 247, ../scss/style.scss */
+  .control .micbutton {
+    display: block;
+    width: 100px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative; }
+    /* line 253, ../scss/style.scss */
+    .control .micbutton:before, .control .micbutton:after {
+      content: "";
+      position: absolute;
+      background-color: #303336;
+      height: 130px;
+      width: 130px;
+      z-index: -9;
+      top: -15px;
+      left: -15px;
+      border-radius: 50%; }
+    /* line 264, ../scss/style.scss */
+    .control .micbutton:after {
+      -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+      z-index: -999; }
+  /* line 270, ../scss/style.scss */
+  .control:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0px;
+    top: -30px;
+    height: 90px;
+    z-index: -99; }
+  /* line 279, ../scss/style.scss */
+  .control:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 20px;
+    background-color: #303336;
+    -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+    height: 85px;
+    z-index: -99; }
+
+/* line 292, ../scss/style.scss */
 .cf {
   *zoom: 1; }
 
-/* line 241, ../scss/style.scss */
+/* line 296, ../scss/style.scss */
 .cf:before, .cf:after {
   content: "";
   display: table;
   line-height: 0;
   height: 0; }
 
-/* line 248, ../scss/style.scss */
+/* line 303, ../scss/style.scss */
 .cf:after {
   clear: both; }
