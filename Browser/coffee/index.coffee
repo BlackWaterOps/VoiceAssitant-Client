@@ -1,4 +1,4 @@
-class Please
+class window.Please
 	constructor: (options) ->
 		@debug = true
 		@debugData = { }
@@ -20,6 +20,53 @@ class Please
 		@counter = 0
 		@disableSpeech = false
 
+		@currentState = 
+			status: null
+			origin: null
+
+		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
+		@presets = 
+			'after work': '18:00:00'
+			'breakfast': '7:30:00'
+			'lunch': '12:00:00'
+		
+		@init()
+
+	init: =>
+		@getLocation()
+		@registerHandlebarHelpers()
+		@registerListeners()
+
+		@input.focus()
+		.on('webkitspeechchange', @ask)
+		.on('keyup', @keyup)
+
+		$('body').on('click', '.expand', @expand)
+		#.on('click', '.simulate', @simulate)
+		
+		$('#cancel').on('click', @cancel)
+
+		if (@board.is(':empty'))
+			init = $('#init')
+			init.fadeIn('slow');
+			setTimeout (->
+				init.fadeOut 'slow'
+			), 1000
+
+	registerListeners: =>
+		$(document)
+		.on('init', @classify)
+		.on('audit', @auditor)
+		.on('disambiguate', @disambiguatePassive)
+		.on('disambiguate:personal', @disambiguatePersonal)
+		.on('disambiguate:active', @disambiguateActive)
+		.on('restart', @replaceContext)
+		.on('inprogress', @show)
+		.on('completed', @actor)
+		.on('error', @show)
+		.on('debug', @addDebug)
+
+	registerHandlebarHelpers: =>
 		Handlebars.registerHelper('elapsedTime', (dateString) =>
 			results = @elapsedTimeHelper(dateString)
 			return results.newDate + ' ' + results.newTime 
@@ -59,50 +106,6 @@ class Please
 			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
 		)
 
-		@currentState = 
-			status: 'init'
-			origin: null
-
-		# pretend presets is a list of 'special' times populated from a DB that stores user prefs
-		@presets = 
-			'after work': '18:00:00'
-			'breakfast': '7:30:00'
-			'lunch': '12:00:00'
-		
-		@init()
-
-	init: =>
-		@input.focus()
-		.on('webkitspeechchange', @ask)
-		.on('keyup', @keyup)
-
-		$('body').on('click', '.expand', @expand)
-		#.on('click', '.simulate', @simulate)
-		
-		$('#cancel').on('click', @cancel)
-
-		if (@board.is(':empty'))
-			init = $('#init')
-			init.fadeIn('slow');
-			setTimeout (->
-				init.fadeOut 'slow'
-			), 1000
-
-		@getLocation()
-		@registerListeners()
-
-	registerListeners: =>
-		$(document)
-		.on('init', @auditor)
-		.on('disambiguate', @disambiguatePassive)
-		.on('disambiguate:personal', @disambiguatePersonal)
-		.on('disambiguate:active', @disambiguateActive)
-		.on('restart', @replaceContext)
-		.on('inprogress', @show)
-		.on('completed', @actor)
-		.on('error', @show)
-		.on('debug', @addDebug)
-
 	ask: (input) =>
 		input = $(input)
 
@@ -114,7 +117,7 @@ class Please
 		
 		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
 		
-		$('#input-form').addClass 'cancel'
+		$('#input-form').addClass('cancel')
 
 		if @currentState.state is 'inprogress' or @currentState.state is 'error'
 			if @currentState.origin is 'actor'
@@ -129,18 +132,10 @@ class Please
 					response: text
 				)
 		else
-			data = query: text
-					
-			@requestHelper @classifier, "GET", data, (response) =>				
-				# addDebug()
-				# @resolver response
-	
-				$(document)
-				.trigger($.Event('debug'))
-				.trigger(
-					type: 'init'
-					response: response
-				)	
+			$(document).trigger(
+				type: 'init'
+				response: text
+			)
 
 	keyup: (e) =>	
 		value = $(e.target).val()
@@ -171,7 +166,7 @@ class Please
 		@disambigContext = { }
 		@history = [ ]
 		@currentState = 
-			state: 'init'
+			state: null
 			origin: null
 
 		$('#input-form').removeClass 'cancel'
@@ -227,6 +222,20 @@ class Please
 		@mainContext = response.data
 
 		@auditor(@mainContext)
+
+	classify: (e) =>
+		query = if e instanceof $.Event then e.response else e
+
+		data = query: query
+					
+		@requestHelper(@classifier, "GET", data, (response) =>
+			$(document)
+			.trigger($.Event('debug'))
+			.trigger(
+				type: 'audit'
+				response: response
+			)
+		)
 
 	disambiguateSuccessHandler: (response, field, type) =>
 		if @currentState.state is 'inprogress' or @currentState.state is 'error'
@@ -423,7 +432,7 @@ class Please
 
 		@loader.hide()
 		@counter = 0
-
+		
 		window.top.postMessage(
 			action: 'speak',
 			speak: results.speak
