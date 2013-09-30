@@ -353,12 +353,13 @@ class window.Please
 		if data.actor is null or data.actor is undefined
 			@show(data)
 		else
+			endpoint = @responder + 'actors/' + data.actor
+
 			if data.actor.indexOf('private') isnt -1
 				data.actor = data.actor.replace('private:', '')
+				endpoint = @personal + 'actors/' + data.actor
 
-				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
-			else
-				@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
+			@requestHelper(endpoint, 'POST', @mainContext, @actorResponseHandler)
 	
 	actorResponseHandler: (response) =>
 		if response.status?

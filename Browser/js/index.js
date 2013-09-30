@@ -385,18 +385,18 @@
     };
 
     Please.prototype.actor = function(e) {
-      var data;
+      var data, endpoint;
       this.disambigContext = {};
       data = e.response;
       if (data.actor === null || data.actor === void 0) {
         return this.show(data);
       } else {
+        endpoint = this.responder + 'actors/' + data.actor;
         if (data.actor.indexOf('private') !== -1) {
           data.actor = data.actor.replace('private:', '');
-          return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
-        } else {
-          return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
+          endpoint = this.personal + 'actors/' + data.actor;
         }
+        return this.requestHelper(endpoint, 'POST', this.mainContext, this.actorResponseHandler);
       }
     };
 
