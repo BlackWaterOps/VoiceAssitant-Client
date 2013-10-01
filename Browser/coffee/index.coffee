@@ -8,8 +8,8 @@ class window.Please
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 33.4930947
 		@lon = -111.928558
-		@mainContext = { }
-		@disambigContext = { }
+		@mainContext = null
+		@disambigContext = null
 		@history = [ ]
 		@pos = @history.length
 		@loader = $('#loader')
@@ -48,7 +48,7 @@ class window.Please
 
 		if (@board.is(':empty'))
 			init = $('#init')
-			init.fadeIn('slow');
+			init.fadeIn('slow')
 			setTimeout (->
 				init.fadeOut 'slow'
 			), 1000
@@ -119,7 +119,7 @@ class window.Please
 		
 		$('#input-form').addClass('cancel')
 
-		if @currentState.state is 'inprogress' or @currentState.state is 'error'
+		if @currentState.state is 'inprogress' or (@currentState.state is 'error' and @disambigContext?)
 			if @currentState.origin is 'actor'
 				# TODO: need to know what object should be used for response. @mainContext??
 				$(document).trigger(
@@ -162,8 +162,8 @@ class window.Please
 
 	cancel: (e) =>
 		@board.empty()
-		@mainContext = { }
-		@disambigContext = { }
+		@mainContext = null
+		@disambigContext = null
 		@history = [ ]
 		@currentState = 
 			state: null
@@ -353,12 +353,13 @@ class window.Please
 		if data.actor is null or data.actor is undefined
 			@show(data)
 		else
+			endpoint = @responder + 'actors/' + data.actor
+
 			if data.actor.indexOf('private') isnt -1
 				data.actor = data.actor.replace('private:', '')
+				endpoint = @personal + 'actors/' + data.actor
 
-				@requestHelper(@personal + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
-			else
-				@requestHelper(@responder + 'actors/' + data.actor, 'POST', @mainContext, @actorResponseHandler)
+			@requestHelper(endpoint, 'POST', @mainContext, @actorResponseHandler)
 	
 	actorResponseHandler: (response) =>
 		if response.status?
@@ -433,6 +434,7 @@ class window.Please
 		@loader.hide()
 		@counter = 0
 		
+		# TODO: conditional check
 		window.top.postMessage(
 			action: 'speak',
 			speak: results.speak
@@ -537,6 +539,7 @@ class window.Please
 				@debugData.response = response
 			
 			@loader.hide()
+			@counter = 0
 		)
 
 	operators = 

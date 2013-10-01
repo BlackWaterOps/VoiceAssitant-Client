@@ -55,8 +55,8 @@
       this.responder = 'http://rez.stremor-apier.appspot.com/v1/';
       this.lat = 33.4930947;
       this.lon = -111.928558;
-      this.mainContext = {};
-      this.disambigContext = {};
+      this.mainContext = null;
+      this.disambigContext = null;
       this.history = [];
       this.pos = this.history.length;
       this.loader = $('#loader');
@@ -143,7 +143,7 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('#input-form').addClass('cancel');
-      if (this.currentState.state === 'inprogress' || this.currentState.state === 'error') {
+      if (this.currentState.state === 'inprogress' || (this.currentState.state === 'error' && (this.disambigContext != null))) {
         if (this.currentState.origin === 'actor') {
           return $(document).trigger({
             type: 'completed',
@@ -195,8 +195,8 @@
 
     Please.prototype.cancel = function(e) {
       this.board.empty();
-      this.mainContext = {};
-      this.disambigContext = {};
+      this.mainContext = null;
+      this.disambigContext = null;
       this.history = [];
       this.currentState = {
         state: null,
@@ -385,18 +385,18 @@
     };
 
     Please.prototype.actor = function(e) {
-      var data;
+      var data, endpoint;
       this.disambigContext = {};
       data = e.response;
       if (data.actor === null || data.actor === void 0) {
         return this.show(data);
       } else {
+        endpoint = this.responder + 'actors/' + data.actor;
         if (data.actor.indexOf('private') !== -1) {
           data.actor = data.actor.replace('private:', '');
-          return this.requestHelper(this.personal + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
-        } else {
-          return this.requestHelper(this.responder + 'actors/' + data.actor, 'POST', this.mainContext, this.actorResponseHandler);
+          endpoint = this.personal + 'actors/' + data.actor;
         }
+        return this.requestHelper(endpoint, 'POST', this.mainContext, this.actorResponseHandler);
       }
     };
 
@@ -590,7 +590,8 @@
           _this.debugData.status = status;
           _this.debugData.response = response;
         }
-        return _this.loader.hide();
+        _this.loader.hide();
+        return _this.counter = 0;
       });
     };
 
