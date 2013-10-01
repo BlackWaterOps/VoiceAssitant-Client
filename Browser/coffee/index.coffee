@@ -48,7 +48,7 @@ class window.Please
 
 		if (@board.is(':empty'))
 			init = $('#init')
-			init.fadeIn('slow');
+			init.fadeIn('slow')
 			setTimeout (->
 				init.fadeOut 'slow'
 			), 1000
@@ -538,6 +538,7 @@ class window.Please
 				@debugData.response = response
 			
 			@loader.hide()
+			@counter = 0
 		)
 
 	operators = 
