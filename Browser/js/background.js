@@ -6,12 +6,12 @@
  */
 chrome.app.runtime.onLaunched.addListener(function() {
 	chrome.app.window.create('../main.html', {
-		width: 768, 
-		height: 1024, 
+		//width: 768, 
+		//height: 1024, 
 		minWidth: 768, 
 		minHeight: 1024, 
-		maxWidth: 768, 
-		maxHeight: 1024
+		//maxWidth: 768, 
+		//maxHeight: 1024
 	}, function(win) {
 		win.contentWindow.addEventListener('message', function(e) {
 			var data = e.data;
