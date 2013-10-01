@@ -411,7 +411,7 @@ div, p, input {
 #init {
   position: absolute;
   top: 40%;
-  left: 40%;
+  width: 100%;
   color: #aaa;
   display: none;
   text-align: center; }
