@@ -8,8 +8,8 @@ class window.Please
 		@responder = 'http://rez.stremor-apier.appspot.com/v1/'
 		@lat = 33.4930947
 		@lon = -111.928558
-		@mainContext = { }
-		@disambigContext = { }
+		@mainContext = null
+		@disambigContext = null
 		@history = [ ]
 		@pos = @history.length
 		@loader = $('#loader')
@@ -119,7 +119,7 @@ class window.Please
 		
 		$('#input-form').addClass('cancel')
 
-		if @currentState.state is 'inprogress' or @currentState.state is 'error'
+		if @currentState.state is 'inprogress' or (@currentState.state is 'error' and @disambigContext?)
 			if @currentState.origin is 'actor'
 				# TODO: need to know what object should be used for response. @mainContext??
 				$(document).trigger(
@@ -162,8 +162,8 @@ class window.Please
 
 	cancel: (e) =>
 		@board.empty()
-		@mainContext = { }
-		@disambigContext = { }
+		@mainContext = null
+		@disambigContext = null
 		@history = [ ]
 		@currentState = 
 			state: null
@@ -434,6 +434,7 @@ class window.Please
 		@loader.hide()
 		@counter = 0
 		
+		# TODO: conditional check
 		window.top.postMessage(
 			action: 'speak',
 			speak: results.speak
