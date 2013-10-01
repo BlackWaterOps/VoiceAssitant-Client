@@ -16,7 +16,7 @@
       this.startupWin = __bind(this.startupWin, this);
       this.refreshiScroll = __bind(this.refreshiScroll, this);
       this.deviceReady = __bind(this.deviceReady, this);
-      this.please = Please || new Please();
+      this.please = new Please();
       document.addEventListener("deviceready", this.deviceReady, false);
     }
 
@@ -59,7 +59,7 @@
     Cordova.prototype.speechOk = function(results) {
       var matches, query, respObj;
       if (results) {
-        respObj = JSON.parse(result);
+        respObj = JSON.parse(results);
         if (respObj) {
           matches = respObj.speechMatches.speechMatch;
           if (matches.length > 0) {

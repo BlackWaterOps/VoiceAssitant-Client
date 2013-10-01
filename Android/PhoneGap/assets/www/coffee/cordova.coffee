@@ -1,6 +1,6 @@
 class Cordova
     constructor: (options) ->
-        @please = Please || new Please()
+        @please = new Please()
                 
         document.addEventListener("deviceready", @deviceReady, false)
 
@@ -41,7 +41,7 @@ class Cordova
 
     speechOk: (results) =>
         if results
-            respObj = JSON.parse(result)
+            respObj = JSON.parse(results)
             if respObj
                 matches = respObj.speechMatches.speechMatch
 
