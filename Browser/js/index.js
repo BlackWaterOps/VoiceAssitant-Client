@@ -590,7 +590,8 @@
           _this.debugData.status = status;
           _this.debugData.response = response;
         }
-        return _this.loader.hide();
+        _this.loader.hide();
+        return _this.counter = 0;
       });
     };
 
