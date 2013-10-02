@@ -107,11 +107,14 @@ class window.Please
 		)
 
 	ask: (input) =>
-		input = $(input)
+		if typeof input is 'string'
+			text = input
+		else
+			input = $(input)
 
-		text = input.val()
+			text = input.val()
 
-		input.val('')
+			input.val('')
 		
 		template = Handlebars.compile($('#bubblein-template').html())
 		
@@ -132,12 +135,14 @@ class window.Please
 					response: text
 				)
 		else
+			console.log('trigger classifier')
 			$(document).trigger(
 				type: 'init'
 				response: text
 			)
 
-	keyup: (e) =>	
+	keyup: (e) =>
+		console.log('keyup triggered')
 		value = $(e.target).val()
 
 		target = $(e.target)
@@ -227,7 +232,7 @@ class window.Please
 		query = if e instanceof $.Event then e.response else e
 
 		data = query: query
-					
+				
 		@requestHelper(@classifier, "GET", data, (response) =>
 			$(document)
 			.trigger($.Event('debug'))
@@ -833,4 +838,4 @@ class window.Please
 
 		console.error args.join(" ")
 
-new Please()                    
+# new Please()                    
