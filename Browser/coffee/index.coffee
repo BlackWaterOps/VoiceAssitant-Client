@@ -837,5 +837,3 @@ class window.Please
 			args.push argument
 
 		console.error args.join(" ")
-
-# new Please()                    
