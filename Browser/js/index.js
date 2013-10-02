@@ -170,7 +170,6 @@
 
     Please.prototype.keyup = function(e) {
       var target, value;
-      console.log('keyup triggered');
       value = $(e.target).val();
       target = $(e.target);
       switch (e.which) {

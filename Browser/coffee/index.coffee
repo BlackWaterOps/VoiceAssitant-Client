@@ -142,7 +142,6 @@ class window.Please
 			)
 
 	keyup: (e) =>
-		console.log('keyup triggered')
 		value = $(e.target).val()
 
 		target = $(e.target)
