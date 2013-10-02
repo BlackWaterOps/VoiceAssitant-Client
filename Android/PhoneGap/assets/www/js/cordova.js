@@ -17,6 +17,7 @@
       this.refreshiScroll = __bind(this.refreshiScroll, this);
       this.deviceReady = __bind(this.deviceReady, this);
       this.please = new Please();
+      this.please.debug = false;
       document.addEventListener("deviceready", this.deviceReady, false);
     }
 
@@ -65,6 +66,7 @@
           if (matches.length > 0) {
             query = matches[0];
             query = this.cleanQuery(query);
+            console.log('your query was ' + query);
             return this.please.ask(query);
           }
         }
