@@ -1,7 +1,10 @@
 class Cordova
     constructor: (options) ->
         @please = new Please()
-                
+        
+        # turn off debugging for phone
+        @please.debug = false
+
         document.addEventListener("deviceready", @deviceReady, false)
 
     deviceReady: =>
@@ -49,6 +52,8 @@ class Cordova
                     query = matches[0]
                     query = @cleanQuery(query)
                     # echo(query) # need to trigger speak from please and handle in this file
+
+                    console.log('your query was ' + query)
 
                     # call please
                     @please.ask(query)
