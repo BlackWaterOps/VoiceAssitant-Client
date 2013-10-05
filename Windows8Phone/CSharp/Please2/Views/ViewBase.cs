@@ -80,7 +80,7 @@ namespace Please2.Views
 
             RegisterListeners();
 
-            App.currentPage = e.Uri.ToString();
+            //App.currentPage = e.Uri.ToString();
 
             var debuggerBox = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage).Descendants<TextBox>().Cast<TextBox>().Where( x => x.Name == "ManualInput");
 

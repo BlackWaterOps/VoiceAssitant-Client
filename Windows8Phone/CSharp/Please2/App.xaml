@@ -22,70 +22,23 @@
             <GradientStop Color="#192128" Offset="0.0" />
             <GradientStop Color="#32393f" Offset="1.0" />
         </LinearGradientBrush>
-        
+
+        <LinearGradientBrush x:Key="ResultItemBackground" StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="#000000" Offset="0.0" />
+            <GradientStop Color="#51575c" Offset="1.0" />
+        </LinearGradientBrush>
+
         <!-- chat bubble colors -->
         <SolidColorBrush x:Key="UserDialogBackground" Color="#1ec0c3" Opacity=".85" />
         <SolidColorBrush x:Key="PleaseDialogBackground" Color="#1ab154" Opacity=".85" />
         <SolidColorBrush x:Key="UserDialogForeground" Color="Black" />
         <SolidColorBrush x:Key="PleaseDialogForeground" Color="Black" />
-           
-        <!-- main menu icons -->  
-        <Style x:Key="glyphsBase" TargetType="Glyphs">
-            <Setter Property="FontUri" Value="/Please2;component/Resources/FontAwesome.otf#FontAwesome"/>
-            <Setter Property="FontRenderingEmSize" Value="100"/>
-            <Setter Property="Fill" Value="White"/>
-        </Style>
-
-        <Style x:Key="conversation" TargetType="Glyphs" BasedOn="{StaticResource glyphsBase}">
-            <Setter Property="UnicodeString" Value="&#xf130;"/>
-        </Style>
-
-        <Style x:Key="weather" TargetType="Glyphs" BasedOn="{StaticResource glyphsBase}">
-            <Setter Property="UnicodeString" Value="&#xf0e9;"/>
-        </Style>
-
-        <Style x:Key="notifications" TargetType="Glyphs" BasedOn="{StaticResource glyphsBase}">
-            <Setter Property="UnicodeString" Value="&#xf0f3;"/>
-        </Style>
-
-        <Style x:Key="search" TargetType="Glyphs" BasedOn="{StaticResource glyphsBase}">
-            <Setter Property="UnicodeString" Value="&#xf002;"/>
-        </Style>
-        
-        <Style x:Key="settings" TargetType="Glyphs" BasedOn="{StaticResource glyphsBase}">
-            <Setter Property="UnicodeString" Value="&#xf013;"/>
-        </Style>
-
-        <!-- weather icons -->
-        <!--
-        <ImageBrush x:Key="WeatherMostlyCloudy" ImageSource="" />
-        <ImageBrush x:Key="WeatherClear" ImageSource="" />
-        <ImageBrush x:Key="WeatherPartlyCloudy" ImageSource="" />
-        <ImageBrush x:Key="WeatherOvercast" ImageSource="" />
-        <ImageBrush x:Key="WeatherFog" ImageSource="" />
-        <ImageBrush x:Key="WeatherSmoke" ImageSource="" />
-        <ImageBrush x:Key="WeatherFreezingRain" ImageSource="" />
-        <ImageBrush x:Key="WeatherHail" ImageSource="" />
-        <ImageBrush x:Key="WeatherRain" ImageSource="" />
-        <ImageBrush x:Key="WeatherRainSnow" ImageSource="" />
-        <ImageBrush x:Key="WeatherThunderstorm" ImageSource="" />
-        <ImageBrush x:Key="WeatherSnow" ImageSource="" />
-        <ImageBrush x:Key="WeatherWindy" ImageSource="" />
-        <ImageBrush x:Key="WeatherTornado" ImageSource="" />
-        <ImageBrush x:Key="WeatherDust" ImageSource="" />
-        <ImageBrush x:Key="WeatherHaze" ImageSource="" />
-        -->
-               
+              
         <!-- listbox item 100% width -->
         <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
         
-        <!-- Glyphicons -->
-        <Style x:Key="FontAwesome" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="/Please2;component/Resources/FontAwesome.otf#FontAwesome"/>
-        </Style>
-
         <!-- various page titles -->
         <Style x:Key="AppTitle" TargetType="TextBlock">
             <Setter Property="Text" Value="please" />
@@ -95,17 +48,18 @@
             <Setter Property="Margin" Value="0" />
         </Style>
 
-        <Style x:Key="PageTitle" TargetType="TextBlock">
+        <Style x:Key="PageTitleBase" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="/Please2;component/Assets/Fonts/Roboto-Thin.ttf#Roboto Thin" />
-            <Setter Property="FontSize" Value="50" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
+        </Style>
+
+        <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
+            <Setter Property="FontSize" Value="50" />
             <Setter Property="Margin" Value="0" />
         </Style>
 
-        <Style x:Key="PageSubTitle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="/Please2;component/Assets/Fonts/Roboto-Thin.ttf#Roboto Thin" />
+        <Style x:Key="PageSubTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
             <Setter Property="Margin" Value="0" />
         </Style>
 
@@ -296,7 +250,6 @@
         <util:NotificationDateConverter x:Key="NotificationDateConverter" />
         <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
         <util:ListResultsConverter x:Key="ListResultsConverter" />
-
 
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
         

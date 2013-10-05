@@ -32,8 +32,9 @@
       this.addDebug = __bind(this.addDebug, this);
       this.actorResponseHandler = __bind(this.actorResponseHandler, this);
       this.actor = __bind(this.actor, this);
-      this.responderSuccessHandler = __bind(this.responderSuccessHandler, this);
+      this.auditorSuccessHandler = __bind(this.auditorSuccessHandler, this);
       this.auditor = __bind(this.auditor, this);
+      this.choose = __bind(this.choose, this);
       this.disambiguatePassive = __bind(this.disambiguatePassive, this);
       this.disambiguatePersonal = __bind(this.disambiguatePersonal, this);
       this.disambiguateActive = __bind(this.disambiguateActive, this);
@@ -59,9 +60,9 @@
       this.disambigContext = null;
       this.history = [];
       this.pos = this.history.length;
-      this.loader = $('#loader');
-      this.board = $('#board');
-      this.input = $('#main-input');
+      this.loader = $('.loader');
+      this.board = $('.board');
+      this.input = $('.main-input');
       this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
       this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
@@ -87,7 +88,7 @@
       $('body').on('click', '.expand', this.expand);
       $('#cancel').on('click', this.cancel);
       if (this.board.is(':empty')) {
-        init = $('#init');
+        init = $('.init');
         init.fadeIn('slow');
         return setTimeout((function() {
           return init.fadeOut('slow');
@@ -96,7 +97,7 @@
     };
 
     Please.prototype.registerListeners = function() {
-      return $(document).on('init', this.classify).on('audit', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('restart', this.replaceContext).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
+      return $(document).on('init', this.classify).on('audit', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('restart', this.replaceContext).on('choice', this.choose).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
     };
 
     Please.prototype.registerHandlebarHelpers = function() {
@@ -146,7 +147,7 @@
       }
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
-      $('#input-form').addClass('cancel');
+      $('.input-form').addClass('cancel');
       if (this.currentState.state === 'inprogress' || (this.currentState.state === 'error' && (this.disambigContext != null))) {
         if (this.currentState.origin === 'actor') {
           return $(document).trigger({
@@ -160,7 +161,6 @@
           });
         }
       } else {
-        console.log('trigger classifier');
         return $(document).trigger({
           type: 'init',
           response: text
@@ -170,7 +170,6 @@
 
     Please.prototype.keyup = function(e) {
       var target, value;
-      console.log('keyup triggered');
       value = $(e.target).val();
       target = $(e.target);
       switch (e.which) {
@@ -208,7 +207,7 @@
         state: null,
         origin: null
       };
-      $('#input-form').removeClass('cancel');
+      $('.input-form').removeClass('cancel');
       this.loader.hide();
       this.counter = 0;
       return this.input.focus();
@@ -362,6 +361,21 @@
       });
     };
 
+    Please.prototype.choose = function(e) {
+      var data, item, list, listItem, _i, _len, _ref;
+      data = e.response;
+      list = $('<ul/>');
+      _ref = data.show.simple.list;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        listItem = $('<li/>').text(item.text);
+        list.append(listItem);
+      }
+      $('.list-slider').append(list);
+      $('body').addClass('choice');
+      return this.show(e);
+    };
+
     Please.prototype.auditor = function(data) {
       var payload, response;
       response = data instanceof $.Event ? data.response : data;
@@ -372,16 +386,16 @@
       this.mainContext = response;
       this.counter++;
       if (this.counter < 3) {
-        return this.requestHelper(this.responder + 'audit', 'POST', response, this.responderSuccessHandler);
+        return this.requestHelper(this.responder + 'audit', 'POST', response, this.auditorSuccessHandler);
       }
     };
 
-    Please.prototype.responderSuccessHandler = function(response) {
+    Please.prototype.auditorSuccessHandler = function(response) {
       this.currentState = {
         state: response.status.replace(' ', ''),
         origin: 'auditor'
       };
-      if (this.currentState.state === 'inprogress') {
+      if (this.currentState.state === 'inprogress' || this.currentState.state === 'choice') {
         this.disambigContext = response;
       }
       return $(document).trigger({

@@ -6,10 +6,10 @@
  */
 chrome.app.runtime.onLaunched.addListener(function() {
 	chrome.app.window.create('../main.html', {
-		//width: 768, 
-		//height: 1024, 
-		minWidth: 768, 
-		minHeight: 1024, 
+		width: 640, 
+		height: 480, 
+		minWidth: 260, 
+		minHeight: 150, 
 		//maxWidth: 768, 
 		//maxHeight: 1024
 	}, function(win) {

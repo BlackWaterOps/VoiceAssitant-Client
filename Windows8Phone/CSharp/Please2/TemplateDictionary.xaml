@@ -186,6 +186,64 @@
         </Border>
     </DataTemplate>
 
+    <DataTemplate x:Key="flights">
+        <Border Background="{StaticResource ResultItemBackground}" BorderThickness="2" BorderBrush="#51575c" Padding="20" Margin="0,10,0,0">
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="{Binding identification}" FontWeight="SemiBold"/>
+
+                    <Border BorderThickness="1" BorderBrush="White" HorizontalAlignment="Stretch"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding status}"/>
+                        <TextBlock Text="{Binding delay}"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Departed:" FontWeight="SemiBold"/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding origin.city}"/>
+                        <TextBlock Text="{Binding origin.airport_code, StringFormat=' ({0})'}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel x:Name="DepartedScheduled" Grid.Column="0">
+                            <TextBlock Text="Scheduled:" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding schedule.filed_departure}"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="DepartedActual" Grid.Column="1" HorizontalAlignment="Right">
+                            <TextBlock Text="Actual:"/>
+                            <TextBlock Text="{Binding schedule.actual_departure}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <Border BorderThickness="1" BorderBrush="White"/>
+
+                    <TextBlock Text="Arrives:"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding destination.city}"/>
+                        <TextBlock Text="{Binding destination.airport_code, StringFormat=' ({0})'}"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel x:Name="ArrivesScheduled" Grid.Column="0">
+                            <TextBlock Text="Scheduled:"/>
+                            <TextBlock Text="{Binding schedule.filed_departure}"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="ArrivesActual" Grid.Column="1" HorizontalAlignment="Right">
+                            <TextBlock Text="Estimated:"/>
+                            <TextBlock Text="{Binding schedule.estimated_arrival}"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </StackPanel>
+            </Grid> 
+        </Border>
+    </DataTemplate>
+    
     <DataTemplate x:Key="contacts">
         <Border Tag="{Binding url}" Background="White" Padding="15" Tap="Contact_Tap">
 

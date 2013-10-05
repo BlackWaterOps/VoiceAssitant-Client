@@ -18,13 +18,13 @@ namespace Please2.ViewModels
         public string PageTitle
         {
             get { return pageTitle; }
-            set 
-            { 
+            set
+            {
                 pageTitle = value;
                 RaisePropertyChanged("PageTitle");
             }
         }
-        
+
         private DataTemplate template;
 
         public DataTemplate Template
@@ -51,22 +51,36 @@ namespace Please2.ViewModels
 
         public ListViewModel()
         {
-
+            FlightTest();
         }
 
-        public IEnumerable<T> CreateList<T>()
+        public void FlightTest()
         {
-            var myType = typeof(T);
+            try
+            {
+                var data = "{\"show\":{\"simple\":{\"text\":\"I found multiple flights. Here is the closest match:\n\nDAL116 arrived at 08:09 pm in Atlanta, GA\"},\"structured\":{\"items\":[{\"origin\":{\"city\":\"Atlanta, GA\",\"airport_code\":\"KATL\",\"airport_name\":\"Hartsfield-Jackson Intl\"},\"status\":\"departed\",\"schedule\":{\"estimated_arrival\":\"2013-10-02T06:43:01\",\"actual_departure\":\"2013-10-01T22:13:00\",\"filed_departure\":\"2013-10-01T21:44:00\"},\"destination\":{\"city\":\"Stuttgart\",\"airport_code\":\"EDDS\",\"airport_name\":\"Stuttgart Echterdingen\"},\"delay\":null,\"identification\":\"DAL116\"},{\"origin\":{\"city\":\"Birmingham, AL\",\"airport_code\":\"KBHM\",\"airport_name\":\"Birmingham-Shuttlesworth Intl\"},\"status\":\"arrived\",\"schedule\":{\"estimated_arrival\":\"2013-10-01T20:09:00\",\"actual_departure\":\"2013-10-01T19:37:00\",\"filed_departure\":\"2013-10-01T19:30:00\",\"actual_arrival\":\"2013-10-01T20:09:00\"},\"destination\":{\"city\":\"Atlanta, GA\",\"airport_code\":\"KATL\",\"airport_name\":\"Hartsfield-Jackson Intl\"},\"delay\":null,\"identification\":\"DAL116\"}],\"flight_number\":\"116\",\"airline\":{\"code\":\"DAL\",\"name\":\"Delta Air Lines, Inc.\",\"url\":\"http://www.delta.com/\",\"country\":\"US\",\"phone\":\"+1-800-221-1212\",\"callsign\":\"Delta\",\"location\":\"\",\"shortname\":\"Delta\"},\"template\":\"list:flights\"}},\"speak\":\"I found multiple flights. Here is the closest match:\n\nDAL116 arrived at 08:09 pm in Atlanta, GA\"}";
 
-            var listGenericType = typeof(IEnumerable<>);
+                var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<Please2.Models.ActorModel>(data);
 
-            var list = listGenericType.MakeGenericType(myType);
+                var show = actor.show;
 
-            var ci = list.GetConstructor(new Type[] { });
+                ListResults = ((Newtonsoft.Json.Linq.JToken)show.structured["items"]).ToObject<IEnumerable<Please2.Models.FlightItem>>();
 
-            var typedList = (IEnumerable<T>)ci.Invoke(new object[] { });
+                var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
 
-            return typedList;
+                if (templates["flights"] == null)
+                {
+                    Console.WriteLine("template not found in TemplateDictionary");
+                }
+
+                Template = templates["flights"] as DataTemplate;
+
+                pageTitle = "flights";
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.Message);
+            }
         }
     }
 }

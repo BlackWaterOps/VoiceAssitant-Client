@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -33,26 +34,17 @@ namespace Please2
             //base.applicationBar.IsVisible = false;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            /*
-            Debug.WriteLine("&#xf130");
-
-            var uni = new System.Text.UnicodeEncoding();
-
-            Byte[] encoded = uni.GetBytes("&#xf130");
-
-            Debug.WriteLine();
-            */
-
-            Debug.WriteLine(typeof(ShoppingModel));
 
             // kick off geolocation listener
             // this should be done somewhere else!!
             Please2.Util.Location.StartTrackingGeolocation();
 
             NavigationService.NavigationFailed += OnNavigationFailed;
+           
+            base.AddDebugTextBox();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -60,6 +52,11 @@ namespace Please2
             NavigationService.NavigationFailed -= OnNavigationFailed;
 
             base.OnNavigatingFrom(e);
+        }
+
+        protected override void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            base.OnKeyDown(sender, e);
         }
 
         protected void MenuItem_Tapped(object sender, EventArgs e)

@@ -23,7 +23,7 @@ namespace Please2.Util
             /*
             if (type == typeof(ShoppingModel))
             {
-
+                
             }
             */
 
@@ -306,49 +306,355 @@ namespace Please2.Util
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string currCondition = ((string)value).ToLower();
-
-            string icon = null;
-
-            //var temp = new List<string>() { "mostly cloudy" };
-
-            var conditions = new Dictionary<string, List<string>>()
+            try
             {
-                {"WeatherMostlyCloudy", new List<string> {"mostly cloudy"} },
-                {"WeatherClear", new List<string> {"fair", "clear"} },
-                {"WeatherPartlyCloudy", new List<string> {"partly cloudy", "few clouds"} },
-                {"WeatherOvercast", new List<string> {"overcast"} },
-                {"WeatherFog", new List<string> {"fog"} },
-                {"WeatherSmoke", new List<string> {"smoke"} },
-                {"WeatherFreezingRain", new List<string> {"freezing rain", "freezing drizzle"} },
-                {"WeatherHail", new List<string> {"ice pellets", "ice crystals", "hail", "snow pellets"} },
-                {"WeatherRain", new List<string> {"rain showers", "light rain", "light showers", "showers rain"} },
-                {"WeatherRainSnow", new List<string> {"rain snow", "snow rain", "drizzle snow", "snow drizzle"} },
-                {"WeatherThunderstorm", new List<string> {"thunderstorm"} },
-                {"WeatherSnow", new List<string> {"snow"} },
-                {"WeatherWindy", new List<string> {"windy", "breezy"} },
-                {"WeatherTornado", new List<string> {"funnel cloud", "tornado", "water spout"} },
-                {"WeatherDust", new List<string> {"dust", "sand"} },
-                {"WeatherHaze", new List<string> {"haze"} }
-            };
+                // need to pass in the whole weatherday model so we have access to daytime and night fields  
+                var weatherDay = value as WeatherDay;
 
-            foreach (var conditionList in conditions)
-            {
-                foreach (var condition in conditionList.Value)
+                bool isNight = false;
+                string currCondition;
+                
+                if (weatherDay.daytime != null && weatherDay.daytime.sky != null)
                 {
-                    if (culture.CompareInfo.IndexOf(currCondition, condition, System.Globalization.CompareOptions.IgnoreCase) != -1)
-                    {
-                        // set icon to appropriate image brush name
-                        icon = conditionList.Key;
+                    currCondition = weatherDay.daytime.sky;
+                }
+                else
+                {
+                    isNight = true;
+                    currCondition = weatherDay.night.sky;
+                }
 
-                        // there's no point to have the images defined as brushes in app.xaml
-                        // make the dict keys the name of the image
-                        return new Uri("/Assets/Weather/" + icon + ".png", UriKind.Relative);
+                currCondition = currCondition.ToLower();
+
+                string icon = null;
+
+                // each key in the dict cooresponds to a glyph in Assets/Fonts/forcasticons.ttf
+                // each value in a list cooresponds to a sky condition returned from the api
+                // TODO: icon for smoke
+                var conditions = new Dictionary<List<string>, List<string>>()
+                {
+                { new List<string> { "3" }, new List<string> { "overcast", "overcast with haze" } },
+                { new List<string> { "a" }, new List<string> { "mostly cloudy", "mostly cloudy with haze" } },
+                { new List<string> { "A" }, new List<string> { "partly cloudy", "partly cloudy with haze",  } },
+                { new List<string> { "2", "6" }, new List<string> { "a few clouds", "a few clouds with haze", "mostly clear" } },
+                { new List<string> { "1", "6" }, new List<string> { "fair", "clear", "fair with haze", "fair and breezy", "clear and breezy", "sunny" } },
+
+                { new List<string> { "b" }, new List<string> { "mostly cloudy and breezy" } },
+                { new List<string> { "Z", "!" }, new List<string> { "overcast and breezy" } },
+                { new List<string> { "d" }, new List<string> { "mostly cloudy and windy" } },
+                /*
+                { "f", new List<string> { "" } },
+                { "j", new List<string> { "" } },
+                { "t", new List<string> { "" } },
+                { "n", new List<string> { "" } },
+                { "x", new List<string> { "" } },
+                { "p", new List<string> { "" } },
+                { "h", new List<string> { "" } },
+                { "l", new List<string> { "" } },
+                { "v", new List<string> { "" } },
+                { "r", new List<string> { "" } },
+
+                { "B", new List<string> {  } },
+                */
+                { new List<string> { "z", "!" }, new List<string> { "a few clouds and breezy", "partly cloudy and breezy", "breezy" } },
+                { new List<string> { "D", "e" }, new List<string> { "windy", "fair and windy", "a few clouds and windy", "partly cloudy and windy" } },
+                { new List<string> { "F", "g" }, new List<string> { "freezing rain in vicinity", "freezing drizzle in vicinity" } },
+                { new List<string> { "J", "k" }, new List<string> { 
+                    "rain showers in vicinity", 
+                    "showers rain in vicinity", 
+                    "rain showers in vicinity fog/mist", 
+                    "showers rain in vicinity fog/mist",
+                    "showers in vicinity",
+                    "showers in vicinity fog/mist",
+                    "showers in vicinity fog",
+                    "showers in vicinity haze"
+                } },
+                /*
+                { "T", new List<string> { "" } },
+                { "N", new List<string> { "" } },
+                */
+                { new List<string> { "X", "y" }, new List<string> { 
+                    "thunderstorm in vicinity fog/mist", 
+                    "thunderstorm in vicinity haze", 
+                    "thunderstorm haze in vicinity",
+                    "thunderstorm in vicinity",
+                    "thunderstorm in vicinity fog",
+                    "thunderstorm in vicinity haze"
+                } },
+                { new List<string> { "P", "q" }, new List<string> { "thunderstorm showers in vicinity" } },
+                { new List<string> { "H", "i" }, new List<string> { 
+                    "ice pellets in vicinity", 
+                    "showers in vicinity snow", 
+                    "snow showers in vicinity", 
+                    "snow showers in vicinity fog/mist",
+                    "snow showers in vicinity fog",
+                    "blowing snow in vicinity"
+                } },
+                /*
+                { "L", new List<string> { "" } },
+                { "V", new List<string> { "" } },\
+                */
+                { new List<string> { "R", "s" }, new List<string> { 
+                    "thunderstorm showers in vicinity hail", 
+                    "thunderstorm in vicinity hail", 
+                    "thunderstorm in vicinity hail haze",
+                    "thunderstorm haze in vicinity hail"
+                } },
+               
+                //{ "C", new List<string> { "" } },
+                { new List<string> { "E" }, new List<string> { "overcast and windy" } },
+                { new List<string> { "G", "g" }, new List<string> { 
+                    "freezing drizzle", 
+                    "light freezing drizzle", 
+                    "light rain showers",
+                    "light showers rain",
+                    "light rain showers fog/mist",
+                    "freezing drizzle rain",
+                    "light freezing drizzle rain",
+                    "rain freezing drizzle",
+                    "light rain freezing drizzle",
+                    "light rain",
+                    "drizzle",
+                    "light drizzle",
+                    "heavy drizzle",
+                    "light rain fog/mist",
+                    "drizzle fog/mist",
+                    "light drizzle fog/mist",
+                    "heavy drizzle fog/mist",
+                    "light rain fog",
+                    "drizzle fog",
+                    "light drizzle fog",
+                    "heavy drizzle fog"
+                } },
+                { new List<string> { "K", "k" }, new List<string> { 
+                    "freezing rain", 
+                    "light freezing rain", 
+                    "rain ice pellets", 
+                    "light rain ice pellets", 
+                    "drizzle ice pellets", 
+                    "light drizzle ice pellets", 
+                    "ice pellets rain", 
+                    "light ice pellets rain", 
+                    "ice pellets drizzle", 
+                    "light ice pellets drizzle",
+                    "rain showers",
+                    "showers rain",
+                    "rain showers fog/mist",
+                    "showers rain fog/mist",
+                    "freezing rain rain",
+                    "light freezing rain rain",
+                    "rain freezing rain",
+                    "light rain freezing rain",
+                    "rain",
+                    "rain fog/mist",
+                    "rain fog"
+                } },
+                { new List<string> { "U", "u" }, new List<string> { 
+                    "heavy freezing rain", 
+                    "heavy freezing drizzle", 
+                    "heavy rain ice pellets", 
+                    "heavy drizzle ice pellets", 
+                    "heavy ice pellets rain", 
+                    "heavy ice pellets drizzle",
+                    "heavy rain showers",
+                    "heavy showers rain",
+                    "heavy showers rain fog/mist",
+                    "heavy freezing rain rain",
+                    "heavy rain freezing rain",
+                    "heavy freezing drizzle rain",
+                    "heavy rain freezing drizzle",
+                    "heavy rain",
+                    "heavy rain fog/mist",
+                    "heavy rain fog"
+                } },
+                { new List<string> { "O", "o" }, new List<string> { "light rain and breezy" } },
+                { new List<string> { "Y", "y" }, new List<string> { "thunderstorm", "thunderstorm fog" } },
+                { new List<string> { "Q", "q" }, new List<string> { 
+                    "thunderstorm rain", 
+                    "light thunderstorm rain", 
+                    "heavy thunderstorm rain",
+                    "thunderstorm rain fog/mist",
+                    "heavy thunderstorm rain fog and windy",
+                    "heavy thunderstorm rain fog/mist",
+                    "light thunderstorm rain haze",
+                    "heavy thunderstorm rain haze",
+                    "light thunderstorm rain fog",
+                    "heavy thunderstorm rain fog",
+                    "thunderstorm light rain",
+                    "thunderstorm heavy rain",
+                    "thunderstorm rain fog/mist",
+                    "thunderstorm light rain fog/mist",
+                    "thunderstorm heavy rain fog/mist",
+                    "thunderstorm light rain haze",
+                    "thunderstorm heavy rain haze",
+                    "thunderstorm light rain fog",
+                    "thunderstorm heavy rain fog",
+                    "thunderstorm hail",
+                    "thunderstorm rain hail fog/mist",
+                    "light thunderstorm rain hail fog/mist",
+                    "heavy thunderstorm rain hail fog/hail",
+                    "light thunderstorm rain hail haze",
+                    "heavy thunderstorm rain hail haze",
+                    "light thunderstorm rain hail fog",
+                    "heavy thunderstorm rain hail fog",
+                    "thunderstorm light rain hail",
+                    "thunderstorm heavy rain hail",
+                    "thunderstorm rain hail fog/mist",
+                    "thunderstorm light rain hail fog/mist",
+                    "thunderstorm heavy rain hail fog/mist",
+                    "thunderstorm light rain hail haze",
+                    "thunderstorm heavy rain hail haze",
+                    "thunderstorm light rain hail fog",
+                    "thunderstorm heavy rain hail fog",
+                    ""
+                } },
+                { new List<string> { "I", "i" }, new List<string> { 
+                    "ice pellets", 
+                    "light ice pellets", 
+                    "ice crystals", 
+                    "hail", 
+                    "small hail/snow pellets", 
+                    "light small hail/snow pellets",
+                    "light drizzle snow",
+                    "snow drizzle",
+                    "light snow drizzle",
+                    "snow",
+                    "light snow",
+                    "snow showers",
+                    "light snow showers",
+                    "showers snow",
+                    "light showers snow",
+                    "snow fog/mist",
+                    "light snow fog/mist",
+                    "snow showers fog/mist",
+                    "light snow showers fog/mist",
+                    "showers snow fog/mist",
+                    "light showers snow fog/mist",
+                    "snow fog",
+                    "light snow fog",
+                    "snow showers fog",
+                    "light snow showers fog",
+                    "showers snow fog",
+                    "light showers snow fog",
+                    "low drifting snow",
+                    "blowing snow",
+                    "snow low drifting snow",
+                    "snow blowing snow",
+                    "light snow low drifting snow",
+                    "light snow blowing snow",
+                    "light snow blowing snow fog/mist",
+                    "snow grains",
+                    "light snow grains"
+                } },
+                { new List<string> { "M", "m" }, new List<string> { 
+                    "heavy ice pellets", 
+                    "heavy small hail/snow pellets",
+                    "heavy drizzle snow",
+                    "heavy snow",
+                    "heavy snow showers",
+                    "heavy showers snow",
+                    "heavy snow fog/mist",
+                    "heavy snow showers fog/mist",
+                    "heavy showers snow fog/mist",
+                    "heavy snow fog",
+                    "heavy snow showers fog",
+                    "heavy showers snow fog",
+                    "heavy snow blowing snow",
+                    "heavy snow grains",
+                    "heavy blowing snow"
+                } },
+                { new List<string> { "W", "w" }, new List<string> { 
+                    "showers ice pellets", 
+                    "showers hail", 
+                    "hail showers", 
+                    "freezing rain snow", 
+                    "light freezing rain snow", 
+                    "heavy freezing rain snow", 
+                    "freezing drizzle snow", 
+                    "light freezing drizzle snow", 
+                    "heavy freezing drizzle snow", 
+                    "snow freezing rain", 
+                    "light snow freezing rain", 
+                    "heavy snow freezing rain", 
+                    "snow freezing drizzle", 
+                    "light snow freezing drizzle", 
+                    "heavy snow freezing drizzle", 
+                    "rain snow",
+                    "light rain snow",
+                    "heavy rain snow",
+                    "snow rain",
+                    "light snow rain",
+                    "heavy snow rain"
+                } },
+                { new List<string> { "S", "s" }, new List<string> { 
+                    "thunderstorm ice pellets", 
+                    "light thunderstorm rain hail", 
+                    "heavy thunderstorm rain hail", 
+                    "thunderstorm hail fog",
+                    "thunderstorm small hail/snow pellets",
+                    "thunderstorm rain small hail/snow pellets",
+                    "light thunderstorm rain small hail/snow pellets",
+                    "heavy thunderstorm rain small hail/snow pellets",
+                    "thunderstorm snow",
+                    "light thunderstorm snow",
+                    "heavy thunderstorm snow"
+                } },
+
+                { new List<string> { ":" }, new List<string> { "funnel cloud", "funnel cloud in vicinity", "tornado/water spout" } },
+                { new List<string> { "/" }, new List<string> {
+                    "smoke",
+                    "dust",
+                    "low drifting dust",
+                    "blowing dust",
+                    "sand",
+                    "blowing sand",
+                    "low drifting sand",
+                    "dust/sand whirls",
+                    "dust/sand whirls in vicinity",
+                    "dust storm",
+                    "heavy dust storm",
+                    "dust storm in vicinity",
+                    "sand storm",
+                    "heavy sand storm",
+                    "sand storm in vicinity",
+                    "haze"
+                } }
+                };
+
+                foreach (var conditionList in conditions)
+                {
+                    foreach (var condition in conditionList.Value)
+                    {
+                        if (currCondition == condition)
+                        {
+                            // set icon to appropriate image brush name
+                            var t = conditionList.Key;
+
+                            if (isNight == true && conditionList.Key.Count > 1)
+                            {
+                                icon = conditionList.Key[1];
+                            }
+                            else
+                            {
+                                icon = conditionList.Key[0];
+                            }
+                        }
                     }
                 }
-            }
 
-            return Application.Current.Resources[icon] as ImageBrush;
+                if (icon == null)
+                {
+                    Debug.WriteLine("could not find a suitable icon for " + currCondition);
+                }
+
+                return icon;
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("converter exception");
+                Debug.WriteLine(err.Message);
+                return value;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

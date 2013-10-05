@@ -26,6 +26,8 @@ MDIL image C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\
 
 
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Please2.dll output C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\MDIL\Please2.dll
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Sparrow.Chart.WP8.45.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Sparrow.Chart.WP8.45.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\System.Windows.Interactivity.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\System.Windows.Interactivity.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\WMAppManifest.xml

@@ -70,7 +70,7 @@ namespace Please2.Util
         {
             currentState.Response = query;
 
-            if (currentState.State == "inprogress")
+            if (currentState.State == "inprogress" || currentState.State == "error")
             {
                 currentState.State = "disambiguate:active";
             }
@@ -103,8 +103,9 @@ namespace Please2.Util
                     case "disambiguate:active":
                         DisambiguateActive((string)currentState.Response);
                         break;
-
+                    
                     case "inprogress":
+                    case "error":
                         Show((ResponderModel)currentState.Response);
                         break;
 
@@ -114,10 +115,6 @@ namespace Please2.Util
 
                     case "completed":
                         Actor((ResponderModel)currentState.Response);
-                        break;
-
-                    case "error":
-                        Show((ResponderModel)currentState.Response);
                         break;
 
                     case "exception":
@@ -194,7 +191,12 @@ namespace Please2.Util
         // TODO: use a service or messenger for this
         private void ErrorMessage(string message)
         {
-            MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
+            var response = MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
+
+            if (response == MessageBoxResult.OK)
+            {
+                currentState = new StateModel();
+            }
         }
 
         private async Task Classify(string query)
@@ -210,6 +212,7 @@ namespace Please2.Util
                 }
                 else
                 {
+                    // should really trigger a state change here instead of calling method directly
                     await Auditor(classifierResults);
                 }
             }
@@ -453,35 +456,31 @@ namespace Please2.Util
         {
             string actor = data.actor;
 
-            string endpoint;
-
             if (actor != null)
             {
+                string endpoint = AppResources.ResponderEndpoint + "actors/" + actor;
+
                 if (actor.Contains("private:"))
                 {
                     endpoint = AppResources.PudEndpoint + "actors/" + actor.Replace("private:", "");
                 }
+
+                ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
+
+                //Debug.WriteLine("Actor");
+                //Debug.WriteLine(SerializeData(response));
+
+                if (response.error != null)
+                {
+                    //Debug.WriteLine("Actor exception");
+                    currentState.Response = response.error.msg;
+                    currentState.State = "exception";
+                }
                 else
                 {
-                    endpoint = AppResources.ResponderEndpoint + "actors/" + actor;
-
-                    ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
-
-                    Debug.WriteLine("Actor");
-                    Debug.WriteLine(SerializeData(response));
-
-                    if (response.error != null)
-                    {
-                        Debug.WriteLine("Actor exception");
-                        currentState.Response = response.error.msg;
-                        currentState.State = "exception";
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Actor response handler");
-                        //Show(response.show, response.speak);
-                        ActorResponseHandler(actor, response);
-                    }
+                    //Debug.WriteLine("Actor response handler");
+                    Show(response.show, response.speak);
+                    ActorResponseHandler(actor, response);
                 }
             }
             else
@@ -493,6 +492,9 @@ namespace Please2.Util
             return;
         }
 
+        // TODO: this method needs refactoring/rethinking.
+        // possibility is to pass the construction of a usercontrol to the list or single viewmodel and bind that the xaml.
+        // this would mean creating helper methods that create the individual user controls. A lot kleener
         private void ActorResponseHandler(string actor, ActorModel response)
         {
             try
@@ -506,44 +508,111 @@ namespace Please2.Util
                     var type = template[0];
                     var templateName = template[1];
                     
-                    Uri page;
+                    Newtonsoft.Json.Linq.JObject resultItem;
+
+                    Uri page = ViewModelLocator.ConverationPageUri;
 
                     switch (type)
                     {
                         case "list":
-                            page = ViewModelLocator.ListResultsPageUri;
+                            switch (templateName)
+                            { 
+                                    // also add override for news so we can set news in a pivot view
+                                case "images":
+                                    page = ViewModelLocator.ImagesPageUri;
 
-                            if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
-                            {
-                                SimpleIoc.Default.Register<ListViewModel>();
-                            }
+                                    if (!SimpleIoc.Default.IsRegistered<ImagesViewModel>())
+                                    {
+                                        SimpleIoc.Default.Register<ImagesViewModel>();
+                                    }
 
-                            var model = SimpleIoc.Default.GetInstance<ListViewModel>();
+                                    var images = SimpleIoc.Default.GetInstance<ImagesViewModel>();
 
-                            model.PageTitle = templateName + " results";
+                                    var enumer = CreateTypedList(templateName, structured["items"]);
+
+                                    images.ImageList = enumer.ToList();
+                                    break;
+
+                                default:
+                                    page = ViewModelLocator.ListResultsPageUri;
+
+                                    if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
+                                    {
+                                        SimpleIoc.Default.Register<ListViewModel>();
+                                    }
+
+                                    var model = SimpleIoc.Default.GetInstance<ListViewModel>();
+
+                                    model.PageTitle = templateName + " results";
                             
-                            var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
+                                    var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
 
-                            if (templates[templateName] == null)
-                            {
-                                Debug.WriteLine("template not found in TemplateDictionary");
+                                    if (templates[templateName] == null)
+                                    {
+                                        Debug.WriteLine("template not found in TemplateDictionary");
+                                    }
+
+                                    model.Template = templates[templateName] as DataTemplate;
+
+                                    model.ListResults = CreateTypedList(templateName, structured["items"]);
+                                    break;     
                             }
-
-                            model.Template = templates[templateName] as DataTemplate;
-
-                            model.ListResults = CreateTypedList(templateName, structured["items"]);
                             break;
 
                         case "single":
-                            page = ViewModelLocator.SingleResultPageUri;
-                           
-                            Debug.WriteLine("need to implement single view and viewmodel");
+                            resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
 
-                            return;
-                            break;
-                        
-                        default: // stub
-                            page = ViewModelLocator.ConverationPageUri;
+                            switch (templateName)
+                            {
+                                case "weather":
+                                    page = ViewModelLocator.WeatherPageUri;
+                                    
+                                    if (!SimpleIoc.Default.IsRegistered<WeatherViewModel>())
+                                    {
+                                        SimpleIoc.Default.Register<WeatherViewModel>();
+                                    }
+
+                                    var weather = SimpleIoc.Default.GetInstance<WeatherViewModel>();
+
+                                    var weatherResults = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<WeatherModel>();
+
+                                    // since the api drops the daytime info for today part way through the afternoon, 
+                                    // lets fill in the missing pieces with what we do have
+                                    var today = weatherResults.week[0];
+
+                                    if (today.daytime == null)
+                                    {
+                                        today.daytime = new WeatherDayDetails()
+                                        {
+                                            temp = weatherResults.now.temp,
+                                            text = today.night.text
+                                        };
+                                    }
+
+                                    weather.MultiForecast = weatherResults.week;
+                                    
+                                    weather.CurrentCondition = weatherResults.now;
+                                    break;
+
+                                case "fitbit":
+                                    page = ViewModelLocator.FitbitResultsPageUri;
+
+                                    if (!SimpleIoc.Default.IsRegistered<FitbitViewModel>())
+                                    {
+                                        SimpleIoc.Default.Register<FitbitViewModel>();
+                                    }
+
+                                    var fitbit = SimpleIoc.Default.GetInstance<FitbitViewModel>();
+
+                                    resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
+
+                                    fitbit.Points = CreateTypedList(templateName, resultItem["timeseries"]);
+                                    break;
+                                
+                                case "stock":
+
+                                    break;
+                            }
                             break;
                     }
 
@@ -579,6 +648,14 @@ namespace Please2.Util
 
                 case "movies":
                     ret = arr.ToObject<IEnumerable<MoviesModel>>();
+                    break;
+
+                case "fitbit":
+                    ret = arr.ToObject<IEnumerable<FitbitTimeseries>>();
+                    break;
+                
+                case "images":
+                    ret = arr.ToObject<IEnumerable<string>>(); 
                     break;
             }
 
