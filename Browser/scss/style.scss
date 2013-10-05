@@ -35,8 +35,8 @@ div, p, input {
     margin: 0 auto;
     text-align: left;
 }
-#input-form.cancel {
-    #main-input {
+.input-form.cancel {
+    .main-input {
         padding-right: 85px;
     }
 
@@ -45,22 +45,21 @@ div, p, input {
     }
 }
 
-#main-input {
+.main-input {
     font-size: 46px;
     padding: 7px 5px 7px 5px;
-    width: 425px;
     margin-top: 20px;
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
+    right: 0;
     color: #c5185e;
     box-shadow: 0 0 10px black;
     background-color: #1f2122;
     border: solid #1f2122 1px;
     @include transition(".2s ease-in-out"); 
 }
-#main-input:focus {
+.main-input:focus {
     outline: none;
 }
 .cancel-btn {
@@ -80,7 +79,7 @@ div, p, input {
     @include box-sizing(border-box);
     @include transition(".2s ease-in-out"); 
 }
-#board {
+.board {
     position: absolute;
     top: 0;
     left: 0;
@@ -174,7 +173,7 @@ div, p, input {
     font-size: .875em;
 }
 
-#loader {
+.loader {
     position: absolute;
     left: 17px;
     bottom: 17px;
@@ -214,7 +213,7 @@ div, p, input {
     }
 }
 
-#init {
+.init {
     position: absolute;
     top: 40%;
     width: 100%;
