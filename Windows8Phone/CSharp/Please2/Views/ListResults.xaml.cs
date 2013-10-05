@@ -36,15 +36,14 @@ namespace Please2.Views
 
                 if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
                 {
-                    MessageBox.Show("List not found");
-                    return;
+                    SimpleIoc.Default.Register<ListViewModel>();
+                    //MessageBox.Show("List not found");
+                    //return;
                 }
 
                 var vm = SimpleIoc.Default.GetInstance<ListViewModel>();
 
                 DataContext = vm;
-
-
             }
         }
 
@@ -52,21 +51,24 @@ namespace Please2.Views
         protected void ShoppingItem_Tap(object sender, EventArgs e)
         {
             // navigate to shopping item details page
+            Debug.WriteLine("navigate to shopping details - aka amazon");
         }
 
         protected void EventItem_Tap(object sender, EventArgs e)
         {
             // navigate to event item details page
+            Debug.WriteLine("navigate to event details");
         }
 
         protected void MovieItem_Tap(object sender, EventArgs e)
         {
             // navigate to movie item details page
+            Debug.WriteLine("navigate to movie details");
         }
 
         protected void NewsItem_Tap(object sender, EventArgs e)
         {
-
+            Debug.WriteLine("navigate to event details - aka news link");
         }
 
         protected void Contact_Tap(object sender, EventArgs e)

@@ -36,7 +36,7 @@ namespace Please2.Util
         {                 
             var wvm = SimpleIoc.Default.GetInstance<WeatherViewModel>();
 
-            var index = wvm.MultiForecast.IndexOf((WeatherModel)item);
+            var index = wvm.MultiForecast.IndexOf((WeatherDay)item);
 
             if (item != null)
             {

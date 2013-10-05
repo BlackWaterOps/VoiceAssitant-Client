@@ -17,95 +17,88 @@
     DataContext="{Binding WeatherViewModel, Source={StaticResource Locator}}">
     <phone:PhoneApplicationPage.Resources>
         <DataTemplate x:Key="WeatherShort">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="84"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <Border Background="#169ea0" BorderBrush="Black" BorderThickness="2" Padding="10" Margin="0,15,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="84"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="6"/>
-                </Grid.RowDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="2*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Glyphs Grid.Column="0" 
+                        Height="105"
+                        Margin="10,-35,0,0"
+                        VerticalAlignment="Top"
+                        UnicodeString="{Binding Converter={StaticResource WeatherConverter}}" 
+                        Fill="White" 
+                        FontRenderingEmSize="100"
+                        FontUri="/Please2;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
 
-                <StackPanel Grid.Column="0" Grid.Row="0">
-                    <Image Source="{Binding image}" Width="104" Height="104"/>
-                </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal">
+                            <TextBlock Text="{Binding daytime.temp, StringFormat='H {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding night.temp, StringFormat='L {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold" Margin="20,0,0,0"/>
+                        </StackPanel>
 
-                <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding temperature,StringFormat='H {0}'}"/>
-                        <TextBlock Text="{Binding temperature, StringFormat='L {0}'}"/>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                            <TextBlock Text="{Binding date, StringFormat='{0:dddd}'}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding daytime.sky, StringFormat=': {0}'}"/>
+                        </StackPanel>
                     </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="day of the week"/>
-                        <TextBlock Text="{Binding sky, StringFormat=': {0}'}"/>
-                    </StackPanel>
-                </StackPanel>
-            </Grid>
-        </DataTemplate>
-
-        <DataTemplate x:Key="WeatherFullNew">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Image Grid.Row="0" Grid.Column="0" Source=""/>
-
-                <StackPanel Grid.Row="0" Grid.Column="1">
-                    <TextBlock Text="{Binding tempCurrent}"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding tempHi,StringFormat='H {0}'}"/>
-                        <TextBlock Text="{Binding tempLo, StringFormat='L {0}'}"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding full_forecast}" TextWrapping="Wrap"/>
-            </Grid>
+                </Grid>
+            </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="WeatherFull">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
+            <Border Background="#1dc0c2" BorderBrush="Black" BorderThickness="2" Padding="25,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="160"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Image Grid.Row="0" Grid.Column="0" Source="{Binding sky, Converter={StaticResource WeatherConverter}}"/>
+                    <Glyphs Grid.Row="0" 
+                        Grid.Column="0" 
+                        Margin="10,-65,0,0" 
+                        VerticalAlignment="Top"
+                        UnicodeString="{Binding Converter={StaticResource WeatherConverter}}" 
+                        Fill="White" 
+                        FontRenderingEmSize="200" 
+                        FontUri="/Please2;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
 
-                <StackPanel Grid.Row="0" Grid.Column="1">
-                    <TextBlock Text="{Binding temperature}" FontSize="{StaticResource PhoneFontSizeExtraExtraLarge}"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1">
+                        <TextBlock Text="{Binding Path=DataContext.CurrentCondition.temp, ElementName=LayoutRoot, StringFormat='{0}&#176;'}" 
+                                   FontSize="{StaticResource PhoneFontSizeExtraExtraLarge}" 
+                                   FontWeight="Light"/>
 
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding sky}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding daytime.temp,StringFormat='H {0}&#176;'}" 
+                                       FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                            <TextBlock Text="{Binding night.temp, StringFormat='L {0}&#176;'}" 
+                                       FontSize="{StaticResource PhoneFontSizeMediumLarge}" 
+                                       Margin="20,0,0,0"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
 
-                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding full_forecast}" TextWrapping="Wrap"/>
-            </Grid>
-        </DataTemplate>
-        
-        <DataTemplate x:Key="SelectingTemplate">
-            <Border Background="Teal" BorderBrush="Black" BorderThickness="2" Padding="10" Margin="0,15,0,0">
-                <util:WeatherTemplateSelector Content="{Binding}" 
-                                              WeatherFull="{StaticResource WeatherFull}" 
-                                              WeatherShort="{StaticResource WeatherShort}"
-                                              HorizontalContentAlignment="Stretch"/>
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding daytime.text}" TextWrapping="Wrap"/>
+                </Grid>
             </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SelectingTemplate">
+            <util:WeatherTemplateSelector Content="{Binding}" 
+                                          WeatherFull="{StaticResource WeatherFull}" 
+                                          WeatherShort="{StaticResource WeatherShort}"
+                                          HorizontalContentAlignment="Stretch"/>
         </DataTemplate>
     </phone:PhoneApplicationPage.Resources>
     
@@ -124,7 +117,7 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="1" Margin="12,17,0,28">
             <TextBlock Style="{StaticResource AppTitle}"/>
-            <TextBlock Text="weather" Margin="9,-7,0,0" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="weather" Style="{StaticResource PageTitle}"/>
             <TextBlock Text="{Binding SubTitle}"/>
         </StackPanel>
 

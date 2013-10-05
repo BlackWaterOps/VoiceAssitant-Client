@@ -106,22 +106,22 @@ namespace Please2.Models
             }
         }
 
-        private string _note;
+        private string _text;
 
         [Column]
-        public string Note
+        public string Text
         {
             get
             {
-                return _note;
+                return _text;
             }
             set
             {
-                if (_note != value)
+                if (_text != value)
                 {
-                    NotifyPropertyChanging("Note");
-                    _note = value;
-                    NotifyPropertyChanged("Note");
+                    NotifyPropertyChanging("Text");
+                    _text = value;
+                    NotifyPropertyChanged("Text");
                 }
             }
         }

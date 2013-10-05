@@ -12,7 +12,6 @@ namespace Please2.Models
     {
         public string background { get; set; }
         public string icon { get; set; }
-        public Style style { get; set; }
         public string title { get; set; }
         public string page { get; set; }
 

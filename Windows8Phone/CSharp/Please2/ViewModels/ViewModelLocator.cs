@@ -31,8 +31,13 @@ namespace Please2.ViewModels
 
         public static readonly Uri ListResultsPageUri = new Uri("/Views/ListResults.xaml", UriKind.Relative);
 
-        public static readonly Uri SingleResultPageUri = new Uri("/views/SingleRsult.xaml", UriKind.Relative);
+        public static readonly Uri SingleResultPageUri = new Uri("/views/SingleResult.xaml", UriKind.Relative);
 
+        public static readonly Uri FitbitResultsPageUri = new Uri("/views/Fitbit.xaml", UriKind.Relative);
+
+        public static readonly Uri WeatherPageUri = new Uri("/views/Weather.xaml", UriKind.Relative);
+
+        public static readonly Uri ImagesPageUri = new Uri("/views/Images.xaml", UriKind.Relative);
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
         /// </summary>

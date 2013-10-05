@@ -20,17 +20,22 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkGray">
+            <TextBox x:Name="ManualInput" Width="480" KeyDown="OnKeyDown" Visibility="Collapsed"/>
+        </StackPanel>
+        
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="12,17,0,28">
+        <StackPanel Grid.Row="1" Margin="12,17,0,28">
             <TextBlock Style="{StaticResource AppTitle}"/>
             <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitle}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+        <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
             <phone:LongListSelector LayoutMode="Grid"
                                     GridCellSize="{Binding GridCellSize}" 
                                     ItemsSource="{Binding MainMenu}" 
@@ -44,8 +49,13 @@
                                 Tag="{Binding page}"
                                 Tap="MenuItem_Tapped">
                             <Grid>
-                                <Glyphs Style="{Binding style}" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                                                                
+                                <Glyphs UnicodeString="{Binding icon}" 
+                                        FontUri="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" 
+                                        FontRenderingEmSize="100" 
+                                        Fill="White" 
+                                        VerticalAlignment="Center" 
+                                        Margin="10,0,0,0"/>
+                                
                                 <TextBlock Text="{Binding title}" 
                                            VerticalAlignment="Bottom" 
                                            FontSize="30"/>

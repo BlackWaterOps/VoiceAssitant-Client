@@ -19,7 +19,7 @@ namespace Please2
 {
     public partial class App : Application
     {
-        public static string currentPage;
+        public static bool isDev = true;
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
