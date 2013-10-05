@@ -12,9 +12,9 @@ class window.Please
 		@disambigContext = null
 		@history = [ ]
 		@pos = @history.length
-		@loader = $('#loader')
-		@board = $('#board')
-		@input = $('#main-input')
+		@loader = $('.loader')
+		@board = $('.board')
+		@input = $('.main-input')
 		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
 		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
@@ -47,7 +47,7 @@ class window.Please
 		$('#cancel').on('click', @cancel)
 
 		if (@board.is(':empty'))
-			init = $('#init')
+			init = $('.init')
 			init.fadeIn('slow')
 			setTimeout (->
 				init.fadeOut 'slow'
@@ -61,6 +61,7 @@ class window.Please
 		.on('disambiguate:personal', @disambiguatePersonal)
 		.on('disambiguate:active', @disambiguateActive)
 		.on('restart', @replaceContext)
+		.on('choice', @choose)
 		.on('inprogress', @show)
 		.on('completed', @actor)
 		.on('error', @show)
@@ -120,7 +121,7 @@ class window.Please
 		
 		@board.append(template(text)).scrollTop(@board.find('.bubble:last').offset().top)
 		
-		$('#input-form').addClass('cancel')
+		$('.input-form').addClass('cancel')
 
 		if @currentState.state is 'inprogress' or (@currentState.state is 'error' and @disambigContext?)
 			if @currentState.origin is 'actor'
@@ -135,7 +136,6 @@ class window.Please
 					response: text
 				)
 		else
-			console.log('trigger classifier')
 			$(document).trigger(
 				type: 'init'
 				response: text
@@ -173,7 +173,7 @@ class window.Please
 			state: null
 			origin: null
 
-		$('#input-form').removeClass 'cancel'
+		$('.input-form').removeClass 'cancel'
 		@loader.hide()
 		@counter = 0
 		@input.focus()
@@ -322,6 +322,22 @@ class window.Please
 			@disambiguateSuccessHandler(response, field, type)
 		)
 
+	choose: (e) =>
+		data = e.response
+
+		list = $('<ul/>')
+
+		for item in data.show.simple.list
+			listItem = $('<li/>').text(item.text)
+
+			list.append(listItem)
+
+		$('.list-slider').append(list)
+		$('body').addClass('choice')
+
+		# should create trigger
+		@show(e)
+
 	# NOTE: data can be a jquery event object or a plain object
 	auditor: (data) =>
 		response = if data instanceof $.Event then data.response else data
@@ -335,14 +351,14 @@ class window.Please
 
 		@counter++
 
-		@requestHelper(@responder + 'audit' , 'POST', response, @responderSuccessHandler) if @counter < 3
+		@requestHelper(@responder + 'audit' , 'POST', response, @auditorSuccessHandler) if @counter < 3
 
-	responderSuccessHandler: (response) =>
+	auditorSuccessHandler: (response) =>
 		@currentState = 
 			state: response.status.replace(' ', '')
 			origin: 'auditor'
 
-		@disambigContext = response if @currentState.state is 'inprogress'
+		@disambigContext = response if @currentState.state is 'inprogress' or @currentState.state is 'choice'
 
 		$(document).trigger(
 			type: @currentState.state

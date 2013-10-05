@@ -247,12 +247,15 @@ div, p, input {
   -ms-transition: .2s ease-in-out;
   -o-transition: .2s ease-in-out;
   transition: .2s ease-in-out; }
+  /* line 61, ../scss/style.scss */
+  body.choice .main-input {
+    left: 30%; }
 
-/* line 62, ../scss/style.scss */
+/* line 65, ../scss/style.scss */
 .main-input:focus {
   outline: none; }
 
-/* line 65, ../scss/style.scss */
+/* line 68, ../scss/style.scss */
 .cancel-btn {
   position: fixed;
   bottom: 0;
@@ -277,7 +280,7 @@ div, p, input {
   -o-transition: .2s ease-in-out;
   transition: .2s ease-in-out; }
 
-/* line 82, ../scss/style.scss */
+/* line 85, ../scss/style.scss */
 .board {
   position: absolute;
   top: 0;
@@ -285,8 +288,28 @@ div, p, input {
   right: 0;
   bottom: 70px;
   overflow: auto; }
+  /* line 92, ../scss/style.scss */
+  body.choice .board {
+    left: 30%; }
 
-/* line 90, ../scss/style.scss */
+/* line 96, ../scss/style.scss */
+.list-slider {
+  position: fixed;
+  left: 0;
+  width: 0;
+  top: 0;
+  bottom: 0;
+  background: white;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 104, ../scss/style.scss */
+  body.choice .list-slider {
+    width: 30%; }
+
+/* line 108, ../scss/style.scss */
 .bubble {
   width: 100%;
   padding: 15px;
@@ -299,40 +322,40 @@ div, p, input {
   -ms-box-sizing: border-box;
   box-sizing: border-box; }
 
-/* line 99, ../scss/style.scss */
+/* line 117, ../scss/style.scss */
 .in {
   background-color: #e2e2e2;
   text-align: right;
   color: #333; }
 
-/* line 105, ../scss/style.scss */
+/* line 123, ../scss/style.scss */
 .out {
   background-color: white;
   color: #c5185e;
   text-align: left; }
 
-/* line 111, ../scss/style.scss */
+/* line 129, ../scss/style.scss */
 .out ul {
   font-size: 16px;
   list-style-type: none;
   column-count: 5; }
 
-/* line 119, ../scss/style.scss */
+/* line 137, ../scss/style.scss */
 .debug {
   margin-top: 10px; }
-  /* line 122, ../scss/style.scss */
+  /* line 140, ../scss/style.scss */
   .debug .underspeak {
     font-size: 14px;
     color: #555;
     font-weight: lighter;
     text-align: left; }
-  /* line 129, ../scss/style.scss */
+  /* line 147, ../scss/style.scss */
   .debug b, .debug strong {
     margin-left: 10px; }
-    /* line 132, ../scss/style.scss */
+    /* line 150, ../scss/style.scss */
     .debug b:nth-child(1), .debug strong:nth-child(1) {
       margin-left: 1px; }
-  /* line 137, ../scss/style.scss */
+  /* line 155, ../scss/style.scss */
   .debug .expand, .debug .simulate {
     border: solid #bbb 1px;
     background: #ddd;
@@ -342,7 +365,7 @@ div, p, input {
     text-decoration: none;
     font-size: 11px;
     cursor: pointer; }
-  /* line 148, ../scss/style.scss */
+  /* line 166, ../scss/style.scss */
   .debug .data {
     font-size: 12px;
     font-family: "Monaco", "Courier New", monospace;
@@ -354,21 +377,21 @@ div, p, input {
     margin-top: 15px;
     padding-top: 10px;
     text-align: left; }
-    /* line 160, ../scss/style.scss */
+    /* line 178, ../scss/style.scss */
     .debug .data pre {
       white-space: pre;
       word-wrap: break-word;
       font-family: "Monaco", "Courier New", monospace;
       font-size: 14px; }
 
-/* line 169, ../scss/style.scss */
+/* line 187, ../scss/style.scss */
 .extLink {
   display: block;
   text-align: right;
   color: #37c;
   font-size: .875em; }
 
-/* line 176, ../scss/style.scss */
+/* line 194, ../scss/style.scss */
 .loader {
   position: absolute;
   left: 17px;
@@ -376,19 +399,19 @@ div, p, input {
   z-index: 999;
   display: none; }
 
-/* line 184, ../scss/style.scss */
+/* line 202, ../scss/style.scss */
 .webpage {
   padding: 20px;
   text-align: center;
   background: white; }
-  /* line 189, ../scss/style.scss */
+  /* line 207, ../scss/style.scss */
   .webpage iframe {
     width: 100%;
     min-height: 400px;
     border: solid #ccc 1px;
     box-shadow: inset 0 0 5px #ccc; }
 
-/* line 197, ../scss/style.scss */
+/* line 215, ../scss/style.scss */
 .i {
   position: absolute;
   top: 9px;
@@ -402,11 +425,11 @@ div, p, input {
   text-decoration: none;
   font-size: 22px;
   z-index: 999999; }
-  /* line 211, ../scss/style.scss */
+  /* line 229, ../scss/style.scss */
   .i:hover {
     background: black; }
 
-/* line 216, ../scss/style.scss */
+/* line 234, ../scss/style.scss */
 .init {
   position: absolute;
   top: 40%;
@@ -414,18 +437,18 @@ div, p, input {
   color: #aaa;
   display: none;
   text-align: center; }
-  /* line 224, ../scss/style.scss */
+  /* line 242, ../scss/style.scss */
   .init h1 {
     font-weight: normal;
     margin: 0;
     padding: 0;
     font-size: 48px; }
-  /* line 231, ../scss/style.scss */
+  /* line 249, ../scss/style.scss */
   .init .subtitle {
     font-size: 14px; }
 
 /********  PhoneGap only **********/
-/* line 238, ../scss/style.scss */
+/* line 256, ../scss/style.scss */
 .control {
   position: fixed;
   bottom: 0;
@@ -434,14 +457,14 @@ div, p, input {
   right: 0;
   z-index: 99;
   text-align: center; }
-  /* line 246, ../scss/style.scss */
+  /* line 264, ../scss/style.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
-    /* line 252, ../scss/style.scss */
+    /* line 270, ../scss/style.scss */
     .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
@@ -452,11 +475,11 @@ div, p, input {
       top: -15px;
       left: -15px;
       border-radius: 50%; }
-    /* line 263, ../scss/style.scss */
+    /* line 281, ../scss/style.scss */
     .control .micbutton:after {
       -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
       z-index: -999; }
-  /* line 269, ../scss/style.scss */
+  /* line 287, ../scss/style.scss */
   .control:before {
     content: "";
     position: absolute;
@@ -465,7 +488,7 @@ div, p, input {
     top: -30px;
     height: 90px;
     z-index: -99; }
-  /* line 278, ../scss/style.scss */
+  /* line 296, ../scss/style.scss */
   .control:after {
     content: "";
     position: absolute;
@@ -477,17 +500,17 @@ div, p, input {
     height: 85px;
     z-index: -99; }
 
-/* line 291, ../scss/style.scss */
+/* line 309, ../scss/style.scss */
 .cf {
   *zoom: 1; }
 
-/* line 295, ../scss/style.scss */
+/* line 313, ../scss/style.scss */
 .cf:before, .cf:after {
   content: "";
   display: table;
   line-height: 0;
   height: 0; }
 
-/* line 302, ../scss/style.scss */
+/* line 320, ../scss/style.scss */
 .cf:after {
   clear: both; }

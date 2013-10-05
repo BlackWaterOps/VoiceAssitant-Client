@@ -57,7 +57,10 @@ div, p, input {
     box-shadow: 0 0 10px black;
     background-color: #1f2122;
     border: solid #1f2122 1px;
-    @include transition(".2s ease-in-out"); 
+    @include transition(".2s ease-in-out");
+    body.choice & {
+        left: 30%;
+    }
 }
 .main-input:focus {
     outline: none;
@@ -86,6 +89,21 @@ div, p, input {
     right: 0;
     bottom: 70px;
     overflow: auto;
+    body.choice & {
+        left: 30%;
+    }
+}
+.list-slider {
+    position: fixed;
+    left: 0;
+    width: 0;
+    top: 0;
+    bottom: 0;
+    background: white;
+    @include transition(".2s ease-in-out"); 
+    body.choice & {
+        width: 30%;
+    }
 }
 .bubble {
     width: 100%;
