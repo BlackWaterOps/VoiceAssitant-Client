@@ -42,6 +42,9 @@ class window.Please
 		.on('keyup', @keyup)
 
 		$('body').on('click', '.expand', @expand)
+				 .on('click', '.choice-item', @handleChoice)
+		
+		
 		#.on('click', '.simulate', @simulate)
 		
 		$('#cancel').on('click', @cancel)
@@ -251,7 +254,6 @@ class window.Please
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
 				@replace(field, response[type])
-				# @findOrReplace(field, response[type])
 			else
 				@mainContext.payload[field] = response[type]
 		
@@ -259,6 +261,12 @@ class window.Please
 			request = $.extend({}, @mainContext)
 						
 			@auditor(request)
+			###
+			$(document).trigger(
+				type: 'audit'
+				response: request
+			)
+			###
 		else
 			console.log 'oops no responder response', results
 
@@ -328,15 +336,39 @@ class window.Please
 		list = $('<ul/>')
 
 		for item in data.show.simple.list
-			listItem = $('<li/>').text(item.text)
-
+			listItem = $('<li/>').addClass('choice-item').data('choice', item).append($('<a/>').text(item.text))
 			list.append(listItem)
 
-		$('.list-slider').append(list)
+		$('.list-slider').html(list)
 		$('body').addClass('choice')
 
 		# should create trigger
 		@show(e)
+
+	handleChoice: (e) =>
+		$('body').removeClass('choice')
+				
+		choice = $(e.currentTarget).data('choice')
+		
+		field = @disambigContext.field
+
+		template = Handlebars.compile($('#bubblein-template').html())
+
+		@board.append(template(choice.text)).scrollTop(@board.find('.bubble:last').offset().top)
+
+		# type = @disambigContext.type
+		
+		# find & replace the specific field indicated in the response 
+		if field.indexOf('.') isnt -1
+			@replace(field, choice)
+		else
+			@mainContext.payload[field] = choice
+		
+		$(document).trigger(
+			type: 'audit'
+			response: @mainContext
+		)
+		
 
 	# NOTE: data can be a jquery event object or a plain object
 	auditor: (data) =>
