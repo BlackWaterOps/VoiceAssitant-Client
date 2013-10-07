@@ -95,7 +95,6 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Please2.csprojResolveAssemblyReference.cache
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Conversation.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Notifications.g.cs
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\SingleResultPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Weather.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\Assets\Fonts\Roboto-Regular.ttf
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\PeerFinder.g.cs
@@ -124,3 +123,5 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\Sparrow.Chart.WP8.45.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Flight.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Images.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Stock.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\SingleResult.g.cs

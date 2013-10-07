@@ -53,4 +53,70 @@ namespace Please2.Util
             return null;
         }
     }
+
+    public class FuelTemplateSelector : TemplateSelector
+    {
+        public DataTemplate BioDiesel { get; set; }
+
+        public DataTemplate Electric { get; set; }
+
+        public DataTemplate Gasoline { get; set; }
+
+        public DataTemplate Ethanol { get; set; }
+
+        public DataTemplate Hydrogen { get; set; }
+
+        public DataTemplate CompressedNaturalGas { get; set; }
+
+        public DataTemplate LiquifiedNaturalGas { get; set; }
+
+        public DataTemplate LiquifiedPetroleumGas { get; set; }
+
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            var result = item as AltFuelModel;
+
+            var fuelType = result.fuel_type_code.ToLower();
+
+            DataTemplate template = new DataTemplate();
+
+            switch (fuelType)
+            {
+                case "bd":
+                    template = BioDiesel;
+                    break;
+                
+                case "elec":
+                    template = Electric;
+                    break;
+
+                case "gas":
+                    template = Gasoline;
+                    break;
+
+                case "e85":
+                    template = Ethanol;
+                    break;
+
+                case "hy":
+                    template = Hydrogen;
+                    break;
+
+                case "lng":
+                    template = LiquifiedNaturalGas;
+                    break;
+
+                case "lpg":
+                    template = LiquifiedPetroleumGas;
+                    break;
+
+                case "cng":
+                    template = CompressedNaturalGas;
+                    break;
+            }
+
+            return template;
+        }
+    }
 }

@@ -62,6 +62,11 @@
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
             <Setter Property="Margin" Value="0" />
         </Style>
+        
+        <!-- global fontawesome uri -->
+        <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
+            <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome"/>
+        </Style>
 
         <!-- toolkit page transitions -->
         <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
@@ -90,7 +95,32 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    
+        
+        <Canvas x:Key="LoadingScreen" x:Name="LoadingScreen">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="ProgressStates">
+                    <VisualState x:Name="Enabled">
+                        <Storyboard>
+                            <DoubleAnimation Duration="200" To="0.75" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="LoadingScreenBorder"/>
+                        </Storyboard>
+                    </VisualState>
+
+                    <VisualState x:Name="Disabled">
+                        <Storyboard>
+                            <DoubleAnimation Duration="200" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="LoadingScreenBorder"/>
+                        </Storyboard>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            
+            <Border x:Name="LoadingScreenBorder" Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel x:Name="LoadingScreenStackPanel">
+                    <ProgressBar IsIndeterminate="True" IsEnabled="True"/>
+                    <TextBox Text="loading" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Canvas>
+
         <!-- chat bubble with rounded corners -->
         <Style x:Key="RoundedChatBubble" TargetType="c4f:ChatBubble">
             <Setter Property="Background" Value="{StaticResource PhoneAccentBrush}" />
@@ -253,7 +283,8 @@
 
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
         
-        <ResourceDictionary x:Key="TemplateDictionary" Source="TemplateDictionary.xaml" />
+        <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
+        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
     </Application.Resources>
     
     <Application.ApplicationLifetimeObjects>

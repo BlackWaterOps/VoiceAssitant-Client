@@ -71,24 +71,14 @@ namespace Please2.ViewModels
         {
             this.navigationService = navigationService;
 
-            this.pleaseService = pleaseService;
-            
-            WeatherTest();
-            //GetDefaultForecast();
+            this.pleaseService = pleaseService;            
         }
       
-        /*
-        public WeatherViewModel()
-        {
-            WeatherTest();
-        }
-        */
-
         public void GetDefaultForecast()
         {
             // TODO: get city/state from device location data 
-            //HandleUserInput("weather today for scottsdale arizona");
-            pleaseService.HandleUserInput("weather today for scottsdale arizona");
+            //pleaseService.HandleUserInput("weather today for scottsdale arizona");
+            WeatherTest();
         }
 
         private void WeatherTest()
@@ -130,6 +120,8 @@ namespace Please2.ViewModels
                 MultiForecast = weatherResults.week;
                  
                 CurrentCondition = weatherResults.now;
+
+                Debug.WriteLine("bottom weather show");
             }
             catch (Exception err)
             {

@@ -27,17 +27,28 @@ namespace Please2.ViewModels
     /// </summary>
     public class ViewModelLocator
     {
-        public static readonly Uri ConverationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
+        public static readonly Uri MainMenuPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
+
+        public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
 
         public static readonly Uri ListResultsPageUri = new Uri("/Views/ListResults.xaml", UriKind.Relative);
 
-        public static readonly Uri SingleResultPageUri = new Uri("/views/SingleResult.xaml", UriKind.Relative);
+        public static readonly Uri SingleResultPageUri = new Uri("/Views/SingleResult.xaml", UriKind.Relative);
 
-        public static readonly Uri FitbitResultsPageUri = new Uri("/views/Fitbit.xaml", UriKind.Relative);
 
-        public static readonly Uri WeatherPageUri = new Uri("/views/Weather.xaml", UriKind.Relative);
 
-        public static readonly Uri ImagesPageUri = new Uri("/views/Images.xaml", UriKind.Relative);
+        // When we're all said and done, we should only need the Uris above
+
+        public static readonly Uri FitbitResultsPageUri = new Uri("/Views/Fitbit.xaml", UriKind.Relative);
+
+        public static readonly Uri WeatherPageUri = new Uri("/Views/Weather.xaml", UriKind.Relative);
+
+        public static readonly Uri ImagesPageUri = new Uri("/Views/Images.xaml", UriKind.Relative);
+
+        public static readonly Uri StockPageUri = new Uri("/Views/Stock.xaml", UriKind.Relative);
+
+        public static readonly Uri GeoPoliticsPageUri = new Uri("/Views/GeoPolitics.xaml", UriKind.Relative);
+
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
         /// </summary>
@@ -55,21 +66,20 @@ namespace Please2.ViewModels
             ////    // Create run time view services and models
             ////    SimpleIoc.Default.Register<IDataService, DataService>();
             ////}
+
             SimpleIoc.Default.Register<INavigationService, NavigationService>();
             
             SimpleIoc.Default.Register<IPleaseService, PleaseService>();
 
             SimpleIoc.Default.Register<MainMenuViewModel>();
             SimpleIoc.Default.Register<ConversationViewModel>();
-            SimpleIoc.Default.Register<WeatherViewModel>();
-
         }
 
         public MainMenuViewModel MainMenuViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainMenuViewModel>();
+                return App.GetViewModelInstance<MainMenuViewModel>();
             }
         }
 
@@ -77,7 +87,7 @@ namespace Please2.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<ConversationViewModel>();
+                return App.GetViewModelInstance<ConversationViewModel>();
             }
         }
 
@@ -85,7 +95,31 @@ namespace Please2.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<WeatherViewModel>();
+                return App.GetViewModelInstance<WeatherViewModel>();
+            }
+        }
+
+        public StockViewModel StockViewModel
+        {
+            get
+            {
+                return App.GetViewModelInstance<StockViewModel>();
+            }
+        }
+
+        public EventsViewModel EventsViewModel
+        {
+            get
+            {
+                return App.GetViewModelInstance<EventsViewModel>();
+            }
+        }
+
+        public NotificationsViewModel NotificationsViewModel
+        {
+            get
+            {
+                return App.GetViewModelInstance<NotificationsViewModel>();
             }
         }
 

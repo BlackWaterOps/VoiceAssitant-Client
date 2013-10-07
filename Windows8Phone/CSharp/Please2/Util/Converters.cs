@@ -158,23 +158,42 @@ namespace Please2.Util
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
+        {            
             if (value == null)
             {
                 return System.Windows.Visibility.Collapsed;
             }
 
-            string link = ((string)value).ToLower();
+            Visibility visible;
 
-            System.Windows.Visibility visible;
-
-            if (link == "" || link == null)
+            if (value.GetType() == typeof(Visibility))
             {
-                visible = System.Windows.Visibility.Collapsed;
+                visible = (Visibility)value;
+
+                if ((string)parameter == "opposite")
+                {
+                    if (visible == Visibility.Visible)
+                    {
+                        visible = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        visible = Visibility.Visible;
+                    }
+                }
             }
             else
             {
-                visible = System.Windows.Visibility.Visible;
+                string link = ((string)value).ToLower();
+
+                if (link == "" || link == null)
+                {
+                    visible = System.Windows.Visibility.Collapsed;
+                }
+                else
+                {
+                    visible = System.Windows.Visibility.Visible;
+                }
             }
 
             return visible;
@@ -328,9 +347,10 @@ namespace Please2.Util
 
                 string icon = null;
 
-                // each key in the dict cooresponds to a glyph in Assets/Fonts/forcasticons.ttf
-                // each value in a list cooresponds to a sky condition returned from the api
-                // TODO: icon for smoke
+                // NOTE:
+                // each key in the dict cooresponds to a list of glyphs found in Assets/Fonts/forcasticons.ttf
+                // the first value in the dict key list is a daytime glyph, the second (if there is one) is a nighttime glyph
+                // each dict value list cooresponds to a sky condition returned from the api
                 var conditions = new Dictionary<List<string>, List<string>>()
                 {
                 { new List<string> { "3" }, new List<string> { "overcast", "overcast with haze" } },
@@ -627,7 +647,7 @@ namespace Please2.Util
                     {
                         if (currCondition == condition)
                         {
-                            // set icon to appropriate image brush name
+                            // set icon to appropriate glyph char
                             var t = conditionList.Key;
 
                             if (isNight == true && conditionList.Key.Count > 1)

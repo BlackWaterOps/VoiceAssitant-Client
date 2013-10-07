@@ -10,7 +10,7 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    public class EventsViewModel : NotificationBase
+    public class EventsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private List<EventModel> _eventResults;
         public List<EventModel> EventResults

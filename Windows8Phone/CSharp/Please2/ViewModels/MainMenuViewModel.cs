@@ -57,23 +57,24 @@ namespace Please2.ViewModels
             var menu = new ObservableCollection<MainMenuModel>();
 
             menu.Add(CreateTile("#1ab154", "conversation", "/Views/Conversation.xaml", "\uf130"));
-            menu.Add(CreateTile("#1ec0c3", "weather", "/Views/Weather.xaml", "\uf0e9"));
-            menu.Add(CreateTile("#f7301e", "notifications", "/Views/Notifications.xaml", "\uf0f3"));
-            menu.Add(CreateTile("#bd731b", "notes", "/Views/Notes.xaml", "\uf15c"));
+            menu.Add(CreateTile("#1ec0c3", "weather", "/Views/SingleResult.xaml?template=weather", "\uf0e9"));
+            menu.Add(CreateTile("#f7301e", "notifications", "/Views/SingleResult.xaml?template=notifications", "\uf0f3"));
+            menu.Add(CreateTile("#bd731b", "notes", "onenote:", "\uf15c", true));
             menu.Add(CreateTile("#a3cd53", "search", "/Views/Search.xaml", "\uf002"));
             menu.Add(CreateTile("#9e9e9e", "settings", "/Views/Settings.xaml", "\uf013"));
 
             MainMenu = menu;
         }
 
-        private MainMenuModel CreateTile(string background, string title, string page, string icon)
+        private MainMenuModel CreateTile(string background, string title, string page, string icon, bool initent = false)
         { 
             var tile = new MainMenuModel()
             {
                 background = background,
                 title = title,
                 page = page,
-                icon = icon
+                icon = icon,
+                isIntent = initent
             };
 
             return tile;

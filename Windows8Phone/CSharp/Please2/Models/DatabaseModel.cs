@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Windows;
 
 using Microsoft.Phone.Scheduler;
 
@@ -14,73 +15,11 @@ namespace Please2.Models
         {
         }
 
-        public Table<PreferenceItem> Preferences;
         public Table<Alarm> Alarms;
         public Table<Note> Notes;
-    }
+        // public Table<Template> Templates;
+        public Table<PreferenceItem> Preferences;
 
-    [Table]
-    public class PreferenceItem : ModelBase
-    {
-        private int _id;
-
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
-        public int ID
-        {
-            get
-            {
-                return _id;
-            }
-            set
-            {
-                if (_id != value)
-                {
-                    NotifyPropertyChanging("ID");
-                    _id = value;
-                    NotifyPropertyChanged("ID");
-                }
-            }
-        }
-
-        private string _name;
-
-        [Column]
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                if (_name != value)
-                {
-                    NotifyPropertyChanging("Name");
-                    _name = value;
-                    NotifyPropertyChanged("Name");
-                }
-            }
-        }
-
-        private string _value;
-
-        [Column]
-        public string Value
-        {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                if (_value != value)
-                {
-                    NotifyPropertyChanging("Value");
-                    _value = value;
-                    NotifyPropertyChanged("Value");
-                }
-            }
-        }
     }
 
     [Table]
@@ -266,6 +205,155 @@ namespace Please2.Models
                     NotifyPropertyChanging("DaysOfWeek");
                     _daysOfWeek = value;
                     NotifyPropertyChanged("DaysOfWeek");
+                }
+            }
+        }
+    }
+
+    /*
+    [Table]
+    public class Template : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+
+        private string _title;
+
+        [Column]
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                if (_title != value)
+                {
+                    NotifyPropertyChanging("Title");
+                    _title = value;
+                    NotifyPropertyChanged("Title");
+                }
+            }
+        }
+
+        private string _subTitle;
+
+        [Column]
+        public string SubTitle
+        {
+            get
+            {
+                return _subTitle;
+            }
+            set
+            {
+                if (_subTitle != value)
+                {
+                    NotifyPropertyChanging("SubTitle");
+                    _subTitle = value;
+                    NotifyPropertyChanged("SubTitle");
+                }
+            }
+        }
+
+        private DataTemplate _dataTemplate;
+
+        [Column]
+        public DataTemplate DataTemplate
+        {
+            get
+            {
+                return _dataTemplate;
+            }
+            set
+            {
+                if (_dataTemplate != value)
+                {
+                    NotifyPropertyChanging("DataTemplate");
+                    _dataTemplate = value;
+                    NotifyPropertyChanged("DataTemplate");
+                }
+            }
+        }
+    }
+    */
+    [Table]
+    public class PreferenceItem : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+
+        private string _name;
+
+        [Column]
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (_name != value)
+                {
+                    NotifyPropertyChanging("Name");
+                    _name = value;
+                    NotifyPropertyChanged("Name");
+                }
+            }
+        }
+
+        private string _value;
+
+        [Column]
+        public string Value
+        {
+            get
+            {
+                return _value;
+            }
+            set
+            {
+                if (_value != value)
+                {
+                    NotifyPropertyChanging("Value");
+                    _value = value;
+                    NotifyPropertyChanged("Value");
                 }
             }
         }

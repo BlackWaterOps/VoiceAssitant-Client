@@ -6,13 +6,15 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Windows.Media;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
 using Windows.Foundation;
 using Windows.Phone.Speech.Recognition;
-using Windows.Phone.Speech.Synthesis;
+using Windows.Phone.Speech.Synthesis; 
 
 using Newtonsoft.Json;
 
@@ -47,9 +49,9 @@ namespace Please2.Views
         {            
             try
             {
-                //SystemTray.ProgressIndicator = new ProgressIndicator();
+                // SystemTray.ProgressIndicator = new ProgressIndicator();
 
-                //SystemTray.ProgressIndicator.IsIndeterminate = true;
+                // SystemTray.ProgressIndicator.IsIndeterminate = true;
 
                 if (synthesizer == null)
                 {
@@ -80,11 +82,11 @@ namespace Please2.Views
 
             RegisterListeners();
 
-            //App.currentPage = e.Uri.ToString();
-
             var debuggerBox = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage).Descendants<TextBox>().Cast<TextBox>().Where( x => x.Name == "ManualInput");
 
             debuggerTextBox = (debuggerBox.Count() > 0) ? debuggerBox.Single() : null;
+
+            //InProgress(true);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -111,27 +113,14 @@ namespace Please2.Views
 
         private void RegisterListeners()
         {
-            Messenger.Default.Register<ProgressMessage>(this, HandleProgressMessage);
-            Messenger.Default.Register<ShowMessage>(this, HandleShowMessage);
+            Messenger.Default.Register<ProgressMessage>(this, InProgress);
+            Messenger.Default.Register<ShowMessage>(this, Speak);
         }
 
         private void UnRegisterListeners()
         {
-            Messenger.Default.Unregister<ProgressMessage>(this, HandleProgressMessage);
-            Messenger.Default.Unregister<ShowMessage>(this, HandleShowMessage);
-        }
-
-        private void HandleProgressMessage(ProgressMessage message)
-        {
-            if (SystemTray.ProgressIndicator != null)
-            {
-                SystemTray.ProgressIndicator.IsVisible = message.InProgress;
-            }
-        }
-
-        private void HandleShowMessage(ShowMessage message)
-        {
-            Speak(message.Speak);
+            Messenger.Default.Unregister<ProgressMessage>(this, InProgress);
+            Messenger.Default.Unregister<ShowMessage>(this, Speak);
         }
 
         protected void CreateApplicationBar()
@@ -223,6 +212,11 @@ namespace Please2.Views
             }
         }
 
+        private void Speak(ShowMessage message)
+        {
+            Speak(message.Speak);
+        }
+
         public async void Speak(string type, string speak = "")
         {
             try
@@ -268,6 +262,133 @@ namespace Please2.Views
 
             // send message to viewmodel to start the api adventure!!
             Messenger.Default.Send<QueryMessage>(new QueryMessage(query));
+        }
+
+        private void InProgress(ProgressMessage message)
+        {
+            InProgress(message.InProgress);
+        }
+
+        private void InProgress(bool inProgress)
+        {
+            try
+            {
+                var progressName = "PleaseRequestProgress";
+
+                var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+                var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").Single();
+
+                Canvas canvas;
+
+                if (layoutRoot != null)
+                {
+                    var contentPanel = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "ContentPanel").Single();
+
+                    if (inProgress == false)
+                    {
+                        canvas = currentPage.Descendants<Canvas>().Cast<Canvas>().Where(x => x.Name == progressName).Single();
+
+                        layoutRoot.Children.Remove(canvas);
+
+                        if (contentPanel != null)
+                        {
+                            contentPanel.IsHitTestVisible = true;
+                        }
+                    }
+                    else
+                    {
+                        var colSpan = layoutRoot.ColumnDefinitions.Count;
+                        var rowSpan = layoutRoot.RowDefinitions.Count;
+
+                        var deviceHeight =  App.Current.Host.Content.ActualHeight;
+                        var deviceWidth = App.Current.Host.Content.ActualWidth;
+                        /*
+                        var loadingScreen = App.Current.Resources["LoadingScreen"];
+
+                        if (loadingScreen != null)
+                        {
+                            canvas = (loadingScreen as Canvas);
+
+                            canvas.Width = deviceWidth;
+                            canvas.Height = deviceHeight;
+
+                            var border = canvas.FindName("LoadingScreenBorder") as Border;
+                            
+                            var stack = canvas.FindName("LoadingScreenStackPanel") as StackPanel;
+
+                            if (stack != null)
+                            {
+                                stack.SetValue(Canvas.TopProperty, (deviceHeight / 2));
+                            }
+
+                            layoutRoot.Children.Add(canvas);
+
+                            VisualStateManager.GoToState(this, "Enabled", true);
+                        }
+                        */
+                       
+                        var background = new SolidColorBrush();
+                        background.Color = Colors.Black;
+
+                        canvas = new Canvas();
+                        canvas.Name = progressName;
+                        canvas.Height = deviceHeight;
+                        canvas.Width = deviceWidth;
+                        canvas.Background = background;
+                        canvas.Opacity = .75;
+                        
+                        if (colSpan > 0)
+                        {
+                            canvas.SetValue(Grid.ColumnSpanProperty, colSpan);
+                        }
+
+                        if (rowSpan > 0)
+                        {
+                            canvas.SetValue(Grid.RowSpanProperty, rowSpan);
+                        }
+                       
+                        var stack = new StackPanel();
+
+
+                        stack.SetValue(Canvas.TopProperty, (deviceHeight / 2));
+
+                        var bar = new ProgressBar();
+                        bar.IsIndeterminate = true;
+                        bar.IsEnabled = true;
+                        bar.Width = deviceWidth;
+
+                        var text = new TextBlock();
+                        text.Text = "loading";
+                        text.HorizontalAlignment = HorizontalAlignment.Center;
+
+                        stack.Children.Add(bar);
+                        stack.Children.Add(text);
+
+                        canvas.Children.Add(stack);
+
+                        layoutRoot.Children.Add(canvas);
+
+                        if (contentPanel != null)
+                        {
+                            contentPanel.IsHitTestVisible = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
+        }
+
+        protected T GetViewModelInstance<T>() where T : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<T>())
+            {
+                SimpleIoc.Default.Register<T>();
+            }
+
+            return SimpleIoc.Default.GetInstance<T>();
         }
 
         #region debug helpers

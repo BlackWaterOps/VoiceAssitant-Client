@@ -10,7 +10,7 @@ using Please2.Resources;
 
 namespace Please2.ViewModels
 {
-    class PreferencesViewModel : NotificationBase
+    class PreferencesViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         DatabaseModel db;
 
@@ -24,7 +24,7 @@ namespace Please2.ViewModels
             set
             {
                 _preferenceList = value;
-                NotifyPropertyChanged("PreferenceList");
+                RaisePropertyChanged("PreferenceList");
             }
         }
 

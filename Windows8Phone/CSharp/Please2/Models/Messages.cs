@@ -14,6 +14,8 @@ namespace Please2.Models
         }
 
         public bool InProgress { get; private set; }
+        
+        public string LoadingText { get; private set; }
     }
 
     public class QueryMessage

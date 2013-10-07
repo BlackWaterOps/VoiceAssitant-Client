@@ -13,7 +13,7 @@ using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class MoviesViewModel : NotificationBase
+    public class MoviesViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private string endpoint =  AppResources.Apier + "movies/";
 

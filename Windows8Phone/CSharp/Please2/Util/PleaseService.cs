@@ -43,8 +43,6 @@ namespace Please2.Util
 
         public PleaseService()
         {
-            Debug.WriteLine("viewmodelbase constructor - " + this.GetType());
-
             Debug.WriteLine(testCounter);
 
             testCounter++;
@@ -510,23 +508,18 @@ namespace Please2.Util
                     
                     Newtonsoft.Json.Linq.JObject resultItem;
 
-                    Uri page = ViewModelLocator.ConverationPageUri;
+                    Uri page = ViewModelLocator.ConversationPageUri;
 
                     switch (type)
                     {
                         case "list":
                             switch (templateName)
                             { 
-                                    // also add override for news so we can set news in a pivot view
+                                // also add override for news so we can set news in a pivot view
                                 case "images":
                                     page = ViewModelLocator.ImagesPageUri;
 
-                                    if (!SimpleIoc.Default.IsRegistered<ImagesViewModel>())
-                                    {
-                                        SimpleIoc.Default.Register<ImagesViewModel>();
-                                    }
-
-                                    var images = SimpleIoc.Default.GetInstance<ImagesViewModel>();
+                                    var images = GetViewModelInstance<ImagesViewModel>();
 
                                     var enumer = CreateTypedList(templateName, structured["items"]);
 
@@ -536,14 +529,9 @@ namespace Please2.Util
                                 default:
                                     page = ViewModelLocator.ListResultsPageUri;
 
-                                    if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
-                                    {
-                                        SimpleIoc.Default.Register<ListViewModel>();
-                                    }
+                                    var list = GetViewModelInstance<ListViewModel>();
 
-                                    var model = SimpleIoc.Default.GetInstance<ListViewModel>();
-
-                                    model.PageTitle = templateName + " results";
+                                    list.PageTitle = templateName + " results";
                             
                                     var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
 
@@ -552,9 +540,9 @@ namespace Please2.Util
                                         Debug.WriteLine("template not found in TemplateDictionary");
                                     }
 
-                                    model.Template = templates[templateName] as DataTemplate;
+                                    list.Template = templates[templateName] as DataTemplate;
 
-                                    model.ListResults = CreateTypedList(templateName, structured["items"]);
+                                    list.ListResults = CreateTypedList(templateName, structured["items"]);
                                     break;     
                             }
                             break;
@@ -567,12 +555,7 @@ namespace Please2.Util
                                 case "weather":
                                     page = ViewModelLocator.WeatherPageUri;
                                     
-                                    if (!SimpleIoc.Default.IsRegistered<WeatherViewModel>())
-                                    {
-                                        SimpleIoc.Default.Register<WeatherViewModel>();
-                                    }
-
-                                    var weather = SimpleIoc.Default.GetInstance<WeatherViewModel>();
+                                    var weather = GetViewModelInstance<WeatherViewModel>();
 
                                     var weatherResults = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<WeatherModel>();
 
@@ -597,12 +580,7 @@ namespace Please2.Util
                                 case "fitbit":
                                     page = ViewModelLocator.FitbitResultsPageUri;
 
-                                    if (!SimpleIoc.Default.IsRegistered<FitbitViewModel>())
-                                    {
-                                        SimpleIoc.Default.Register<FitbitViewModel>();
-                                    }
-
-                                    var fitbit = SimpleIoc.Default.GetInstance<FitbitViewModel>();
+                                    var fitbit = GetViewModelInstance<FitbitViewModel>();
 
                                     resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
 
@@ -610,7 +588,24 @@ namespace Please2.Util
                                     break;
                                 
                                 case "stock":
+                                    page = ViewModelLocator.StockPageUri;
 
+                                    var stock = GetViewModelInstance<StockViewModel>();
+
+                                    stock.StockData = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<StockModel>();
+
+                                    var direction = stock.StockData.share_price_direction;
+                                    
+                                    if (direction == "down")
+                                    {
+                                        stock.DirectionSymbol = "\uf063";
+                                        stock.DirectionColor = "#dc143c";
+                                    }
+                                    else if (direction == "up")
+                                    {
+                                        stock.DirectionSymbol = "\uf062";
+                                        stock.DirectionColor = "#008000";
+                                    }
                                     break;
                             }
                             break;
@@ -624,6 +619,16 @@ namespace Please2.Util
                 Debug.WriteLine("ActorResponseHandler - " + err.Message);
             }
         }
+   
+        private T GetViewModelInstance<T>() where T : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<T>())
+            {
+                SimpleIoc.Default.Register<T>();
+            }
+
+            return SimpleIoc.Default.GetInstance<T>();
+        }
 
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
@@ -633,6 +638,10 @@ namespace Please2.Util
 
             switch (name)
             {
+                case "fuel":
+                    ret = arr.ToObject<IEnumerable<AltFuelModel>>();
+                    break;
+
                 case "product":
                 case "shopping":
                     ret = arr.ToObject<IEnumerable<ShoppingModel>>();
@@ -694,6 +703,7 @@ namespace Please2.Util
                     break;
 
                 case "directions":
+                case "directions_denial":
                     tasks.GetDirections();
                     break;
 
@@ -707,6 +717,10 @@ namespace Please2.Util
                 case "calendar_create_denial":
                     tasks.SetAppointment();
                     break;
+
+                case "information":
+
+                    break;
             }
 
             return;
@@ -719,8 +733,7 @@ namespace Please2.Util
 
             req.Method = method;
 
-            // TODO: send message to view to activate progress indicator
-            //SystemTray.ProgressIndicator.IsVisible = true;
+            // Notify the view that the request has begun
             Messenger.Default.Send(new ProgressMessage(true));
 
             T response;
@@ -735,9 +748,8 @@ namespace Please2.Util
 
                 response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data));
             }
-
-            // TODO: send message to view to deactivate progress indicator
-            //SystemTray.ProgressIndicator.IsVisible = false;
+            
+            // Notify the view that the request is complete
             Messenger.Default.Send(new ProgressMessage(false));
 
             return response;

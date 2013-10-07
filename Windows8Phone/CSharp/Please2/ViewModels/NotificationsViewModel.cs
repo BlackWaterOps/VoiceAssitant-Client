@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Microsoft.Phone.Data.Linq;
 using Microsoft.Phone.Scheduler;
@@ -14,44 +15,80 @@ using Please2.Resources;
 
 namespace Please2.ViewModels
 {
-    class NotificationsViewModel : NotificationBase
+    public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        private Visibility? reminderVisibility;
+        public Visibility ReminderVisibility
+        {
+            get { return (reminderVisibility.HasValue == false) ? Visibility.Visible : reminderVisibility.Value; }
+            set
+            {
+                reminderVisibility = value;
+                RaisePropertyChanged("ReminderVisibility");
+            }
+        }
+        
         private ObservableCollection<Reminder> reminders;
-
         public ObservableCollection<Reminder> Reminders
         {
             get { return reminders; }
             set 
             { 
                 reminders = value;
-                NotifyPropertyChanged("Reminders");
+                RaisePropertyChanged("Reminders");
             }
         }
-        
-         private ObservableCollection<Please2.Models.Alarm> alarms;
 
+        private Visibility? alarmVisibility;
+        public Visibility AlarmVisibility
+        {
+            get { return (alarmVisibility.HasValue == false) ? Visibility.Visible : alarmVisibility.Value; }
+            set
+            {
+                alarmVisibility = value;
+                RaisePropertyChanged("AlarmVisibility");
+            }
+        }
+
+        private ObservableCollection<Please2.Models.Alarm> alarms;
         public ObservableCollection<Please2.Models.Alarm> Alarms
         {
             get { return alarms; }
             set 
             { 
                 alarms = value;
-                NotifyPropertyChanged("Alarms");
+                RaisePropertyChanged("Alarms");
             }
         }
 
         public NotificationsViewModel()
         {
+            
+        }
+
+        public void LoadNotifications()
+        {
             LoadReminders();
-            LoadAlarms();
+            //LoadAlarms();
         }
 
         #region Reminders
         public void LoadReminders()
         {
             var r = ScheduledActionService.GetActions<Reminder>().OrderBy(x => x.BeginTime);
+            Debug.WriteLine(r);
+            Debug.WriteLine(r.Count());
 
-            Reminders = new ObservableCollection<Reminder>(r);
+            foreach (var t in r)
+            {
+                Debug.WriteLine(t.Name);
+                Debug.WriteLine(t.BeginTime);
+                Debug.WriteLine(t.Title);
+            }
+
+            reminders = new ObservableCollection<Reminder>(r);
+           
+            reminderVisibility = (reminders.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void CreateReminder(DateTime reminderDate, string title)
@@ -105,7 +142,7 @@ namespace Please2.ViewModels
                 {
                     if (db.DatabaseExists().Equals(false))
                     {
-                        Alarms = new ObservableCollection<Please2.Models.Alarm>();
+                        this.alarms = new ObservableCollection<Please2.Models.Alarm>();
                         return;
                     }
 
@@ -115,7 +152,9 @@ namespace Please2.ViewModels
                     // TODO: order by beginDate
                     // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
 
-                    Alarms = new ObservableCollection<Please2.Models.Alarm>(query);
+                    this.alarms = new ObservableCollection<Please2.Models.Alarm>(query);
+
+                    alarmVisibility = (this.alarms.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception err)

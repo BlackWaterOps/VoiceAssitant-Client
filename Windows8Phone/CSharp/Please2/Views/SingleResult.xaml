@@ -1,0 +1,124 @@
+﻿<local:ViewBase
+    x:Class="Please2.Views.SingleResult"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:local="clr-namespace:Please2.Views"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    shell:SystemTray.IsVisible="True">
+    <!--
+    <phone:PhoneApplicationPage.Resources>
+        <Style x:Key="StockLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="DarkGray"/>
+        </Style>
+    
+        <DataTemplate x:Key="stock">
+            <Grid DataContext="{Binding StockViewModel, Source={StaticResource Locator}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,20">
+                    <TextBlock Text="{Binding StockData.share_price, StringFormat='{0:C}'}" 
+                           FontSize="60"
+                           VerticalAlignment="Bottom"/>
+
+                    <Glyphs UnicodeString="{Binding DirectionSymbol}" 
+                        Fill="{Binding DirectionColor}"
+                        FontRenderingEmSize="30"
+                        Style="{StaticResource FontAwesomeBase}"
+                        VerticalAlignment="Bottom"
+                        Margin="10,0,0,0"/>
+
+                    <TextBlock Text="{Binding StockData.share_price_change}" 
+                           Foreground="{Binding DirectionColor}" 
+                           VerticalAlignment="Bottom"
+                           FontSize="30"
+                           Margin="10,0"/>
+                    <TextBlock Text="{Binding StockData.share_price_change_percent, StringFormat='{0}%'}" 
+                           Foreground="{Binding DirectionColor}"
+                           FontSize="30"
+                           VerticalAlignment="Bottom"
+                           Margin="10,0"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Opening Price" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StockData.opening_price, StringFormat='{0:C}'}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Low Price" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding StockData.low_price, StringFormat='{0:C}'}"/>
+                -->
+                <!--
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Stock Exchange" Style="{StaticResource StockLabel}"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding StockData.stock_exchange}"/>
+            -->
+            
+            <!--
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Trade Volume" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding StockData.trade_volume}"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Avg Trade Volume" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding StockData.average_trade_volume}"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="PE" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding StockData.pe}"/>
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="High Price" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding StockData.high_price, StringFormat='{0:C}'}"/>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="Market Cap" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding StockData.market_cap}"/>
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Yield" Style="{StaticResource StockLabel}"/>
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding StockData.yield}" Style="{StaticResource StockLabel}"/>
+            </Grid>
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+    -->
+    
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <StackPanel Grid.Row="0" Margin="12,17,0,28" Visibility="{Binding TitleVisibility}">
+            <TextBlock Style="{StaticResource AppTitle}"/>
+            <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
+        </StackPanel>
+
+        <!--ContentPanel - place additional content here-->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ContentControl HorizontalContentAlignment="Stretch" 
+                            VerticalContentAlignment="Stretch" 
+                            ContentTemplate="{Binding ContentTemplate}"/>
+        </Grid>
+    </Grid>
+
+</local:ViewBase>

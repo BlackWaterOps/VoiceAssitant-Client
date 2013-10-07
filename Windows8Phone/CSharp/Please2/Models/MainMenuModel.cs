@@ -14,6 +14,7 @@ namespace Please2.Models
         public string icon { get; set; }
         public string title { get; set; }
         public string page { get; set; }
+        public bool isIntent { get; set; }
 
         // optional
         public string detail { get; set; }

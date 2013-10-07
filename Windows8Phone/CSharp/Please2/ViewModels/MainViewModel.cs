@@ -15,7 +15,7 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    public class MainViewModel : NotificationBase
+    public class MainViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private ObservableCollection<DialogModel> _dialogList;
         public ObservableCollection<DialogModel> DialogList
@@ -24,7 +24,7 @@ namespace Please2.ViewModels
             set
             {
                 _dialogList = value;
-                NotifyPropertyChanged("DialogList"); 
+                RaisePropertyChanged("DialogList"); 
             }
         }
 

@@ -45,6 +45,8 @@ namespace Please2
             NavigationService.NavigationFailed += OnNavigationFailed;
            
             base.AddDebugTextBox();
+
+            var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -59,13 +61,31 @@ namespace Please2
             base.OnKeyDown(sender, e);
         }
 
-        protected void MenuItem_Tapped(object sender, EventArgs e)
+        protected async void MenuItem_Tapped(object sender, EventArgs e)
         {
-            var item = sender as FrameworkElement;
+            try
+            {
+                var item = sender as FrameworkElement;
 
-            var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
-             
-            navigationService.NavigateTo(new Uri((string)item.Tag, UriKind.Relative));
+                var uri = (string)item.Tag;
+
+                var model = item.DataContext as MainMenuModel;
+
+                if (model.isIntent == true)
+                {
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
+                }
+                else
+                {
+                    var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
+
+                    navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
         }
 
         protected void OnNavigationFailed(object sender, NavigationFailedEventArgs e)

@@ -114,6 +114,7 @@
     <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\PeerFinderViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
+    <Compile Include="ViewModels\StockViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\AddPreferencePage.xaml.cs">
       <DependentUpon>AddPreferencePage.xaml</DependentUpon>
@@ -162,8 +163,11 @@
     <Compile Include="Views\PeerFinder.xaml.cs">
       <DependentUpon>PeerFinder.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SingleResultPage.xaml.cs">
-      <DependentUpon>SingleResultPage.xaml</DependentUpon>
+    <Compile Include="Views\SingleResult.xaml.cs">
+      <DependentUpon>SingleResult.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stock.xaml.cs">
+      <DependentUpon>Stock.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ViewBase.cs" />
     <Compile Include="Views\ReminderPage.xaml.cs">
@@ -180,7 +184,6 @@
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoviesViewModel.cs" />
-    <Compile Include="ViewModels\NotificationBase.cs" />
     <Compile Include="ViewModels\NotificationsViewModel.cs" />
     <Compile Include="ViewModels\WeatherViewModel.cs" />
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
@@ -271,7 +274,6 @@
     <Compile Include="Util\Request.cs" />
     <Compile Include="ViewModels\PreferencesViewModel.cs" />
     <Compile Include="ViewModels\ShoppingViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Resource Include="Assets\Fonts\FontAwesome.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -281,11 +283,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="TemplateDictionary.Single.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainPage2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TemplateDictionary.xaml">
+    <Page Include="TemplateDictionary.List.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -369,7 +375,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SingleResultPage.xaml">
+    <Page Include="Views\SingleResult.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Stock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

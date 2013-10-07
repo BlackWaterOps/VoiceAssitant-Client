@@ -8,7 +8,7 @@ using Please2.Models;
 
 namespace Please2.ViewModels
 {
-    public class ShoppingViewModel : NotificationBase
+    public class ShoppingViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private List<ShoppingModel> shoppingResults;
         public List<ShoppingModel> ShoppingResults
