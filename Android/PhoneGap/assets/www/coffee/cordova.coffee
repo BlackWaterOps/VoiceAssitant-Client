@@ -5,14 +5,47 @@ class Cordova
         # turn off debugging for phone
         @please.debug = false
 
+        opts =
+            lines: 12 # The number of lines to draw
+            length: 7 # The length of each line
+            width: 5 # The line thickness
+            radius: 10 # The radius of the inner circle
+            color: '#999' # #rbg or #rrggbb
+            speed: 1 # Rounds per second
+            trail: 100 # Afterglow percentage
+            shadow: true # Whether to render a shadow
+        
+        $.fn.spin = (spinOpts) ->
+            this.each(->
+                $this = $(this)
+                spinner = $this.data('spinner')
+
+                spinner.stop() if (spinner) 
+                if opts isnt false
+                    opts = $.extend(
+                        color: $this.css('color')
+                    , opts)
+
+                    spinner = new Spinner(opts).spin(this)
+                    $this.data('spinner', spinner)
+            )
+            
+            return this
+
+        $('.spinner').remove()
+
         document.addEventListener("deviceready", @deviceReady, false)
 
     deviceReady: =>
         window.plugins.tts.startup(@startupWin, @startupFail)
         window.plugins.speechrecognizer.init(@speechInitOk, @speechInitFail)
         
-        # myScroll = new iScroll('wrapper', {checkDOMChanges: true})
-        # hite = $('#wrapper').innerHeight()
+        $(document).on('speak', @speak)
+
+        myScroll = new iScroll('wrapper', {checkDOMChanges: true})
+        hite = $('#wrapper').innerHeight()
+        @refreshiScroll()
+
         return
 
     refreshiScroll: =>
@@ -28,7 +61,7 @@ class Cordova
             console.log('cordova startupWin')
             $('.control').on('fastClick', '.micbutton', @initQuery)
       
-            # @refreshiScroll();
+            @refreshiScroll();
     
     initQuery: =>
         window.plugins.tts.stop()
@@ -57,6 +90,11 @@ class Cordova
 
                     # call please
                     @please.ask(query)
+
+                    @refreshiScroll()
+
+    speak: (e) =>
+        window.plugins.tts.speak(e.response);
 
     cleanQuery: (query) =>
         query.replace('needa', 'need a')

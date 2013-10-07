@@ -483,15 +483,27 @@ class window.Please
 
 				@board.find('.bubble:last').append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
+			# this should be done in cordova.coffee
+			# if (iScroll?)
+			#	boardScroll = new iScroll('', checkDOMChanges: true) if templateType is 'images'
+
+
 		@loader.hide()
 		@counter = 0
 		
-		# TODO: conditional check
-		window.top.postMessage(
-			action: 'speak',
-			speak: results.speak
-			options: {}
-		, '*')
+		if window isnt window.top
+			# Chrome app
+			window.top.postMessage(
+				action: 'speak',
+				speak: results.speak
+				options: {}
+			, '*')
+		else
+			# Cordova App
+			$(document).trigger(
+				type: 'speak'
+				response: results.speak
+			)
 
 	getLocation: =>
 		navigator.geolocation.getCurrentPosition @updatePosition

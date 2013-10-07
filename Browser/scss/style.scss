@@ -31,9 +31,16 @@ div, p, input {
     margin: 0px;
 }
 .wrapper {
-    width: 480px;
-    margin: 0 auto;
-    text-align: left;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    -webkit-overflow-scrolling: touch;
+    .board {
+        position: relative;
+    }
 }
 .input-form.cancel {
     .main-input {

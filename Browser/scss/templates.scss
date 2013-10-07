@@ -56,7 +56,7 @@
     overflow-x: scroll;
     overflow-y: hidden;
     white-space: nowrap;
-
+    -webkit-overflow-scrolling: touch;
     img {
         border: solid white 2px;
         box-shadow: 0 0 10px black;

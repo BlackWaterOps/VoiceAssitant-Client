@@ -10,20 +10,58 @@
       this.speechInitFail = __bind(this.speechInitFail, this);
       this.speechInitOk = __bind(this.speechInitOk, this);
       this.cleanQuery = __bind(this.cleanQuery, this);
+      this.speak = __bind(this.speak, this);
       this.speechOk = __bind(this.speechOk, this);
       this.recognizeSpeech = __bind(this.recognizeSpeech, this);
       this.initQuery = __bind(this.initQuery, this);
       this.startupWin = __bind(this.startupWin, this);
       this.refreshiScroll = __bind(this.refreshiScroll, this);
       this.deviceReady = __bind(this.deviceReady, this);
+      var opts;
       this.please = new Please();
       this.please.debug = false;
+      opts = {
+        lines: 12,
+        length: 7,
+        width: 5,
+        radius: 10,
+        color: '#999',
+        speed: 1,
+        trail: 100,
+        shadow: true
+      };
+      $.fn.spin = function(spinOpts) {
+        this.each(function() {
+          var $this, spinner;
+          $this = $(this);
+          spinner = $this.data('spinner');
+          if (spinner) {
+            spinner.stop();
+          }
+          if (opts !== false) {
+            opts = $.extend({
+              color: $this.css('color')
+            }, opts);
+            spinner = new Spinner(opts).spin(this);
+            return $this.data('spinner', spinner);
+          }
+        });
+        return this;
+      };
+      $('.spinner').remove();
       document.addEventListener("deviceready", this.deviceReady, false);
     }
 
     Cordova.prototype.deviceReady = function() {
+      var hite, myScroll;
       window.plugins.tts.startup(this.startupWin, this.startupFail);
       window.plugins.speechrecognizer.init(this.speechInitOk, this.speechInitFail);
+      $(document).on('speak', this.speak);
+      myScroll = new iScroll('wrapper', {
+        checkDOMChanges: true
+      });
+      hite = $('#wrapper').innerHeight();
+      this.refreshiScroll();
     };
 
     Cordova.prototype.refreshiScroll = function() {
@@ -39,7 +77,8 @@
     Cordova.prototype.startupWin = function(result) {
       if (result === TTS.STARTED) {
         console.log('cordova startupWin');
-        return $('.control').on('fastClick', '.micbutton', this.initQuery);
+        $('.control').on('fastClick', '.micbutton', this.initQuery);
+        return this.refreshiScroll();
       }
     };
 
@@ -67,10 +106,15 @@
             query = matches[0];
             query = this.cleanQuery(query);
             console.log('your query was ' + query);
-            return this.please.ask(query);
+            this.please.ask(query);
+            return this.refreshiScroll();
           }
         }
       }
+    };
+
+    Cordova.prototype.speak = function(e) {
+      return window.plugins.tts.speak(e.response);
     };
 
     Cordova.prototype.cleanQuery = function(query) {
