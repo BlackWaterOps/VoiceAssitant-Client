@@ -181,6 +181,8 @@ class window.Please
 		@counter = 0
 		@input.focus()
 
+		$('body').removeClass('choice').find('list-slider').empty()
+
 	store:
 		createCookie: (k, v, d) ->
 			exp = new Date()

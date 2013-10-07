@@ -211,7 +211,8 @@
       $('.input-form').removeClass('cancel');
       this.loader.hide();
       this.counter = 0;
-      return this.input.focus();
+      this.input.focus();
+      return $('body').removeClass('choice').find('list-slider').empty();
     };
 
     Please.prototype.store = {
