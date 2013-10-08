@@ -63,6 +63,7 @@ class window.Please
 		.on('disambiguate', @disambiguatePassive)
 		.on('disambiguate:personal', @disambiguatePersonal)
 		.on('disambiguate:active', @disambiguateActive)
+		.on('disambiguate:candidate', @disambiguateCandidate)
 		.on('restart', @replaceContext)
 		.on('choice', @choose)
 		.on('inprogress', @show)
@@ -126,20 +127,27 @@ class window.Please
 		
 		$('.input-form').addClass('cancel')
 
+		doc = $(document)
+
 		if @currentState.state is 'inprogress' or (@currentState.state is 'error' and @disambigContext?)
 			if @currentState.origin is 'actor'
 				# TODO: need to know what object should be used for response. @mainContext??
-				$(document).trigger(
+				doc.trigger(
 					type: 'completed'
 					response: null
 				)
 			else
-				$(document).trigger(
+				doc.trigger(
 					type: 'disambiguate:active'
 					response: text
 				)
+		else if @currentState.state is 'choice'
+			doc.trigger(
+				type: 'disambiguate:candidate'
+				response: text
+			)
 		else
-			$(document).trigger(
+			doc.trigger(
 				type: 'init'
 				response: text
 			)
@@ -327,8 +335,25 @@ class window.Please
 			type: type
 			payload: text
 
-
 		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
+			@disambiguateSuccessHandler(response, field, type)
+		)
+
+	disambiguateCandidate: (e) =>
+		field = @disambigContext.field
+
+		type = @disambigContext.type
+		
+		text = e.response
+
+		# this is what makes this different than an 'active' disambiguation
+		list = @disambigContext.show.simple.list
+
+		postData =
+			payload: text
+			type: type
+
+		@requestHelper(@disambiguator + '/candidate', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
 		)
 

@@ -36,6 +36,7 @@
       this.auditor = __bind(this.auditor, this);
       this.handleChoice = __bind(this.handleChoice, this);
       this.choose = __bind(this.choose, this);
+      this.disambiguateCandidate = __bind(this.disambiguateCandidate, this);
       this.disambiguatePassive = __bind(this.disambiguatePassive, this);
       this.disambiguatePersonal = __bind(this.disambiguatePersonal, this);
       this.disambiguateActive = __bind(this.disambiguateActive, this);
@@ -98,7 +99,7 @@
     };
 
     Please.prototype.registerListeners = function() {
-      return $(document).on('init', this.classify).on('audit', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('restart', this.replaceContext).on('choice', this.choose).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
+      return $(document).on('init', this.classify).on('audit', this.auditor).on('disambiguate', this.disambiguatePassive).on('disambiguate:personal', this.disambiguatePersonal).on('disambiguate:active', this.disambiguateActive).on('disambiguate:candidate', this.disambiguateCandidate).on('restart', this.replaceContext).on('choice', this.choose).on('inprogress', this.show).on('completed', this.actor).on('error', this.show).on('debug', this.addDebug);
     };
 
     Please.prototype.registerHandlebarHelpers = function() {
@@ -138,7 +139,7 @@
     };
 
     Please.prototype.ask = function(input) {
-      var template, text;
+      var doc, template, text;
       if (typeof input === 'string') {
         text = input;
       } else {
@@ -149,20 +150,26 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(text)).scrollTop(this.board.find('.bubble:last').offset().top);
       $('.input-form').addClass('cancel');
+      doc = $(document);
       if (this.currentState.state === 'inprogress' || (this.currentState.state === 'error' && (this.disambigContext != null))) {
         if (this.currentState.origin === 'actor') {
-          return $(document).trigger({
+          return doc.trigger({
             type: 'completed',
             response: null
           });
         } else {
-          return $(document).trigger({
+          return doc.trigger({
             type: 'disambiguate:active',
             response: text
           });
         }
+      } else if (this.currentState.state === 'choice') {
+        return doc.trigger({
+          type: 'disambiguate:candidate',
+          response: text
+        });
       } else {
-        return $(document).trigger({
+        return doc.trigger({
           type: 'init',
           response: text
         });
@@ -366,6 +373,22 @@
         payload: text
       };
       return this.requestHelper(this.disambiguator + '/passive', 'POST', postData, function(response) {
+        return _this.disambiguateSuccessHandler(response, field, type);
+      });
+    };
+
+    Please.prototype.disambiguateCandidate = function(e) {
+      var field, list, postData, text, type,
+        _this = this;
+      field = this.disambigContext.field;
+      type = this.disambigContext.type;
+      text = e.response;
+      list = this.disambigContext.show.simple.list;
+      postData = {
+        payload: text,
+        type: type
+      };
+      return this.requestHelper(this.disambiguator + '/candidate', 'POST', postData, function(response) {
         return _this.disambiguateSuccessHandler(response, field, type);
       });
     };
