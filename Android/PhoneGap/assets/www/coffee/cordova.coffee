@@ -4,6 +4,8 @@ class Cordova
         
         # turn off debugging for phone
         @please.debug = false
+        @myScroll = null
+        @hite = null
 
         opts =
             lines: 12 # The number of lines to draw
@@ -42,16 +44,20 @@ class Cordova
         
         $(document).on('speak', @speak)
 
-        myScroll = new iScroll('wrapper', {checkDOMChanges: true})
-        hite = $('#wrapper').innerHeight()
+        @myScroll = new iScroll('wrapper', 
+            checkDOMChanges: true
+            onBeforeScrollStart: (e) ->
+                e.preventDefault() if this.absDistY > (this.absDistX + 5)
+        )
+        @hite = $('#wrapper').innerHeight()
         @refreshiScroll()
 
         return
 
     refreshiScroll: =>
         setTimeout( =>
-            myScroll.refresh()
-            myScroll.scrollToElement('#board div:last-child', 250) if $('#board').innerHeight() > hite 
+            @myScroll.refresh()
+            @myScroll.scrollToElement('#board div:last-child', 250) if $('#board').innerHeight() > @hite 
         , 0)
         # $('.spinner').remove()
 

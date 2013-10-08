@@ -20,6 +20,8 @@
       var opts;
       this.please = new Please();
       this.please.debug = false;
+      this.myScroll = null;
+      this.hite = null;
       opts = {
         lines: 12,
         length: 7,
@@ -53,23 +55,27 @@
     }
 
     Cordova.prototype.deviceReady = function() {
-      var hite, myScroll;
       window.plugins.tts.startup(this.startupWin, this.startupFail);
       window.plugins.speechrecognizer.init(this.speechInitOk, this.speechInitFail);
       $(document).on('speak', this.speak);
-      myScroll = new iScroll('wrapper', {
-        checkDOMChanges: true
+      this.myScroll = new iScroll('wrapper', {
+        checkDOMChanges: true,
+        onBeforeScrollStart: function(e) {
+          if (this.absDistY > (this.absDistX + 5)) {
+            return e.preventDefault();
+          }
+        }
       });
-      hite = $('#wrapper').innerHeight();
+      this.hite = $('#wrapper').innerHeight();
       this.refreshiScroll();
     };
 
     Cordova.prototype.refreshiScroll = function() {
       var _this = this;
       return setTimeout(function() {
-        myScroll.refresh();
-        if ($('#board').innerHeight() > hite) {
-          return myScroll.scrollToElement('#board div:last-child', 250);
+        _this.myScroll.refresh();
+        if ($('#board').innerHeight() > _this.hite) {
+          return _this.myScroll.scrollToElement('#board div:last-child', 250);
         }
       }, 0);
     };
