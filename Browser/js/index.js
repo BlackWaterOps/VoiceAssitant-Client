@@ -386,7 +386,8 @@
       list = this.disambigContext.show.simple.list;
       postData = {
         payload: text,
-        type: type
+        type: type,
+        candidates: list
       };
       return this.requestHelper(this.disambiguator + '/candidate', 'POST', postData, function(response) {
         return _this.disambiguateSuccessHandler(response, field, type);

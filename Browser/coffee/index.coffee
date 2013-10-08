@@ -352,6 +352,7 @@ class window.Please
 		postData =
 			payload: text
 			type: type
+			candidates: list
 
 		@requestHelper(@disambiguator + '/candidate', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
@@ -372,7 +373,7 @@ class window.Please
 		# should create trigger
 		@show(e)
 
-	handleChoice: (e) =>
+	handleChoice: (e) =>		
 		$('body').removeClass('choice')
 				
 		choice = $(e.currentTarget).data('choice')
