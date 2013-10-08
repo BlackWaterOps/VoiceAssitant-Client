@@ -49,6 +49,7 @@ namespace Please2.Views
         {            
             try
             {
+                Debug.WriteLine(this);
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
 
                 // SystemTray.ProgressIndicator.IsIndeterminate = true;
@@ -379,16 +380,6 @@ namespace Please2.Views
             {
                 Debug.WriteLine(err.Message);
             }
-        }
-
-        protected T GetViewModelInstance<T>() where T : class
-        {
-            if (!SimpleIoc.Default.IsRegistered<T>())
-            {
-                SimpleIoc.Default.Register<T>();
-            }
-
-            return SimpleIoc.Default.GetInstance<T>();
         }
 
         #region debug helpers

@@ -67,10 +67,13 @@ namespace Please2
             {
                 var item = sender as FrameworkElement;
 
-                var uri = (string)item.Tag;
+                // var uri = (string)item.Tag;
 
                 var model = item.DataContext as MainMenuModel;
 
+                vm.LoadDefaultTemplate(model);
+
+                /*
                 if (model.isIntent == true)
                 {
                     await Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
@@ -81,6 +84,7 @@ namespace Please2
 
                     navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
                 }
+                */
             }
             catch (Exception err)
             {

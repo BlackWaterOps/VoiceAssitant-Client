@@ -31,7 +31,8 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="1" Margin="12,17,0,28">
             <TextBlock Style="{StaticResource AppTitle}"/>
-            <TextBlock Text="{Binding PageTitle}" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="main menu" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->

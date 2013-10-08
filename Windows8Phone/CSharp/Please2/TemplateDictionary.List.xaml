@@ -332,4 +332,10 @@
             </StackPanel>
         </Border>
     </DataTemplate>
+    
+    <DataTemplate x:Key="choice">
+        <Border Tag="{Binding url}" Background="White" Padding="15" Tap="Contact_Tap">
+            <TextBlock Text="{Binding text}"/>
+        </Border>
+    </DataTemplate>
 </ResourceDictionary>

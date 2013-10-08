@@ -311,8 +311,14 @@ namespace Please2.Models
         public DateTime dateTime { get; set; }
     }
 
+    public class FitbitGoals
+    {
+        public int weight { get; set; }
+    }
+
     public class FitbitModel
     {
         public List<FitbitTimeseries> timeseries { get; set; }
+        public FitbitGoals goals { get; set; }
     }
 }

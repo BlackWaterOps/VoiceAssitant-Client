@@ -168,7 +168,19 @@ namespace Please2.Util
 
         public void ShowClock()
         {
-            navigationService.NavigateTo(new Uri("/Views/Clock.xaml", UriKind.Relative));
+            navigationService.NavigateTo(ViewModelLocator.TimePageUri);
+        }
+
+        public void SetAlarm()
+        {
+            // need to prepop view model
+            navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
+        }
+
+        public void SetReminder()
+        {
+            // need to prepop view model
+            navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
         }
 
         #region helpers

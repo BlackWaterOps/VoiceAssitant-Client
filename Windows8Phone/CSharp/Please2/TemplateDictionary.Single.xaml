@@ -4,9 +4,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-    xmlns:mvvm="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.WP8"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
     xmlns:util="clr-namespace:Please2.Util">
-
     <!-- Stocks -->
     <Style x:Key="StockLabel" TargetType="TextBlock">
         <Setter Property="Foreground" Value="DarkGray"/>
@@ -183,9 +182,10 @@
     <!-- Flight -->
     
     <!-- Notifications -->
+    <!--
     <DataTemplate x:Key="notifications">
         <phone:Pivot Title="Please" DataContext="{Binding NotificationsViewModel, Source={StaticResource Locator}}">
-            <!--Pivot item one-->
+            
             <phone:PivotItem Header="Reminders">
                 <Grid>
                     <TextBlock x:Name="RemindersEmpty" 
@@ -200,7 +200,6 @@
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>
                             <DataTemplate>
-                                <!-- add Tap="ReminderItem_Tapped" -->
                                 <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
                                         BorderBrush="Black"
                                         BorderThickness="2"
@@ -237,7 +236,7 @@
                                                FontSize="20" 
                                                />
 
-                                            <!--<ToggleButton Click="ReminderToggle_Click"/>-->
+                                            <ToggleButton Click="ReminderToggle_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -247,7 +246,6 @@
                 </Grid>
             </phone:PivotItem>
 
-            <!--Pivot item two-->
             <phone:PivotItem Header="Alarms">
                 <Grid>
                     <TextBlock x:Name="AlarmsEmpty" 
@@ -309,67 +307,42 @@
             </phone:PivotItem>
         </phone:Pivot>
     </DataTemplate>
+    -->
     
-    <!-- Time -->
-    <Storyboard x:Name="SecondHand" RepeatBehavior="Forever">
-        <DoubleAnimation  
-                Duration="0:1:0" From="0" To="360" 
-                Storyboard.TargetName="Sec" 
-                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
-                d:IsOptimized="True" />
-    </Storyboard>
-    <Storyboard x:Name="LongHand" RepeatBehavior="Forever">
-        <DoubleAnimation  
-                Duration="1:0:0" From="0" To="360" 
-                Storyboard.TargetName="Min" 
-                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
-                d:IsOptimized="True" />
-    </Storyboard>
-    <Storyboard x:Name="HourHand" RepeatBehavior="Forever">
-        <DoubleAnimation  
-                Duration="12:0:0" From="0" To="360" 
-                Storyboard.TargetName="Hour" 
-                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
-                d:IsOptimized="True" />
-    </Storyboard>
+    <!-- How to -->
+    <DataTemplate x:Key="howto">
+        <phone:Pivot Title="How To">
+            <!--Pivot item one-->
+            <phone:PivotItem Header="item1">
+                <Grid/>
+            </phone:PivotItem>
 
-    <LinearGradientBrush x:Key="ClockFaceBackground" StartPoint="0.5,0" EndPoint="0.5,1">
-        <GradientStop Color="#000000" Offset="0.0" />
-        <GradientStop Color="#414141" Offset="1.0" />
-    </LinearGradientBrush>
+            <!--Pivot item two-->
+            <phone:PivotItem Header="Things you'll need">
+                <Grid/>
+            </phone:PivotItem>
+        </phone:Pivot>
+    </DataTemplate>
     
-    <DataTemplate x:Key="time">
-        <StackPanel VerticalAlignment="Center">
-            <Border Background="{StaticResource ClockFaceBackground}" 
-                        Height="350" 
-                        Width="350"
-                        BorderBrush="White" 
-                        BorderThickness="3" 
-                        CornerRadius="200">
-
-                <Canvas>
-                    <Polygon x:Name="Min" Points="175,25 170,170 175,180 180,170 175,25" Stroke="White" StrokeThickness="3" Fill="DarkGreen">
-                        <Polygon.RenderTransform>
-                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
-                        </Polygon.RenderTransform>
-                    </Polygon>
-
-                    <Polygon x:Name="Hour" Points="175,45 170,170 175,180 180,170 175,45" Stroke="White" StrokeThickness="3" Fill="White">
-                        <Polygon.RenderTransform>
-                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
-                        </Polygon.RenderTransform>
-                    </Polygon>
-
-                    <Polygon x:Name="Sec" Points="175,10 175,180" Stroke="Red">
-                        <Polygon.RenderTransform>
-                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
-                        </Polygon.RenderTransform>
-                    </Polygon>
-                </Canvas>
-            </Border>
-
-            <TextBlock x:Name="TimeTextBlock" TextAlignment="Center" Margin="0,50,0,0" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+    <!-- Fitbit -->
+    <DataTemplate x:Key="fitbit">
+        <StackPanel DataContext="{Binding FitbitViewModel, Source={StaticResource Locator}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Your Goal Weight is: " FontWeight="SemiBold" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                <TextBlock Text="{Binding Goals.weight, StringFormat='{0}lbs'}" FontSize="{StaticResource PhoneFontSizeLarge}" Margin="0,0,0,20"/>
+            </StackPanel>
+            
+            <sparrow:SparrowChart Height="300">
+                <sparrow:SparrowChart.XAxis>
+                    <sparrow:DateTimeXAxis Header="Date" StringFormat="MMM d" LabelAngle="-25.0" MajorLineSize="10" ShowCrossLines="False"/>
+                </sparrow:SparrowChart.XAxis>
+                <sparrow:SparrowChart.YAxis>
+                    <sparrow:LinearYAxis Header="Weight" StringFormat="#.##" MajorLineSize="10"/>
+                </sparrow:SparrowChart.YAxis>
+                <sparrow:SeriesCollection>
+                    <sparrow:AreaSeries x:Name="FitbitLineSeries" Fill="GreenYellow" PointsSource="{Binding Points}" XPath="dateTime" YPath="value" Stroke="LimeGreen" StrokeThickness="3"/>
+                </sparrow:SeriesCollection>
+            </sparrow:SparrowChart>
         </StackPanel>
     </DataTemplate>
-
 </ResourceDictionary>

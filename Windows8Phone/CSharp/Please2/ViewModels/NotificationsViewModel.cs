@@ -13,6 +13,8 @@ using Microsoft.Phone.Scheduler;
 using Please2.Models;
 using Please2.Resources;
 
+
+// TODO: need to add properties so we can bind data returned from please
 namespace Please2.ViewModels
 {
     public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase

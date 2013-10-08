@@ -27,7 +27,7 @@ namespace Please2.ViewModels
     /// </summary>
     public class ViewModelLocator
     {
-        public static readonly Uri MainMenuPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
+        public static readonly Uri MainMenuPageUri = new Uri("/Views/MainPage2.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
 
@@ -35,10 +35,20 @@ namespace Please2.ViewModels
 
         public static readonly Uri SingleResultPageUri = new Uri("/Views/SingleResult.xaml", UriKind.Relative);
 
+        public static readonly Uri NotificationsPageUri = new Uri("/Views/Notifications.xaml", UriKind.Relative);
 
+        public static readonly Uri TimePageUri = new Uri("/Views/Clock.xaml", UriKind.Relative);
+        
+        public static readonly Uri AlarmPageUri = new Uri("/Views/Alarm.xaml", UriKind.Relative);
+
+        public static readonly Uri ReminderPageUri = new Uri("/Views/Reminder.xaml", UriKind.Relative);
+
+        public static readonly Uri SettingsPageUri = new Uri("/Views/Settings.xaml", UriKind.Relative);
+
+        public static readonly Uri SearchPageUri = new Uri("/Views/Search.xaml", UriKind.Relative);
 
         // When we're all said and done, we should only need the Uris above
-
+        /*
         public static readonly Uri FitbitResultsPageUri = new Uri("/Views/Fitbit.xaml", UriKind.Relative);
 
         public static readonly Uri WeatherPageUri = new Uri("/Views/Weather.xaml", UriKind.Relative);
@@ -48,6 +58,7 @@ namespace Please2.ViewModels
         public static readonly Uri StockPageUri = new Uri("/Views/Stock.xaml", UriKind.Relative);
 
         public static readonly Uri GeoPoliticsPageUri = new Uri("/Views/GeoPolitics.xaml", UriKind.Relative);
+        */
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -79,7 +90,7 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<MainMenuViewModel>();
+                return GetViewModelInstance<MainMenuViewModel>();
             }
         }
 
@@ -87,7 +98,15 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<ConversationViewModel>();
+                return GetViewModelInstance<ConversationViewModel>();
+            }
+        }
+
+        public SingleViewModel SingleViewModel
+        {
+            get
+            {
+                return GetViewModelInstance<SingleViewModel>();
             }
         }
 
@@ -95,7 +114,7 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<WeatherViewModel>();
+                return GetViewModelInstance<WeatherViewModel>();
             }
         }
 
@@ -103,7 +122,7 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<StockViewModel>();
+                return GetViewModelInstance<StockViewModel>();
             }
         }
 
@@ -111,7 +130,7 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<EventsViewModel>();
+                return GetViewModelInstance<EventsViewModel>();
             }
         }
 
@@ -119,13 +138,31 @@ namespace Please2.ViewModels
         {
             get
             {
-                return App.GetViewModelInstance<NotificationsViewModel>();
+                return GetViewModelInstance<NotificationsViewModel>();
+            }
+        }
+
+        public FitbitViewModel FitbitViewModel
+        {
+            get
+            {
+                return GetViewModelInstance<FitbitViewModel>();
             }
         }
 
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
+        }
+
+        public static T GetViewModelInstance<T>() where T : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<T>())
+            {
+                SimpleIoc.Default.Register<T>();
+            }
+
+            return ServiceLocator.Current.GetInstance<T>();
         }
     }
 }

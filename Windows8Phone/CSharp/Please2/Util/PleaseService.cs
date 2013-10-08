@@ -107,6 +107,10 @@ namespace Please2.Util
                         Show((ResponderModel)currentState.Response);
                         break;
 
+                    case "choice":
+                        ChoiceList((ResponderModel)currentState.Response);
+                        break;
+
                     case "restart":
                         await Auditor((ResponderModel)currentState.Response);
                         break;
@@ -122,12 +126,33 @@ namespace Please2.Util
             }
         }
 
+        private void ChoiceList(ResponderModel response)
+        {
+            var simple = response.show.simple;
+
+            if (simple.ContainsKey("list"))
+            {
+                var templates = App.Current.Resources["ListResourceDictionary"] as ResourceDictionary;
+               
+                // TODO: need to cast against model not dict
+                var list = ((Newtonsoft.Json.Linq.JToken)simple["list"]).ToObject<List<Dictionary<string, object>>>();
+
+                var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+
+                vm.ListResults = list;
+                vm.Template = (DataTemplate)templates["choice"];
+
+                navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
+            }
+            else
+            {
+                Debug.WriteLine("no choice list could be found");
+            }
+        }
+
         // NOTE: called from inprogress status
         private void Show(ResponderModel response)
         {
-            // since this overload only get's triggered on an "inprogress" status, check current page
-            // if current page is not conversation.xaml, navigate to conversation.xaml
-            // else pass data to overload below which will be picked up by the conversationViewModel
             try
             {
                 var frame = App.Current.RootVisual as PhoneApplicationFrame;
@@ -163,9 +188,6 @@ namespace Please2.Util
         }
 
         // NOTE: called from Actor method
-        // this is the method that should be inherited from all view models
-        //protected abstract void Show(ShowModel showModel, string speak = "");
-     
         private void Show(ShowModel showModel, string speak = "")
         {
             if (showModel.simple.ContainsKey("text"))
@@ -186,7 +208,6 @@ namespace Please2.Util
             Messenger.Default.Send(new ShowMessage(show, speak, link));
         }
      
-        // TODO: use a service or messenger for this
         private void ErrorMessage(string message)
         {
             var response = MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
@@ -510,16 +531,20 @@ namespace Please2.Util
 
                     Uri page = ViewModelLocator.ConversationPageUri;
 
+                    ResourceDictionary templates;
+
                     switch (type)
                     {
                         case "list":
+                            page = ViewModelLocator.ListResultsPageUri;
+
+                            templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+                            
                             switch (templateName)
                             { 
                                 // also add override for news so we can set news in a pivot view
                                 case "images":
-                                    page = ViewModelLocator.ImagesPageUri;
-
-                                    var images = GetViewModelInstance<ImagesViewModel>();
+                                    var images = ViewModelLocator.GetViewModelInstance<ImagesViewModel>();
 
                                     var enumer = CreateTypedList(templateName, structured["items"]);
 
@@ -527,14 +552,10 @@ namespace Please2.Util
                                     break;
 
                                 default:
-                                    page = ViewModelLocator.ListResultsPageUri;
-
-                                    var list = GetViewModelInstance<ListViewModel>();
+                                    var list = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
                                     list.PageTitle = templateName + " results";
                             
-                                    var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
-
                                     if (templates[templateName] == null)
                                     {
                                         Debug.WriteLine("template not found in TemplateDictionary");
@@ -550,12 +571,25 @@ namespace Please2.Util
                         case "single":
                             resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
 
+                            page = ViewModelLocator.SingleResultPageUri;
+
+                            templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+                            
+                            var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                            try
+                            {
+                                singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+                            }
+                            catch (Exception err)
+                            {
+                                Debug.WriteLine("could not locate template " + templateName);
+                            }
+
                             switch (templateName)
                             {
-                                case "weather":
-                                    page = ViewModelLocator.WeatherPageUri;
-                                    
-                                    var weather = GetViewModelInstance<WeatherViewModel>();
+                                case "weather":                                    
+                                    var weather = ViewModelLocator.GetViewModelInstance<WeatherViewModel>();
 
                                     var weatherResults = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<WeatherModel>();
 
@@ -573,24 +607,27 @@ namespace Please2.Util
                                     }
 
                                     weather.MultiForecast = weatherResults.week;
-                                    
                                     weather.CurrentCondition = weatherResults.now;
+
+                                    singleViewModel.Title = "weather";
+                                    singleViewModel.SubTitle =  DateTime.Now.ToString("dddd, MMMM d, yyyy");
                                     break;
 
                                 case "fitbit":
-                                    page = ViewModelLocator.FitbitResultsPageUri;
-
-                                    var fitbit = GetViewModelInstance<FitbitViewModel>();
+                                    // depending on other structures, might need a switch for weight, food, and exercise
+                                    var fitbit = ViewModelLocator.GetViewModelInstance<FitbitViewModel>();
 
                                     resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
 
                                     fitbit.Points = CreateTypedList(templateName, resultItem["timeseries"]);
+                                    fitbit.Goals = resultItem["goals"].ToObject<FitbitGoals>();
+
+                                    singleViewModel.Title = "fitbit";
+                                    singleViewModel.SubTitle = "";
                                     break;
                                 
                                 case "stock":
-                                    page = ViewModelLocator.StockPageUri;
-
-                                    var stock = GetViewModelInstance<StockViewModel>();
+                                    var stock = ViewModelLocator.GetViewModelInstance<StockViewModel>();
 
                                     stock.StockData = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<StockModel>();
 
@@ -606,6 +643,9 @@ namespace Please2.Util
                                         stock.DirectionSymbol = "\uf062";
                                         stock.DirectionColor = "#008000";
                                     }
+
+                                    singleViewModel.Title = "stock";
+                                    singleViewModel.SubTitle = stock.StockData.name + "(" + stock.StockData.symbol + ")";
                                     break;
                             }
                             break;
@@ -620,16 +660,6 @@ namespace Please2.Util
             }
         }
    
-        private T GetViewModelInstance<T>() where T : class
-        {
-            if (!SimpleIoc.Default.IsRegistered<T>())
-            {
-                SimpleIoc.Default.Register<T>();
-            }
-
-            return SimpleIoc.Default.GetInstance<T>();
-        }
-
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
             IEnumerable<object> ret = new List<object>();
@@ -720,6 +750,14 @@ namespace Please2.Util
 
                 case "information":
 
+                    break;
+
+                case "alarm":
+                    tasks.SetAlarm();
+                    break;
+
+                case "reminder":
+                    tasks.SetReminder();
                     break;
             }
 

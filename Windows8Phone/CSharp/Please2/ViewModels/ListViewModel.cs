@@ -54,7 +54,7 @@ namespace Please2.ViewModels
             FlightTest();
         }
 
-        public void FlightTest()
+        private void FlightTest()
         {
             try
             {
@@ -81,6 +81,21 @@ namespace Please2.ViewModels
             {
                 Console.WriteLine(err.Message);
             }
+        }
+
+        private void EventTest()
+        {
+
+        }
+
+        private void MovieTest()
+        {
+
+        }
+
+        private void ShoppingTest()
+        {
+
         }
     }
 }

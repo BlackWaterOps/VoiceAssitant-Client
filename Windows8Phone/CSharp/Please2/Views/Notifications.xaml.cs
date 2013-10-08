@@ -17,38 +17,21 @@ namespace Please2.Views
 {
     public partial class Notifications : PhoneApplicationPage
     {
-        NotificationsViewModel viewModel = new NotificationsViewModel();
+        NotificationsViewModel vm;
         
         public Notifications()
         {
             InitializeComponent();
 
-            DataContext = viewModel;
+            vm = (NotificationsViewModel)DataContext;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            SetReminderPanel();
-            SetAlarmPanel();
         }
 
         #region Reminders
-        protected void SetReminderPanel()
-        {
-            if (viewModel.Reminders.Count == 0)
-            {
-                RemindersList.Visibility = Visibility.Collapsed;
-                RemindersEmpty.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                RemindersEmpty.Visibility = Visibility.Collapsed;
-                RemindersList.Visibility = Visibility.Visible;
-            }
-        }
-
         protected void ReminderButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Pages/ReminderPage.xaml", UriKind.Relative));
@@ -71,20 +54,6 @@ namespace Please2.Views
         #endregion
 
         #region Alarms
-        protected void SetAlarmPanel()
-        {
-            if (viewModel.Alarms.Count == 0)
-            {
-                AlarmsList.Visibility = Visibility.Collapsed;
-                AlarmsEmpty.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                AlarmsEmpty.Visibility = Visibility.Collapsed;
-                AlarmsList.Visibility = Visibility.Visible;
-            }
-        }
-
         protected void AlarmButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Pages/AlarmPage.xaml", UriKind.Relative));

@@ -16,10 +16,10 @@ namespace Please2.ViewModels
     {
         private const string templateDict = "SingleTemplateDictionary";
 
-        private Visibility titleVisibility;
+        private Visibility? titleVisibility;
         public Visibility TitleVisibility
         {
-            get { return (titleVisibility == null) ? Visibility.Visible : titleVisibility; }
+            get { return (titleVisibility.HasValue == false) ? Visibility.Visible : titleVisibility.Value; }
             set
             {
                 titleVisibility = value;
@@ -38,13 +38,13 @@ namespace Please2.ViewModels
             }
         }
 
-        private string subtitle;
+        private string subTitle;
         public string SubTitle
         {
-            get { return subtitle; }
+            get { return subTitle; }
             set
             {
-                subtitle = value;
+                subTitle = value;
                 RaisePropertyChanged("SubTitle");
             }
         }
@@ -65,58 +65,25 @@ namespace Please2.ViewModels
 
         }
 
-        public void LoadDefaultTemplate(string template)
-        {
-            var templates = App.Current.Resources[templateDict] as ResourceDictionary;
-
-            if (templates.Contains(template))
-            {
-                switch (template)
-                {
-                    case "weather":
-                        var weather = App.GetViewModelInstance<WeatherViewModel>();
-                        weather.GetDefaultForecast();
-
-                        title = "weather";
-
-                        var pos = Please2.Util.Location.GeoPosition;
-                        /*
-                        if (pos != null)
-                        {
-                            subtitle += pos.CivicAddress.City + ", " + pos.CivicAddress.State + ": ";
-                        }
-                        */
-                        subtitle = DateTime.Now.ToString("dddd, MMMM d, yyyy");
-                        break;
-
-                    case "notifications":
-                        var notifications = App.GetViewModelInstance<NotificationsViewModel>();
-
-                        notifications.LoadNotifications();
-
-                        title = "reminders & alerts";
-                        subtitle = DateTime.Now.ToString("dddd, MMMM d, yyyy @ h:mm tt");
-
-                        titleVisibility = Visibility.Collapsed;
-                        break;
-                }
-
-                contentTemplate = templates[template] as DataTemplate;
-            }
-            else
-            {
-                Debug.WriteLine(template + " template could not be found");
-            }    
-        }
-
         public void RunTest(string test, DataTemplate contentTemplate)
         {
             ContentTemplate = contentTemplate;
+
+            title = test;
+            subTitle = "";
 
             switch (test)
             {
                 case "stock":
                     StockTest();
+                    break;
+
+                case "weather":
+                    WeatherTest();
+                    break;
+
+                case "fitbit":
+                    FitbitTest();
                     break;
             }
         }
@@ -186,6 +153,26 @@ namespace Please2.ViewModels
             vm.MultiForecast = weatherResults.week;
 
             vm.CurrentCondition = weatherResults.now; 
+        }
+
+        private void FitbitTest()
+        {
+            Debug.WriteLine("fitbit test");
+
+            var locator = GetLocator();
+
+            var vm = locator.FitbitViewModel;
+
+            var data = "{\"show\":{\"simple\":{\"text\":\"As of October 7 2013 your weight is 250.9 pounds\"},\"structured\":{\"item\":{\"goals\":{\"weight\":210},\"timeseries\":[{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-08\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-09\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-10\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-11\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-12\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-13\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-14\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-15\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-16\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-17\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-18\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-19\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-20\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-21\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-22\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-23\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-24\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-25\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-26\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-27\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-28\"},{\"value\":\"250.86000061035156\",\"dateTime\":\"2013-09-29\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-09-30\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-01\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-02\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-03\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-04\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-05\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-06\"},{\"value\":\"250.89999389648438\",\"dateTime\":\"2013-10-07\"}]},\"template\":\"single:fitbit:weight\"}},\"speak\":\"As of October 7 2013 your weight is 250.9 pounds\"}";
+
+            var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<ActorModel>(data);
+
+            var show = actor.show;
+
+            var fitbitResults = ((Newtonsoft.Json.Linq.JToken)show.structured["item"]).ToObject<FitbitModel>();
+       
+            vm.Points = fitbitResults.timeseries;
+            vm.Goals = fitbitResults.goals;
         }
 
         private ViewModelLocator GetLocator()

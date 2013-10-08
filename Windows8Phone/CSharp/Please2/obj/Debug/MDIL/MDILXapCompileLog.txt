@@ -1,5 +1,7 @@
 Compile filter specified.  Only the following files will be processed:
 c:\users\jeff schifano\documents\visual studio 2012\projects\please2\please2\bin\debug\mdil\please2.dll
+Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\AmCharts.Windows.QuickCharts.WP.dll
+File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\AmCharts.Windows.QuickCharts.WP.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\BindableApplicationBar.dll
 File C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\BindableApplicationBar.dll is not in the compile filter. Skipping.
 Processing file: C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\MDIL\Coding4Fun.Toolkit.Controls.dll

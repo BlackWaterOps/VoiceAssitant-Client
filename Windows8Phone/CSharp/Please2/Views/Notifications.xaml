@@ -12,14 +12,9 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
-    
-    <phone:PhoneApplicationPage.Resources>
-        <DataTemplate x:Key="NotificationTemplate">
-            
-        </DataTemplate>
-    </phone:PhoneApplicationPage.Resources>
-    
+    shell:SystemTray.IsVisible="True"
+    DataContext="{Binding NotificationsViewModel, Source={StaticResource Locator}}">
+        
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <!--Pivot Control-->
@@ -27,11 +22,14 @@
             <!--Pivot item one-->
             <phone:PivotItem Header="Reminders">
                 <Grid>
-                    <TextBlock x:Name="RemindersEmpty" Text="No Saved Reminders" Visibility="Collapsed"/>
+                    <TextBlock x:Name="RemindersEmpty" 
+                               Text="No Saved Reminders" 
+                               Visibility="{Binding ReminderVisibility, Converter={StaticResource VisibilityConverter}, ConverterParameter=opposite}"/>
 
                     <phone:LongListSelector
                                     x:Name="RemindersList"
                                     ItemsSource="{Binding Reminders}" 
+                                    Visibility="{Binding ReminderVisibility}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>
@@ -86,11 +84,14 @@
             <!--Pivot item two-->
             <phone:PivotItem Header="Alarms">
                 <Grid>
-                    <TextBlock x:Name="AlarmsEmpty" Text="No Saved Alarms" Visibility="Collapsed"/>
-                    
+                    <TextBlock x:Name="AlarmsEmpty" 
+                               Text="No Saved Alarms" 
+                               Visibility="{Binding AlarmVisibility, Converter={StaticResource VisibilityConverter}, ConverterParameter=opposite}"/>
+
                     <phone:LongListSelector 
                                     x:Name="AlarmsList"
                                     ItemsSource="{Binding Alarms}" 
+                                    Visibility="{Binding AlarmVisibility}"
                                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>

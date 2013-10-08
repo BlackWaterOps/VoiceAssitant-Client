@@ -66,5 +66,9 @@ namespace Please2.Util
         void SetAppointment();
 
         void ShowClock();
+
+        void SetAlarm();
+
+        void SetReminder();
     }
 }

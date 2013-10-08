@@ -15,9 +15,9 @@
     mc:Ignorable="d">
 
     <!--Application Resources-->
-    <Application.Resources> 
+    <Application.Resources>
         <local:LocalizedStrings xmlns:local="clr-namespace:Please2" x:Key="LocalizedStrings" />
-                
+
         <LinearGradientBrush x:Key="AppBackground" StartPoint="0.5,0" EndPoint="0.5,1">
             <GradientStop Color="#192128" Offset="0.0" />
             <GradientStop Color="#32393f" Offset="1.0" />
@@ -33,12 +33,12 @@
         <SolidColorBrush x:Key="PleaseDialogBackground" Color="#1ab154" Opacity=".85" />
         <SolidColorBrush x:Key="UserDialogForeground" Color="Black" />
         <SolidColorBrush x:Key="PleaseDialogForeground" Color="Black" />
-              
+
         <!-- listbox item 100% width -->
         <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
-        
+
         <!-- various page titles -->
         <Style x:Key="AppTitle" TargetType="TextBlock">
             <Setter Property="Text" Value="please" />
@@ -62,7 +62,7 @@
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
             <Setter Property="Margin" Value="0" />
         </Style>
-        
+
         <!-- global fontawesome uri -->
         <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
             <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome"/>
@@ -95,7 +95,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Canvas x:Key="LoadingScreen" x:Name="LoadingScreen">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="ProgressStates">
@@ -112,7 +112,7 @@
                     </VisualState>
                 </VisualStateGroup>
             </VisualStateManager.VisualStateGroups>
-            
+
             <Border x:Name="LoadingScreenBorder" Background="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel x:Name="LoadingScreenStackPanel">
                     <ProgressBar IsIndeterminate="True" IsEnabled="True"/>
@@ -282,11 +282,11 @@
         <util:ListResultsConverter x:Key="ListResultsConverter" />
 
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-        
+
         <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
         <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
     </Application.Resources>
-    
+
     <Application.ApplicationLifetimeObjects>
         <!--Required object that handles lifetime events for the application-->
         <shell:PhoneApplicationService Launching="Application_Launching" 
