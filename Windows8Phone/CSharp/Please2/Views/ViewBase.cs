@@ -46,7 +46,9 @@ namespace Please2.Views
         TextBox debuggerTextBox;
 
         public ViewBase()
-        {            
+        {
+            Debug.WriteLine(this);
+
             try
             {
                 Debug.WriteLine(this);

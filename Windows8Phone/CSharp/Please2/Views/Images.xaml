@@ -25,7 +25,7 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <phone:LongListSelector x:Name="ImagesThumbnail" 
-                                    Visibility="Collapsed" 
+                                    Visibility="Visible" 
                                     LayoutMode="Grid" 
                                     GridCellSize="145,145" 
                                     ItemsSource="{Binding ImageList}" 
@@ -44,7 +44,7 @@
                     </DataTemplate>
                 </phone:LongListSelector.ItemTemplate>
             </phone:LongListSelector>
-                      
+               <!--       
             <ListBox 
                 x:Name="ImagesFull"
                 MaxHeight="300"
@@ -83,9 +83,9 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-           
+           -->
             <ViewportControl x:Name="ImageViewport" 
-                             Visibility="Visible"
+                             Visibility="Collapsed"
                              ManipulationStarted="OnManipulationStarted" 
                              ManipulationDelta="OnManipulationDelta"   
                              ManipulationCompleted="OnManipulationCompleted" 

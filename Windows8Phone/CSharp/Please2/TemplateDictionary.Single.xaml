@@ -5,7 +5,10 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
-    xmlns:util="clr-namespace:Please2.Util">
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+    
     <!-- Stocks -->
     <Style x:Key="StockLabel" TargetType="TextBlock">
         <Setter Property="Foreground" Value="DarkGray"/>
@@ -324,6 +327,11 @@
         </phone:Pivot>
     </DataTemplate>
     
+    <!-- Geopolitics -->
+    <DataTemplate x:Key="geopolitics">
+        
+    </DataTemplate>
+    
     <!-- Fitbit -->
     <DataTemplate x:Key="fitbit">
         <StackPanel DataContext="{Binding FitbitViewModel, Source={StaticResource Locator}}">
@@ -331,16 +339,16 @@
                 <TextBlock Text="Your Goal Weight is: " FontWeight="SemiBold" FontSize="{StaticResource PhoneFontSizeLarge}"/>
                 <TextBlock Text="{Binding Goals.weight, StringFormat='{0}lbs'}" FontSize="{StaticResource PhoneFontSizeLarge}" Margin="0,0,0,20"/>
             </StackPanel>
-            
-            <sparrow:SparrowChart Height="300">
+
+            <sparrow:SparrowChart x:Name="FitbitWeightChart" Height="300">
                 <sparrow:SparrowChart.XAxis>
-                    <sparrow:DateTimeXAxis Header="Date" StringFormat="MMM d" LabelAngle="-25.0" MajorLineSize="10" ShowCrossLines="False"/>
+                    <sparrow:DateTimeXAxis Header="Date" StringFormat="MMM d" LabelAngle="-25.0" MajorLineSize="10" ShowCrossLines="False" ZoomCoefficient=".1" ZoomOffset=".7"/>
                 </sparrow:SparrowChart.XAxis>
                 <sparrow:SparrowChart.YAxis>
                     <sparrow:LinearYAxis Header="Weight" StringFormat="#.##" MajorLineSize="10"/>
                 </sparrow:SparrowChart.YAxis>
                 <sparrow:SeriesCollection>
-                    <sparrow:AreaSeries x:Name="FitbitLineSeries" Fill="GreenYellow" PointsSource="{Binding Points}" XPath="dateTime" YPath="value" Stroke="LimeGreen" StrokeThickness="3"/>
+                    <sparrow:LineSeries x:Name="FitbitLineSeries" Background="GreenYellow" PointsSource="{Binding Points}" XPath="dateTime" YPath="value" Stroke="LimeGreen" StrokeThickness="3"/>
                 </sparrow:SeriesCollection>
             </sparrow:SparrowChart>
         </StackPanel>

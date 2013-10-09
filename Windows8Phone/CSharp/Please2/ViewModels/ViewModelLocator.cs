@@ -27,6 +27,8 @@ namespace Please2.ViewModels
     /// </summary>
     public class ViewModelLocator
     {
+        public const string FullImageUri = @"/Views/FullImage.xaml?image={0}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/Views/MainPage2.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
@@ -47,13 +49,14 @@ namespace Please2.ViewModels
 
         public static readonly Uri SearchPageUri = new Uri("/Views/Search.xaml", UriKind.Relative);
 
+        public static readonly Uri ImagesPageUri = new Uri("/Views/Images.xaml", UriKind.Relative);
+
+
         // When we're all said and done, we should only need the Uris above
         /*
         public static readonly Uri FitbitResultsPageUri = new Uri("/Views/Fitbit.xaml", UriKind.Relative);
 
         public static readonly Uri WeatherPageUri = new Uri("/Views/Weather.xaml", UriKind.Relative);
-
-        public static readonly Uri ImagesPageUri = new Uri("/Views/Images.xaml", UriKind.Relative);
 
         public static readonly Uri StockPageUri = new Uri("/Views/Stock.xaml", UriKind.Relative);
 
@@ -88,66 +91,42 @@ namespace Please2.ViewModels
 
         public MainMenuViewModel MainMenuViewModel
         {
-            get
-            {
-                return GetViewModelInstance<MainMenuViewModel>();
-            }
+            get { return GetViewModelInstance<MainMenuViewModel>(); }
         }
 
         public ConversationViewModel ConversationViewModel
         {
-            get
-            {
-                return GetViewModelInstance<ConversationViewModel>();
-            }
+            get { return GetViewModelInstance<ConversationViewModel>(); }
+        }
+
+        public ListViewModel ListViewModel
+        {
+            get { return GetViewModelInstance<ListViewModel>(); }
         }
 
         public SingleViewModel SingleViewModel
         {
-            get
-            {
-                return GetViewModelInstance<SingleViewModel>();
-            }
+            get { return GetViewModelInstance<SingleViewModel>(); }
         }
 
         public WeatherViewModel WeatherViewModel
         {
-            get
-            {
-                return GetViewModelInstance<WeatherViewModel>();
-            }
+            get { return GetViewModelInstance<WeatherViewModel>(); }
         }
 
         public StockViewModel StockViewModel
         {
-            get
-            {
-                return GetViewModelInstance<StockViewModel>();
-            }
-        }
-
-        public EventsViewModel EventsViewModel
-        {
-            get
-            {
-                return GetViewModelInstance<EventsViewModel>();
-            }
+            get { return GetViewModelInstance<StockViewModel>(); }
         }
 
         public NotificationsViewModel NotificationsViewModel
         {
-            get
-            {
-                return GetViewModelInstance<NotificationsViewModel>();
-            }
+            get { return GetViewModelInstance<NotificationsViewModel>(); }
         }
 
         public FitbitViewModel FitbitViewModel
         {
-            get
-            {
-                return GetViewModelInstance<FitbitViewModel>();
-            }
+            get { return GetViewModelInstance<FitbitViewModel>(); }
         }
 
         public static void Cleanup()

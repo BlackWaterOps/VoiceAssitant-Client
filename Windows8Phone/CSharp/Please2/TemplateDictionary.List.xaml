@@ -1,7 +1,9 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:util="clr-namespace:Please2.Util">
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
     
     <Style x:Key="FuelLabel" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -118,6 +120,12 @@
 
     <DataTemplate x:Key="events">
         <Border Background="White" Padding="10" Margin="0,15,0,0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding EventItemSelection}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="104"/>
@@ -161,6 +169,12 @@
 
     <DataTemplate x:Key="movies">
         <Border Background="White" Padding="15">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding MovieItemSelection}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>

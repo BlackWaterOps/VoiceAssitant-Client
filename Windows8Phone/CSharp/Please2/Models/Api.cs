@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Newtonsoft.Json.Linq;
+
 namespace Please2.Models
 {
     public class ErrorModel
@@ -34,8 +36,8 @@ namespace Please2.Models
     public class DisambiguatorModel
     {
         public object payload { get; set; }
-        public List<string> types { get; set; }
         public string type { get; set; }
+        public Newtonsoft.Json.Linq.JArray candidates;
         public Dictionary<string, object> device_info { get; set; }
     }
 

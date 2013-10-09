@@ -283,7 +283,7 @@
 
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
 
-        <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
+        <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml"/>
         <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
     </Application.Resources>
 

@@ -84,7 +84,6 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\Bin\Debug\Microsoft.Practices.ServiceLocation.xml
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\AddPreferencePage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\EventDetailsPage.g.cs
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\EventsPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\PreferencesPage.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Please2.csprojResolveAssemblyReference.cache
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Conversation.g.cs
@@ -117,3 +116,4 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Alarm.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Reminder.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Settings.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Images.g.cs

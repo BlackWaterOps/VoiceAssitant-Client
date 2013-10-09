@@ -102,6 +102,10 @@ namespace Please2.Util
                         DisambiguateActive((string)currentState.Response);
                         break;
                     
+                    case "disambiguate:candidate":
+                        DisambiguateCandidate((string)currentState.Response);
+                        break;
+
                     case "inprogress":
                     case "error":
                         Show((ResponderModel)currentState.Response);
@@ -164,21 +168,12 @@ namespace Please2.Util
                 }
                 else
                 {
-                    // set Conversation ViewModel data
-                    if (!SimpleIoc.Default.IsRegistered<ConversationViewModel>())
-                    {
-                        Debug.WriteLine("register conversation viewmodel");
-                        // need to set the data to a property. can't call a method
-                        SimpleIoc.Default.Register<ConversationViewModel>();
-                    }
-
-                    // get instance of conversation view model and update dialoglist
-                    var cvm = SimpleIoc.Default.GetInstance<ConversationViewModel>();
-
-                    cvm.AddDialog("please", (string)response.show.simple["text"]);
+                    var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+                    
+                    vm.AddDialog("please", (string)response.show.simple["text"]);
 
                     // navigate to conversation.xaml
-                    navigationService.NavigateTo(new Uri("/Views/Conversation.xaml", UriKind.Relative));
+                    navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
                 }
             }
             catch (Exception err)
@@ -257,7 +252,6 @@ namespace Please2.Util
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
 
             try
             {
@@ -272,21 +266,49 @@ namespace Please2.Util
             }
         }
 
+        private async void DisambiguateCandidate(string data)
+        {
+            var simple = tempContext.show.simple;
+
+            string field = tempContext.field;
+
+            string type = tempContext.type;
+
+            var list = (simple.ContainsKey("list")) ? (Newtonsoft.Json.Linq.JArray)simple["list"] : new Newtonsoft.Json.Linq.JArray();
+
+            string payload = data;
+
+            var postData = new DisambiguatorModel();
+
+            postData.payload = payload;
+            postData.type = type;
+            postData.candidates = list;
+          
+            try
+            {
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/candidate", "POST", postData);
+
+                // hand off response to disambig response handler
+                DisambiguateResponseHandler(response, field, type);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
+        }
+
         private async void DisambiguatePassive(ResponderModel data)
         {
-            List<string> types = new List<string>();
-
             string field = data.field;
 
             string type = data.type;
-
-            types.Add(type);
 
             object payload;
 
             if (field.Contains("."))
             {
-                payload = FindOrReplace(field);
+                // payload = FindOrReplace(field);
+                payload = Find(field);
             }
             else
             {
@@ -309,7 +331,6 @@ namespace Please2.Util
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
             postData.device_info = deviceInfo;
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", "POST", postData);
@@ -320,19 +341,16 @@ namespace Please2.Util
 
         private async void DisambiguatePersonal(ResponderModel data)
         {            
-            List<string> types = new List<string>();
-
             string field = data.field;
 
             string type = data.type;
-
-            types.Add(type);
 
             object payload;
 
             if (field.Contains("."))
             {
-                payload = FindOrReplace(field);
+                //payload = FindOrReplace(field);
+                payload = Find(field);
             }
             else
             {
@@ -343,7 +361,6 @@ namespace Please2.Util
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.PudEndpoint + "disambiguate", "POST", postData);
 
@@ -370,7 +387,8 @@ namespace Please2.Util
                     {
                         if (field.Contains("."))
                         {
-                            FindOrReplace(field, response[type]);
+                            //FindOrReplace(field, response[type]);
+                            Replace(field, response[type]);
                         }
                         else
                         {
@@ -543,7 +561,12 @@ namespace Please2.Util
                             switch (templateName)
                             { 
                                 // also add override for news so we can set news in a pivot view
+                                // really, images should go to list with a flag to indicate grid view with
+                                // a way to dynamically set the grid cell sizes
+                                // then, we need a way to handle image taps that will redirect to the full size image page
                                 case "images":
+                                    page = ViewModelLocator.ImagesPageUri;
+
                                     var images = ViewModelLocator.GetViewModelInstance<ImagesViewModel>();
 
                                     var enumer = CreateTypedList(templateName, structured["items"]);
@@ -828,47 +851,62 @@ namespace Please2.Util
             return data;
         }
 
-        /*
         protected void Replace(string field, object type)
         {
             var fields = field.Split('.').ToList();
 
+            var last = fields[fields.Count - 1];
 
+            // convert to generic object
+            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+
+            var t = fields.Aggregate(context, (a, b) =>
+            {
+                if (b == last)
+                {
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                }
+                else
+                {
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                }
+            }
+            );
+
+            // convert back to classifier model
+            this.mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(context));
         }
-        */
 
-        /*
-        protected void Find(string field)
+        protected object Find(string field)
         {
             var fields = field.Split('.').ToList();
 
-            var myTest = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>("{\"action\":\"create\",\"model\":\"hotel_booking\",\"payload\":{\"duration\":null,\"start_date\":null,\"location\":null}}");
+            // convert to generic object
+            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
 
-            var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(myTest));
+            return fields.Aggregate(context, (a, b) => ((Newtonsoft.Json.Linq.JObject)a)[b]);
 
-            var stackToVisit = new Stack<Newtonsoft.Json.Linq.JObject>();
-
-            stackToVisit.Push(jObject);
-
-            // keep visiting iterating until the stack of dictionaries to visit is empty
-            while (stackToVisit.Count > 0)
+            /*
+            return fields.Aggregate(context, (a, b) =>
             {
-                var next = stackToVisit.Pop();
-
-                var res = fields.Aggregate((a, b) =>
+                if (a.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
                 {
-                    return 
-                });
-            }
-
-            Debug.WriteLine(res);
-
+                    Debug.WriteLine("Find A");
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                }
+                else
+                {
+                    Debug.WriteLine("Find B");
+                    return b;
+                }
+            });
+             */
         }
-        */
 
         // if type is null, it's a find. 
         // if type has a value, it's a replace
         // TODO: REFACTOR THIS POS. SPLIT FIND AND REPLACE INTO TWO SEPERATE METHODS
+        /*
         private object FindOrReplace(string field, object type = null)
         {
             try
@@ -952,7 +990,7 @@ namespace Please2.Util
                 return null;
             }
         }
-
+        */
         private async Task<Dictionary<string, object>> ReplaceLocation(Dictionary<string, object> payload)
         {
             try

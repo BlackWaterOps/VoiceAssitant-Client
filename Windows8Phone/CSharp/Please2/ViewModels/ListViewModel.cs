@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 
+using Please2.Models;
 using Please2.Util;
 
 namespace Please2.ViewModels
@@ -49,11 +51,58 @@ namespace Please2.ViewModels
             }
         }
 
-        public ListViewModel()
+        INavigationService navigationService;
+
+        public RelayCommand<EventModel> EventItemSelection { get; set; }
+        public RelayCommand<MoviesModel> MovieItemSelection { get; set; }
+        public RelayCommand<ShoppingModel> ShoppingItemSelection { get; set; }
+        public RelayCommand<NewsModel> NewsItemSelection { get; set; }
+        public RelayCommand<RealEstateModel> RealEstateItemSelection { get; set; }
+        public RelayCommand<string> ImageItemSelection { get; set; }
+
+        public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
+            this.navigationService = navigationService;
+
+            AttachEventHandlers();
+
             FlightTest();
         }
 
+        private void AttachEventHandlers()
+        {
+            EventItemSelection = new RelayCommand<EventModel>(EventItemSelected);
+            MovieItemSelection = new RelayCommand<MoviesModel>(MovieItemSelected);
+            ShoppingItemSelection = new RelayCommand<ShoppingModel>(ShoppingItemSelected);
+            ImageItemSelection = new RelayCommand<string>(ImageItemSelected);
+        }
+
+        #region event handlers
+        public void EventItemSelected(EventModel e)
+        {
+            // navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
+            navigationService.NavigateTo(new Uri("/Views/Details.xaml?template=event&id=" + e.id, UriKind.Relative));
+        }
+
+        public void MovieItemSelected(MoviesModel movie)
+        {
+            // navigate to generic details page with movies id and template name
+            navigationService.NavigateTo(new Uri("/Views/Details.xaml?template=movie&id=" + movie.id, UriKind.Relative));
+        }
+
+        public void ShoppingItemSelected(ShoppingModel product)
+        {
+            // navigate to generic details page with movies id and template name
+            navigationService.NavigateTo(new Uri(product.url, UriKind.Absolute));
+        }
+
+        public void ImageItemSelected(string imageUrl)
+        {
+            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
+        }
+        #endregion
+
+        #region tests
         private void FlightTest()
         {
             try
@@ -85,7 +134,7 @@ namespace Please2.ViewModels
 
         private void EventTest()
         {
-
+           
         }
 
         private void MovieTest()
@@ -97,5 +146,6 @@ namespace Please2.ViewModels
         {
 
         }
+        #endregion
     }
 }

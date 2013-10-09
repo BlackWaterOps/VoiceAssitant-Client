@@ -132,7 +132,7 @@ namespace Please2
 
             //var myTest = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>("{\"action\":\"create\",\"model\":\"hotel_booking\",\"payload\":{\"duration\":null,\"start_date\":null,\"location\":null}}");
 
-            // Find("payload.location.city");
+            // Replace("payload.location.city", "glendale");
 
             // PREPEND_TO TEST
             //var test = "{\"action\": \"create\",\"model\": \"email\",\"payload\": {\"message\": \"test\",\"contact\": {\"candidates\": [\"brandon\",\"this\",\"is\",\"a\"],\"prepend_to\": \"message\"}}}";
@@ -554,13 +554,9 @@ namespace Please2
 
         protected async void DisambiguateActive(string data)
         {
-            List<string> types = new List<string>();
-
             string  field = tempContext.field;
 
             string type = tempContext.type;
-
-            types.Add(type);
 
             string payload = data;
 
@@ -568,7 +564,6 @@ namespace Please2
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
 
             try
             {                
@@ -584,14 +579,10 @@ namespace Please2
         }
 
         protected async void DisambiguatePassive(ResponderModel data)
-        {
-            List<string> types = new List<string>();
-           
+        {           
             string field = data.field;
 
             string type = data.type;
-
-            types.Add(type);
 
             object payload;
 
@@ -620,7 +611,6 @@ namespace Please2
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
             postData.device_info = deviceInfo;
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", "POST", postData);
@@ -630,14 +620,10 @@ namespace Please2
         }
 
         protected async void DisambiguatePersonal(ResponderModel data)
-        {          
-            List<string> types = new List<string>();
-  
+        {            
             string field = data.field;
 
             string type = data.type;
-
-            types.Add(type);
 
             object payload;
 
@@ -654,7 +640,6 @@ namespace Please2
 
             postData.payload = payload;
             postData.type = type;
-            postData.types = types;
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.PudEndpoint + "disambiguate", "POST", postData);
             
@@ -930,44 +915,58 @@ namespace Please2
             return data;
         }
 
-        /*
         protected void Replace(string field, object type)
         {
             var fields = field.Split('.').ToList();
 
+            var last = fields[fields.Count - 1];
 
+            // convert to generic object
+            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+
+            var t = fields.Aggregate(context, (a, b) =>
+            {
+                if (b == last)
+                {
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                }
+                else
+                {
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                }
+            }
+            );
+
+            // convert back to classifier model
+            this.mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(context));
         }
-        */
 
-        /*
-        protected void Find(string field)
+        protected object Find(string field)
         {
             var fields = field.Split('.').ToList();
 
-            var myTest = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>("{\"action\":\"create\",\"model\":\"hotel_booking\",\"payload\":{\"duration\":null,\"start_date\":null,\"location\":null}}");
+            // convert to generic object
+            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
 
-            var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(myTest));
+            return fields.Aggregate(context, (a, b) => ((Newtonsoft.Json.Linq.JObject)a)[b]);
 
-            var stackToVisit = new Stack<Newtonsoft.Json.Linq.JObject>();
-
-            stackToVisit.Push(jObject);
-
-            // keep visiting iterating until the stack of dictionaries to visit is empty
-            while (stackToVisit.Count > 0)
+            /*
+            return fields.Aggregate(context, (a, b) =>
             {
-                var next = stackToVisit.Pop();
-
-                var res = fields.Aggregate((a, b) =>
+                if (a.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
                 {
-                    return 
-                });
-            }
-
-            Debug.WriteLine(res);
-
+                    Debug.WriteLine("Find A");
+                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                }
+                else
+                {
+                    Debug.WriteLine("Find B");
+                    return b;
+                }
+            });
+             */
         }
-        */
-
+        
         // if type is null, it's a find. 
         // if type has a value, it's a replace
         // TODO: REFACTOR THIS POS. SPLIT FIND AND REPLACE INTO TWO SEPERATE METHODS

@@ -30,7 +30,7 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
+            /*
             try
             {
                 RunTest("fitbit");
@@ -39,6 +39,7 @@ namespace Please2.Views
             {
                 Debug.WriteLine(err.Message);
             }
+            */
         }
 
         private void RunTest(string name)
