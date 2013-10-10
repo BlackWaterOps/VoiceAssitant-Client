@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,22 +9,34 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
+using Newtonsoft.Json.Linq;
+
 using Please2.Models;
 using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
-        private string pageTitle;
-
-        public string PageTitle
+        private string title;
+        public string Title
         {
-            get { return pageTitle; }
+            get { return title; }
             set
             {
-                pageTitle = value;
-                RaisePropertyChanged("PageTitle");
+                title = value;
+                RaisePropertyChanged("Title");
+            }
+        }
+
+        private string subTitle;
+        public string SubTitle
+        {
+            get { return subTitle; }
+            set
+            {
+                subTitle = value;
+                RaisePropertyChanged("SubTitle");
             }
         }
 
@@ -81,13 +94,17 @@ namespace Please2.ViewModels
         public void EventItemSelected(EventModel e)
         {
             // navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
-            navigationService.NavigateTo(new Uri("/Views/Details.xaml?template=event&id=" + e.id, UriKind.Relative));
+            var uri = String.Format(ViewModelLocator.DetailsUri, "event", e.id);
+
+            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void MovieItemSelected(MoviesModel movie)
         {
             // navigate to generic details page with movies id and template name
-            navigationService.NavigateTo(new Uri("/Views/Details.xaml?template=movie&id=" + movie.id, UriKind.Relative));
+            var uri = String.Format(ViewModelLocator.DetailsUri, "movie", movie.id);
+
+            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void ShoppingItemSelected(ShoppingModel product)
@@ -101,6 +118,63 @@ namespace Please2.ViewModels
             navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
         }
         #endregion
+
+        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        {
+            var ret = new Dictionary<string, object>();
+
+            var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+
+            if (structured.ContainsKey("items"))
+            {
+                title = templateName + " results";
+
+                if (templates[templateName] == null)
+                {
+                    Debug.WriteLine("template not found in TemplateDictionary");
+                }
+
+                template = templates[templateName] as DataTemplate;
+
+                listResults = CreateTypedList(templateName, structured["items"]);
+            }
+
+            // nothing really to send back. everything is set on this page
+            return ret;
+        }
+
+        private IEnumerable<object> CreateTypedList(string name, object items)
+        {
+            IEnumerable<object> ret = new List<object>();
+
+            var arr = items as JArray;
+
+            switch (name)
+            {
+                case "fuel":
+                    ret = arr.ToObject<IEnumerable<AltFuelModel>>();
+                    break;
+
+                case "product":
+                case "shopping":
+                    ret = arr.ToObject<IEnumerable<ShoppingModel>>();
+                    break;
+
+                case "events":
+                    ret = arr.ToObject<IEnumerable<EventModel>>();
+                    break;
+
+                case "movies":
+                    ret = arr.ToObject<IEnumerable<MoviesModel>>();
+                    break;
+
+                case "real_estate":
+                    ret = arr.ToObject<IEnumerable<RealEstateModel>>();
+                    break;
+            }
+
+            return ret;
+        }
 
         #region tests
         private void FlightTest()
@@ -124,7 +198,7 @@ namespace Please2.ViewModels
 
                 Template = templates["flights"] as DataTemplate;
 
-                pageTitle = "flights";
+                title = "flights";
             }
             catch (Exception err)
             {

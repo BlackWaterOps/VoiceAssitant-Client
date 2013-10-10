@@ -18,6 +18,7 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Ioc;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Resources;
@@ -41,6 +42,8 @@ namespace Please2.Util
 
         INavigationService navigationService { get; set; }
 
+        public string OriginalQuery { get; private set; }
+
         public PleaseService()
         {
             Debug.WriteLine(testCounter);
@@ -59,6 +62,8 @@ namespace Please2.Util
             //navigationService.Navigating += OnNavigating;
         }
 
+
+        // TODO: change name to Query
         private void HandleUserInput(QueryMessage message)
         {
             HandleUserInput(message.Query);
@@ -66,6 +71,8 @@ namespace Please2.Util
 
         public void HandleUserInput(string query)
         {
+            OriginalQuery = query;
+
             currentState.Response = query;
 
             if (currentState.State == "inprogress" || currentState.State == "error")
@@ -93,9 +100,9 @@ namespace Please2.Util
                         break;
 
                     case "disambiguate:personal":
-                        //ActorInterceptor(mainContext.model);
+                        ActorInterceptor(mainContext.model);
 
-                        DisambiguatePersonal((ResponderModel)currentState.Response);
+                        //DisambiguatePersonal((ResponderModel)currentState.Response);
                         break;
 
                     case "disambiguate:active":
@@ -139,7 +146,7 @@ namespace Please2.Util
                 var templates = App.Current.Resources["ListResourceDictionary"] as ResourceDictionary;
                
                 // TODO: need to cast against model not dict
-                var list = ((Newtonsoft.Json.Linq.JToken)simple["list"]).ToObject<List<Dictionary<string, object>>>();
+                var list = ((JToken)simple["list"]).ToObject<List<Dictionary<string, object>>>();
 
                 var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
@@ -274,7 +281,7 @@ namespace Please2.Util
 
             string type = tempContext.type;
 
-            var list = (simple.ContainsKey("list")) ? (Newtonsoft.Json.Linq.JArray)simple["list"] : new Newtonsoft.Json.Linq.JArray();
+            var list = (simple.ContainsKey("list")) ? (JArray)simple["list"] : new JArray();
 
             string payload = data;
 
@@ -517,7 +524,7 @@ namespace Please2.Util
                 {
                     //Debug.WriteLine("Actor response handler");
                     Show(response.show, response.speak);
-                    ActorResponseHandler(actor, response);
+                    ActorResponseHandler2(actor, response);
                 }
             }
             else
@@ -529,9 +536,143 @@ namespace Please2.Util
             return;
         }
 
+        private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
+        {
+            var ret = new Dictionary<string, object>();
+            
+            var locator = App.Current.Resources["Locator"] as ViewModelLocator;
+
+            try
+            {
+                var viewmodelProperty = locator.GetType().GetProperty((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "ViewModel");
+
+                if (viewmodelProperty != null)
+                {
+                    var viewModel = viewmodelProperty.GetValue(locator, null);
+
+                    var populateMethod = viewModel.GetType().GetMethod("Populate");
+
+                    if (populateMethod != null)
+                    {
+                        var parameters = new object[] { templateName, structured };
+
+                        return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("reflection: 'Populate' method not implemented in " + templateName);
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("reflection: view model " + templateName + " could not be found");
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
+
+            return ret;
+        }
+
+        private void ActorResponseHandler2(string actor, ActorModel response)
+        {
+            if (response.show.structured != null && response.show.structured.ContainsKey("template"))
+            {
+                Dictionary<string, object> structured = response.show.structured;
+
+                string[] template = (structured["template"] as string).Split(':');
+
+                var type = template[0];
+                var templateName = template[1];
+
+                Dictionary<string, object> titles;
+
+                ResourceDictionary templates;
+
+                SingleViewModel singleViewModel;
+
+                Uri page = ViewModelLocator.ConversationPageUri;
+
+                switch (type)
+                {
+                    case "list":
+                        templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+
+                        switch (templateName)
+                        {
+                            // override. list items that act like single items
+                            case "images":
+                            case "news":
+                                titles = PopulateViewModel(templateName, structured);
+
+                                singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                                if (titles.ContainsKey("page"))
+                                {
+                                    page = (Uri)titles["page"];
+                                }
+
+                                if (titles.ContainsKey("title"))
+                                {
+                                    singleViewModel.Title = (string)titles["title"];
+                                }
+
+                                if (titles.ContainsKey("subtitle"))
+                                {
+                                    singleViewModel.SubTitle = (string)titles["subtitle"];
+                                }
+                                break;
+
+                            default:
+                                page = ViewModelLocator.ListResultsPageUri;
+
+                                titles = PopulateViewModel("list", structured);
+                                break;
+                        }
+                        break;
+
+                    case "single":
+                        templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+
+                        titles = PopulateViewModel(templateName, structured);
+
+                        singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                        if (templates[templateName] != null)
+                        {
+                            singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+                        }
+                        else
+                        {
+                            Debug.WriteLine("single template not found: " + templateName);
+                        }
+
+                        if (titles.ContainsKey("page"))
+                        {
+                            page = (Uri)titles["page"];
+                        }
+
+                        if (titles.ContainsKey("title"))
+                        {
+                            singleViewModel.Title = (string)titles["title"];
+                        }
+
+                        if (titles.ContainsKey("subtitle"))
+                        {
+                            singleViewModel.SubTitle = (string)titles["subtitle"];
+                        }
+                        break;
+                }
+
+                navigationService.NavigateTo(page);
+            }
+        }
+
         // TODO: this method needs refactoring/rethinking.
-        // possibility is to pass the construction of a usercontrol to the list or single viewmodel and bind that the xaml.
-        // this would mean creating helper methods that create the individual user controls. A lot kleener
+        // Each one of these cases should be handled by their respective viewmodel
+        /*
         private void ActorResponseHandler(string actor, ActorModel response)
         {
             try
@@ -544,12 +685,14 @@ namespace Please2.Util
 
                     var type = template[0];
                     var templateName = template[1];
-                    
-                    Newtonsoft.Json.Linq.JObject resultItem;
+
+                    JObject resultItem;
 
                     Uri page = ViewModelLocator.ConversationPageUri;
 
                     ResourceDictionary templates;
+
+                    SingleViewModel singleViewModel;
 
                     switch (type)
                     {
@@ -557,10 +700,9 @@ namespace Please2.Util
                             page = ViewModelLocator.ListResultsPageUri;
 
                             templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
-                            
+
                             switch (templateName)
-                            { 
-                                // also add override for news so we can set news in a pivot view
+                            {
                                 // really, images should go to list with a flag to indicate grid view with
                                 // a way to dynamically set the grid cell sizes
                                 // then, we need a way to handle image taps that will redirect to the full size image page
@@ -574,11 +716,26 @@ namespace Please2.Util
                                     images.ImageList = enumer.ToList();
                                     break;
 
+                                case "news":
+                                    page = ViewModelLocator.SingleResultPageUri;
+
+                                    var news = ViewModelLocator.GetViewModelInstance<NewsViewModel>();
+
+                                    var stories = CreateTypedList(templateName, structured["items"]);
+
+                                    news.Stories = stories.Cast<NewsModel>().ToList<NewsModel>();
+
+                                    singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                                    singleViewModel.Title = "news results";
+                                    singleViewModel.SubTitle = String.Format("news search on \"{0}\"", OriginalQuery);
+                                    break;
+
                                 default:
                                     var list = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
-                                    list.PageTitle = templateName + " results";
-                            
+                                    list.Title = templateName + " results";
+
                                     if (templates[templateName] == null)
                                     {
                                         Debug.WriteLine("template not found in TemplateDictionary");
@@ -587,18 +744,18 @@ namespace Please2.Util
                                     list.Template = templates[templateName] as DataTemplate;
 
                                     list.ListResults = CreateTypedList(templateName, structured["items"]);
-                                    break;     
+                                    break;
                             }
                             break;
 
                         case "single":
-                            resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
+                            resultItem = structured["item"] as JObject;
 
                             page = ViewModelLocator.SingleResultPageUri;
 
                             templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
-                            
-                            var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                            singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
 
                             try
                             {
@@ -611,10 +768,10 @@ namespace Please2.Util
 
                             switch (templateName)
                             {
-                                case "weather":                                    
+                                case "weather":
                                     var weather = ViewModelLocator.GetViewModelInstance<WeatherViewModel>();
 
-                                    var weatherResults = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<WeatherModel>();
+                                    var weatherResults = ((JToken)structured["item"]).ToObject<WeatherModel>();
 
                                     // since the api drops the daytime info for today part way through the afternoon, 
                                     // lets fill in the missing pieces with what we do have
@@ -633,14 +790,14 @@ namespace Please2.Util
                                     weather.CurrentCondition = weatherResults.now;
 
                                     singleViewModel.Title = "weather";
-                                    singleViewModel.SubTitle =  DateTime.Now.ToString("dddd, MMMM d, yyyy");
+                                    singleViewModel.SubTitle = DateTime.Now.ToString("dddd, MMMM d, yyyy");
                                     break;
 
                                 case "fitbit":
                                     // depending on other structures, might need a switch for weight, food, and exercise
                                     var fitbit = ViewModelLocator.GetViewModelInstance<FitbitViewModel>();
 
-                                    resultItem = structured["item"] as Newtonsoft.Json.Linq.JObject;
+                                    resultItem = structured["item"] as JObject;
 
                                     fitbit.Points = CreateTypedList(templateName, resultItem["timeseries"]);
                                     fitbit.Goals = resultItem["goals"].ToObject<FitbitGoals>();
@@ -648,14 +805,14 @@ namespace Please2.Util
                                     singleViewModel.Title = "fitbit";
                                     singleViewModel.SubTitle = "";
                                     break;
-                                
+
                                 case "stock":
                                     var stock = ViewModelLocator.GetViewModelInstance<StockViewModel>();
 
-                                    stock.StockData = ((Newtonsoft.Json.Linq.JToken)structured["item"]).ToObject<StockModel>();
+                                    stock.StockData = ((JToken)structured["item"]).ToObject<StockModel>();
 
                                     var direction = stock.StockData.share_price_direction;
-                                    
+
                                     if (direction == "down")
                                     {
                                         stock.DirectionSymbol = "\uf063";
@@ -682,12 +839,14 @@ namespace Please2.Util
                 Debug.WriteLine("ActorResponseHandler - " + err.Message);
             }
         }
-   
+        
+        // this should live in ListViewModel.xaml
+        // with cases only for models handled in list ie.(no images or news)
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
             IEnumerable<object> ret = new List<object>();
 
-            var arr = items as Newtonsoft.Json.Linq.JArray;
+            var arr = items as JArray;
 
             switch (name)
             {
@@ -723,6 +882,7 @@ namespace Please2.Util
 
             return ret;
         }
+        */
 
         // these are actor's that will be handled locally. no need to run out to web service
         // all the data needed to fulfill the tasks should be in the mainContext var.
@@ -835,7 +995,7 @@ namespace Please2.Util
                 return data;
             }
 
-            var prepend = (string)((Newtonsoft.Json.Linq.JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
+            var prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
 
             var field = (string)data["prepend_to"];
 
@@ -858,23 +1018,23 @@ namespace Please2.Util
             var last = fields[fields.Count - 1];
 
             // convert to generic object
-            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+            var context = JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
 
             var t = fields.Aggregate(context, (a, b) =>
             {
                 if (b == last)
                 {
-                    return ((Newtonsoft.Json.Linq.JObject)a)[b] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                    return ((JObject)a)[b] = JToken.FromObject(type);
                 }
                 else
                 {
-                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                    return ((JObject)a)[b];
                 }
             }
             );
 
             // convert back to classifier model
-            this.mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(context));
+            this.mainContext = JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(context));
         }
 
         protected object Find(string field)
@@ -882,17 +1042,17 @@ namespace Please2.Util
             var fields = field.Split('.').ToList();
 
             // convert to generic object
-            var context = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+            var context = JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
 
-            return fields.Aggregate(context, (a, b) => ((Newtonsoft.Json.Linq.JObject)a)[b]);
+            return fields.Aggregate(context, (a, b) => ((JObject)a)[b]);
 
             /*
             return fields.Aggregate(context, (a, b) =>
             {
-                if (a.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+                if (a.GetType() == typeof(JObject))
                 {
                     Debug.WriteLine("Find A");
-                    return ((Newtonsoft.Json.Linq.JObject)a)[b];
+                    return ((JObject)a)[b];
                 }
                 else
                 {
@@ -917,9 +1077,9 @@ namespace Please2.Util
                 var fields = field.Split('.').ToList();
 
                 // turn our context into a jobject we can work with
-                var jObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(SerializeData(mainContext));
+                var jObject = JsonConvert.DeserializeObject<JObject>(SerializeData(mainContext));
 
-                var stackToVisit = new Stack<Newtonsoft.Json.Linq.JObject>();
+                var stackToVisit = new Stack<JObject>();
 
                 stackToVisit.Push(jObject);
 
@@ -935,19 +1095,19 @@ namespace Please2.Util
 
                             if (type != null)
                             {
-                                nextObject.Add(fields.First(), Newtonsoft.Json.Linq.JToken.FromObject(type));
+                                nextObject.Add(fields.First(), JToken.FromObject(type));
                             }
                         }
                         else
                         {
                             for (int i = 0; i < nextObject.Count; i++)
                             {
-                                var keyValuePair = nextObject.ElementAt<KeyValuePair<string, Newtonsoft.Json.Linq.JToken>>(i);
+                                var keyValuePair = nextObject.ElementAt<KeyValuePair<string, JToken>>(i);
 
                                 if (fields.Count() > 1 && keyValuePair.Key == fields.First())
                                 {
                                     fields.RemoveAt(0);
-                                    stackToVisit.Push(keyValuePair.Value as Newtonsoft.Json.Linq.JObject);
+                                    stackToVisit.Push(keyValuePair.Value as JObject);
                                 }
                                 else if (keyValuePair.Key == fields.First())
                                 {
@@ -959,7 +1119,7 @@ namespace Please2.Util
                                     {
                                         try
                                         {
-                                            nextObject[keyValuePair.Key] = Newtonsoft.Json.Linq.JToken.FromObject(type);
+                                            nextObject[keyValuePair.Key] = JToken.FromObject(type);
                                         }
                                         catch (Exception err)
                                         {
@@ -969,7 +1129,7 @@ namespace Please2.Util
                                 }
                                 else if (nextObject[fields.First()] == null && type != null)
                                 {
-                                    nextObject.Add(fields.First(), Newtonsoft.Json.Linq.JToken.FromObject(type));
+                                    nextObject.Add(fields.First(), JToken.FromObject(type));
                                 }
                             }
                         }
@@ -979,7 +1139,7 @@ namespace Please2.Util
                 // turn our jobject back into the proper context model
                 if (type != null)
                 {
-                    mainContext = Newtonsoft.Json.JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(jObject));
+                    mainContext = JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(jObject));
                 }
 
                 return null;
@@ -1125,7 +1285,7 @@ namespace Please2.Util
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
             jsonSettings.NullValueHandling = NullValueHandling.Include;
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(data, jsonSettings);
+            return JsonConvert.SerializeObject(data, jsonSettings);
         }
         #endregion
     }

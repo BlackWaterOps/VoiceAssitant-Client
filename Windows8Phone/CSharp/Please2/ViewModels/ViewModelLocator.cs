@@ -29,6 +29,8 @@ namespace Please2.ViewModels
     {
         public const string FullImageUri = @"/Views/FullImage.xaml?image={0}";
 
+        public const string DetailsUri = @"/Views/Details.xaml?template={0}&id={1}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/Views/MainPage2.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
@@ -50,18 +52,6 @@ namespace Please2.ViewModels
         public static readonly Uri SearchPageUri = new Uri("/Views/Search.xaml", UriKind.Relative);
 
         public static readonly Uri ImagesPageUri = new Uri("/Views/Images.xaml", UriKind.Relative);
-
-
-        // When we're all said and done, we should only need the Uris above
-        /*
-        public static readonly Uri FitbitResultsPageUri = new Uri("/Views/Fitbit.xaml", UriKind.Relative);
-
-        public static readonly Uri WeatherPageUri = new Uri("/Views/Weather.xaml", UriKind.Relative);
-
-        public static readonly Uri StockPageUri = new Uri("/Views/Stock.xaml", UriKind.Relative);
-
-        public static readonly Uri GeoPoliticsPageUri = new Uri("/Views/GeoPolitics.xaml", UriKind.Relative);
-        */
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -127,6 +117,16 @@ namespace Please2.ViewModels
         public FitbitViewModel FitbitViewModel
         {
             get { return GetViewModelInstance<FitbitViewModel>(); }
+        }
+
+        public NewsViewModel NewsViewModel
+        {
+            get { return GetViewModelInstance<NewsViewModel>(); }
+        }
+
+        public ImagesViewModel ImagesViewModel
+        {
+            get { return GetViewModelInstance<ImagesViewModel>(); }
         }
 
         public static void Cleanup()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Navigation;
 
@@ -43,9 +44,14 @@ namespace Please2.Util
 
     public interface IPleaseService
     {
-        //INavigationService navigationService { get; set; }
-
+        // void Query(string query);
         void HandleUserInput(string query);
+        string OriginalQuery { get; }
+    }
+
+    public interface IViewModel
+    {
+        Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured);
     }
 
     public interface ITaskService

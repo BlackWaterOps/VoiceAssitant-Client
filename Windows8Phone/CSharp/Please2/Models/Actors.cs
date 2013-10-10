@@ -110,7 +110,7 @@ namespace Please2.Models
         public string url { get; set; }
         public string summary { get; set; }
         public string source { get; set; }
-        public string date { get; set; }
+        public DateTime date { get; set; }
     }
 
     /* Movies */

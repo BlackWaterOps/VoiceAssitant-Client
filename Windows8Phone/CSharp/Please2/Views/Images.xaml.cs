@@ -101,6 +101,7 @@ namespace Please2.Views
         /// <param name="e"></param> 
         protected void OnManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
+            /*
             if (e.PinchManipulation != null)
             {
                 e.Handled = true;
@@ -125,6 +126,7 @@ namespace Please2.Views
                 pinching = false;
                 originalScale = scale = coercedScale;
             }
+            */
         }
 
         /// <summary>  
@@ -208,7 +210,7 @@ namespace Please2.Views
         }
 
         private void ImagesFull_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
-        {
+        {   /*
             var listBox = sender as ListBox;
 
             //if ()
@@ -245,7 +247,7 @@ namespace Please2.Views
                 //ListTransform.TranslateX = e.DeltaManipulation.Translation.X;
                 //ListTransform.TranslateY = e.DeltaManipulation.Translation.Y;
             }
-
+            */
         }
     }    
 }

@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using GalaSoft.MvvmLight.Ioc;
-
+using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.UserData;
+
+using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.ViewModels;
@@ -85,23 +91,32 @@ namespace Please2.Util
 
         public void ComposeSms()
         {
+            Debug.WriteLine("compose sms");
+
             var candidates = GetCandidates();
 
             if (candidates.Count > 0)
             {
                 GetContacts(candidates, (contactList, unused_tokens) =>
                 {
-                    if (contactList.Count == 1)
+                    if (contactList.Count > 0)
                     {
-                        var contact = contactList.First();
+                        if (contactList.Count == 1)
+                        {
+                            var contact = contactList.First();
 
-                        DoSmsTask(contact, unused_tokens);
+                            DoSmsTask(contact, unused_tokens);
+                        }
+                        else
+                        {
+                            this.unused_tokens = unused_tokens;
+
+                            ShowContactList(contactList);
+                        }
                     }
                     else
                     {
-                        this.unused_tokens = unused_tokens;
-
-                        ShowContactList(contactList);
+                        NoContactFound();
                     }
                 });
             }
@@ -120,17 +135,25 @@ namespace Please2.Util
             {
                 GetContacts(candidates, (contactList, unused_tokens) =>
                     {
-                        if (contactList.Count == 1)
+                        if (contactList.Count > 0)
                         {
-                            var contact = contactList.First();
+                            if (contactList.Count == 1)
+                            {
+                                var contact = contactList.First();
 
-                            DoPhoneCallTask(contact);
+                                DoPhoneCallTask(contact);
+                            }
+                            else
+                            {
+                                this.unused_tokens = unused_tokens;
+
+                                ShowContactList(contactList);
+                            }
                         }
                         else
                         {
-                            this.unused_tokens = unused_tokens;
-
-                            ShowContactList(contactList);
+                            // dialog service error message
+                            NoContactFound();
                         }
                     }
                 );
@@ -155,6 +178,8 @@ namespace Please2.Util
 
             cal.Show();
         }
+
+        // TODO: get appointment(s)
 
         public void GetDirections()
         {
@@ -184,9 +209,9 @@ namespace Please2.Util
         }
 
         #region helpers
-        private Newtonsoft.Json.Linq.JArray GetCandidates()
+        private JArray GetCandidates()
         {
-            var candidates = new Newtonsoft.Json.Linq.JArray();
+            var candidates = new JArray();
 
             if (payload.ContainsKey("contact"))
             {
@@ -199,7 +224,7 @@ namespace Please2.Util
         }
 
         // NOTE: a callback must be used because searchAsync is not awaitable
-        private void GetContacts(Newtonsoft.Json.Linq.JArray candidates, Action<List<Contact>, List<string>> callback)
+        private void GetContacts(JArray candidates, Action<List<Contact>, List<string>> callback)
         {
             var contacts = new Contacts();
 
@@ -249,21 +274,25 @@ namespace Please2.Util
             }
         }
 
+        private void NoContactFound()
+        {
+            var dialogService = (IDialogService)(App.Current.RootVisual as PhoneApplicationFrame).Content;
+
+            dialogService.ShowMessageBox("I could not find a contact in your address book", "Contact Lookup");
+        }
+
         // pass any needed data to listviewmodel inorder to complete the process??
         // possibly consider a callback with the choosen contact(s) passed back
         private void ShowContactList(List<Contact> contacts)
         {
-            if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
-            {
-                SimpleIoc.Default.Register<ListViewModel>();
-            }
+            Debug.WriteLine("show contact list. Count " + contacts.Count);
 
-            var listView = SimpleIoc.Default.GetInstance<ListViewModel>();
+            var listView = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
             //set data
             listView.ListResults = contacts.ToList<object>();
 
-            navigationService.NavigateTo(new Uri("/Views/ListResults.xaml", UriKind.Relative));
+            navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
         }
 
         private void DoEmailTask(Contact contact, List<string> unused_tokens)
@@ -287,9 +316,9 @@ namespace Please2.Util
             var task = new SmsComposeTask();
 
             /*
-            var contact = (Newtonsoft.Json.Linq.JObject)payload["contact"];
-            var numbers = (Newtonsoft.Json.Linq.JArray)contact.GetValue("phone_numbers");
-            var number = (Newtonsoft.Json.Linq.JObject)numbers.First;
+            var contact = (JObject)payload["contact"];
+            var numbers = (JArray)contact.GetValue("phone_numbers");
+            var number = (JObject)numbers.First;
             */
 
             task.To = contact.PhoneNumbers.First().PhoneNumber;

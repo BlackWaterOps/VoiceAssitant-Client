@@ -8,13 +8,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-using GalaSoft.MvvmLight.Command;
+using Newtonsoft.Json.Linq;
 
 using Please2.Models;
+using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
         private IEnumerable<object> points;
         public IEnumerable<object> Points
@@ -38,17 +39,65 @@ namespace Please2.ViewModels
             }
         }
 
-        // keep this around as a working command example
-        public RelayCommand ChartTap { get; set; }
-
-        public FitbitViewModel()
+        public FitbitViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
-            ChartTap = new RelayCommand(ChartTapHandler);
+
         }
 
-        public void ChartTapHandler()
+        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            Debug.WriteLine("chart tap handler");
+            var ret = new Dictionary<string, object>();
+
+            string[] template = (structured["template"] as string).Split(':');
+
+            if (structured.ContainsKey("item"))
+            {
+                var item = structured["item"] as JObject;
+
+                switch (template.Last())
+                {
+                    case "weight":
+                        ret = PopulateWeight(item);
+                        break;
+
+                    case "food":
+                        ret = PopulateFood(item);
+                        break;
+
+                    case "fitness":
+                        ret = PopulateFitness(item);
+                        break;
+                }    
+            }
+
+            return ret;
+        }
+
+        private Dictionary<string, object> PopulateWeight(JObject item)
+        {
+            var ret = new Dictionary<string, object>();
+
+            points = (item["timeseries"] as JArray).ToObject<IEnumerable<FitbitTimeseries>>();
+            goals = item["goals"].ToObject<FitbitGoals>();
+
+            ret.Add("title", "fitbit");
+            ret.Add("subtitle", "");
+
+            return ret;
+        }
+
+        private Dictionary<string, object> PopulateFood(JObject item)
+        {
+            var ret = new Dictionary<string, object>();
+
+            return ret;
+        }
+
+        private Dictionary<string, object> PopulateFitness(JObject item)
+        {
+            var ret = new Dictionary<string, object>();
+
+            return ret;
         }
     }
 }

@@ -144,9 +144,49 @@ namespace Please2.Util
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string datestring = ((string)value).ToLower();
+            string param = ((string)parameter != null) ? (string)parameter : "";
 
-            return DateTime.Parse(datestring).ToString("ddd, MMM d, yyyy");  
+            string parseString = null;
+
+            switch (param)
+            {
+                case "news":
+                    DateTime storyDate = (DateTime)value;
+
+                    parseString = storyDate.ToString("dddd d, yyyy: h:mm tt");
+                    break;
+
+                case "notifications":
+                    DateTime beginDate = (DateTime)value;
+
+                    DateTime now = DateTime.Now;
+
+                     string date;
+
+                    if (beginDate.Date == now.Date)
+                    {
+                        date = "today ";
+                    }
+                    else if (beginDate.Date == now.AddDays(1).Date)
+                    {
+                        date = "tomorrow ";
+                    }
+                    else
+                    {
+                        date = beginDate.ToString("dddd, MMMM d, yyyy ");
+                    }
+
+                    parseString = date + beginDate.ToString("@ h:mm tt");
+                    break;
+
+                default:
+                    string datestring = ((string)value).ToLower();
+
+                    parseString =  DateTime.Parse(datestring).ToString("ddd, MMM d, yyyy");
+                    break;
+            }
+
+            return parseString;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

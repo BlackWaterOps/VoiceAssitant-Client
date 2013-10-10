@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -215,28 +216,21 @@ namespace Please2.Views
             }
         }
 
-        private void Speak(ShowMessage message)
+        private async void Speak(ShowMessage message)
         {
-            Speak(message.Speak);
+            await Speak(message.Speak);
         }
 
         public async void Speak(string type, string speak = "")
         {
-            try
+            // say response
+            if (type.ToLower() == "please")
             {
-                // say response
-                if (type.ToLower() == "please" && speak != "" && disableSpeech == false)
-                {
-                    await synthesizer.SpeakTextAsync(speak);
-                }
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
+                await Speak(speak);
             }
         }
 
-        public async void Speak(string speak = "")
+        public async Task Speak(string speak = "")
         {
             try
             {
@@ -253,15 +247,10 @@ namespace Please2.Views
 
         private void ProcessQuery(string query)
         {
-            if (!SimpleIoc.Default.IsRegistered<ConversationViewModel>())
-            {
-                SimpleIoc.Default.Register<ConversationViewModel>();
-            }
-
-            var convo = SimpleIoc.Default.GetInstance<ConversationViewModel>();
-
+            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+            
             // add initial query to conversation list
-            convo.AddDialog("user", query);
+            vm.AddDialog("user", query);
 
             // send message to viewmodel to start the api adventure!!
             Messenger.Default.Send<QueryMessage>(new QueryMessage(query));

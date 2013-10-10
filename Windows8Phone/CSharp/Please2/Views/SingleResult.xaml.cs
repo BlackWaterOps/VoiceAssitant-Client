@@ -30,16 +30,17 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            /*
-            try
+
+#if DEBUG
+            string test = String.Empty;
+
+            NavigationContext.QueryString.TryGetValue("test", out test);
+
+            if (!String.IsNullOrEmpty(test))
             {
-                RunTest("fitbit");
+                RunTest(test);
             }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-            }
-            */
+#endif
         }
 
         private void RunTest(string name)

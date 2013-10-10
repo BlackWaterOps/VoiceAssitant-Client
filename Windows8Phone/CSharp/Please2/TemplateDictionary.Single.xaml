@@ -179,138 +179,42 @@
     </DataTemplate>
     
     <!-- News -->
+    <DataTemplate x:Key="news">
+        <phone:Pivot Padding="0,0,0,10" DataContext="{Binding NewsViewModel, Source={StaticResource Locator}}" ItemsSource="{Binding Stories}">
+            <phone:Pivot.HeaderTemplate>
+                <DataTemplate/>
+            </phone:Pivot.HeaderTemplate>
+            <phone:Pivot.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="#999999" 
+                            BorderThickness="3" 
+                            Background="{StaticResource ResultItemBackground}" 
+                            Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="{Binding title}" 
+                                       FontSize="{StaticResource PhoneFontSizeMediumLarge}" 
+                                       TextWrapping="Wrap" 
+                                       Margin="0,0,0,40" 
+                                       FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                                <TextBlock Text="{Binding source, StringFormat='{0} '}" 
+                                           FontSize="{StaticResource PhoneFontSizeSmall}"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding date, Converter={StaticResource PrettyDateConverter}, ConverterParameter=news}" 
+                                           FontSize="{StaticResource PhoneFontSizeSmall}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding summary}" TextWrapping="Wrap" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </phone:Pivot.ItemTemplate>
+        </phone:Pivot>
+    </DataTemplate>
+    
     
     <!-- Dictionary -->
     
     <!-- Flight -->
-    
-    <!-- Notifications -->
-    <!--
-    <DataTemplate x:Key="notifications">
-        <phone:Pivot Title="Please" DataContext="{Binding NotificationsViewModel, Source={StaticResource Locator}}">
-            
-            <phone:PivotItem Header="Reminders">
-                <Grid>
-                    <TextBlock x:Name="RemindersEmpty" 
-                               Text="No Saved Reminders" 
-                               Visibility="{Binding ReminderVisibility, Converter={StaticResource VisibilityConverter}, ConverterParameter=opposite}"/>
-
-                    <phone:LongListSelector
-                                    x:Name="RemindersList"
-                                    ItemsSource="{Binding Reminders}"
-                                    Visibility="{Binding ReminderVisibility}"
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    toolkit:TiltEffect.IsTiltEnabled="True">
-                        <phone:LongListSelector.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
-                                        BorderBrush="Black"
-                                        BorderThickness="2"
-                                        Padding="10" 
-                                        Margin="0,15,0,0">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="85"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-
-                                        <StackPanel Grid.Column="0" Grid.Row="0">
-                                            <Image Source="/Assets/feature.alarm.png" 
-                                                   Width="100" 
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"                                                   
-                                                   Opacity="{Binding BeginTime, Converter={StaticResource NotificationOpacityConverter}}"/>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                                            <TextBlock 
-                                            Text="{Binding Title}" 
-                                            Foreground="White" 
-                                            TextWrapping="NoWrap"
-                                            TextTrimming="WordEllipsis"
-                                            FontSize="30" 
-                                            FontWeight="Bold"/>
-
-                                            <TextBlock 
-                                               Text="{Binding BeginTime, Converter={StaticResource NotificationDateConverter}}"
-                                               Margin="0,10,0,0" 
-                                               Foreground="White" 
-                                               FontSize="20" 
-                                               />
-
-                                            <ToggleButton Click="ReminderToggle_Click"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </phone:LongListSelector.ItemTemplate>
-                    </phone:LongListSelector>
-                </Grid>
-            </phone:PivotItem>
-
-            <phone:PivotItem Header="Alarms">
-                <Grid>
-                    <TextBlock x:Name="AlarmsEmpty" 
-                               Text="No Saved Alarms" 
-                               Visibility="{Binding AlarmVisibility, Converter={StaticResource VisibilityConverter}, ConverterParameter=opposite}"/>
-
-                    <phone:LongListSelector 
-                                    x:Name="AlarmsList"
-                                    ItemsSource="{Binding Alarms}"
-                                    Visibility="{Binding AlarmVisibility}"
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                    toolkit:TiltEffect.IsTiltEnabled="True">
-                        <phone:LongListSelector.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
-                                        BorderBrush="Black"
-                                        Padding="10" 
-                                        Margin="0,15,0,0"
-                                        Tap="AlarmItem_Tapped">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="104"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="6"/>
-                                        </Grid.RowDefinitions>
-
-                                        <StackPanel Grid.Column="0" Grid.Row="0">
-                                            <Image Source="{Binding image}" Width="104" Height="104"/>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                                            <HyperlinkButton x:Name="ShoppingTitle" 
-                                                     NavigateUri="{Binding url}" 
-                                                     TargetName="shopping" 
-                                                     Content="{Binding title}"
-                                                     Style="{StaticResource CustomHyperlinkButtonStyle}"
-                                                     Foreground="Blue" 
-                                                     Margin="-12,0,0,0" 
-                                                     HorizontalAlignment="Left"/>
-                                            <TextBlock x:Name="ShoppingPrice" 
-                                               Text="{Binding price}" 
-                                               Margin="0,10,0,0" 
-                                               Foreground="Black" 
-                                               FontSize="{StaticResource PhoneFontSizeLarge}" 
-                                               FontWeight="SemiBold"/>
-
-                                            <ToggleButton Click="ReminderToggle_Click"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </phone:LongListSelector.ItemTemplate>
-                    </phone:LongListSelector>
-                </Grid>
-            </phone:PivotItem>
-        </phone:Pivot>
-    </DataTemplate>
-    -->
     
     <!-- How to -->
     <DataTemplate x:Key="howto">
