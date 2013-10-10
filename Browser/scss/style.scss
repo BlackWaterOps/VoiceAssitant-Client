@@ -66,7 +66,7 @@ div, p, input {
     border: solid #1f2122 1px;
     @include transition(".2s ease-in-out");
     body.choice & {
-        left: 30%;
+        left: 300px;
     }
 }
 .main-input:focus {
@@ -96,8 +96,9 @@ div, p, input {
     right: 0;
     bottom: 70px;
     overflow: auto;
+    @include transition(".2s ease-in-out"); 
     body.choice & {
-        left: 30%;
+        margin-left: 300px;
     }
 }
 .list-slider {
@@ -106,13 +107,14 @@ div, p, input {
     width: 0;
     top: 0;
     bottom: 0;
+    z-index: 9999;
     background: white;
     @include transition(".2s ease-in-out"); 
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     box-shadow: 0 0 10px black;
     body.choice & {
-        width: 30%;
+        width: 300px;
     }
     
     li {
@@ -218,6 +220,10 @@ div, p, input {
     bottom: 17px;
     z-index: 999;
     display: none;
+    @include transition(".2s ease-in-out"); 
+    body.choice & {
+        margin-left: 310px;
+    }
 }
 
 .webpage {

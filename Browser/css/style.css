@@ -257,7 +257,7 @@ div, p, input {
   transition: .2s ease-in-out; }
   /* line 68, ../scss/style.scss */
   body.choice .main-input {
-    left: 30%; }
+    left: 300px; }
 
 /* line 72, ../scss/style.scss */
 .main-input:focus {
@@ -295,18 +295,24 @@ div, p, input {
   left: 0;
   right: 0;
   bottom: 70px;
-  overflow: auto; }
-  /* line 99, ../scss/style.scss */
+  overflow: auto;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 100, ../scss/style.scss */
   body.choice .board {
-    left: 30%; }
+    margin-left: 300px; }
 
-/* line 103, ../scss/style.scss */
+/* line 104, ../scss/style.scss */
 .list-slider {
   position: fixed;
   left: 0;
   width: 0;
   top: 0;
   bottom: 0;
+  z-index: 9999;
   background: white;
   -webkit-transition: .2s ease-in-out;
   -moz-transition: .2s ease-in-out;
@@ -316,21 +322,21 @@ div, p, input {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-shadow: 0 0 10px black; }
-  /* line 114, ../scss/style.scss */
+  /* line 116, ../scss/style.scss */
   body.choice .list-slider {
-    width: 30%; }
-  /* line 118, ../scss/style.scss */
+    width: 300px; }
+  /* line 120, ../scss/style.scss */
   .list-slider li {
     padding: 10px;
     margin: 0;
     border-bottom: 1px solid #eee;
     background: #f9f9f9;
     cursor: pointer; }
-    /* line 124, ../scss/style.scss */
+    /* line 126, ../scss/style.scss */
     .list-slider li:last-child {
       border: 0; }
 
-/* line 129, ../scss/style.scss */
+/* line 131, ../scss/style.scss */
 .bubble {
   width: 100%;
   padding: 15px;
@@ -343,40 +349,40 @@ div, p, input {
   -ms-box-sizing: border-box;
   box-sizing: border-box; }
 
-/* line 138, ../scss/style.scss */
+/* line 140, ../scss/style.scss */
 .in {
   background-color: #e2e2e2;
   text-align: right;
   color: #333; }
 
-/* line 144, ../scss/style.scss */
+/* line 146, ../scss/style.scss */
 .out {
   background-color: white;
   color: #c5185e;
   text-align: left; }
 
-/* line 150, ../scss/style.scss */
+/* line 152, ../scss/style.scss */
 .out ul {
   font-size: 16px;
   list-style-type: none;
   column-count: 5; }
 
-/* line 158, ../scss/style.scss */
+/* line 160, ../scss/style.scss */
 .debug {
   margin-top: 10px; }
-  /* line 161, ../scss/style.scss */
+  /* line 163, ../scss/style.scss */
   .debug .underspeak {
     font-size: 14px;
     color: #555;
     font-weight: lighter;
     text-align: left; }
-  /* line 168, ../scss/style.scss */
+  /* line 170, ../scss/style.scss */
   .debug b, .debug strong {
     margin-left: 10px; }
-    /* line 171, ../scss/style.scss */
+    /* line 173, ../scss/style.scss */
     .debug b:nth-child(1), .debug strong:nth-child(1) {
       margin-left: 1px; }
-  /* line 176, ../scss/style.scss */
+  /* line 178, ../scss/style.scss */
   .debug .expand, .debug .simulate {
     border: solid #bbb 1px;
     background: #ddd;
@@ -386,7 +392,7 @@ div, p, input {
     text-decoration: none;
     font-size: 11px;
     cursor: pointer; }
-  /* line 187, ../scss/style.scss */
+  /* line 189, ../scss/style.scss */
   .debug .data {
     font-size: 12px;
     font-family: "Monaco", "Courier New", monospace;
@@ -398,41 +404,49 @@ div, p, input {
     margin-top: 15px;
     padding-top: 10px;
     text-align: left; }
-    /* line 199, ../scss/style.scss */
+    /* line 201, ../scss/style.scss */
     .debug .data pre {
       white-space: pre;
       word-wrap: break-word;
       font-family: "Monaco", "Courier New", monospace;
       font-size: 14px; }
 
-/* line 208, ../scss/style.scss */
+/* line 210, ../scss/style.scss */
 .extLink {
   display: block;
   text-align: right;
   color: #37c;
   font-size: .875em; }
 
-/* line 215, ../scss/style.scss */
+/* line 217, ../scss/style.scss */
 .loader {
   position: absolute;
   left: 17px;
   bottom: 17px;
   z-index: 999;
-  display: none; }
+  display: none;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 224, ../scss/style.scss */
+  body.choice .loader {
+    margin-left: 310px; }
 
-/* line 223, ../scss/style.scss */
+/* line 229, ../scss/style.scss */
 .webpage {
   padding: 20px;
   text-align: center;
   background: white; }
-  /* line 228, ../scss/style.scss */
+  /* line 234, ../scss/style.scss */
   .webpage iframe {
     width: 100%;
     min-height: 400px;
     border: solid #ccc 1px;
     box-shadow: inset 0 0 5px #ccc; }
 
-/* line 236, ../scss/style.scss */
+/* line 242, ../scss/style.scss */
 .i {
   position: absolute;
   top: 9px;
@@ -446,11 +460,11 @@ div, p, input {
   text-decoration: none;
   font-size: 22px;
   z-index: 999999; }
-  /* line 250, ../scss/style.scss */
+  /* line 256, ../scss/style.scss */
   .i:hover {
     background: black; }
 
-/* line 255, ../scss/style.scss */
+/* line 261, ../scss/style.scss */
 .init {
   position: absolute;
   top: 40%;
@@ -458,18 +472,18 @@ div, p, input {
   color: #aaa;
   display: none;
   text-align: center; }
-  /* line 263, ../scss/style.scss */
+  /* line 269, ../scss/style.scss */
   .init h1 {
     font-weight: normal;
     margin: 0;
     padding: 0;
     font-size: 48px; }
-  /* line 270, ../scss/style.scss */
+  /* line 276, ../scss/style.scss */
   .init .subtitle {
     font-size: 14px; }
 
 /********  PhoneGap only **********/
-/* line 277, ../scss/style.scss */
+/* line 283, ../scss/style.scss */
 .control {
   position: fixed;
   bottom: 0;
@@ -478,14 +492,14 @@ div, p, input {
   right: 0;
   z-index: 99;
   text-align: center; }
-  /* line 285, ../scss/style.scss */
+  /* line 291, ../scss/style.scss */
   .control .micbutton {
     display: block;
     width: 100px;
     margin: 0 auto;
     cursor: pointer;
     position: relative; }
-    /* line 291, ../scss/style.scss */
+    /* line 297, ../scss/style.scss */
     .control .micbutton:before, .control .micbutton:after {
       content: "";
       position: absolute;
@@ -496,11 +510,11 @@ div, p, input {
       top: -15px;
       left: -15px;
       border-radius: 50%; }
-    /* line 302, ../scss/style.scss */
+    /* line 308, ../scss/style.scss */
     .control .micbutton:after {
       -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
       z-index: -999; }
-  /* line 308, ../scss/style.scss */
+  /* line 314, ../scss/style.scss */
   .control:before {
     content: "";
     position: absolute;
@@ -509,7 +523,7 @@ div, p, input {
     top: -30px;
     height: 90px;
     z-index: -99; }
-  /* line 317, ../scss/style.scss */
+  /* line 323, ../scss/style.scss */
   .control:after {
     content: "";
     position: absolute;
@@ -521,17 +535,17 @@ div, p, input {
     height: 85px;
     z-index: -99; }
 
-/* line 330, ../scss/style.scss */
+/* line 336, ../scss/style.scss */
 .cf {
   *zoom: 1; }
 
-/* line 334, ../scss/style.scss */
+/* line 340, ../scss/style.scss */
 .cf:before, .cf:after {
   content: "";
   display: table;
   line-height: 0;
   height: 0; }
 
-/* line 341, ../scss/style.scss */
+/* line 347, ../scss/style.scss */
 .cf:after {
   clear: both; }

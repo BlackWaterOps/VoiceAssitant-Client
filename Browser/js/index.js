@@ -34,6 +34,7 @@
       this.actor = __bind(this.actor, this);
       this.auditorSuccessHandler = __bind(this.auditorSuccessHandler, this);
       this.auditor = __bind(this.auditor, this);
+      this.clearChoiceList = __bind(this.clearChoiceList, this);
       this.handleChoice = __bind(this.handleChoice, this);
       this.choose = __bind(this.choose, this);
       this.disambiguateCandidate = __bind(this.disambiguateCandidate, this);
@@ -219,7 +220,7 @@
       this.loader.hide();
       this.counter = 0;
       this.input.focus();
-      return $('body').removeClass('choice').find('list-slider').empty();
+      return this.clearChoiceList();
     };
 
     Please.prototype.store = {
@@ -411,7 +412,6 @@
 
     Please.prototype.handleChoice = function(e) {
       var choice, field, template;
-      $('body').removeClass('choice');
       choice = $(e.currentTarget).data('choice');
       field = this.disambigContext.field;
       template = Handlebars.compile($('#bubblein-template').html());
@@ -425,6 +425,10 @@
         type: 'audit',
         response: this.mainContext
       });
+    };
+
+    Please.prototype.clearChoiceList = function() {
+      return $('body').removeClass('choice').find('list-slider').empty();
     };
 
     Please.prototype.auditor = function(data) {
@@ -651,10 +655,13 @@
         timeout: 20000,
         beforeSend: function() {
           _this.log(endpointName, ">", data);
+          _this.clearChoiceList();
+          _this.input.prop('readonly', true);
           return _this.loader.show();
         }
       }).done(function(response, status) {
         _this.log(endpointName, "<", response);
+        _this.input.prop('readonly', false);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;
@@ -664,6 +671,7 @@
         }
       }).fail(function(response, status) {
         _this.error(endpointName, "<", (response.responseJSON != null ? response.responseJSON : response));
+        _this.input.prop('readonly', false);
         if (_this.debug === true) {
           _this.debugData.status = status;
           _this.debugData.response = response;

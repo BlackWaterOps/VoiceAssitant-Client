@@ -188,8 +188,7 @@ class window.Please
 		@loader.hide()
 		@counter = 0
 		@input.focus()
-
-		$('body').removeClass('choice').find('list-slider').empty()
+		@clearChoiceList()
 
 	store:
 		createCookie: (k, v, d) ->
@@ -373,9 +372,7 @@ class window.Please
 		# should create trigger
 		@show(e)
 
-	handleChoice: (e) =>		
-		$('body').removeClass('choice')
-				
+	handleChoice: (e) =>						
 		choice = $(e.currentTarget).data('choice')
 		
 		field = @disambigContext.field
@@ -396,7 +393,9 @@ class window.Please
 			type: 'audit'
 			response: @mainContext
 		)
-		
+	
+	clearChoiceList: =>
+		$('body').removeClass('choice').find('list-slider').empty()
 
 	# NOTE: data can be a jquery event object or a plain object
 	auditor: (data) =>
@@ -614,10 +613,13 @@ class window.Please
 			timeout: 20000
 			beforeSend: =>
 				@log endpointName, ">", data
+				@clearChoiceList()
+				@input.prop('readonly', true)
 				@loader.show()
 		).done((response, status) =>
 			@log endpointName, "<", response
-			
+			@input.prop('readonly', false)
+
 			if @debug is true
 				@debugData.status = status
 				@debugData.response = response
@@ -625,7 +627,8 @@ class window.Please
 			doneHandler(response) if doneHandler?
 		).fail((response, status) =>
 			@error endpointName, "<", (if response.responseJSON? then response.responseJSON else response)
-			
+			@input.prop('readonly', false)
+
 			if @debug is true
 				@debugData.status = status
 				@debugData.response = response
