@@ -254,8 +254,9 @@ class window.Please
 		)
 
 	disambiguateSuccessHandler: (response, field, type) =>
-		if @currentState.state is 'inprogress' or @currentState.state is 'error'
-			$(document).trigger($.Event('debug'))	
+		debuggable = ['inprogress', 'error', 'choice']
+
+		$(document).trigger($.Event('debug')) if debuggable.indexOf(@currentState.state) isnt -1				
 			
 		if response?
 			@clientOperations(response)

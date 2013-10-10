@@ -298,8 +298,9 @@
     };
 
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
-      var request;
-      if (this.currentState.state === 'inprogress' || this.currentState.state === 'error') {
+      var debuggable, request;
+      debuggable = ['inprogress', 'error', 'choice'];
+      if (debuggable.indexOf(this.currentState.state) !== -1) {
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
