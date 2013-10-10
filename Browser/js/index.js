@@ -402,7 +402,7 @@
       _ref = data.show.simple.list;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         item = _ref[_i];
-        listItem = $('<li/>').addClass('choice-item').data('choice', item.data).append($('<a/>').text(item.text));
+        listItem = $('<li/>').addClass('choice-item').data('choice', item).append($('<a/>').text(item.text));
         list.append(listItem);
       }
       $('.list-slider').html(list);
@@ -411,19 +411,20 @@
     };
 
     Please.prototype.handleChoice = function(e) {
-      var choice, field, template;
+      var choice, field, template,
+        _this = this;
       choice = $(e.currentTarget).data('choice');
       field = this.disambigContext.field;
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(choice.text)).scrollTop(this.board.find('.bubble:last').offset().top);
       if (field.indexOf('.') !== -1) {
-        this.replace(field, choice);
+        this.replace(field, choice.data);
       } else {
-        this.mainContext.payload[field] = choice;
+        this.mainContext.payload[field] = choice.data;
       }
-      return $(document).trigger({
-        type: 'audit',
-        response: this.mainContext
+      return this.requestHelper(this.responder + 'audit', 'POST', this.mainContext, function(response) {
+        $(document).trigger($.Event('debug'));
+        return _this.auditorSuccessHandler(response);
       });
     };
 

@@ -363,7 +363,7 @@ class window.Please
 		list = $('<ul/>')
 
 		for item in data.show.simple.list
-			listItem = $('<li/>').addClass('choice-item').data('choice', item.data).append($('<a/>').text(item.text))
+			listItem = $('<li/>').addClass('choice-item').data('choice', item).append($('<a/>').text(item.text))
 			list.append(listItem)
 
 		$('.list-slider').html(list)
@@ -385,13 +385,14 @@ class window.Please
 		
 		# find & replace the specific field indicated in the response 
 		if field.indexOf('.') isnt -1
-			@replace(field, choice)
+			@replace(field, choice.data)
 		else
-			@mainContext.payload[field] = choice
+			@mainContext.payload[field] = choice.data
 		
-		$(document).trigger(
-			type: 'audit'
-			response: @mainContext
+		@requestHelper(@responder + 'audit' , 'POST', @mainContext, (response) =>
+			$(document).trigger($.Event('debug'))
+
+			@auditorSuccessHandler(response)
 		)
 	
 	clearChoiceList: =>
