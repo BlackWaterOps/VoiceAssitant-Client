@@ -9,6 +9,55 @@
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     
+    <DataTemplate x:Key="fuel">
+        <Border Background="DarkGreen" Padding="10" Margin="0,15,0,0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.FuelItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="104"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!--
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="6"/>
+                </Grid.RowDefinitions>
+                -->
+                <StackPanel Grid.Column="0" Grid.Row="0">
+                    <Glyphs FontRenderingEmSize="100"
+                            Fill="LimeGreen" 
+                            UnicodeString="&#xf06c;" 
+                            VerticalAlignment="Center" 
+                            HorizontalAlignment="Center" 
+                            Style="{StaticResource FontAwesomeBase}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
+                    <TextBlock Text="{Binding station_name}" 
+                               TextWrapping="Wrap" 
+                               FontWeight="SemiBold"
+                               FontSize="{StaticResource PhoneFontSizeMedium}"/>
+
+                    <TextBlock Text="{Binding address}" 
+                               TextWrapping="Wrap" 
+                               FontSize="{StaticResource PhoneFontSizeSmall}"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Distance: " Style="{StaticResource FuelLabel}"/>
+                        <TextBlock Text="{Binding distance, StringFormat='{0:n2} miles away'}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+    
+    <!--
     <DataTemplate x:Key="BioDiesel">
         <Border Background="White" Padding="10" Margin="0,15,0,0">
             <Grid>
@@ -80,7 +129,7 @@
                                    LiquifiedPetroleumGas="{StaticResource LPG}"
                                    HorizontalContentAlignment="Stretch"/>
     </DataTemplate>
-
+    -->
     <DataTemplate x:Key="shopping">
         <Border Background="White" Padding="10" Margin="0,15,0,0">
             <Grid>
@@ -122,7 +171,7 @@
         <Border Background="White" Padding="10" Margin="0,15,0,0">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
-                    <command:EventToCommand Command="{Binding EventItemSelection}" CommandParameter="{Binding}"/>
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.EventItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             
@@ -171,7 +220,7 @@
         <Border Background="White" Padding="15">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
-                    <command:EventToCommand Command="{Binding MovieItemSelection}" CommandParameter="{Binding}"/>
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.MovieItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             
@@ -247,64 +296,6 @@
         </Border>
     </DataTemplate>
 
-    <DataTemplate x:Key="flights">
-        <Border Background="{StaticResource ResultItemBackground}" BorderThickness="2" BorderBrush="#51575c" Padding="20" Margin="0,10,0,0">
-            <Grid>
-                <StackPanel>
-                    <TextBlock Text="{Binding identification}" FontWeight="SemiBold"/>
-
-                    <Border BorderThickness="1" BorderBrush="White" HorizontalAlignment="Stretch"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding status}"/>
-                        <TextBlock Text="{Binding delay}"/>
-                    </StackPanel>
-
-                    <TextBlock Text="Departed:" FontWeight="SemiBold"/>
-                    
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding origin.city}"/>
-                        <TextBlock Text="{Binding origin.airport_code, StringFormat=' ({0})'}"/>
-                    </StackPanel>
-                    
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel x:Name="DepartedScheduled" Grid.Column="0">
-                            <TextBlock Text="Scheduled:" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding schedule.filed_departure}"/>
-                        </StackPanel>
-
-                        <StackPanel x:Name="DepartedActual" Grid.Column="1" HorizontalAlignment="Right">
-                            <TextBlock Text="Actual:"/>
-                            <TextBlock Text="{Binding schedule.actual_departure}"/>
-                        </StackPanel>
-                    </StackPanel>
-                    
-                    <Border BorderThickness="1" BorderBrush="White"/>
-
-                    <TextBlock Text="Arrives:"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding destination.city}"/>
-                        <TextBlock Text="{Binding destination.airport_code, StringFormat=' ({0})'}"/>
-                    </StackPanel>
-                    
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel x:Name="ArrivesScheduled" Grid.Column="0">
-                            <TextBlock Text="Scheduled:"/>
-                            <TextBlock Text="{Binding schedule.filed_departure}"/>
-                        </StackPanel>
-
-                        <StackPanel x:Name="ArrivesActual" Grid.Column="1" HorizontalAlignment="Right">
-                            <TextBlock Text="Estimated:"/>
-                            <TextBlock Text="{Binding schedule.estimated_arrival}"/>
-                        </StackPanel>
-
-                    </StackPanel>
-                </StackPanel>
-            </Grid> 
-        </Border>
-    </DataTemplate>
-    
     <DataTemplate x:Key="contacts">
         <Border Tag="{Binding url}" Background="White" Padding="15" Tap="Contact_Tap">
 

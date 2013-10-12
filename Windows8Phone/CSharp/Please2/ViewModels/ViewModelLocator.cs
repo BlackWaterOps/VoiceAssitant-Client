@@ -129,6 +129,11 @@ namespace Please2.ViewModels
             get { return GetViewModelInstance<ImagesViewModel>(); }
         }
 
+        public FlightsViewModel FlightsViewModel
+        {
+            get { return GetViewModelInstance<FlightsViewModel>(); }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

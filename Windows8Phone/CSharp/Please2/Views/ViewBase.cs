@@ -48,11 +48,9 @@ namespace Please2.Views
 
         public ViewBase()
         {
-            Debug.WriteLine(this);
-
             try
             {
-                Debug.WriteLine(this);
+                // Debug.WriteLine(this);
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
 
                 // SystemTray.ProgressIndicator.IsIndeterminate = true;

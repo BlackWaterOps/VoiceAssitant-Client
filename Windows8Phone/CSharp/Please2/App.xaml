@@ -279,7 +279,6 @@
         <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter" />
         <util:NotificationDateConverter x:Key="NotificationDateConverter" />
         <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
-        <util:ListResultsConverter x:Key="ListResultsConverter" />
 
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
 

@@ -38,11 +38,12 @@ namespace Please2.Views
 
             if (!String.IsNullOrEmpty(test))
             {
-                RunTest(test);
+                vm.RunTest(test);
             }
 #endif
         }
 
+        /*
         private void RunTest(string name)
         {
             var templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
@@ -56,5 +57,6 @@ namespace Please2.Views
                 vm.RunTest(name, templates[name] as DataTemplate);
             }
         }
+        */
     }
 }

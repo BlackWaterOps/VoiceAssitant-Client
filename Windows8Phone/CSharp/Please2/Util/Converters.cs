@@ -11,31 +11,6 @@ using Please2.Models;
 
 namespace Please2.Util
 {
-    public class ListResultsConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            var type = value.GetType();
-
-            Debug.WriteLine("list results converter");
-            Debug.WriteLine(type);
-
-            /*
-            if (type == typeof(ShoppingModel))
-            {
-                
-            }
-            */
-
-            return value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
     public class BackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -360,7 +335,42 @@ namespace Please2.Util
             return null;
         }
     }
-   
+
+    public class FontAwesomeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var param = (string)parameter;
+
+            string icon = null;
+
+            switch (param)
+            {
+                case "food":
+                    var unit = (string)value;
+
+                    switch (unit)
+                    {
+                        case "fl oz":
+                            // \uf0fc // beer mug
+                            icon = "\uf0f4"; // coffee cup
+                            break;
+
+                        default:
+                            icon = "\uf0f5"; // knive & fork
+                            break;
+                    }
+                    break;
+            }
+
+            return icon;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
     public class WeatherConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

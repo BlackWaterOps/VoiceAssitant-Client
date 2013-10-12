@@ -32,7 +32,7 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <ContentControl HorizontalContentAlignment="Stretch" 
+            <ContentControl x:Name="SingleContentControl" HorizontalContentAlignment="Stretch" 
                             VerticalContentAlignment="Stretch" 
                             ContentTemplate="{Binding ContentTemplate}"/>
         </Grid>

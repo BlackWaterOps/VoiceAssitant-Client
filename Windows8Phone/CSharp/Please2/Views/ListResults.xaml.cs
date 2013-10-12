@@ -20,55 +20,29 @@ namespace Please2.Views
 {
     public partial class ListResults : ViewBase
     {
+        private ListViewModel vm;
+
         public ListResults()
         {
             InitializeComponent();
+
+            vm = (ListViewModel)DataContext;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            if (DataContext == null)
+#if DEBUG
+            string test = String.Empty;
+
+            NavigationContext.QueryString.TryGetValue("test", out test);
+
+            if (!String.IsNullOrEmpty(test))
             {
-                //var url = e.Uri.ToString();
-                //var itemUrl = url.Substring(url.IndexOf("?") + 1);
-
-                if (!SimpleIoc.Default.IsRegistered<ListViewModel>())
-                {
-                    SimpleIoc.Default.Register<ListViewModel>();
-                    //MessageBox.Show("List not found");
-                    //return;
-                }
-
-                var vm = SimpleIoc.Default.GetInstance<ListViewModel>();
-
-                DataContext = vm;
+                vm.RunTest(test);
             }
-        }
-
-        // ALL THE DETAILS COULD BE STUFFED INTO ONE VIEW
-        protected void ShoppingItem_Tap(object sender, EventArgs e)
-        {
-            // navigate to shopping item details page
-            Debug.WriteLine("navigate to shopping details - aka amazon");
-        }
-
-        protected void EventItem_Tap(object sender, EventArgs e)
-        {
-            // navigate to event item details page
-            Debug.WriteLine("navigate to event details");
-        }
-
-        protected void MovieItem_Tap(object sender, EventArgs e)
-        {
-            // navigate to movie item details page
-            Debug.WriteLine("navigate to movie details");
-        }
-
-        protected void NewsItem_Tap(object sender, EventArgs e)
-        {
-            Debug.WriteLine("navigate to event details - aka news link");
+#endif
         }
 
         protected void Contact_Tap(object sender, EventArgs e)

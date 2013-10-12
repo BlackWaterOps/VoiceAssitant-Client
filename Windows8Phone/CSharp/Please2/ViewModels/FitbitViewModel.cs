@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -17,6 +18,7 @@ namespace Please2.ViewModels
 {
     public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
+        /* WEIGHT */
         private IEnumerable<object> points;
         public IEnumerable<object> Points
         {
@@ -28,8 +30,8 @@ namespace Please2.ViewModels
             }
         }
 
-        private FitbitGoals goals;
-        public FitbitGoals Goals
+        private FitbitWeightGoals goals;
+        public FitbitWeightGoals Goals
         {
             get { return goals; }
             set
@@ -39,9 +41,56 @@ namespace Please2.ViewModels
             }
         }
 
+        /* FOOD */
+        private FitbitFoodSummary foodSummary;
+        public FitbitFoodSummary FoodSummary
+        {
+            get { return foodSummary; }
+            set
+            {
+                foodSummary = value;
+                RaisePropertyChanged("FoodSummary");
+            }
+        }
+
+        private FitbitFoodGoals foodGoals;
+        public FitbitFoodGoals FoodGoals
+        {
+            get { return foodGoals; }
+            set
+            {
+                foodGoals = value;
+                RaisePropertyChanged("FoodGoals");
+            }
+        }
+
+        private IEnumerable<FitbitFood> foods;
+        public IEnumerable<FitbitFood> Foods
+        {
+            get { return foods; }
+            set
+            {
+                foods = value;
+                RaisePropertyChanged("Foods");
+            }
+        }
+
+        private int caloriesRemaining;
+        public int CaloriesRemaining 
+        {
+            get { return caloriesRemaining; }
+            set
+            {
+                caloriesRemaining = value;
+                RaisePropertyChanged("CaloriesRemaining");
+            }
+        }
+
         public FitbitViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
-
+            // TODO: create pie chart 
+            // 4, 4, 9 rule
+            // protein, carbs, fat
         }
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
@@ -77,10 +126,10 @@ namespace Please2.ViewModels
         {
             var ret = new Dictionary<string, object>();
 
-            points = (item["timeseries"] as JArray).ToObject<IEnumerable<FitbitTimeseries>>();
-            goals = item["goals"].ToObject<FitbitGoals>();
+            points = (item["timeseries"] as JArray).ToObject<IEnumerable<FitbitWeightTimeseries>>();
+            goals = item["goals"].ToObject<FitbitWeightGoals>();
 
-            ret.Add("title", "fitbit");
+            ret.Add("title", "fitbit weight");
             ret.Add("subtitle", "");
 
             return ret;
@@ -89,6 +138,17 @@ namespace Please2.ViewModels
         private Dictionary<string, object> PopulateFood(JObject item)
         {
             var ret = new Dictionary<string, object>();
+
+            foods = (item["food"] as JArray).ToObject<IEnumerable<FitbitFood>>();
+            foodGoals = item["goals"].ToObject<FitbitFoodGoals>();
+            foodSummary = item["summary"].ToObject<FitbitFoodSummary>();
+
+            var remaining = foodGoals.calories - foodSummary.calories;
+
+            caloriesRemaining = (remaining > 0) ? remaining : 0;
+
+            ret.Add("title", "fitbit food");
+            ret.Add("subtitle", "");
 
             return ret;
         }

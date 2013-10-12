@@ -9,6 +9,7 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
@@ -16,7 +17,7 @@ using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private string title;
         public string Title
@@ -41,7 +42,6 @@ namespace Please2.ViewModels
         }
 
         private DataTemplate template;
-
         public DataTemplate Template
         {
             get { return template; }
@@ -53,7 +53,6 @@ namespace Please2.ViewModels
         }
 
         private IEnumerable<object> listResults;
-
         public IEnumerable<object> ListResults
         {
             get { return listResults; }
@@ -72,14 +71,13 @@ namespace Please2.ViewModels
         public RelayCommand<NewsModel> NewsItemSelection { get; set; }
         public RelayCommand<RealEstateModel> RealEstateItemSelection { get; set; }
         public RelayCommand<string> ImageItemSelection { get; set; }
+        public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
 
         public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
             this.navigationService = navigationService;
 
-            AttachEventHandlers();
-
-            FlightTest();
+            //AttachEventHandlers();
         }
 
         private void AttachEventHandlers()
@@ -88,6 +86,7 @@ namespace Please2.ViewModels
             MovieItemSelection = new RelayCommand<MoviesModel>(MovieItemSelected);
             ShoppingItemSelection = new RelayCommand<ShoppingModel>(ShoppingItemSelected);
             ImageItemSelection = new RelayCommand<string>(ImageItemSelected);
+            FuelItemSelection = new RelayCommand<AltFuelModel>(FuelItemSelected);
         }
 
         #region event handlers
@@ -117,6 +116,14 @@ namespace Please2.ViewModels
         {
             navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
         }
+
+        public void FuelItemSelected(AltFuelModel fuel)
+        {
+            var uri = String.Format(ViewModelLocator.DetailsUri, "fuel", fuel.id);
+
+            // navigate to generic details page with movies id and template name
+            navigationService.NavigateTo(new Uri(uri, UriKind.Absolute));
+        }
         #endregion
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
@@ -145,6 +152,7 @@ namespace Please2.ViewModels
 
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
+            Debug.WriteLine("create typed list");
             IEnumerable<object> ret = new List<object>();
 
             var arr = items as JArray;
@@ -152,6 +160,7 @@ namespace Please2.ViewModels
             switch (name)
             {
                 case "fuel":
+                    Debug.WriteLine("fuel case");
                     ret = arr.ToObject<IEnumerable<AltFuelModel>>();
                     break;
 
@@ -176,50 +185,56 @@ namespace Please2.ViewModels
             return ret;
         }
 
-        #region tests
-        private void FlightTest()
+        public void RunTest(string templateName)
         {
             try
             {
-                var data = "{\"show\":{\"simple\":{\"text\":\"I found multiple flights. Here is the closest match:\n\nDAL116 arrived at 08:09 pm in Atlanta, GA\"},\"structured\":{\"items\":[{\"origin\":{\"city\":\"Atlanta, GA\",\"airport_code\":\"KATL\",\"airport_name\":\"Hartsfield-Jackson Intl\"},\"status\":\"departed\",\"schedule\":{\"estimated_arrival\":\"2013-10-02T06:43:01\",\"actual_departure\":\"2013-10-01T22:13:00\",\"filed_departure\":\"2013-10-01T21:44:00\"},\"destination\":{\"city\":\"Stuttgart\",\"airport_code\":\"EDDS\",\"airport_name\":\"Stuttgart Echterdingen\"},\"delay\":null,\"identification\":\"DAL116\"},{\"origin\":{\"city\":\"Birmingham, AL\",\"airport_code\":\"KBHM\",\"airport_name\":\"Birmingham-Shuttlesworth Intl\"},\"status\":\"arrived\",\"schedule\":{\"estimated_arrival\":\"2013-10-01T20:09:00\",\"actual_departure\":\"2013-10-01T19:37:00\",\"filed_departure\":\"2013-10-01T19:30:00\",\"actual_arrival\":\"2013-10-01T20:09:00\"},\"destination\":{\"city\":\"Atlanta, GA\",\"airport_code\":\"KATL\",\"airport_name\":\"Hartsfield-Jackson Intl\"},\"delay\":null,\"identification\":\"DAL116\"}],\"flight_number\":\"116\",\"airline\":{\"code\":\"DAL\",\"name\":\"Delta Air Lines, Inc.\",\"url\":\"http://www.delta.com/\",\"country\":\"US\",\"phone\":\"+1-800-221-1212\",\"callsign\":\"Delta\",\"location\":\"\",\"shortname\":\"Delta\"},\"template\":\"list:flights\"}},\"speak\":\"I found multiple flights. Here is the closest match:\n\nDAL116 arrived at 08:09 pm in Atlanta, GA\"}";
+                var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
 
-                var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<Please2.Models.ActorModel>(data);
-
-                var show = actor.show;
-
-                ListResults = ((Newtonsoft.Json.Linq.JToken)show.structured["items"]).ToObject<IEnumerable<Please2.Models.FlightItem>>();
-
-                var templates = App.Current.Resources["TemplateDictionary"] as ResourceDictionary;
-
-                if (templates["flights"] == null)
+                if (templates[templateName] == null)
                 {
-                    Console.WriteLine("template not found in TemplateDictionary");
+                    Debug.WriteLine("could not find template " + templateName);
+                    return;
                 }
 
-                Template = templates["flights"] as DataTemplate;
+                Template = templates[templateName] as DataTemplate;
+                Title = templateName;
+                SubTitle = "";
 
-                title = "flights";
+                var listTest = new Please2.Tests.List();
+
+                var test = listTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                
+                if (test == null)
+                {
+                    Debug.WriteLine("no test found for " + templateName);
+                    return;
+                }
+                
+                var response = (Dictionary<string, object>)test.Invoke(listTest, null);
+                
+                if (!response.ContainsKey("list"))
+                {
+                    Debug.WriteLine("no list data was returned from test " + templateName);
+                    return;
+                }
+                
+                ListResults = (IEnumerable<object>)response["list"];
+
+                if (response.ContainsKey("title"))
+                {
+                    Title = (string)response["title"];
+                }
+
+                if (response.ContainsKey("subtitle"))
+                {
+                    SubTitle = (string)response["subtitle"];
+                }    
             }
             catch (Exception err)
             {
-                Console.WriteLine(err.Message);
+                Debug.WriteLine("outer excep: " + err.Message);
             }
         }
-
-        private void EventTest()
-        {
-           
-        }
-
-        private void MovieTest()
-        {
-
-        }
-
-        private void ShoppingTest()
-        {
-
-        }
-        #endregion
     }
 }
