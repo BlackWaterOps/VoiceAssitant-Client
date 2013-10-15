@@ -79,6 +79,10 @@ namespace Please2.Util
             {
                 currentState.State = "disambiguate:active";
             }
+            else if (currentState.State == "choice")
+            {
+                currentState.State = "disambiguate:candidate";
+            }
             else
             {
                 currentState.State = "init";
@@ -139,25 +143,34 @@ namespace Please2.Util
 
         private void ChoiceList(ResponderModel response)
         {
-            var simple = response.show.simple;
-
-            if (simple.ContainsKey("list"))
+            try
             {
-                var templates = App.Current.Resources["ListResourceDictionary"] as ResourceDictionary;
-               
-                // TODO: need to cast against model not dict
-                var list = ((JToken)simple["list"]).ToObject<List<Dictionary<string, object>>>();
+                var simple = response.show.simple;
 
-                var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+                if (simple.ContainsKey("list"))
+                {
+                    var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
 
-                vm.ListResults = list;
-                vm.Template = (DataTemplate)templates["choice"];
+                    var list = ((JArray)simple["list"]).ToObject<List<ChoiceModel>>();
 
-                navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
+                    var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+
+                    vm.ListResults = list;
+                    vm.Template = (DataTemplate)templates["choice"];
+                    vm.Title = (string)simple["text"];
+
+                    Show(response.show, response.speak);
+
+                    navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
+                }
+                else
+                {
+                    Debug.WriteLine("no choice list could be found");
+                }
             }
-            else
+            catch (Exception err)
             {
-                Debug.WriteLine("no choice list could be found");
+                Debug.WriteLine(err.Message);
             }
         }
 
@@ -431,6 +444,28 @@ namespace Please2.Util
             }
         }
 
+        public async Task Auditor(ChoiceModel choice)
+        {
+            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+
+            vm.AddDialog("user", choice.text);
+
+            var field = tempContext.field;
+
+            var t = choice.data;
+
+            if (field.Contains("."))
+            {
+                Replace(field, choice.data);
+            }
+            else
+            {
+                mainContext.payload[field] = choice.data;
+            }
+
+            await Auditor(mainContext);
+        }
+
         private async Task Auditor(ResponderModel data)
         {
             // reset counter
@@ -486,7 +521,7 @@ namespace Please2.Util
                 {
                     string state = response.status.Replace(" ", "");
 
-                    if (state == "inprogress")
+                    if (state == "inprogress" || state == "choice")
                         tempContext = response;
 
                     // create event and trigger based on status
@@ -632,37 +667,41 @@ namespace Please2.Util
                                 break;
                         }
                         break;
-
+                    
+                    case "simple":
                     case "single":
                         templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
 
-                        titles = PopulateViewModel(templateName, structured);
-
-                        singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+                        page = ViewModelLocator.SingleResultPageUri;
 
                         if (templates[templateName] != null)
                         {
+                            singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
                             singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+
+                            titles = PopulateViewModel(templateName, structured);
+
+                            if (titles.ContainsKey("page"))
+                            {
+                                page = (Uri)titles["page"];
+                            }
+
+                            if (titles.ContainsKey("title"))
+                            {
+                                singleViewModel.Title = (string)titles["title"];
+                            }
+
+                            if (titles.ContainsKey("subtitle"))
+                            {
+                                singleViewModel.SubTitle = (string)titles["subtitle"];
+                            }
                         }
                         else
                         {
                             Debug.WriteLine("single template not found: " + templateName);
                         }
 
-                        if (titles.ContainsKey("page"))
-                        {
-                            page = (Uri)titles["page"];
-                        }
-
-                        if (titles.ContainsKey("title"))
-                        {
-                            singleViewModel.Title = (string)titles["title"];
-                        }
-
-                        if (titles.ContainsKey("subtitle"))
-                        {
-                            singleViewModel.SubTitle = (string)titles["subtitle"];
-                        }
                         break;
                 }
 

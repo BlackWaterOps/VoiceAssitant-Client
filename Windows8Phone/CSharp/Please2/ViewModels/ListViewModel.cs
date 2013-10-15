@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -64,6 +65,7 @@ namespace Please2.ViewModels
         }
 
         INavigationService navigationService;
+        IPleaseService pleaseService;
 
         public RelayCommand<EventModel> EventItemSelection { get; set; }
         public RelayCommand<MoviesModel> MovieItemSelection { get; set; }
@@ -72,12 +74,14 @@ namespace Please2.ViewModels
         public RelayCommand<RealEstateModel> RealEstateItemSelection { get; set; }
         public RelayCommand<string> ImageItemSelection { get; set; }
         public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
+        public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
 
         public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
             this.navigationService = navigationService;
+            this.pleaseService = pleaseService;
 
-            //AttachEventHandlers();
+            AttachEventHandlers();
         }
 
         private void AttachEventHandlers()
@@ -87,45 +91,53 @@ namespace Please2.ViewModels
             ShoppingItemSelection = new RelayCommand<ShoppingModel>(ShoppingItemSelected);
             ImageItemSelection = new RelayCommand<string>(ImageItemSelected);
             FuelItemSelection = new RelayCommand<AltFuelModel>(FuelItemSelected);
+            ChoiceItemSelection = new RelayCommand<ChoiceModel>(ChoiceItemSelected);
         }
 
         #region event handlers
+        public async void ChoiceItemSelected(ChoiceModel choice)
+        {
+            // pass selection to please service to process and send to auditor
+            await pleaseService.Auditor(choice);   
+        }
+
         public void EventItemSelected(EventModel e)
         {
             // navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
-            var uri = String.Format(ViewModelLocator.DetailsUri, "event", e.id);
+            //var uri = String.Format(ViewModelLocator.DetailsUri, "event", e.id);
 
-            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            //navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void MovieItemSelected(MoviesModel movie)
         {
             // navigate to generic details page with movies id and template name
-            var uri = String.Format(ViewModelLocator.DetailsUri, "movie", movie.id);
+            //var uri = String.Format(ViewModelLocator.DetailsUri, "movie", movie.id);
 
-            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            //navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void ShoppingItemSelected(ShoppingModel product)
         {
             // navigate to generic details page with movies id and template name
-            navigationService.NavigateTo(new Uri(product.url, UriKind.Absolute));
+            //navigationService.NavigateTo(new Uri(product.url, UriKind.Absolute));
         }
 
         public void ImageItemSelected(string imageUrl)
         {
-            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
+            //navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
         }
 
         public void FuelItemSelected(AltFuelModel fuel)
         {
-            var uri = String.Format(ViewModelLocator.DetailsUri, "fuel", fuel.id);
+            //var uri = String.Format(ViewModelLocator.DetailsUri, "fuel", fuel.id);
 
             // navigate to generic details page with movies id and template name
-            navigationService.NavigateTo(new Uri(uri, UriKind.Absolute));
+            //navigationService.NavigateTo(new Uri(uri, UriKind.Absolute));
         }
         #endregion
 
+        #region helpers
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
             var ret = new Dictionary<string, object>();
@@ -152,7 +164,6 @@ namespace Please2.ViewModels
 
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
-            Debug.WriteLine("create typed list");
             IEnumerable<object> ret = new List<object>();
 
             var arr = items as JArray;
@@ -180,6 +191,10 @@ namespace Please2.ViewModels
                 case "real_estate":
                     ret = arr.ToObject<IEnumerable<RealEstateModel>>();
                     break;
+
+                case "choice":
+                    ret = arr.ToObject<IEnumerable<ChoiceModel>>();
+                    break;
             }
 
             return ret;
@@ -203,7 +218,7 @@ namespace Please2.ViewModels
 
                 var listTest = new Please2.Tests.List();
 
-                var test = listTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var test = listTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 
                 if (test == null)
                 {
@@ -236,5 +251,6 @@ namespace Please2.ViewModels
                 Debug.WriteLine("outer excep: " + err.Message);
             }
         }
+        #endregion
     }
 }

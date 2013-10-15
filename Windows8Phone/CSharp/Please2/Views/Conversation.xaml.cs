@@ -33,6 +33,7 @@ namespace Please2.Views
             InitializeComponent();            
         }
 
+        // TODO: call scrollTo if dialog list has items
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

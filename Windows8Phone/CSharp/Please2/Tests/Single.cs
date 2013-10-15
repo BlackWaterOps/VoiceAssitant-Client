@@ -21,7 +21,7 @@ namespace Please2.Tests
 
         private Dictionary<string, object> FlightsTest()
         {
-            var originalQuery = "status of delta flight 116";
+            var originalQuery = "status of delta flight 1053";
 
             var locator = GetLocator();
 
@@ -37,6 +37,7 @@ namespace Please2.Tests
 
             vm.Flights = flightResults.details;
             vm.Airline = flightResults.airline;
+            vm.FlightNumber = flightResults.flight_number;
 
             titles.Add("title", "flights");
             titles.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
@@ -174,7 +175,6 @@ namespace Please2.Tests
 
             //Debug.WriteLine(JsonConvert.SerializeObject(fitbitResults));
 
-
             var remaining = fitbitResults.goals.calories - fitbitResults.summary.calories;
 
             vm.Foods = fitbitResults.foods;
@@ -184,6 +184,33 @@ namespace Please2.Tests
 
             titles.Add("title", "fitbit food results");
             titles.Add("titlevisibility", Visibility.Collapsed);
+
+            return titles;
+        }
+
+        private Dictionary<string, object> HoroscopeTest()
+        {
+            var locator = GetLocator();
+
+            var vm = locator.HoroscopeViewModel;
+
+            var data = "{\"show\":{\"simple\":{\"text\":\"Today you will be unlucky in family. Keep an eye out for a man in blue to have a major impact on your week. Your lucky number for today is 1.\"},\"structured\":{\"item\":{\"zodiac_sign\":\"leo\",\"horoscope\":\"Today you will be unlucky in family. Keep an eye out for a man in blue to have a major impact on your week. Your lucky number for today is 1.\"},\"template\":\"single:horoscope\"}},\"speak\":\"Today you will be unlucky in family. Keep an eye out for a man in blue to have a major impact on your week. Your lucky number for today is 1.\"}";
+
+            var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<ActorModel>(data);
+
+            var show = actor.show;
+
+            var horoscopeResults = ((JToken)show.structured["item"]).ToObject<HoroscopeModel>();
+
+            var sign = horoscopeResults.zodiac_sign;
+
+            vm.ZodiacSign = sign;
+            vm.Horoscope = horoscopeResults.horoscope;
+
+            var date = DateTime.Now.ToString("dddd, MMMM d, yyyy");
+
+            titles.Add("title", "horoscope");
+            titles.Add("subtitle", sign + " for " + date);
 
             return titles;
         }

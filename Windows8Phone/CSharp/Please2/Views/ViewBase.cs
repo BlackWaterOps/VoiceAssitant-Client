@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
@@ -54,7 +55,6 @@ namespace Please2.Views
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
 
                 // SystemTray.ProgressIndicator.IsIndeterminate = true;
-
                 if (synthesizer == null)
                 {
                     synthesizer = new SpeechSynthesizer();
@@ -64,7 +64,7 @@ namespace Please2.Views
                 {
                     recognizer = new SpeechRecognizerUI();
                     recognizer.Settings.ReadoutEnabled = false;
-                    recognizer.Settings.ShowConfirmation = false;
+                    //recognizer.Settings.ShowConfirmation = false;
                 }
 
                 if (applicationBar == null)
@@ -81,6 +81,8 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            CreatePageBackground();
 
             RegisterListeners();
 
@@ -123,6 +125,26 @@ namespace Please2.Views
         {
             Messenger.Default.Unregister<ProgressMessage>(this, InProgress);
             Messenger.Default.Unregister<ShowMessage>(this, Speak);
+        }
+
+        protected void CreatePageBackground()
+        {
+            var bg = new ImageBrush();
+
+            bg.ImageSource = new BitmapImage(new Uri("/Assets/plexi-big-black-720.png", UriKind.Relative));
+            bg.Opacity = 0.30;
+            bg.AlignmentX = AlignmentX.Center;
+            bg.AlignmentY = AlignmentY.Bottom;
+            bg.Stretch = Stretch.Uniform;
+
+            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+            var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").Single();
+
+            if (layoutRoot != null)
+            {
+                Debug.WriteLine("add page bg");
+                layoutRoot.Background = bg;
+            }
         }
 
         protected void CreateApplicationBar()

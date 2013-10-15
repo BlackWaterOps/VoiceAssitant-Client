@@ -51,6 +51,7 @@
         <Style x:Key="PageTitleBase" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="/Please2;component/Assets/Fonts/Roboto-Thin.ttf#Roboto Thin" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
 
         <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">

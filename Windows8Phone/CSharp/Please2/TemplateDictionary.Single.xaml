@@ -9,6 +9,37 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
     
+    <!-- Horoscope -->
+    <DataTemplate x:Key="horoscope">
+        <Grid DataContext="{Binding HoroscopeViewModel, Source={StaticResource Locator}}">
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="175"/>
+            </Grid.ColumnDefinitions>
+           
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <Image Grid.Row="0" Grid.Column="1" 
+                   Width="175" 
+                   Height="175" 
+                   Source="{Binding ZodiacSign, StringFormat='/Assets/Horoscope/zodiac-{0}.png'}" 
+                   VerticalAlignment="Top" 
+                   HorizontalAlignment="Right"/>
+
+            <StackPanel Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Left">
+                <TextBlock Text="{Binding ZodiacSignCap}" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}" 
+                           FontWeight="SemiBold" Margin="0,0,0,50"/>
+                <TextBlock Text="{Binding Horoscope}" FontSize="{StaticResource PhoneFontSizeMedium}" TextWrapping="Wrap"/>
+            </StackPanel>
+            
+        </Grid>
+    </DataTemplate>
+
     <!-- Stocks -->
     <Style x:Key="StockLabel" TargetType="TextBlock">
         <Setter Property="Foreground" Value="DarkGray"/>
@@ -216,49 +247,61 @@
     
     <!-- Flight -->
     <DataTemplate x:Key="flights">
-        <Border DataContext="{Binding FlightsViewModel, Source={StaticResource Locator}}" Background="{StaticResource ResultItemBackground}" BorderThickness="2" BorderBrush="#51575c" Padding="20" Margin="0,10,0,0">
-            <StackPanel>
+        <Border>
+            <StackPanel DataContext="{Binding FlightsViewModel, Source={StaticResource Locator}}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Airline.callsign}"/>
-                    <TextBlock Text="{Binding FlightNumber, StringFormat=' flight {0}'}"/>
+                    <TextBlock Text="{Binding Airline.callsign}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                    <TextBlock Text="{Binding FlightNumber, StringFormat=' {0}'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
                 </StackPanel>
                 
                 <ListBox ItemsSource="{Binding Flights}" ItemContainerStyle="{StaticResource ListBoxItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="Black" BorderThickness="3">
+                            <Border Background="#1ec0c3" BorderBrush="Black" BorderThickness="3" Padding="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Text="{Binding schedule.actual_departure}"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding origin.city}"/>
-                                            <TextBlock Text="{Binding origin.airport_code, StringFormat='({0})'}"/>
-                                        </StackPanel>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="50"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding delay, StringFormat='status: {0}'}" Foreground="#333333" FontWeight="SemiBold"/>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding origin.city, StringFormat='From: {0}'}"/>
+                                        <TextBlock Text="{Binding origin.airport_code, StringFormat=' ({0})'}"/>
                                     </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding schedule.estimated_arrival}"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding destination.city}"/>
-                                            <TextBlock Text="{Binding destination.airport_code, StringFormat='({0})'}"/>
-                                        </StackPanel>
+
+                                    <StackPanel Grid.Row="1" Grid.Column="1">
+                                        <TextBlock Text="Departs" TextAlignment="Right" Foreground="#333333" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding schedule.filed_departure, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right"/>
+                                        <TextBlock Text="{Binding schedule.actual_departure, StringFormat='(wa\\s h:mm tt)'}" Foreground="#333333" TextAlignment="Right"/>
                                     </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="2">
-                                        
+
+                                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding destination.city, StringFormat='To: {0}'}"/>
+                                        <TextBlock Text="{Binding destination.airport_code, StringFormat=' ({0})'}"/>
                                     </StackPanel>
+
+                                    <StackPanel Grid.Row="3" Grid.Column="1">
+                                        <TextBlock Text="Arrives" TextAlignment="Right" Foreground="#333333" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding schedule.estimated_arrival, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right"/>
+                                        <TextBlock Text="{Binding schedule.actual_arrival, StringFormat='(wa\\s h:mm tt)'}" Foreground="#333333" TextAlignment="Right"/>
+                                    </StackPanel>
+
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-
+                
+                <!--
                 <StackPanel>
                     <TextBlock Text="{Binding identification}" FontWeight="SemiBold"/>
 
@@ -310,6 +353,7 @@
 
                     </StackPanel>
                 </StackPanel>
+                -->
             </StackPanel>
         </Border>
     </DataTemplate>

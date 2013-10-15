@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class FlightsViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class FlightsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
         private List<Flight> flights;
         public List<Flight> Flights
@@ -17,7 +20,33 @@ namespace Please2.ViewModels
             get { return flights; }
             set
             {
+                for (var i = 0; i < value.Count; i++)
+                {
+                    Flight flight = value[i];
+
+                    if (flight.delay == null)
+                    {
+                        // flight is on time
+                        flight.delay = "Arriving on-time";
+                    }
+                    else
+                    {
+                        var delay = Convert.ToInt64(flight.delay);
+                        if (delay > 0)
+                        {
+                            // flight delayed
+                            flight.delay = "Delayed by " + flight.delay + " mins";
+                        }
+                        else if (delay < 0)
+                        {
+                            // flight is early
+                            flight.delay = "Arriving early by " + flight.delay + " mins";
+                        }
+                    }
+                }
+             
                 flights = value;
+
                 RaisePropertyChanged("Flights");
             }
         }
@@ -50,5 +79,25 @@ namespace Please2.ViewModels
         {
             this.navigationService = navigationService;
         }
+
+        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        {
+            var ret = new Dictionary<string, object>();
+
+            var flightResults = (structured["item"] as JObject).ToObject<FlightModel>();
+
+            Flights = flightResults.details;
+            Airline = flightResults.airline;
+            FlightNumber = flightResults.flight_number;
+
+            ret.Add("title", "flights");
+            ret.Add("subtitle", "flight results");
+
+            //ret.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
+
+            return ret;
+        }
+
+
     }
 }

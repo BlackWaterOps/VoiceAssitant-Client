@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Navigation;
 
 using Microsoft.Phone.UserData;
@@ -43,10 +44,13 @@ namespace Please2.Util
     }
 
     public interface IPleaseService
-    {
-        // void Query(string query);
-        void HandleUserInput(string query);
+    { 
         string OriginalQuery { get; }
+
+        // TODO: (new name) void Query(string query);
+        void HandleUserInput(string query);
+
+        Task Auditor(ChoiceModel choice);
     }
 
     public interface IViewModel

@@ -64,4 +64,10 @@ namespace Please2.Models
 
         public ErrorModel error { get; set; }
     }
+
+    public class ChoiceModel
+    {
+        public string text { get; set; }
+        public Dictionary<string, object> data { get; set; }
+    }
 }

@@ -310,8 +310,16 @@
     </DataTemplate>
     
     <DataTemplate x:Key="choice">
-        <Border Tag="{Binding url}" Background="White" Padding="15" Tap="Contact_Tap">
-            <TextBlock Text="{Binding text}"/>
-        </Border>
+        <StackPanel>
+            <Border Padding="10">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Tap">
+                        <command:EventToCommand Command="{Binding Path=ListViewModel.ChoiceItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <TextBlock Text="{Binding text}" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+            </Border>
+            <Border BorderThickness="1" BorderBrush="#eeeeee"/>
+        </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Please2.Models
 {
+    /* Horoscope */
+    public class HoroscopeModel
+    {
+        public string zodiac_sign { get; set; }
+        public string horoscope { get; set; }
+    }
+
     /* Alt Fuels */
     public class AltFuelFederalAgency
     {
@@ -186,9 +193,10 @@ namespace Please2.Models
 
     public class FlightSchedule
     {
-        public string estimated_arrival { get; set; }
-        public string filed_departure { get; set; }
-        public string actual_departure { get; set; }
+        public DateTime estimated_arrival { get; set; }
+        public DateTime filed_departure { get; set; }
+        public DateTime actual_departure { get; set; }
+        public DateTime actual_arrival { get; set; }
     }
 
     public class FlightDestination

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -77,7 +78,7 @@ namespace Please2.ViewModels
 
                 if (templates[templateName] == null)
                 {
-                    Debug.WriteLine("cuold not find template " + templateName);
+                    Debug.WriteLine("could not find template " + templateName);
                     return;
                 }
 
@@ -87,11 +88,12 @@ namespace Please2.ViewModels
 
                 var singleTest = new Please2.Tests.Single();
 
-                var test = singleTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var test = singleTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (test == null)
                 {
                     Debug.WriteLine("no test found for " + templateName);
+                    Debug.WriteLine((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test");
                     return;
                 }
 
