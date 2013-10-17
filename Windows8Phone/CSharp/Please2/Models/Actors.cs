@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace Please2.Models
 {
+    /* GeoPolitics */
+    public class GeopoliticsStats
+    {
+        public string area { get; set; }
+        public string leader { get; set; }
+        public string population { get; set; }
+    }
+    
+    public class GeopoliticsModel
+    {
+        public string country { get; set; }
+        public string flag { get; set; }
+        public GeopoliticsStats stats { get; set; }
+    }
+
     /* Horoscope */
     public class HoroscopeModel
     {
@@ -138,7 +153,7 @@ namespace Please2.Models
 
     public class MoviesModel
     {
-        public string release_date { get; set; }
+        public DateTime release_date { get; set; }
         public MovieRatings ratings { get; set; }
         public string mpaa_rating { get; set; }
         public string title { get; set; }
@@ -170,16 +185,16 @@ namespace Please2.Models
     public class EventModel
     {
         public string id { get; set; }
-        public string start_time { get; set; }
+        public DateTime? start_time { get; set; }
         public string title { get; set; }
         public string description { get; set; }
         public string url { get; set; }
         public string image { get; set; }
-        public string created { get; set; }
+        public DateTime? created { get; set; }
         public string all_day { get; set; }
         public string venue_url { get; set; }
         public Dictionary<string, EventPerformer> performers { get; set; }
-        public string stop_time { get; set; }
+        public DateTime? stop_time { get; set; }
         public EventLocation location { get; set; }
     }
 
@@ -195,8 +210,8 @@ namespace Please2.Models
     {
         public DateTime estimated_arrival { get; set; }
         public DateTime filed_departure { get; set; }
-        public DateTime actual_departure { get; set; }
-        public DateTime actual_arrival { get; set; }
+        public DateTime? actual_departure { get; set; }
+        public DateTime? actual_arrival { get; set; }
     }
 
     public class FlightDestination
@@ -293,7 +308,7 @@ namespace Please2.Models
         public string name { get; set; }
     }
 
-    public class RealEstateModel
+    public class RealEstateListings
     {
         public string body { get; set; }
         public RealEstateCategory category { get; set; }
@@ -309,6 +324,30 @@ namespace Please2.Models
         public RealEstateAttributes attributes { get; set; }
         public string id { get; set; }
         public RealEstateUser user { get; set; }
+    }
+
+    public class RealEstateStatsNums
+    {
+        public double std {get; set; }
+        public double min {get; set; }
+        public double max {get; set; }
+        public double median {get; set; }
+        public double range {get; set; }
+        public double mode {get; set; }
+        public double mean {get; set; }
+    }
+    public class RealEstateStats
+    {
+        public RealEstateStatsNums price { get; set; }
+        public RealEstateStatsNums bedrooms { get; set; }
+        public RealEstateStatsNums bathrooms { get; set; }
+        public RealEstateStatsNums square_feet { get; set; }
+    }
+
+    public class RealEstateModel
+    {
+        public List<RealEstateListings> listings { get; set; }
+        public RealEstateStats stats { get; set; }
     }
 
     /* Fitbit */

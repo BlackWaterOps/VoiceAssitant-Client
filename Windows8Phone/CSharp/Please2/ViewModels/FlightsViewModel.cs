@@ -20,33 +20,7 @@ namespace Please2.ViewModels
             get { return flights; }
             set
             {
-                for (var i = 0; i < value.Count; i++)
-                {
-                    Flight flight = value[i];
-
-                    if (flight.delay == null)
-                    {
-                        // flight is on time
-                        flight.delay = "Arriving on-time";
-                    }
-                    else
-                    {
-                        var delay = Convert.ToInt64(flight.delay);
-                        if (delay > 0)
-                        {
-                            // flight delayed
-                            flight.delay = "Delayed by " + flight.delay + " mins";
-                        }
-                        else if (delay < 0)
-                        {
-                            // flight is early
-                            flight.delay = "Arriving early by " + flight.delay + " mins";
-                        }
-                    }
-                }
-             
                 flights = value;
-
                 RaisePropertyChanged("Flights");
             }
         }

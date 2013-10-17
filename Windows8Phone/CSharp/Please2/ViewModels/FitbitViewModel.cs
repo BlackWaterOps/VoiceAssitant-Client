@@ -130,7 +130,6 @@ namespace Please2.ViewModels
             goals = item["goals"].ToObject<FitbitWeightGoals>();
 
             ret.Add("title", "fitbit weight");
-            ret.Add("subtitle", "");
 
             return ret;
         }
@@ -148,7 +147,6 @@ namespace Please2.ViewModels
             caloriesRemaining = (remaining > 0) ? remaining : 0;
 
             ret.Add("title", "fitbit food");
-            ret.Add("subtitle", "");
 
             return ret;
         }

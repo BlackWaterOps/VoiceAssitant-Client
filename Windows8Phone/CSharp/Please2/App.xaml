@@ -28,6 +28,12 @@
             <GradientStop Color="#51575c" Offset="1.0" />
         </LinearGradientBrush>
 
+        <Style x:Key="ResultItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource ResultItemBackground}"/>
+            <Setter Property="BorderBrush" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="3"/>
+        </Style>
+        
         <!-- chat bubble colors -->
         <SolidColorBrush x:Key="UserDialogBackground" Color="#1ec0c3" Opacity=".85" />
         <SolidColorBrush x:Key="PleaseDialogBackground" Color="#1ab154" Opacity=".85" />
@@ -269,22 +275,29 @@
         </Style>
 
         <!-- converters -->
-        <util:BackgroundConverter x:Key="BackgroundConverter" />
-        <util:ForegroundConverter x:Key="ForegroundConverter" />
-        <util:AlignmentConverter x:Key="AlignmentConverter" />
-        <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />
-        <util:PrettyDateConverter x:Key="PrettyDateConverter" />
-        <util:VisibilityConverter x:Key="VisibilityConverter" />
-        <util:EntityConverter x:Key="EntityConverter" />
-        <util:WeatherConverter x:Key="WeatherConverter" />
-        <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter" />
-        <util:NotificationDateConverter x:Key="NotificationDateConverter" />
-        <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
-
-        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-
+        <util:BackgroundConverter x:Key="BackgroundConverter"/>
+        <util:ForegroundConverter x:Key="ForegroundConverter"/>
+        <util:AlignmentConverter x:Key="AlignmentConverter"/>
+        <util:ChatBubbleConverter x:Key="ChatBubbleConverter"/>
+        <util:PrettyDateConverter x:Key="PrettyDateConverter"/>
+        <!--
+        <util:VisibilityConverter x:Key="VisibilityConverter"/>
+        -->
+        <util:EntityConverter x:Key="EntityConverter"/>
+        <util:WeatherConverter x:Key="WeatherConverter"/>
+        <util:StatusConverter x:Key="StatusConverter"/>
+        <util:ColorConverter x:Key="ColorConverter"/>
+        <util:MarginConverter x:Key="MarginConverter"/>
+        <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter"/>
+        <util:NotificationDateConverter x:Key="NotificationDateConverter"/>
+        <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter"/>
+        <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        
         <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml"/>
-        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
+        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml"/>
+        <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="TemplateDictionary.Details.xaml"/>
+
+        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True"/>
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>
@@ -292,7 +305,7 @@
         <shell:PhoneApplicationService Launching="Application_Launching" 
                                        Closing="Application_Closing" 
                                        Activated="Application_Activated" 
-                                       Deactivated="Application_Deactivated" />
+                                       Deactivated="Application_Deactivated"/>
     </Application.ApplicationLifetimeObjects>
 
 </Application>

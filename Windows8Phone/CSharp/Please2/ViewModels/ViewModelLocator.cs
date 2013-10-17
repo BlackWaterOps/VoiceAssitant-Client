@@ -12,6 +12,7 @@
   See http://www.galasoft.ch/mvvm
 */
 using System;
+using System.Windows;
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
@@ -27,9 +28,15 @@ namespace Please2.ViewModels
     /// </summary>
     public class ViewModelLocator
     {
-        public const string FullImageUri = @"/Views/FullImage.xaml?image={0}";
+        public static ResourceDictionary ListTemplates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
 
-        public const string DetailsUri = @"/Views/Details.xaml?template={0}&id={1}";
+        public static ResourceDictionary SingleTemplates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+
+        public static ResourceDictionary DetailsTemplates = App.Current.Resources["DetailsTemplateDictionary"] as ResourceDictionary;
+
+        public const string FullImageUri = @"/Views/Image.xaml?image={0}";
+
+        public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 
         public static readonly Uri MainMenuPageUri = new Uri("/Views/MainPage2.xaml", UriKind.Relative);
 
@@ -51,7 +58,7 @@ namespace Please2.ViewModels
 
         public static readonly Uri SearchPageUri = new Uri("/Views/Search.xaml", UriKind.Relative);
 
-        public static readonly Uri ImagesPageUri = new Uri("/Views/Images.xaml", UriKind.Relative);
+        public static readonly Uri ImagePageUri = new Uri("/Views/Image.xaml", UriKind.Relative);
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
@@ -99,6 +106,11 @@ namespace Please2.ViewModels
             get { return GetViewModelInstance<SingleViewModel>(); }
         }
 
+        public DetailsViewModel DetailsViewModel
+        {
+            get { return GetViewModelInstance<DetailsViewModel>(); }
+        }
+
         public WeatherViewModel WeatherViewModel
         {
             get { return GetViewModelInstance<WeatherViewModel>(); }
@@ -124,9 +136,9 @@ namespace Please2.ViewModels
             get { return GetViewModelInstance<NewsViewModel>(); }
         }
 
-        public ImagesViewModel ImagesViewModel
+        public ImageViewModel ImageViewModel
         {
-            get { return GetViewModelInstance<ImagesViewModel>(); }
+            get { return GetViewModelInstance<ImageViewModel>(); }
         }
 
         public FlightsViewModel FlightsViewModel
@@ -137,6 +149,11 @@ namespace Please2.ViewModels
         public HoroscopeViewModel HoroscopeViewModel
         {
             get { return GetViewModelInstance<HoroscopeViewModel>(); }
+        }
+
+        public GeopoliticsViewModel GeopoliticsViewModel
+        {
+            get { return GetViewModelInstance<GeopoliticsViewModel>(); }
         }
 
         public static void Cleanup()

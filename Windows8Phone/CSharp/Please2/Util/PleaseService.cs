@@ -149,13 +149,13 @@ namespace Please2.Util
 
                 if (simple.ContainsKey("list"))
                 {
-                    var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+                    var templates = ViewModelLocator.ListTemplates;
 
                     var list = ((JArray)simple["list"]).ToObject<List<ChoiceModel>>();
 
                     var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
-                    vm.ListResults = list;
+                    vm.ListResults = list.ToList<object>();
                     vm.Template = (DataTemplate)templates["choice"];
                     vm.Title = (string)simple["text"];
 
@@ -559,13 +559,13 @@ namespace Please2.Util
                 {
                     //Debug.WriteLine("Actor response handler");
                     Show(response.show, response.speak);
-                    ActorResponseHandler2(actor, response);
+                    ActorResponseHandler(actor, response);
                 }
             }
             else
             {
-                // we have no actor, so send show data to ViewBase.cs
-                Show(data.show);
+                // we have no actor, so send responder object to show
+                Show(data);
             }
 
             return;
@@ -589,7 +589,7 @@ namespace Please2.Util
 
                     if (populateMethod != null)
                     {
-                        var parameters = new object[] { templateName, structured };
+                        var parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured};
 
                         return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
                     }
@@ -611,7 +611,45 @@ namespace Please2.Util
             return ret;
         }
 
-        private void ActorResponseHandler2(string actor, ActorModel response)
+        private Uri LoadSingleResult(string templateName, Dictionary<string, object> structured)
+        {
+            var templates = ViewModelLocator.SingleTemplates;
+
+            var page = ViewModelLocator.SingleResultPageUri;
+
+            if (templates[templateName] != null)
+            {
+                var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+                singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+
+                var data = PopulateViewModel(templateName, structured);
+
+                if (data.ContainsKey("page"))
+                {
+                    page = (Uri)data["page"];
+                }
+
+                if (data.ContainsKey("title"))
+                {
+                    singleViewModel.Title = (string)data["title"];
+                }
+
+                if (data.ContainsKey("subtitle"))
+                {
+                    singleViewModel.SubTitle = (string)data["subtitle"];
+                }
+            }
+            else
+            {
+                Debug.WriteLine("single template not found: " + templateName);
+                return null;
+            }
+
+            return page;
+        }
+
+        private void ActorResponseHandler(string actor, ActorModel response)
         {
             if (response.show.structured != null && response.show.structured.ContainsKey("template"))
             {
@@ -622,55 +660,84 @@ namespace Please2.Util
                 var type = template[0];
                 var templateName = template[1];
 
-                Dictionary<string, object> titles;
+                Dictionary<string, object> data;
 
                 ResourceDictionary templates;
 
-                SingleViewModel singleViewModel;
+                //SingleViewModel singleViewModel;
 
                 Uri page = ViewModelLocator.ConversationPageUri;
+
+                Uri uri;
 
                 switch (type)
                 {
                     case "list":
-                        templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+                        templates = ViewModelLocator.ListTemplates;
 
                         switch (templateName)
                         {
                             // override. list items that act like single items
-                            case "images":
-                            case "news":
-                                titles = PopulateViewModel(templateName, structured);
+                            //case "images": // TODO: images will be a list in grid mode with a link to full image
+                            case "news": 
+                                // !!create a method for this logic!!
+                                uri = LoadSingleResult(templateName, structured);
 
-                                singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                                if (titles.ContainsKey("page"))
+                                if (uri != null)
                                 {
-                                    page = (Uri)titles["page"];
+                                    page = uri;
                                 }
 
-                                if (titles.ContainsKey("title"))
+                                /*
+                                if (templates[templateName] != null)
                                 {
-                                    singleViewModel.Title = (string)titles["title"];
-                                }
+                                    singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
 
-                                if (titles.ContainsKey("subtitle"))
-                                {
-                                    singleViewModel.SubTitle = (string)titles["subtitle"];
+                                    singleViewModel.ContentTemplate = templates[templateName] as DataTemplate;
+                                    
+                                    data = PopulateViewModel(templateName, structured);
+
+                                    if (data.ContainsKey("page"))
+                                    {
+                                        page = (Uri)data["page"];
+                                    }
+
+                                    if (data.ContainsKey("title"))
+                                    {
+                                        singleViewModel.Title = (string)data["title"];
+                                    }
+
+                                    if (data.ContainsKey("subtitle"))
+                                    {
+                                        singleViewModel.SubTitle = (string)data["subtitle"];
+                                    }
                                 }
+                                */
                                 break;
 
                             default:
-                                page = ViewModelLocator.ListResultsPageUri;
+                                data = PopulateViewModel("list", structured);
 
-                                titles = PopulateViewModel("list", structured);
+                                if (data != null)
+                                {
+                                    page = ViewModelLocator.ListResultsPageUri;
+                                }
                                 break;
                         }
                         break;
                     
                     case "simple":
                     case "single":
-                        templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+                        // !!create a method for this logic!!
+                        uri = LoadSingleResult(templateName, structured);
+
+                        if (uri != null)
+                        {
+                            page = uri;
+                        }
+
+                        /*
+                        templates = ViewModelLocator.SingleTemplates;
 
                         page = ViewModelLocator.SingleResultPageUri;
 
@@ -680,248 +747,34 @@ namespace Please2.Util
 
                             singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
 
-                            titles = PopulateViewModel(templateName, structured);
+                            data = PopulateViewModel(templateName, structured);
 
-                            if (titles.ContainsKey("page"))
+                            if (data.ContainsKey("page"))
                             {
-                                page = (Uri)titles["page"];
+                                page = (Uri)data["page"];
                             }
 
-                            if (titles.ContainsKey("title"))
+                            if (data.ContainsKey("title"))
                             {
-                                singleViewModel.Title = (string)titles["title"];
+                                singleViewModel.Title = (string)data["title"];
                             }
 
-                            if (titles.ContainsKey("subtitle"))
+                            if (data.ContainsKey("subtitle"))
                             {
-                                singleViewModel.SubTitle = (string)titles["subtitle"];
+                                singleViewModel.SubTitle = (string)data["subtitle"];
                             }
                         }
                         else
                         {
                             Debug.WriteLine("single template not found: " + templateName);
                         }
-
+                        */
                         break;
                 }
 
                 navigationService.NavigateTo(page);
             }
         }
-
-        // TODO: this method needs refactoring/rethinking.
-        // Each one of these cases should be handled by their respective viewmodel
-        /*
-        private void ActorResponseHandler(string actor, ActorModel response)
-        {
-            try
-            {
-                if (response.show.structured != null && response.show.structured.ContainsKey("template"))
-                {
-                    Dictionary<string, object> structured = response.show.structured;
-
-                    string[] template = (structured["template"] as string).Split(':');
-
-                    var type = template[0];
-                    var templateName = template[1];
-
-                    JObject resultItem;
-
-                    Uri page = ViewModelLocator.ConversationPageUri;
-
-                    ResourceDictionary templates;
-
-                    SingleViewModel singleViewModel;
-
-                    switch (type)
-                    {
-                        case "list":
-                            page = ViewModelLocator.ListResultsPageUri;
-
-                            templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
-
-                            switch (templateName)
-                            {
-                                // really, images should go to list with a flag to indicate grid view with
-                                // a way to dynamically set the grid cell sizes
-                                // then, we need a way to handle image taps that will redirect to the full size image page
-                                case "images":
-                                    page = ViewModelLocator.ImagesPageUri;
-
-                                    var images = ViewModelLocator.GetViewModelInstance<ImagesViewModel>();
-
-                                    var enumer = CreateTypedList(templateName, structured["items"]);
-
-                                    images.ImageList = enumer.ToList();
-                                    break;
-
-                                case "news":
-                                    page = ViewModelLocator.SingleResultPageUri;
-
-                                    var news = ViewModelLocator.GetViewModelInstance<NewsViewModel>();
-
-                                    var stories = CreateTypedList(templateName, structured["items"]);
-
-                                    news.Stories = stories.Cast<NewsModel>().ToList<NewsModel>();
-
-                                    singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                                    singleViewModel.Title = "news results";
-                                    singleViewModel.SubTitle = String.Format("news search on \"{0}\"", OriginalQuery);
-                                    break;
-
-                                default:
-                                    var list = ViewModelLocator.GetViewModelInstance<ListViewModel>();
-
-                                    list.Title = templateName + " results";
-
-                                    if (templates[templateName] == null)
-                                    {
-                                        Debug.WriteLine("template not found in TemplateDictionary");
-                                    }
-
-                                    list.Template = templates[templateName] as DataTemplate;
-
-                                    list.ListResults = CreateTypedList(templateName, structured["items"]);
-                                    break;
-                            }
-                            break;
-
-                        case "single":
-                            resultItem = structured["item"] as JObject;
-
-                            page = ViewModelLocator.SingleResultPageUri;
-
-                            templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
-
-                            singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                            try
-                            {
-                                singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
-                            }
-                            catch (Exception err)
-                            {
-                                Debug.WriteLine("could not locate template " + templateName);
-                            }
-
-                            switch (templateName)
-                            {
-                                case "weather":
-                                    var weather = ViewModelLocator.GetViewModelInstance<WeatherViewModel>();
-
-                                    var weatherResults = ((JToken)structured["item"]).ToObject<WeatherModel>();
-
-                                    // since the api drops the daytime info for today part way through the afternoon, 
-                                    // lets fill in the missing pieces with what we do have
-                                    var today = weatherResults.week[0];
-
-                                    if (today.daytime == null)
-                                    {
-                                        today.daytime = new WeatherDayDetails()
-                                        {
-                                            temp = weatherResults.now.temp,
-                                            text = today.night.text
-                                        };
-                                    }
-
-                                    weather.MultiForecast = weatherResults.week;
-                                    weather.CurrentCondition = weatherResults.now;
-
-                                    singleViewModel.Title = "weather";
-                                    singleViewModel.SubTitle = DateTime.Now.ToString("dddd, MMMM d, yyyy");
-                                    break;
-
-                                case "fitbit":
-                                    // depending on other structures, might need a switch for weight, food, and exercise
-                                    var fitbit = ViewModelLocator.GetViewModelInstance<FitbitViewModel>();
-
-                                    resultItem = structured["item"] as JObject;
-
-                                    fitbit.Points = CreateTypedList(templateName, resultItem["timeseries"]);
-                                    fitbit.Goals = resultItem["goals"].ToObject<FitbitGoals>();
-
-                                    singleViewModel.Title = "fitbit";
-                                    singleViewModel.SubTitle = "";
-                                    break;
-
-                                case "stock":
-                                    var stock = ViewModelLocator.GetViewModelInstance<StockViewModel>();
-
-                                    stock.StockData = ((JToken)structured["item"]).ToObject<StockModel>();
-
-                                    var direction = stock.StockData.share_price_direction;
-
-                                    if (direction == "down")
-                                    {
-                                        stock.DirectionSymbol = "\uf063";
-                                        stock.DirectionColor = "#dc143c";
-                                    }
-                                    else if (direction == "up")
-                                    {
-                                        stock.DirectionSymbol = "\uf062";
-                                        stock.DirectionColor = "#008000";
-                                    }
-
-                                    singleViewModel.Title = "stock";
-                                    singleViewModel.SubTitle = stock.StockData.name + "(" + stock.StockData.symbol + ")";
-                                    break;
-                            }
-                            break;
-                    }
-
-                    navigationService.NavigateTo(page);
-                }
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine("ActorResponseHandler - " + err.Message);
-            }
-        }
-        
-        // this should live in ListViewModel.xaml
-        // with cases only for models handled in list ie.(no images or news)
-        private IEnumerable<object> CreateTypedList(string name, object items)
-        {
-            IEnumerable<object> ret = new List<object>();
-
-            var arr = items as JArray;
-
-            switch (name)
-            {
-                case "fuel":
-                    ret = arr.ToObject<IEnumerable<AltFuelModel>>();
-                    break;
-
-                case "product":
-                case "shopping":
-                    ret = arr.ToObject<IEnumerable<ShoppingModel>>();
-                    break;
-
-                case "news":
-                    ret = arr.ToObject<IEnumerable<NewsModel>>();
-                    break;
-
-                case "events":
-                    ret = arr.ToObject<IEnumerable<EventModel>>();
-                    break;
-
-                case "movies":
-                    ret = arr.ToObject<IEnumerable<MoviesModel>>();
-                    break;
-
-                case "fitbit":
-                    ret = arr.ToObject<IEnumerable<FitbitTimeseries>>();
-                    break;
-                
-                case "images":
-                    ret = arr.ToObject<IEnumerable<string>>(); 
-                    break;
-            }
-
-            return ret;
-        }
-        */
 
         // these are actor's that will be handled locally. no need to run out to web service
         // all the data needed to fulfill the tasks should be in the mainContext var.

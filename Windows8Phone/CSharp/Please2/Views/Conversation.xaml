@@ -69,7 +69,7 @@
                                                TextWrapping="Wrap"/>
                                     <HyperlinkButton Content="Click for more" 
                                                      TargetName="_blank" 
-                                                     Visibility="{Binding link, Converter={StaticResource VisibilityConverter}}" 
+                                                     Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}" 
                                                      NavigateUri="{Binding link}" 
                                                      Foreground="#0000ee" 
                                                      HorizontalAlignment="Right"/>

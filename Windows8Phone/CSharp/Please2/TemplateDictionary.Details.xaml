@@ -14,7 +14,6 @@
     <!-- Events -->
     <DataTemplate x:Key="events">
         <phone:Pivot DataContext="{Binding DetailsViewModel, Source={StaticResource Locator}}" Title="{Binding CurrentItem.title}" x:Name="EventDetailsPivotView">
-            <!--Pivot item one-->
             <phone:PivotItem Header="Details" x:Name="DetailsPivotPanel">
                 <ScrollViewer Background="White" Foreground="Black" Margin="10" Padding="10">
                     <StackPanel HorizontalAlignment="Stretch">
@@ -47,28 +46,21 @@
                     </StackPanel>
                 </ScrollViewer>
             </phone:PivotItem>
-
-            <!--Pivot item two-->
+           
             <phone:PivotItem Header="Directions" x:Name="DirectionsPivotPanel">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <command:EventToCommand Command="{Binding EventDirectionsLoaded}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                
                 <StackPanel>
-                    <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                        <map:Map.Layers>
-                            <map:MapLayer>
-                                <map:MapOverlay PositionOrigin="0,0.5">
-                                    <map:MapOverlay.Content>
-                                        <mtoolkit:UserLocationMarker/>                                            
-                                    </map:MapOverlay.Content>
-                                    <map:MapOverlay.GeoCoordinate>
-                                        <location:GeoCoordinate Latitude="{Binding CurrentItem.location.lat}" Longitude="{Binding CurrentItem.location.lon}"/>
-                                    </map:MapOverlay.GeoCoordinate>
-                                </map:MapOverlay>
-                            </map:MapLayer>
-                        </map:Map.Layers>
-                    </map:Map>
-
-                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="ShowFullMapCommand"/>
+                    <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
+                        
+                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
                 </StackPanel>
             </phone:PivotItem>
+           
         </phone:Pivot>
     </DataTemplate>
 

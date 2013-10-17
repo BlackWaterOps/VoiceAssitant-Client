@@ -33,17 +33,20 @@ namespace Please2.Views
             InitializeComponent();            
         }
 
-        // TODO: call scrollTo if dialog list has items
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
             vm = (ConversationViewModel)DataContext;
-            
+
             if (vm.DialogList == null || vm.DialogList.Count == 0)
             {
                 vm.AddDialog("please", "how may I help you?");
-                //Speak("please", "how may I help you?");
+                base.Speak("please", "how may I help you?");
+            }
+            else
+            {
+                ScrollTo();
             }
             
             base.AddDebugTextBox();
@@ -63,7 +66,6 @@ namespace Please2.Views
  	        base.OnKeyDown(sender, e);
         }
 
-        /*
         private void ScrollTo()
         {
             // get last item
@@ -79,6 +81,5 @@ namespace Please2.Views
                 scrollViewer.UpdateLayout();
             }
         }
-         */
     }
 }

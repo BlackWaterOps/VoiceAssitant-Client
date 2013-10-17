@@ -38,8 +38,8 @@ namespace Please2.Views
         private Point screenMidpoint; 
         private Point relativeMidpoint; 
  
-        private BitmapImage bitmap;  
-        
+        private BitmapImage bitmap;
+
         public Images()
         {
             InitializeComponent();
@@ -49,12 +49,12 @@ namespace Please2.Views
         {
             base.OnNavigatedTo(e);
 
-            if (!SimpleIoc.Default.IsRegistered<ImagesViewModel>())
+            if (!SimpleIoc.Default.IsRegistered<ImageViewModel>())
             {
-                SimpleIoc.Default.Register<ImagesViewModel>();
+                SimpleIoc.Default.Register<ImageViewModel>();
             }
 
-            DataContext = SimpleIoc.Default.GetInstance<ImagesViewModel>(); 
+            DataContext = SimpleIoc.Default.GetInstance<ImageViewModel>(); 
         }
 
         protected void Image_Tap(object sender, EventArgs e)
@@ -62,7 +62,7 @@ namespace Please2.Views
             // animate to full screen view of image
             // swipe left and right to view other images in full screen mode
 
-            (DataContext as ImagesViewModel).SingleImage = (string)(sender as Image).Tag;
+            (DataContext as ImageViewModel).SingleImage = (string)(sender as Image).Tag;
 
             ImagesThumbnail.Visibility = Visibility.Collapsed;
             ImageViewport.Visibility = Visibility.Visible;

@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using Microsoft.Phone.Controls;
+
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
@@ -20,6 +22,8 @@ namespace Please2.ViewModels
 {
     public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        private string templateName;
+
         private string title;
         public string Title
         {
@@ -53,6 +57,28 @@ namespace Please2.ViewModels
             }
         }
 
+        private LongListSelectorLayoutMode layoutMode;
+        public LongListSelectorLayoutMode LayoutMode
+        {
+            get { return layoutMode; }
+            set
+            {
+                layoutMode = value;
+                RaisePropertyChanged("LayoutMode");
+            }
+        }
+
+        private Size gridCellSize;
+        public Size GridCellSize
+        {
+            get { return gridCellSize; }
+            set
+            {
+                gridCellSize = value;
+                RaisePropertyChanged("GridCellSize");
+            }
+        }
+
         private IEnumerable<object> listResults;
         public IEnumerable<object> ListResults
         {
@@ -75,7 +101,7 @@ namespace Please2.ViewModels
         public RelayCommand<string> ImageItemSelection { get; set; }
         public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
         public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
-
+        
         public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
             this.navigationService = navigationService;
@@ -103,10 +129,13 @@ namespace Please2.ViewModels
 
         public void EventItemSelected(EventModel e)
         {
-            // navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
-            //var uri = String.Format(ViewModelLocator.DetailsUri, "event", e.id);
+            //navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
 
-            //navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            var isSet = SetDetails(this.templateName, e);
+
+            var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
+
+            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void MovieItemSelected(MoviesModel movie)
@@ -125,7 +154,13 @@ namespace Please2.ViewModels
 
         public void ImageItemSelected(string imageUrl)
         {
-            //navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.FullImageUri, imageUrl, UriKind.Relative)));
+            var uri = String.Format(ViewModelLocator.FullImageUri, imageUrl);
+
+            //var vm = ViewModelLocator.GetViewModelInstance<ImageViewModel>();
+
+            //vm.CurrentImage = imageUrl;
+
+            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
         }
 
         public void FuelItemSelected(AltFuelModel fuel)
@@ -138,31 +173,60 @@ namespace Please2.ViewModels
         #endregion
 
         #region helpers
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Populate(Dictionary<string, object> structured)
         {
             var ret = new Dictionary<string, object>();
 
-            var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+            var templates = ViewModelLocator.ListTemplates;
+
+            string[] template = (structured["template"] as string).Split(':');
+
+            this.templateName = template[1];
 
             if (structured.ContainsKey("items"))
             {
-                title = templateName + " results";
+                title = this.templateName + " results";
 
-                if (templates[templateName] == null)
+                if (templates[this.templateName] == null)
                 {
-                    Debug.WriteLine("template not found in TemplateDictionary");
+                    Debug.WriteLine("template " + this.templateName + " not found in TemplateDictionary");
+                    return null;
                 }
 
-                template = templates[templateName] as DataTemplate;
+                // set list to grid view.
+                if (this.templateName == "images")
+                {
+                    LayoutMode = LongListSelectorLayoutMode.Grid;
+                    GridCellSize = new Size(145, 145);
+                }
 
-                listResults = CreateTypedList(templateName, structured["items"]);
+                Template = templates[this.templateName] as DataTemplate;
+
+                ListResults = CreateTypedList(this.templateName, structured["items"]);
             }
 
             // nothing really to send back. everything is set on this page
             return ret;
         }
 
-        private IEnumerable<object> CreateTypedList(string name, object items)
+        public bool SetDetails(string template, object model)
+        {
+            var templates = ViewModelLocator.DetailsTemplates;
+
+            var isSet = false;
+
+            if (templates[template] != null)
+            {
+                var vm = ViewModelLocator.GetViewModelInstance<DetailsViewModel>();
+
+                vm.CurrentItem = model;
+                isSet = true;
+            }
+
+            return isSet;
+        }
+
+        public IEnumerable<object> CreateTypedList(string name, object items)
         {
             IEnumerable<object> ret = new List<object>();
 
@@ -170,8 +234,11 @@ namespace Please2.ViewModels
 
             switch (name)
             {
+                case "images":
+                    ret = arr.ToObject<IEnumerable<string>>();
+                    break;
+
                 case "fuel":
-                    Debug.WriteLine("fuel case");
                     ret = arr.ToObject<IEnumerable<AltFuelModel>>();
                     break;
 
@@ -204,7 +271,7 @@ namespace Please2.ViewModels
         {
             try
             {
-                var templates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
+                var templates = ViewModelLocator.ListTemplates;
 
                 if (templates[templateName] == null)
                 {
@@ -212,9 +279,9 @@ namespace Please2.ViewModels
                     return;
                 }
 
+                this.templateName = templateName;
+                
                 Template = templates[templateName] as DataTemplate;
-                Title = templateName;
-                SubTitle = "";
 
                 var listTest = new Please2.Tests.List();
 
@@ -244,7 +311,19 @@ namespace Please2.ViewModels
                 if (response.ContainsKey("subtitle"))
                 {
                     SubTitle = (string)response["subtitle"];
-                }    
+                }
+
+                if (response.ContainsKey("layoutmode"))
+                {
+                    LayoutMode = (LongListSelectorLayoutMode)response["layoutmode"];
+                }
+
+                if (response.ContainsKey("gridcellsize"))
+                {
+                    GridCellSize = (Size)response["gridcellsize"];
+                }
+
+                Debug.WriteLine("bottom");
             }
             catch (Exception err)
             {

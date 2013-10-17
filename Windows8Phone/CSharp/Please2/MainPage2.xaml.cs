@@ -67,24 +67,9 @@ namespace Please2
             {
                 var item = sender as FrameworkElement;
 
-                // var uri = (string)item.Tag;
-
                 var model = item.DataContext as MainMenuModel;
 
                 vm.LoadDefaultTemplate(model);
-
-                /*
-                if (model.isIntent == true)
-                {
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri(uri));
-                }
-                else
-                {
-                    var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
-
-                    navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
-                }
-                */
             }
             catch (Exception err)
             {

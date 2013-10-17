@@ -9,6 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+using Microsoft.Phone.Controls;
+
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 
@@ -20,11 +23,20 @@ namespace Please2.ViewModels
     public class MainMenuViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private int columns = 2;
+        public int Columns
+        {
+            get { return columns; }
+        }
+
+        private int margin = 5;
+        public int Margin
+        {
+            get { return margin; }
+        }
 
         public string SubTitle { get { return DateTime.Now.ToString("dddd, MMMM d, yyyy @ h:mm tt"); } }
 
         private ObservableCollection<MainMenuModel> mainMenu;
-
         public ObservableCollection<MainMenuModel> MainMenu
         {
             get { return mainMenu; }
@@ -39,22 +51,39 @@ namespace Please2.ViewModels
         {
             get
             {
-                var w = App.Current.Host.Content.ActualWidth / columns;
-
-                Debug.WriteLine(w);
-
-                return new Size(221, 221);
+                return new Size(221.5, 221.5);
             }
         }
 
-        private INavigationService navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
+        public RelayCommand MenuLoaded { get; set; }
 
-        public MainMenuViewModel()
+        private INavigationService navigationService;
+
+        public MainMenuViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
+            this.navigationService = navigationService;
+
+            MenuLoaded = new RelayCommand(SetGridSize);
+
             AddDefaultMenuItems();
         }
 
-        public void AddDefaultMenuItems() {
+        private void SetGridSize()
+        {
+            var curr = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
+
+            var content = curr.FindName("ContentPanel");
+
+            if (content != null)
+            {
+                Debug.WriteLine("not null");
+                Debug.WriteLine(((content as Grid).ActualWidth / 2) - margin);
+
+                // update gridcell prop which will update view
+            }
+        }
+
+        private void AddDefaultMenuItems() {
             if (MainMenu != null)
                 return;
 
@@ -71,9 +100,10 @@ namespace Please2.ViewModels
         }
 
         // TODO: V2 make this whole process dynamic. So any item can be a menu item
+        // REFLECTION!!!
         public async void LoadDefaultTemplate(MainMenuModel model)
         {
-            var templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+            var templates = ViewModelLocator.SingleTemplates;
 
             var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
 
@@ -120,7 +150,7 @@ namespace Please2.ViewModels
                     break;
 
                 case "search":
-
+                    page = ViewModelLocator.SearchPageUri;
                     break;
             }
 

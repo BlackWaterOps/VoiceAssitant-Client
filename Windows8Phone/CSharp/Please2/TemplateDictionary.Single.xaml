@@ -208,7 +208,7 @@
     <DataTemplate x:Key="weather">
         <phone:LongListSelector x:Name="WeatherList" DataContext="{Binding WeatherViewModel, Source={StaticResource Locator}}" ItemsSource="{Binding MultiForecast}" ItemTemplate="{StaticResource SelectingTemplate}"/>
     </DataTemplate>
-    
+
     <!-- News -->
     <DataTemplate x:Key="news">
         <phone:Pivot Padding="0,0,0,10" DataContext="{Binding NewsViewModel, Source={StaticResource Locator}}" ItemsSource="{Binding Stories}">
@@ -234,15 +234,16 @@
                                 <TextBlock Text="{Binding date, Converter={StaticResource PrettyDateConverter}, ConverterParameter=news}" 
                                            FontSize="{StaticResource PhoneFontSizeSmall}"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding summary}" TextWrapping="Wrap" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+                            <ScrollViewer>
+                                <TextBlock Text="{Binding summary}" TextWrapping="Wrap" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+                            </ScrollViewer>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
             </phone:Pivot.ItemTemplate>
         </phone:Pivot>
     </DataTemplate>
-    
-    
+
     <!-- Dictionary -->
     
     <!-- Flight -->
@@ -257,7 +258,7 @@
                 <ListBox ItemsSource="{Binding Flights}" ItemContainerStyle="{StaticResource ListBoxItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="#1ec0c3" BorderBrush="Black" BorderThickness="3" Padding="10">
+                            <Border Background="#51575c" BorderBrush="#666666" BorderThickness="3" Padding="10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="2*"/>
@@ -271,7 +272,10 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding delay, StringFormat='status: {0}'}" Foreground="#333333" FontWeight="SemiBold"/>
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" 
+                                               Text="{Binding delay, Converter={StaticResource StatusConverter}, StringFormat='status: {0}'}" 
+                                               Foreground="{Binding delay, Converter={StaticResource ColorConverter}, ConverterParameter=flights}" 
+                                               FontWeight="SemiBold"/>
 
                                     <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                         <TextBlock Text="{Binding origin.city, StringFormat='From: {0}'}"/>
@@ -279,9 +283,11 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="1" Grid.Column="1">
-                                        <TextBlock Text="Departs" TextAlignment="Right" Foreground="#333333" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Departs" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold"/>
                                         <TextBlock Text="{Binding schedule.filed_departure, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right"/>
-                                        <TextBlock Text="{Binding schedule.actual_departure, StringFormat='(wa\\s h:mm tt)'}" Foreground="#333333" TextAlignment="Right"/>
+                                        <TextBlock Text="{Binding schedule.actual_departure, StringFormat='(wa\\s h:mm tt)'}"
+                                                   Visibility="{Binding schedule.actual_departure, Converter={StaticResource NullToVisibilityConverter}}"
+                                                   Foreground="#999999" TextAlignment="Right"/>
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal">
@@ -290,9 +296,11 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Row="3" Grid.Column="1">
-                                        <TextBlock Text="Arrives" TextAlignment="Right" Foreground="#333333" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Arrives" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold"/>
                                         <TextBlock Text="{Binding schedule.estimated_arrival, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right"/>
-                                        <TextBlock Text="{Binding schedule.actual_arrival, StringFormat='(wa\\s h:mm tt)'}" Foreground="#333333" TextAlignment="Right"/>
+                                        <TextBlock Text="{Binding schedule.actual_arrival, StringFormat='(wa\\s h:mm tt)'}"
+                                                   Visibility="{Binding schedule.actual_arrival, Converter={StaticResource NullToVisibilityConverter}}"
+                                                   Foreground="#333333" TextAlignment="Right"/>
                                     </StackPanel>
 
                                 </Grid>
@@ -359,23 +367,57 @@
     </DataTemplate>
 
     <!-- How to -->
+    <!--
     <DataTemplate x:Key="howto">
         <phone:Pivot Title="How To">
-            <!--Pivot item one-->
             <phone:PivotItem Header="item1">
                 <Grid/>
             </phone:PivotItem>
 
-            <!--Pivot item two-->
             <phone:PivotItem Header="Things you'll need">
                 <Grid/>
             </phone:PivotItem>
         </phone:Pivot>
     </DataTemplate>
+    -->
     
     <!-- Geopolitics -->
     <DataTemplate x:Key="geopolitics">
-        
+        <Border Style="{StaticResource ResultItemStyle}" Padding="15" DataContext="{Binding GeopoliticsViewModel, Source={StaticResource Locator}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="151"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                   
+                        <TextBlock Grid.Column="0" Text="{Binding Country}" FontWeight="SemiBold" FontSize="34" VerticalAlignment="Center"/>
+                        <Image Grid.Column="1" Source="{Binding Flag}" Width="226" Height="151" HorizontalAlignment="Right"/>
+
+                <StackPanel Grid.ColumnSpan="2" Grid.Row="2">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Leader: " FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Stats.leader}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Area: " FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Stats.area, StringFormat='{0} sq/km'}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Population: " FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Stats.population}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
     </DataTemplate>
     
     <!-- Fitbit -->

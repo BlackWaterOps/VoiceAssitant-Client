@@ -42,21 +42,5 @@ namespace Please2.Views
             }
 #endif
         }
-
-        /*
-        private void RunTest(string name)
-        {
-            var templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
-
-            if (templates[name] == null)
-            {
-                Debug.WriteLine("cold not find template " + name);
-            }
-            else
-            {
-                vm.RunTest(name, templates[name] as DataTemplate);
-            }
-        }
-        */
     }
 }

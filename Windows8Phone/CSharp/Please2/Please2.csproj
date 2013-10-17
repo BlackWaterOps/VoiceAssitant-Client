@@ -110,10 +110,12 @@
     <Compile Include="Util\NavigationService.cs" />
     <Compile Include="Util\PleaseService.cs" />
     <Compile Include="Util\TaskService.cs" />
+    <Compile Include="ViewModels\DetailsViewModel.cs" />
     <Compile Include="ViewModels\FitbitViewModel.cs" />
     <Compile Include="ViewModels\FlightsViewModel.cs" />
+    <Compile Include="ViewModels\GeopoliticsViewModel.cs" />
     <Compile Include="ViewModels\HoroscopeViewModel.cs" />
-    <Compile Include="ViewModels\ImagesViewModel.cs" />
+    <Compile Include="ViewModels\ImageViewModel.cs" />
     <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\NewsViewModel.cs" />
     <Compile Include="ViewModels\PeerFinderViewModel.cs" />
@@ -135,14 +137,20 @@
     <Compile Include="Views\Conversation.xaml.cs">
       <DependentUpon>Conversation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Details.xaml.cs">
+      <DependentUpon>Details.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EventDetailsPage.xaml.cs">
       <DependentUpon>EventDetailsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\DialogModel.cs" />
     <Compile Include="Models\StateModel.cs" />
-    <Compile Include="Views\Images.xaml.cs">
-      <DependentUpon>Images.xaml</DependentUpon>
+    <Compile Include="Views\Image.xaml.cs">
+      <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
+    <None Include="Views\Images.xaml.cs">
+      <DependentUpon>Images.xaml</DependentUpon>
+    </None>
     <Compile Include="Views\ListResults.xaml.cs">
       <DependentUpon>ListResults.xaml</DependentUpon>
     </Compile>
@@ -152,6 +160,9 @@
     </Compile>
     <Compile Include="Views\PeerFinder.xaml.cs">
       <DependentUpon>PeerFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
@@ -261,6 +272,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="TemplateDictionary.Details.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="TemplateDictionary.Single.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
@@ -293,6 +308,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Details.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EventDetailsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -301,9 +320,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Images.xaml">
+    <Page Include="Views\Image.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
+    <None Include="Views\Images.xaml">
+      <SubType>Designer</SubType>
+    </None>
     <Page Include="Views\ListResults.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -321,6 +344,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PreferencesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -71,7 +71,7 @@ namespace Please2.Views
 
                 AddMapLayer(coord);
 
-                var datetime = DateTime.Parse(currentEvent.start_time);
+                var datetime = currentEvent.start_time.Value;
 
                 formattedDate = datetime.ToString("ddd, MMM d, yyyy");
                 formattedTime = datetime.ToString("h:m tt");

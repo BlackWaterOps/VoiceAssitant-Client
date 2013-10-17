@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Coding4Fun.Toolkit.Controls;
 
 using Please2.Models;
+using Please2.ViewModels;
 
 namespace Please2.Util
 {
@@ -170,6 +171,127 @@ namespace Please2.Util
         }
     }
 
+    public class ColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var param = (string)parameter;
+
+            string color = null;
+
+            switch (param)
+            {
+                case "stock":
+                    var direction = (string)value;
+
+                    if (direction == "down")
+                    {
+                        color = "#dc143c"; // red
+                    }
+                    else if (direction == "up")
+                    {
+                        color = "#008000"; // green
+                    }
+                    break;
+
+                case "flights":
+                    var delay = System.Convert.ToInt64(value);
+
+                    color =  "#008000"; // green
+
+                    if (delay > 0)
+                    {
+                        color = "#dc143c"; // red
+                    }
+                    break;
+            }
+
+            if (color == null)
+            {
+                return value;
+            }
+
+            return color;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class StatusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+
+            string status = null;
+
+            if (value == null)
+            {
+                // flight is on time
+                status = "Arriving on-time";
+            }
+            else
+            {
+                var delay = System.Convert.ToInt64(value);
+
+                if (delay > 0)
+                {
+                    // flight delayed
+                    status = "Delayed by " + delay + " mins";
+                }
+                else if (delay < 0)
+                {
+                    // flight is early
+                    status = "Arriving early by " + delay + " mins";
+                }
+            }
+
+            return status;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+
+    public class MarginConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            var margin = new Thickness();
+
+            var item = (MainMenuModel)value;
+
+            var vm = ViewModelLocator.GetViewModelInstance<MainMenuViewModel>();
+
+            var items = vm.MainMenu;
+            var gridMargin = vm.Margin;
+            var gridCols = vm.Columns;
+
+            var ind = items.IndexOf(item);
+            var total = items.Count;
+            var lastRow = total - gridCols;
+
+
+            margin.Top = (ind < gridCols) ? 0 : gridMargin;
+            margin.Right = (ind % 2 == 0) ? gridMargin : 0;
+            margin.Left = (ind % 2 == 1) ? gridMargin : 0;
+            margin.Bottom = (ind > (lastRow - 1)) ? 0 : gridMargin;
+
+            return margin;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+    //TODO: see if this can be replaced with toolkit's nulltovisibility converter
+    /*
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -219,7 +341,7 @@ namespace Please2.Util
             return null;
         }
     }
-
+    */
     public class EntityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -336,41 +458,6 @@ namespace Please2.Util
         }
     }
 
-    public class FontAwesomeConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            var param = (string)parameter;
-
-            string icon = null;
-
-            switch (param)
-            {
-                case "food":
-                    var unit = (string)value;
-
-                    switch (unit)
-                    {
-                        case "fl oz":
-                            // \uf0fc // beer mug
-                            icon = "\uf0f4"; // coffee cup
-                            break;
-
-                        default:
-                            icon = "\uf0f5"; // knive & fork
-                            break;
-                    }
-                    break;
-            }
-
-            return icon;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
     public class WeatherConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

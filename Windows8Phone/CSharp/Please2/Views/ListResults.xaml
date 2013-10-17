@@ -26,18 +26,31 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Style="{StaticResource AppTitle}"/>
-            <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitle}"/>
-            <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
+            <TextBlock Text="{Binding Title}" 
+                       Visibility="{Binding Title, Converter={StaticResource NullToVisibilityConverter}}"
+                       Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{Binding SubTitle}" 
+                       Visibility="{Binding SubTitle, Converter={StaticResource NullToVisibilityConverter}}"
+                       Style="{StaticResource PageSubTitle}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <phone:LongListSelector x:Name="ResultsListBox" 
+                                    ItemsSource="{Binding ListResults}" 
+                                    ItemTemplate="{Binding Template}"
+                                    LayoutMode="{Binding LayoutMode}"
+                                    GridCellSize="{Binding GridCellSize}"
+                                    CacheMode="BitmapCache"
+                                    toolkit:TiltEffect.IsTiltEnabled="True"/>
+            
+            <!--
             <ListBox x:Name="ResultsListBox" 
                      ItemsSource="{Binding ListResults}"
                      ItemTemplate="{Binding Template}"
                      ItemContainerStyle="{StaticResource ListBoxItem}"
-                     toolkit:TiltEffect.IsTiltEnabled="True">
-            </ListBox>     
+                     toolkit:TiltEffect.IsTiltEnabled="True"/>
+            -->
         </Grid>
     </Grid>
 

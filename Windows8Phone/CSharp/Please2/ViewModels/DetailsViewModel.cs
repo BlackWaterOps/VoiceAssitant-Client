@@ -7,12 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Maps.Controls;
+using Microsoft.Phone.Maps.Toolkit;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
+
+using LinqToVisualTree;
 
 using GalaSoft.MvvmLight.Command;
 
 using Please2.Util;
+using Please2.Models;
 
 namespace Please2.ViewModels
 {
@@ -43,10 +49,11 @@ namespace Please2.ViewModels
         public RelayCommand<object> PinToStartCommand { get; set; }
         public RelayCommand<object> ShowFullMapCommand { get; set; }
 
+        public RelayCommand EventDirectionsLoaded { get; set; }
+
         public DetailsViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
-            PinToStartCommand = new RelayCommand<object>(PinToStart);
-            ShowFullMapCommand = new RelayCommand<object>(ShowFullMap);
+            AttachEventHandlers();
         }
 
         public void SetDetailsTemplate(string template)
@@ -56,8 +63,15 @@ namespace Please2.ViewModels
             if (templates[template] != null)
             {
                 ContentTemplate = templates[template] as DataTemplate;
-                Debug.WriteLine("add content template");
             }
+        }
+
+        private void AttachEventHandlers()
+        {
+            PinToStartCommand = new RelayCommand<object>(PinToStart);
+            ShowFullMapCommand = new RelayCommand<object>(ShowFullMap);
+
+            EventDirectionsLoaded = new RelayCommand(AddDirectionsMap);
         }
 
         private void PinToStart(object e)
@@ -93,6 +107,48 @@ namespace Please2.ViewModels
 
             fullMap.Show();
             */
+        }
+
+        // Do to the lack of binding support in the maps api, we have to
+        // resort to adding the map layer in code. XAML binding would be prefered.
+        private void AddDirectionsMap()
+        {
+            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+
+            var maps = currentPage.Descendants<Map>().Cast<Map>();
+
+            if (maps.Count() > 0)
+            {
+                var map = maps.Single();
+
+                var item = CurrentItem as EventModel;
+
+                var layer = CreateMapLayer(item.location.lat, item.location.lon);
+
+                map.Layers.Add(layer);
+                map.Center = new GeoCoordinate(item.location.lat, item.location.lon);
+            }
+        }
+
+        protected MapLayer CreateMapLayer(double lat, double lon)
+        {
+            var coord = new GeoCoordinate(lat, lon);
+
+            var EventMapPushpin = new UserLocationMarker();
+
+            MapOverlay overlay = new MapOverlay();
+
+            overlay.Content = EventMapPushpin;
+
+            overlay.GeoCoordinate = coord;
+
+            overlay.PositionOrigin = new Point(0, 0.5);
+
+            MapLayer layer = new MapLayer();
+
+            layer.Add(overlay);
+
+            return layer;
         }
     }
 }

@@ -116,4 +116,6 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Alarm.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Reminder.g.cs
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Settings.g.cs
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Images.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Image.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Details.g.cs
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Please2\obj\Debug\Views\Search.g.cs

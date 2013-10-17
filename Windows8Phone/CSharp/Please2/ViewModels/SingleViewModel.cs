@@ -19,8 +19,6 @@ namespace Please2.ViewModels
 {
     public class SingleViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        private const string templateDict = "SingleTemplateDictionary";
-
         private Visibility? titleVisibility;
         public Visibility TitleVisibility
         {
@@ -74,7 +72,7 @@ namespace Please2.ViewModels
         {
             try
             {
-                var templates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
+                var templates = ViewModelLocator.SingleTemplates;
 
                 if (templates[templateName] == null)
                 {
@@ -83,8 +81,6 @@ namespace Please2.ViewModels
                 }
 
                 ContentTemplate = templates[templateName] as DataTemplate;
-                Title = templateName;
-                SubTitle = "";
 
                 var singleTest = new Please2.Tests.Single();
 

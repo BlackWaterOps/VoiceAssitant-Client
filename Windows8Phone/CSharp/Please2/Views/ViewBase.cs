@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media;
@@ -406,6 +407,14 @@ namespace Please2.Views
                 input.Click += MenuItem_Click;
 
                 ApplicationBar.MenuItems.Add(input);
+
+                InputScope scope = new InputScope();
+                InputScopeName name = new InputScopeName();
+
+                name.NameValue = InputScopeNameValue.Text;
+                scope.Names.Add(name);
+
+                debuggerTextBox.InputScope = scope;
             }
         }
 

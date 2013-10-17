@@ -8,6 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -38,14 +40,19 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
             <phone:LongListSelector LayoutMode="Grid"
-                                    GridCellSize="{Binding GridCellSize}" 
+                                    GridCellSize="{Binding GridCellSize}"
                                     ItemsSource="{Binding MainMenu}" 
-                                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
                                     toolkit:TiltEffect.IsTiltEnabled="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <command:EventToCommand Command="{Binding MenuLoaded}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                
                 <phone:LongListSelector.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="5" 
-                                Margin="5" 
+                        <Border Padding="5"
+                                Margin="{Binding Converter={StaticResource MarginConverter}}" 
                                 Background="{Binding background}" 
                                 Tag="{Binding page}"
                                 Tap="MenuItem_Tapped">
