@@ -269,10 +269,10 @@ namespace Please2.Models
         public string name { get; set; }
         public string zip { get; set; }
         public string country { get; set; }
-        public string longitude { get; set; }
+        public double longitude { get; set; }
         public string state { get; set; }
         public string address { get; set; }
-        public string latitude { get; set; }
+        public double latitude { get; set; }
         public string addresscode { get; set; }
     }
 
@@ -291,8 +291,8 @@ namespace Please2.Models
         public string price_display { get; set; }
         public string fee { get; set; }
         public double bathrooms { get; set; }
-        public string price { get; set; }
-        public int bedrooms { get; set; }
+        public double price { get; set; }
+        public double bedrooms { get; set; }
         public int square_feet { get; set; }
         public string currency { get; set; }
         public string amenities { get; set; }
@@ -308,7 +308,7 @@ namespace Please2.Models
         public string name { get; set; }
     }
 
-    public class RealEstateListings
+    public class RealEstateListing
     {
         public string body { get; set; }
         public RealEstateCategory category { get; set; }
@@ -323,7 +323,7 @@ namespace Please2.Models
         public List<RealEstateImage> images { get; set; }
         public RealEstateAttributes attributes { get; set; }
         public string id { get; set; }
-        public RealEstateUser user { get; set; }
+        //public RealEstateUser user { get; set; }
     }
 
     public class RealEstateStatsNums
@@ -346,7 +346,7 @@ namespace Please2.Models
 
     public class RealEstateModel
     {
-        public List<RealEstateListings> listings { get; set; }
+        public List<RealEstateListing> listings { get; set; }
         public RealEstateStats stats { get; set; }
     }
 

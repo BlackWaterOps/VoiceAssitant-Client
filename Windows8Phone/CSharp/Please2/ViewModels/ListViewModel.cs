@@ -133,9 +133,16 @@ namespace Please2.ViewModels
 
             var isSet = SetDetails(this.templateName, e);
 
-            var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
+            if (isSet)
+            {
+                var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
 
-            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+                navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            }
+            else
+            {
+                // no template found message
+            }
         }
 
         public void MovieItemSelected(MoviesModel movie)
@@ -190,6 +197,7 @@ namespace Please2.ViewModels
                 if (templates[this.templateName] == null)
                 {
                     Debug.WriteLine("template " + this.templateName + " not found in TemplateDictionary");
+                    GoTo("conversation");
                     return null;
                 }
 
@@ -204,7 +212,11 @@ namespace Please2.ViewModels
 
                 ListResults = CreateTypedList(this.templateName, structured["items"]);
             }
-
+            else
+            {
+                Debug.WriteLine("could not find \"items\" key in structured response");
+                GoTo("conversation");
+            }
             // nothing really to send back. everything is set on this page
             return ret;
         }
@@ -276,6 +288,7 @@ namespace Please2.ViewModels
                 if (templates[templateName] == null)
                 {
                     Debug.WriteLine("could not find template " + templateName);
+                    GoTo("home");
                     return;
                 }
 
@@ -285,11 +298,12 @@ namespace Please2.ViewModels
 
                 var listTest = new Please2.Tests.List();
 
-                var test = listTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var test = listTest.GetType().GetMethod(templateName.CamelCase() + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 
                 if (test == null)
                 {
                     Debug.WriteLine("no test found for " + templateName);
+                    GoTo("home");
                     return;
                 }
                 
@@ -298,6 +312,7 @@ namespace Please2.ViewModels
                 if (!response.ContainsKey("list"))
                 {
                     Debug.WriteLine("no list data was returned from test " + templateName);
+                    GoTo("home");
                     return;
                 }
                 
@@ -329,6 +344,26 @@ namespace Please2.ViewModels
             {
                 Debug.WriteLine("outer excep: " + err.Message);
             }
+        }
+
+        private void GoTo(string location)
+        {
+            Uri place = null;
+
+            switch (location)
+            {
+                case "home":
+                case "menu":
+                    place = ViewModelLocator.MainMenuPageUri;
+                    break;
+
+                case "conversation":
+                case "dialog":
+                    place = ViewModelLocator.ConversationPageUri;
+                    break;
+            }
+
+            navigationService.NavigateTo(place);
         }
         #endregion
     }

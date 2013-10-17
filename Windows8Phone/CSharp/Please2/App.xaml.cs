@@ -21,7 +21,8 @@ namespace Please2
 {
     public partial class App : Application
     {
-        public static bool isDev = true;
+        // convenience shortcut
+        //public static PhoneApplicationPage currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
 
         /// <summary>
         /// Provides easy access View Models in SimpleIoc.

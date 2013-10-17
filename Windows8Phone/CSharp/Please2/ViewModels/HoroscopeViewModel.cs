@@ -45,7 +45,6 @@ namespace Please2.ViewModels
         {
             var ret = new Dictionary<string, object>();
 
-            // TODO: add logic
             var horoscopeResults = ((JObject)structured["item"]).ToObject<HoroscopeModel>();
 
             ZodiacSign = horoscopeResults.zodiac_sign;

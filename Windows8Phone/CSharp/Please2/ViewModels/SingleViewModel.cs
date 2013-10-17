@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -63,9 +64,11 @@ namespace Please2.ViewModels
             }
         }
 
+        INavigationService navigationService;
+
         public SingleViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
-
+            this.navigationService = navigationService;
         }
 
         public void RunTest(string templateName)
@@ -77,6 +80,7 @@ namespace Please2.ViewModels
                 if (templates[templateName] == null)
                 {
                     Debug.WriteLine("could not find template " + templateName);
+                    GoHome();
                     return;
                 }
 
@@ -84,12 +88,12 @@ namespace Please2.ViewModels
 
                 var singleTest = new Please2.Tests.Single();
 
-                var test = singleTest.GetType().GetMethod((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                var test = singleTest.GetType().GetMethod(templateName.CamelCase() + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
                 if (test == null)
                 {
                     Debug.WriteLine("no test found for " + templateName);
-                    Debug.WriteLine((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "Test");
+                    GoHome();
                     return;
                 }
 
@@ -114,6 +118,11 @@ namespace Please2.ViewModels
             {
                 Debug.WriteLine(err.Message);
             }
+        }
+
+        private void GoHome()
+        {
+            navigationService.NavigateTo(ViewModelLocator.MainMenuPageUri);
         }
     }
 }

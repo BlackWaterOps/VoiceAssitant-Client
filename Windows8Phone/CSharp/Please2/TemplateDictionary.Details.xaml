@@ -66,7 +66,99 @@
 
     <!-- Real Estate -->
     <DataTemplate x:Key="real_estate">
-        
+        <phone:Pivot DataContext="{Binding RealEstateViewModel, Source={StaticResource Locator}}" Title="{Binding CurrentItem.title}" x:Name="ListingDetailsPivotView">
+            <phone:PivotItem Header="Details" x:Name="DetailsPivotPanel">
+                <ScrollViewer Background="White" Foreground="Black" Margin="10" Padding="10">
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <Image Source="{Binding CurrentItem.image}" MaxHeight="250"/>
+
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="Asking: "/>
+                                <TextBlock Text="{Binding attributes.price_display}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Text="Bedrooms: "/>
+                                <TextBlock Text="{Binding attributes.bedrooms}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="Bathrooms: "/>
+                                <TextBlock Text="{Binding attributes.bathrooms}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="Amenities: "/>
+                                <TextBlock Text="{Binding attributes.amenities}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Text="Pets Allowed: "/>
+                                <TextBlock Text="{Binding attributes.pets_allowed}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="Pets Allowed: "/>
+                                <TextBlock Text="{Binding attributes.pets_allowed}"/>
+                            </StackPanel>
+                        </Grid>
+                        <!--
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="/Assets/feature.calendar.png" Grid.Column="0" MaxWidth="75" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="ListingLocation" Grid.Column="1" Text="{Binding CurrentItem.location.address}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                        </Grid>
+                      
+                        
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Source="/Assets/feature.calendar.png" Grid.Column="0" MaxWidth="75" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding CurrentItem.start_time, StringFormat='ddd, MMM d, yyyy'}"/>
+                                <TextBlock Text="{Binding CurrentItem.start_time, StringFormat='h:m tt'}"/>
+                            </StackPanel>
+                        </Grid>
+                        -->
+                        <TextBlock x:Name="ListingDescription" Text="{Binding CurrentItem.body}" Margin="0,20,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </phone:PivotItem>
+
+            <phone:PivotItem Header="Directions" x:Name="DirectionsPivotPanel">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <command:EventToCommand Command="{Binding ListingDirectionsLoaded}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <StackPanel>
+                    <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
+
+                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
+                </StackPanel>
+            </phone:PivotItem>
+
+        </phone:Pivot>
     </DataTemplate>
     
     <!-- Movies -->

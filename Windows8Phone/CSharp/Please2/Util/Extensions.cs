@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Please2.Util
 {
-    class Extensions
+    public static class Extensions
     {
+        public static string CamelCase(this string name)
+        {
+            if (name.IndexOf("_") != -1)
+            {
+                name = Regex.Replace(name, @"[_-][a-z]{1}", (match) => match.ToString().ToUpper());
+                name = Regex.Replace(name, @"[_-]", "");
+            }
+
+            return Char.ToUpper(name[0]) + name.Substring(1);
+        }
     }
 }

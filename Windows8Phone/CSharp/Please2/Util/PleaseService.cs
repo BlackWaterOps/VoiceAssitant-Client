@@ -579,7 +579,7 @@ namespace Please2.Util
 
             try
             {
-                var viewmodelProperty = locator.GetType().GetProperty((Char.ToUpper(templateName[0]) + templateName.Substring(1)) + "ViewModel");
+                var viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
 
                 if (viewmodelProperty != null)
                 {

@@ -38,13 +38,13 @@ namespace Please2.ViewModels
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 
-        public static readonly Uri MainMenuPageUri = new Uri("/Views/MainPage2.xaml", UriKind.Relative);
+        public static readonly Uri MainMenuPageUri = new Uri("/MainPage2.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
 
-        public static readonly Uri ListResultsPageUri = new Uri("/Views/ListResults.xaml", UriKind.Relative);
+        public static readonly Uri ListResultsPageUri = new Uri("/Views/List.xaml", UriKind.Relative);
 
-        public static readonly Uri SingleResultPageUri = new Uri("/Views/SingleResult.xaml", UriKind.Relative);
+        public static readonly Uri SingleResultPageUri = new Uri("/Views/Single.xaml", UriKind.Relative);
 
         public static readonly Uri NotificationsPageUri = new Uri("/Views/Notifications.xaml", UriKind.Relative);
 
@@ -154,6 +154,11 @@ namespace Please2.ViewModels
         public GeopoliticsViewModel GeopoliticsViewModel
         {
             get { return GetViewModelInstance<GeopoliticsViewModel>(); }
+        }
+
+        public RealEstateViewModel RealestateViewModel
+        {
+            get { return GetViewModelInstance<RealEstateViewModel>(); }
         }
 
         public static void Cleanup()

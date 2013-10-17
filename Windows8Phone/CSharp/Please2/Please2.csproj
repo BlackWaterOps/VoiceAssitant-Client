@@ -119,6 +119,7 @@
     <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\NewsViewModel.cs" />
     <Compile Include="ViewModels\PeerFinderViewModel.cs" />
+    <Compile Include="ViewModels\RealEstateViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
@@ -151,8 +152,8 @@
     <None Include="Views\Images.xaml.cs">
       <DependentUpon>Images.xaml</DependentUpon>
     </None>
-    <Compile Include="Views\ListResults.xaml.cs">
-      <DependentUpon>ListResults.xaml</DependentUpon>
+    <Compile Include="Views\List.xaml.cs">
+      <DependentUpon>List.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Notifications.xaml.cs">
       <DependentUpon>Notifications.xaml</DependentUpon>
@@ -167,8 +168,8 @@
     <Compile Include="Views\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SingleResult.xaml.cs">
-      <DependentUpon>SingleResult.xaml</DependentUpon>
+    <Compile Include="Views\Single.xaml.cs">
+      <DependentUpon>Single.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ViewBase.cs" />
     <Compile Include="Views\Reminder.xaml.cs">
@@ -327,7 +328,7 @@
     <None Include="Views\Images.xaml">
       <SubType>Designer</SubType>
     </None>
-    <Page Include="Views\ListResults.xaml">
+    <Page Include="Views\List.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -355,7 +356,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SingleResult.xaml">
+    <Page Include="Views\Single.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
