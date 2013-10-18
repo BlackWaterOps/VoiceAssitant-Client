@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
@@ -29,18 +30,20 @@ namespace Please2.Util
     public class PleaseService : IPleaseService
     {
         // gets completed with all the necessary fields in order to fulfill an action
-        ClassifierModel mainContext = null;
+        private ClassifierModel mainContext = null;
 
         // indicates fields that need to be completed in the main context
-        ResponderModel tempContext = null;
+        private ResponderModel tempContext = null;
 
-        StateModel currentState = new StateModel();
+        private StateModel currentState = new StateModel();
 
-        int counter = 0;
+        private int counter = 0;
 
-        int testCounter = 0;
+        private int testCounter = 0;
 
-        INavigationService navigationService { get; set; }
+        private INavigationService navigationService { get; set; }
+
+        private DispatcherTimer contextTimer;
 
         public string OriginalQuery { get; private set; }
 
@@ -51,25 +54,15 @@ namespace Please2.Util
             testCounter++;
 
             // attach navigation service
-            this.navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
+            this.navigationService = ViewModelLocator.GetViewModelInstance<INavigationService>();
             
-            // listen for querys from ViewBase.cs
-            Messenger.Default.Register<QueryMessage>(this, HandleUserInput);
-
             // listen for Please API state changes 
             currentState.PropertyChanged += OnStateChanged;
 
-            //navigationService.Navigating += OnNavigating;
+            CreateTimer();
         }
 
-
-        // TODO: change name to Query
-        private void HandleUserInput(QueryMessage message)
-        {
-            HandleUserInput(message.Query);
-        }
-
-        public void HandleUserInput(string query)
+        public void Query(string query)
         {
             OriginalQuery = query;
 
@@ -87,6 +80,12 @@ namespace Please2.Util
             {
                 currentState.State = "init";
             }
+        }
+
+        public void ResetTimer()
+        {
+            contextTimer.Stop();
+            CreateTimer();
         }
 
         private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -139,6 +138,32 @@ namespace Please2.Util
                         break;
                 }
             }
+        }
+
+        private void CreateTimer()
+        {
+            contextTimer = new DispatcherTimer();
+            contextTimer.Interval = TimeSpan.FromMinutes(2);
+            contextTimer.Tick += Reset;
+        }
+
+        private void ClearContext()
+        {
+            mainContext = null;
+            tempContext = null;
+            currentState = new StateModel();
+
+            ResetTimer();
+        }
+
+        private void Reset(object sender, EventArgs e)
+        {
+            ClearContext();
+
+            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+            vm.DialogList = null;
+
+            navigationService.NavigateTo(ViewModelLocator.MainMenuPageUri);
         }
 
         private void ChoiceList(ResponderModel response)
@@ -225,11 +250,12 @@ namespace Please2.Util
      
         private void ErrorMessage(string message)
         {
+            // pass message to view
             var response = MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
 
             if (response == MessageBoxResult.OK)
             {
-                currentState = new StateModel();
+                ClearContext();
             }
         }
 
@@ -499,12 +525,8 @@ namespace Please2.Util
             if (data.ContainsKey("payload"))
             {
                 var payload = (Dictionary<string, object>)data["payload"];
-
                 data["payload"] = await DoClientOperations(payload);
             }
-
-            //Debug.WriteLine("auditor request");
-            //Debug.WriteLine(SerializeData(mainContext));
 
             counter++;
 
@@ -522,7 +544,10 @@ namespace Please2.Util
                     string state = response.status.Replace(" ", "");
 
                     if (state == "inprogress" || state == "choice")
+                    {
                         tempContext = response;
+                        contextTimer.Start();
+                    }
 
                     // create event and trigger based on status
                     currentState.Response = response;
@@ -546,9 +571,8 @@ namespace Please2.Util
 
                 ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
 
-                //Debug.WriteLine("Actor");
-                //Debug.WriteLine(SerializeData(response));
-
+                ClearContext();
+                
                 if (response.error != null)
                 {
                     //Debug.WriteLine("Actor exception");
@@ -678,9 +702,7 @@ namespace Please2.Util
                         switch (templateName)
                         {
                             // override. list items that act like single items
-                            //case "images": // TODO: images will be a list in grid mode with a link to full image
                             case "news": 
-                                // !!create a method for this logic!!
                                 uri = LoadSingleResult(templateName, structured);
 
                                 if (uri != null)
@@ -688,31 +710,6 @@ namespace Please2.Util
                                     page = uri;
                                 }
 
-                                /*
-                                if (templates[templateName] != null)
-                                {
-                                    singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                                    singleViewModel.ContentTemplate = templates[templateName] as DataTemplate;
-                                    
-                                    data = PopulateViewModel(templateName, structured);
-
-                                    if (data.ContainsKey("page"))
-                                    {
-                                        page = (Uri)data["page"];
-                                    }
-
-                                    if (data.ContainsKey("title"))
-                                    {
-                                        singleViewModel.Title = (string)data["title"];
-                                    }
-
-                                    if (data.ContainsKey("subtitle"))
-                                    {
-                                        singleViewModel.SubTitle = (string)data["subtitle"];
-                                    }
-                                }
-                                */
                                 break;
 
                             default:
@@ -735,40 +732,6 @@ namespace Please2.Util
                         {
                             page = uri;
                         }
-
-                        /*
-                        templates = ViewModelLocator.SingleTemplates;
-
-                        page = ViewModelLocator.SingleResultPageUri;
-
-                        if (templates[templateName] != null)
-                        {
-                            singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                            singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
-
-                            data = PopulateViewModel(templateName, structured);
-
-                            if (data.ContainsKey("page"))
-                            {
-                                page = (Uri)data["page"];
-                            }
-
-                            if (data.ContainsKey("title"))
-                            {
-                                singleViewModel.Title = (string)data["title"];
-                            }
-
-                            if (data.ContainsKey("subtitle"))
-                            {
-                                singleViewModel.SubTitle = (string)data["subtitle"];
-                            }
-                        }
-                        else
-                        {
-                            Debug.WriteLine("single template not found: " + templateName);
-                        }
-                        */
                         break;
                 }
 

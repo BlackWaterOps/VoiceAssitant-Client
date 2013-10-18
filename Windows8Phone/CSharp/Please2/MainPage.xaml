@@ -110,7 +110,7 @@
                                     ChatBubbleDirection="{Binding sender, Converter={StaticResource ChatBubbleConverter}}">
                                         <StackPanel x:Name="StackTest">
                                             <TextBlock Text="{Binding message}" Foreground="{Binding sender, Converter={StaticResource ForegroundConverter}}" TextWrapping="Wrap"/>
-                                            <HyperlinkButton Content="Click for more" TargetName="_blank" Visibility="{Binding link, Converter={StaticResource VisibilityConverter}}" NavigateUri="{Binding link}" Foreground="#0000ee" HorizontalAlignment="Right"/>
+                                            <HyperlinkButton Content="Click for more" TargetName="_blank" Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}" NavigateUri="{Binding link}" Foreground="#0000ee" HorizontalAlignment="Right"/>
                                         </StackPanel>
                                     </c4f:ChatBubble>
                                     

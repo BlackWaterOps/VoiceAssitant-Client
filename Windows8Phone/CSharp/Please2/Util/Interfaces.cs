@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 using Microsoft.Phone.UserData;
 
@@ -47,8 +48,9 @@ namespace Please2.Util
     { 
         string OriginalQuery { get; }
 
-        // TODO: (new name) void Query(string query);
-        void HandleUserInput(string query);
+        void ResetTimer();
+
+        void Query(string query);
 
         Task Auditor(ChoiceModel choice);
     }

@@ -41,7 +41,11 @@ namespace Please2.Views
 
         private IAsyncOperation<SpeechRecognitionUIResult> recoOperation;
 
+        private IPleaseService pleaseService;
+
         protected bool disableSpeech = false;
+
+        private string[] cancellation = new string[] {"cancel", "nevermind"};
 
         // allow sub classes to interact/alter the appbar
         protected ApplicationBar applicationBar;
@@ -52,10 +56,14 @@ namespace Please2.Views
         {
             try
             {
-                // Debug.WriteLine(this);
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
 
                 // SystemTray.ProgressIndicator.IsIndeterminate = true;
+                if (pleaseService == null)
+                {
+                    pleaseService = ViewModelLocator.GetViewModelInstance<IPleaseService>();
+                }
+
                 if (synthesizer == null)
                 {
                     synthesizer = new SpeechSynthesizer();
@@ -166,6 +174,18 @@ namespace Please2.Views
             ApplicationBar = applicationBar;
         }
 
+        protected void AddCancelButton()
+        {
+            var cancelBtn = new ApplicationBarIconButton()
+            {
+                IconUri = new Uri("/Assets/close.png", UriKind.Relative),
+                Text = "cancel",
+                IsEnabled = true
+            };
+
+            applicationBar.Buttons.Add(cancelBtn);
+        }
+
         protected void Microphone_Click(object sender, EventArgs e)
         {
             PerformSpeechRecognition();
@@ -173,6 +193,8 @@ namespace Please2.Views
 
         protected async void PerformSpeechRecognition()
         {
+            pleaseService.ResetTimer();
+
             synthesizer.CancelAll();
 
             if (recoOperation != null && recoOperation.Status == AsyncStatus.Started)
@@ -210,6 +232,8 @@ namespace Please2.Views
                         //TODO: conditional is needed
                         // check if speak is in response to a task filter ie. narrow down results for a phone task like email or sms
                         // if (this.GetType() == typeof(ContactList))
+
+                        // check if query is a cancellation command
 
                         ProcessQuery(query);
                     }
@@ -273,8 +297,8 @@ namespace Please2.Views
             // add initial query to conversation list
             vm.AddDialog("user", query);
 
-            // send message to viewmodel to start the api adventure!!
-            Messenger.Default.Send<QueryMessage>(new QueryMessage(query));
+            // send message to pleaseService to start the api adventure!!
+            pleaseService.Query(query);
         }
 
         private void InProgress(ProgressMessage message)
