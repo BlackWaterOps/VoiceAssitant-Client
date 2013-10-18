@@ -497,7 +497,7 @@ namespace Please2.Util
                 { new List<string> { "1", "6" }, new List<string> { "fair", "clear", "fair with haze", "fair and breezy", "clear and breezy", "sunny" } },
 
                 { new List<string> { "b" }, new List<string> { "mostly cloudy and breezy" } },
-                { new List<string> { "Z", "!" }, new List<string> { "overcast and breezy" } },
+                { new List<string> { "Z", "!" }, new List<string> { "overcast and breezy", "patchy fog", "area fog" } },
                 { new List<string> { "d" }, new List<string> { "mostly cloudy and windy" } },
                 /*
                 { "f", new List<string> { "" } },
