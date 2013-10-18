@@ -18,16 +18,6 @@ namespace Please2.Models
         public string LoadingText { get; private set; }
     }
 
-    public class QueryMessage
-    {
-        public QueryMessage(string query)
-        {
-            Query = query;
-        }
-        
-        public string Query { get; private set; }
-    }
-
     public class ShowMessage
     {
         public ShowMessage(string text, string speak, string link = null)
