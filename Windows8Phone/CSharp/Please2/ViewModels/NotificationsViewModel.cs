@@ -19,6 +19,7 @@ namespace Please2.ViewModels
 {
     public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        /*
         private Visibility? reminderVisibility;
         public Visibility ReminderVisibility
         {
@@ -29,7 +30,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("ReminderVisibility");
             }
         }
-        
+        */
         private ObservableCollection<Reminder> reminders;
         public ObservableCollection<Reminder> Reminders
         {
@@ -40,7 +41,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("Reminders");
             }
         }
-
+        /*
         private Visibility? alarmVisibility;
         public Visibility AlarmVisibility
         {
@@ -51,7 +52,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("AlarmVisibility");
             }
         }
-
+        */
         private ObservableCollection<Please2.Models.Alarm> alarms;
         public ObservableCollection<Please2.Models.Alarm> Alarms
         {
@@ -88,9 +89,12 @@ namespace Please2.ViewModels
                 Debug.WriteLine(t.Title);
             }
 
-            reminders = new ObservableCollection<Reminder>(r);
-           
-            reminderVisibility = (reminders.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+            if (r.Count() > 0)
+            {
+                reminders = new ObservableCollection<Reminder>(r);
+            }
+
+                //reminderVisibility = (reminders.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void CreateReminder(DateTime reminderDate, string title)
@@ -150,13 +154,16 @@ namespace Please2.ViewModels
 
                     IQueryable<Please2.Models.Alarm> query = from Please2.Models.Alarm alarms in db.Alarms select alarms;
 
-                    Debug.WriteLine(query);
-                    // TODO: order by beginDate
-                    // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
+                    if (query.Count() > 0)
+                    {
+                        Debug.WriteLine(query);
+                        // TODO: order by beginDate
+                        // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
 
-                    this.alarms = new ObservableCollection<Please2.Models.Alarm>(query);
+                        this.alarms = new ObservableCollection<Please2.Models.Alarm>(query);
 
-                    alarmVisibility = (this.alarms.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+                        // alarmVisibility = (this.alarms.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+                    }
                 }
             }
             catch (Exception err)
