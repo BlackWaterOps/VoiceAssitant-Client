@@ -26,6 +26,7 @@
       this.replace = __bind(this.replace, this);
       this.find = __bind(this.find, this);
       this.reduce = __bind(this.reduce, this);
+      this.isEqual = __bind(this.isEqual, this);
       this.updatePosition = __bind(this.updatePosition, this);
       this.getLocation = __bind(this.getLocation, this);
       this.show = __bind(this.show, this);
@@ -440,9 +441,9 @@
       if (payload != null) {
         this.clientOperations(payload);
       }
-      this.mainContext = response;
-      this.counter++;
-      if (this.counter < 3) {
+      if (!this.isEqual(this.mainContext, response)) {
+        this.mainContext = response;
+        this.counter++;
         return this.requestHelper(this.responder + 'audit', 'POST', response, this.auditorSuccessHandler);
       }
     };
@@ -573,6 +574,12 @@
     Please.prototype.updatePosition = function(position) {
       this.lat = position.coords.latitude;
       return this.lon = position.coords.longitude;
+    };
+
+    Please.prototype.isEqual = function(object1, object2) {
+      console.log(JSON.stringify(object1));
+      console.log(JSON.stringify(object2));
+      return JSON.stringify(object1) === JSON.stringify(object2);
     };
 
     Please.prototype.reduce = function(fun, iterable, initial) {

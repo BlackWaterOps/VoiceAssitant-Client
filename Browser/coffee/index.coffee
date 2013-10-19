@@ -407,12 +407,13 @@ class window.Please
 
 		@clientOperations(payload) if payload?
 
-		# this should only be set for init requests not disambiguate responses
-		@mainContext = response
+		if not @isEqual(@mainContext, response)
+			# this should only be set for init requests not disambiguate responses
+			@mainContext = response
 
-		@counter++
+			@counter++
 
-		@requestHelper(@responder + 'audit' , 'POST', response, @auditorSuccessHandler) if @counter < 3
+			@requestHelper(@responder + 'audit' , 'POST', response, @auditorSuccessHandler)
 
 	auditorSuccessHandler: (response) =>
 		@currentState = 
@@ -541,6 +542,12 @@ class window.Please
 		@lat = position.coords.latitude
 		@lon = position.coords.longitude
 	
+	isEqual: (object1, object2) =>
+		console.log(JSON.stringify(object1))
+		console.log(JSON.stringify(object2))
+		
+		JSON.stringify(object1) is JSON.stringify(object2)
+
 	reduce: (fun, iterable, initial) =>
 		if iterable.length > 0
 			initial = fun(initial, iterable[0])
