@@ -259,8 +259,6 @@ class window.Please
 		$(document).trigger($.Event('debug')) if debuggable.indexOf(@currentState.state) isnt -1				
 			
 		if response?
-			console.log(response, field, type)
-
 			# create a clone of the context to update so we can compare them later
 			context = $.extend(true, {}, @mainContext)
 
@@ -272,8 +270,6 @@ class window.Please
 			else
 				context.payload[field] = response[type]
 			
-			console.log('context', JSON.stringify(context), 'maincontext', JSON.stringify(@mainContext))
-
 			$(document).trigger(
 				type: 'audit'
 				response: context

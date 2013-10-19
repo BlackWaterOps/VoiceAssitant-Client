@@ -305,7 +305,6 @@
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
-        console.log(response, field, type);
         context = $.extend(true, {}, this.mainContext);
         context = this.clientOperations(context, response);
         if (field.indexOf('.') !== -1) {
@@ -313,7 +312,6 @@
         } else {
           context.payload[field] = response[type];
         }
-        console.log('context', JSON.stringify(context), 'maincontext', JSON.stringify(this.mainContext));
         return $(document).trigger({
           type: 'audit',
           response: context
