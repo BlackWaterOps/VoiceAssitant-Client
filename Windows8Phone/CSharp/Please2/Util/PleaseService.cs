@@ -49,8 +49,6 @@ namespace Please2.Util
 
         public PleaseService()
         {
-            Debug.WriteLine(testCounter);
-
             testCounter++;
 
             // attach navigation service
@@ -86,6 +84,17 @@ namespace Please2.Util
         {
             contextTimer.Stop();
             CreateTimer();
+        }
+
+        public void ClearContext()
+        {
+            Debug.WriteLine("clear context");
+            mainContext = null;
+            tempContext = null;
+            currentState = new StateModel();
+            currentState.PropertyChanged += OnStateChanged;
+
+            ResetTimer();
         }
 
         private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -147,21 +156,13 @@ namespace Please2.Util
             contextTimer.Tick += Reset;
         }
 
-        private void ClearContext()
-        {
-            mainContext = null;
-            tempContext = null;
-            currentState = new StateModel();
-
-            ResetTimer();
-        }
-
         private void Reset(object sender, EventArgs e)
         {
+            Debug.WriteLine("please service reset");
             ClearContext();
 
             var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-            vm.DialogList = null;
+            vm.ClearDialog();
 
             navigationService.NavigateTo(ViewModelLocator.MainMenuPageUri);
         }
@@ -206,16 +207,18 @@ namespace Please2.Util
             {
                 var frame = App.Current.RootVisual as PhoneApplicationFrame;
 
-                if (frame.CurrentSource.ToString().Contains("Conversation.xaml"))
+                if (frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
                 {
-                    Debug.WriteLine("pass data to show override");
                     Show(response.show, response.speak);
                 }
                 else
                 {
-                    var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+                    //var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
                     
-                    vm.AddDialog("please", (string)response.show.simple["text"]);
+                    // this won't have any speak
+                    //vm.AddDialog("please", (string)response.show.simple["text"]);
+
+                    Show(response.show, response.speak);
 
                     // navigate to conversation.xaml
                     navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);

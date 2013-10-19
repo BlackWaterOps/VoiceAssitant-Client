@@ -18,6 +18,9 @@
     <Application.Resources>
         <local:LocalizedStrings xmlns:local="clr-namespace:Please2" x:Key="LocalizedStrings" />
 
+        <shell:ApplicationBarIconButton x:Key="MicBtn" IconUri="/Assets/microphone.png" Text="speak"/>
+        <shell:ApplicationBarIconButton x:Key="CancelBtn" IconUri="/Assets/close.png" Text="cancel"/>
+
         <LinearGradientBrush x:Key="AppBackground" StartPoint="0.5,0" EndPoint="0.5,1">
             <GradientStop Color="#192128" Offset="0.0" />
             <GradientStop Color="#32393f" Offset="1.0" />

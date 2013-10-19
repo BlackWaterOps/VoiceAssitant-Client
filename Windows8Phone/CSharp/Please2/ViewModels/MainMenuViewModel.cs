@@ -76,8 +76,8 @@ namespace Please2.ViewModels
 
             if (content != null)
             {
-                Debug.WriteLine("not null");
-                Debug.WriteLine(((content as Grid).ActualWidth / 2) - margin);
+                //Debug.WriteLine("not null");
+                //Debug.WriteLine(((content as Grid).ActualWidth / 2) - margin);
 
                 // update gridcell prop which will update view
             }

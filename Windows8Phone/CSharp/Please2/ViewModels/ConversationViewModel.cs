@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using Microsoft.Phone.Controls;
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -16,11 +19,13 @@ namespace Please2.ViewModels
 {
     public class ConversationViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        public string SubTitle
+        private const string phrase = "how may I help you?";
+
+        public DateTime SubTitle
         {
-            get { return DateTime.Now.ToString("dddd, MMMM d, yyyy @ h:mm tt"); }
+            get { return DateTime.Now; }
         }
-        
+
         private ObservableCollection<DialogModel> dialogList;
         public ObservableCollection<DialogModel> DialogList
         {
@@ -43,49 +48,25 @@ namespace Please2.ViewModels
             this.pleaseService = pleaseService;
 
             Messenger.Default.Register<ShowMessage>(this, Show);
-        }
-        
-        /*
-        public ConversationViewModel()
-        {
-        }
-        */
 
-        private void Show(ShowMessage message)
-        {
-            var text = message.Text;
-            var link = message.Link;
-
-            AddDialog("please", text, link);
-        }
-
-        // we hit the show override so we must be showing please dialog
-        /*
-        private void Show(ShowModel showModel, string speak = "")
-        {
-            Debug.WriteLine("conversation show method");
-
-            if (showModel.simple.ContainsKey("text"))
+            if (DialogList == null)
             {
-                string show = (string)showModel.simple["text"];
-
-                string link = null;
-
-                if (showModel.simple.ContainsKey("link"))
-                    link = (string)showModel.simple["link"];
-
-                AddDialog("please", show, link);
-            }
-            else
-            {
-                Debug.WriteLine("conversation viewmodel: no simple text found");
+                DialogList = new ObservableCollection<DialogModel>();
             }
         }
-        */
 
-        // NOTE: might be able to change type for message to string later
+        public void AddOpeningDialog()
+        {
+            AddDialog("please", phrase);
+
+            // only send message to viewbase. Not to ourself
+            Messenger.Default.Send(new ShowMessage(null, phrase, null), "viewbase");
+        }
+
         public void AddDialog(string sender, string message, string link = null)
         {
+            Debug.WriteLine(message);
+
             if (DialogList == null)
             {
                 DialogList = new ObservableCollection<DialogModel>();
@@ -97,9 +78,33 @@ namespace Please2.ViewModels
             dialog.message = message;
 
             if (link != null)
+            {
                 dialog.link = link;
+            }
 
             DialogList.Add(dialog);
+        }
+
+        public void ClearDialog()
+        {
+            DialogList.Clear();
+
+            if ((App.Current.RootVisual as PhoneApplicationFrame).CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
+            {
+                AddOpeningDialog();
+            }
+        }
+
+        private void Show(ShowMessage message)
+        {
+            Debug.WriteLine("viewmodel catch show message");
+            var text = message.Text;
+            var link = message.Link;
+
+            if (text != null)
+            {
+                AddDialog("please", text, link);
+            }
         }
     }
 }

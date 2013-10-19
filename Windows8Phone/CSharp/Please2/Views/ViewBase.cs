@@ -43,9 +43,11 @@ namespace Please2.Views
 
         private IPleaseService pleaseService;
 
-        protected bool disableSpeech = false;
+        private string[] cancelCommands = new string[] {"cancel", "nevermind", "never mind"};
 
-        private string[] cancellation = new string[] {"cancel", "nevermind"};
+        private string[] cancelMessages = new string[] { "ok then.", "as you wish.", "very well." };
+
+        protected bool disableSpeech = false;
 
         // allow sub classes to interact/alter the appbar
         protected ApplicationBar applicationBar;
@@ -127,7 +129,10 @@ namespace Please2.Views
         private void RegisterListeners()
         {
             Messenger.Default.Register<ProgressMessage>(this, InProgress);
+            // listen for any show messages
             Messenger.Default.Register<ShowMessage>(this, Speak);
+            // listen for only show messages with the token "viewbase"
+            Messenger.Default.Register<ShowMessage>(this, "viewbase", Speak);
         }
 
         private void UnRegisterListeners()
@@ -151,7 +156,6 @@ namespace Please2.Views
 
             if (layoutRoot != null)
             {
-                Debug.WriteLine("add page bg");
                 layoutRoot.Background = bg;
             }
         }
@@ -160,13 +164,8 @@ namespace Please2.Views
         {
             applicationBar = new ApplicationBar();
 
-            var micBtn = new ApplicationBarIconButton()
-            {
-                IconUri = new Uri("/Assets/microphone.png", UriKind.Relative),
-                Text = "speak",
-                IsEnabled = true
-            };
-
+            var micBtn = App.Current.Resources["MicBtn"] as ApplicationBarIconButton;
+           
             micBtn.Click += Microphone_Click;
 
             applicationBar.Buttons.Add(micBtn);
@@ -176,14 +175,29 @@ namespace Please2.Views
 
         protected void AddCancelButton()
         {
-            var cancelBtn = new ApplicationBarIconButton()
+            if (applicationBar.Buttons.Count == 1)
             {
-                IconUri = new Uri("/Assets/close.png", UriKind.Relative),
-                Text = "cancel",
-                IsEnabled = true
-            };
+                var cancelBtn = App.Current.Resources["CancelBtn"] as ApplicationBarIconButton;
 
-            applicationBar.Buttons.Add(cancelBtn);
+                cancelBtn.Click += Cancel_Click;
+
+                applicationBar.Buttons.Add(cancelBtn);
+            }
+        }
+
+        protected void RemoveCancelButton()
+        {
+            var cancelBtn = App.Current.Resources["CancelBtn"] as ApplicationBarIconButton;
+
+            cancelBtn.Click -= Cancel_Click;
+
+            applicationBar.Buttons.Remove(cancelBtn);
+        }
+
+        protected async void Cancel_Click(object sender, EventArgs e)
+        {
+            RemoveCancelButton();
+            await CancelConversation();
         }
 
         protected void Microphone_Click(object sender, EventArgs e)
@@ -193,6 +207,8 @@ namespace Please2.Views
 
         protected async void PerformSpeechRecognition()
         {
+            disableSpeech = false;
+
             pleaseService.ResetTimer();
 
             synthesizer.CancelAll();
@@ -233,8 +249,6 @@ namespace Please2.Views
                         // check if speak is in response to a task filter ie. narrow down results for a phone task like email or sms
                         // if (this.GetType() == typeof(ContactList))
 
-                        // check if query is a cancellation command
-
                         ProcessQuery(query);
                     }
                 }
@@ -263,6 +277,8 @@ namespace Please2.Views
 
         private async void Speak(ShowMessage message)
         {
+            Debug.WriteLine("viewbase catch show message");
+
             await Speak(message.Speak);
         }
 
@@ -290,15 +306,45 @@ namespace Please2.Views
             }
         }
 
-        private void ProcessQuery(string query)
+        private async Task CancelConversation()
         {
             var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-            
-            // add initial query to conversation list
-            vm.AddDialog("user", query);
 
-            // send message to pleaseService to start the api adventure!!
-            pleaseService.Query(query);
+            Debug.WriteLine("viewbase clear dialog");
+            vm.ClearDialog();
+            pleaseService.ClearContext();
+
+            var r = new Random();
+
+            var ind = r.Next(0, cancelMessages.Length);
+
+            // if we give a nice cancel tts, it'll get trampled by the tts for 'How may I help you' for the initial dialog
+            // TODO: resolve this dilemma
+            //await Speak(cancelMessages[ind]);
+        }
+
+        private async void ProcessQuery(string query)
+        {
+            try
+            {
+                var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+
+                if (Array.IndexOf(cancelCommands, query.Trim().ToLower()) != -1)
+                {
+                    await CancelConversation();
+                    return;
+                }
+
+                // add initial query to conversation list
+                vm.AddDialog("user", query);
+
+                // send message to pleaseService to start the api adventure!!
+                pleaseService.Query(query);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
         }
 
         private void InProgress(ProgressMessage message)

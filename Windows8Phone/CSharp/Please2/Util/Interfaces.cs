@@ -48,6 +48,8 @@ namespace Please2.Util
     { 
         string OriginalQuery { get; }
 
+        void ClearContext();
+
         void ResetTimer();
 
         void Query(string query);

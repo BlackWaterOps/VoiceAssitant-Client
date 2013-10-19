@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -39,17 +40,35 @@ namespace Please2.Views
 
             vm = (ConversationViewModel)DataContext;
 
-            if (vm.DialogList == null || vm.DialogList.Count == 0)
+            vm.DialogList.CollectionChanged += DialogCollectionChanged;
+
+            var dialogCount = vm.DialogList.Count; 
+
+            if (dialogCount == 0)
             {
-                vm.AddDialog("please", "how may I help you?");
-                base.Speak("please", "how may I help you?");
+                vm.AddOpeningDialog();
             }
-            else
+
+            if (dialogCount > 0)
             {
-                ScrollTo();
+                base.AddCancelButton();
             }
+
+            ScrollTo();
             
             base.AddDebugTextBox();
+        }
+
+        private void DialogCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Debug.WriteLine("collection changed");
+            Debug.WriteLine(e.Action);
+            Debug.WriteLine(e.NewStartingIndex);
+
+            if (e.NewStartingIndex > 0)
+            {
+                base.AddCancelButton();
+            }
         }
 
         protected void ContextMenuItem_Click(object sender, EventArgs e)
@@ -73,8 +92,10 @@ namespace Please2.Views
 
             var enumerable = DialogList.Descendants<ScrollViewer>().Cast<ScrollViewer>();
 
-            if (enumerable.Count() > 0)
+            if (enumerable.Count() > 0 && index > 0)
             {
+                Debug.WriteLine("scroll to");
+
                 var scrollViewer = enumerable.Single();
 
                 scrollViewer.ScrollToVerticalOffset(index);
