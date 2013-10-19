@@ -293,33 +293,31 @@
       return this.requestHelper(this.classifier, "GET", data, function(response) {
         return $(document).trigger($.Event('debug')).trigger({
           type: 'audit',
-          response: response
+          response: _this.clientOperations(response, response.payload)
         });
       });
     };
 
     Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
-      var debuggable, request;
+      var context, debuggable;
       debuggable = ['inprogress', 'error', 'choice'];
       if (debuggable.indexOf(this.currentState.state) !== -1) {
         $(document).trigger($.Event('debug'));
       }
       if (response != null) {
-        this.clientOperations(response);
+        console.log(response, field, type);
+        context = $.extend(true, {}, this.mainContext);
+        context = this.clientOperations(context, response);
         if (field.indexOf('.') !== -1) {
-          this.replace(field, response[type]);
+          context = this.replace(context, field, response[type]);
         } else {
-          this.mainContext.payload[field] = response[type];
+          context.payload[field] = response[type];
         }
-        request = $.extend({}, this.mainContext);
-        return this.auditor(request);
-        /*
-        			$(document).trigger(
-        				type: 'audit'
-        				response: request
-        			)
-        */
-
+        console.log('context', JSON.stringify(context), 'maincontext', JSON.stringify(this.mainContext));
+        return $(document).trigger({
+          type: 'audit',
+          response: context
+        });
       } else {
         return console.log('oops no responder response', results);
       }
@@ -346,11 +344,7 @@
       data = e.response;
       field = data.field;
       type = data.type;
-      if (field.indexOf('.') !== -1) {
-        text = this.find(field);
-      } else {
-        text = this.mainContext.payload[field];
-      }
+      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
       postData = {
         type: type,
         payload: text
@@ -366,11 +360,7 @@
       data = e.response;
       field = data.field;
       type = data.type;
-      if (field.indexOf('.') !== -1) {
-        text = this.find(field);
-      } else {
-        text = this.mainContext.payload[field];
-      }
+      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
       postData = {
         type: type,
         payload: text
@@ -420,7 +410,7 @@
       template = Handlebars.compile($('#bubblein-template').html());
       this.board.append(template(choice.text)).scrollTop(this.board.find('.bubble:last').offset().top);
       if (field.indexOf('.') !== -1) {
-        this.replace(field, choice.data);
+        this.mainContext = this.replace(this.mainContext, field, choice.data);
       } else {
         this.mainContext.payload[field] = choice.data;
       }
@@ -434,26 +424,26 @@
       return $('body').removeClass('choice').find('list-slider').empty();
     };
 
-    Please.prototype.auditor = function(data) {
-      var payload, response;
-      response = data instanceof $.Event ? data.response : data;
-      payload = response.payload;
-      if (payload != null) {
-        this.clientOperations(payload);
-      }
-      if (!this.isEqual(this.mainContext, response)) {
-        this.mainContext = response;
-        this.counter++;
-        return this.requestHelper(this.responder + 'audit', 'POST', response, this.auditorSuccessHandler);
+    Please.prototype.auditor = function(e) {
+      var context, isEqual;
+      context = e.response;
+      isEqual = this.isEqual(context, this.mainContext);
+      if (!isEqual) {
+        this.mainContext = context;
+        return this.requestHelper(this.responder + 'audit', 'POST', context, this.auditorSuccessHandler);
+      } else {
+        return console.log('potential request loop detected');
       }
     };
 
     Please.prototype.auditorSuccessHandler = function(response) {
+      var tempStates;
+      tempStates = ['disambiguate', 'inprogress', 'choice'];
       this.currentState = {
         state: response.status.replace(' ', ''),
         origin: 'auditor'
       };
-      if (this.currentState.state === 'inprogress' || this.currentState.state === 'choice') {
+      if (tempStates.indexOf(this.currentState.state) !== -1) {
         this.disambigContext = response;
       }
       return $(document).trigger({
@@ -577,8 +567,6 @@
     };
 
     Please.prototype.isEqual = function(object1, object2) {
-      console.log(JSON.stringify(object1));
-      console.log(JSON.stringify(object2));
       return JSON.stringify(object1) === JSON.stringify(object2);
     };
 
@@ -591,28 +579,29 @@
       }
     };
 
-    Please.prototype.find = function(field) {
+    Please.prototype.find = function(context, field) {
       var fields,
         _this = this;
       fields = field.split('.');
       if ('function' === typeof Array.prototype.reduce) {
         return fields.reduce(function(prevVal, currVal, index, array) {
           return prevVal[currVal] || null;
-        }, this.mainContext);
+        }, context);
       } else {
         return this.reduce(function(obj, key) {
           return obj[key] || null;
-        }, fields, this.mainContext);
+        }, fields, context);
       }
     };
 
-    Please.prototype.replace = function(field, type) {
+    Please.prototype.replace = function(context, field, type) {
       var fields, last, obj;
       fields = field.split('.');
       last = fields.pop();
       field = fields.join('.');
-      obj = this.find(field);
-      return obj[last] = type;
+      obj = this.find(context, field);
+      obj[last] = type;
+      return context;
     };
 
     Please.prototype.nameMap = function(key) {
@@ -712,21 +701,25 @@
       return dateObj.getFullYear() + '-' + pad(dateObj.getMonth() + 1) + '-' + pad(dateObj.getDate()) + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes()) + ':' + pad(dateObj.getSeconds());
     };
 
-    Please.prototype.clientOperations = function(data) {
-      this.replaceLocation(data);
-      this.replaceDates(data);
-      if (data.unused_tokens != null) {
-        return this.prependTo(data);
+    Please.prototype.clientOperations = function(context, data) {
+      if (data != null) {
+        data = this.replaceLocation(data);
+        data = this.replaceDates(data);
+        if (data.unused_tokens != null) {
+          context = this.prependTo(context, data);
+        }
       }
+      return context;
     };
 
-    Please.prototype.prependTo = function(data) {
+    Please.prototype.prependTo = function(context, data) {
       var field, payloadField, prepend;
       prepend = data.unused_tokens.join(" ");
       field = data.prepend_to;
-      payloadField = this.mainContext.payload[field];
+      payloadField = context.payload[field];
       payloadField = payloadField == null ? "" : " " + payloadField;
-      return this.mainContext.payload[field] = prepend + payloadField;
+      context.payload[field] = prepend + payloadField;
+      return context;
     };
 
     Please.prototype.replaceLocation = function(payload) {
@@ -736,6 +729,7 @@
             payload.location = this.buildDeviceInfo();
         }
       }
+      return payload;
     };
 
     Please.prototype.replaceDates = function(payload) {
@@ -757,6 +751,7 @@
           }
         }
       }
+      return payload;
     };
 
     Please.prototype.buildDatetime = function(date, time) {

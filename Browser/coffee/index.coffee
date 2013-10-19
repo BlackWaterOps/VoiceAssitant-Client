@@ -249,7 +249,7 @@ class window.Please
 			.trigger($.Event('debug'))
 			.trigger(
 				type: 'audit'
-				response: response
+				response: @clientOperations(response, response.payload)
 			)
 		)
 
@@ -259,24 +259,25 @@ class window.Please
 		$(document).trigger($.Event('debug')) if debuggable.indexOf(@currentState.state) isnt -1				
 			
 		if response?
-			@clientOperations(response)
+			console.log(response, field, type)
+
+			# create a clone of the context to update so we can compare them later
+			context = $.extend(true, {}, @mainContext)
+
+			context = @clientOperations(context, response)
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
-				@replace(field, response[type])
+				context = @replace(context, field, response[type])
 			else
-				@mainContext.payload[field] = response[type]
-		
-			# clone 'mainContext' so we don't pollute with unused_tokens
-			request = $.extend({}, @mainContext)
-						
-			@auditor(request)
-			###
+				context.payload[field] = response[type]
+			
+			console.log('context', JSON.stringify(context), 'maincontext', JSON.stringify(@mainContext))
+
 			$(document).trigger(
 				type: 'audit'
-				response: request
+				response: context
 			)
-			###
 		else
 			console.log 'oops no responder response', results
 
@@ -303,11 +304,7 @@ class window.Please
 
 		type = data.type
 
-		if field.indexOf('.') isnt -1
-			text = @find(field)
-			# text = @findOrReplace(field)
-		else
-			text = @mainContext.payload[field]	
+		text = if field.indexOf('.') isnt -1 then @find(@mainContext, field) else @mainContext.payload[field]
 
 		postData = 
 			type: type
@@ -324,13 +321,8 @@ class window.Please
 
 		type = data.type
 
-		if field.indexOf('.') isnt -1
-			text = @find(field)
+		text = if field.indexOf('.') isnt -1 then @find(@mainContext, field) else @mainContext.payload[field]
 
-			# text = @findOrReplace(field)
-		else
-			text = @mainContext.payload[field]	
-		
 		postData = 
 			type: type
 			payload: text
@@ -386,7 +378,7 @@ class window.Please
 		
 		# find & replace the specific field indicated in the response 
 		if field.indexOf('.') isnt -1
-			@replace(field, choice.data)
+			@mainContext = @replace(@mainContext, field, choice.data)
 		else
 			@mainContext.payload[field] = choice.data
 		
@@ -400,27 +392,29 @@ class window.Please
 		$('body').removeClass('choice').find('list-slider').empty()
 
 	# NOTE: data can be a jquery event object or a plain object
-	auditor: (data) =>
-		response = if data instanceof $.Event then data.response else data
+	auditor: (e) =>
+		# context = if data instanceof $.Event then data.response else data
+		context = e.response
+				
+		isEqual = @isEqual(context, @mainContext)
 
-		payload = response.payload
+		if not isEqual
+			@mainContext = context
 
-		@clientOperations(payload) if payload?
+			# @counter++
 
-		if not @isEqual(@mainContext, response)
-			# this should only be set for init requests not disambiguate responses
-			@mainContext = response
-
-			@counter++
-
-			@requestHelper(@responder + 'audit' , 'POST', response, @auditorSuccessHandler)
+			@requestHelper(@responder + 'audit' , 'POST', context, @auditorSuccessHandler)
+		else
+			console.log('potential request loop detected')
 
 	auditorSuccessHandler: (response) =>
+		tempStates = ['disambiguate', 'inprogress', 'choice']
+
 		@currentState = 
 			state: response.status.replace(' ', '')
 			origin: 'auditor'
-
-		@disambigContext = response if @currentState.state is 'inprogress' or @currentState.state is 'choice'
+	
+		@disambigContext = response if tempStates.indexOf(@currentState.state) isnt -1
 
 		$(document).trigger(
 			type: @currentState.state
@@ -543,9 +537,9 @@ class window.Please
 		@lon = position.coords.longitude
 	
 	isEqual: (object1, object2) =>
-		console.log(JSON.stringify(object1))
-		console.log(JSON.stringify(object2))
-		
+		# console.log(JSON.stringify(object1))
+		# console.log(JSON.stringify(object2))
+
 		JSON.stringify(object1) is JSON.stringify(object2)
 
 	reduce: (fun, iterable, initial) =>
@@ -555,28 +549,30 @@ class window.Please
 		else
 			return initial
  
-	find: (field) =>
+	find: (context, field) =>
 		fields = field.split('.')
 		
 		if 'function' is typeof Array.prototype.reduce
 			fields.reduce((prevVal, currVal, index, array) =>
 				return prevVal[currVal] || null
-			, @mainContext)
+			, context)
 		else
 			@reduce((obj, key) =>
 				return obj[key] || null
-			, fields, @mainContext)
+			, fields, context)
 
-	replace: (field, type) =>
+	replace: (context, field, type) =>
 		fields = field.split('.')
 
 		last = fields.pop()
 
 		field = fields.join('.')
 
-		obj = @find(field)
+		obj = @find(context, field)
 
-		return obj[last] = type		
+		obj[last] = type
+
+		return context		
 
 	nameMap: (key) =>
 		map = false
@@ -663,26 +659,31 @@ class window.Please
 	# Note: 
 	# data represents the payload object in response to classification
 	# and represents the entire response object in response to disambiguation
-	clientOperations: (data) =>
-		# replace location operators			
-		@replaceLocation(data)
+	clientOperations: (context, data) =>
+		if data?
+			# replace location operators			
+			data = @replaceLocation(data)
 
-		# find & replace date time fields
-		@replaceDates(data)
+			# find & replace date time fields
+			data = @replaceDates(data)
 
-		# prepend (potential) unused_tokens to payload.{field}
-		@prependTo(data) if data.unused_tokens?		
+			# prepend (potential) unused_tokens to payload.{field}
+			context = @prependTo(context, data) if data.unused_tokens?		
 
-	prependTo: (data) =>
+		return context
+
+	prependTo: (context, data) =>
 		prepend = data.unused_tokens.join(" ")
 
 		field = data.prepend_to
 
-		payloadField = @mainContext.payload[field]
+		payloadField = context.payload[field]
 
 		payloadField = if not payloadField? then "" else " " + payloadField
 
-		@mainContext.payload[field] = prepend + payloadField
+		context.payload[field] = prepend + payloadField
+
+		return context
 
 	replaceLocation: (payload) =>
 		if payload? and payload.location?
@@ -690,7 +691,7 @@ class window.Please
 				when '#current_location'
 					payload.location = @buildDeviceInfo()
 
-		return	
+		return payload
 
 	replaceDates: (payload) =>
 		datetimes = [
@@ -710,7 +711,7 @@ class window.Please
 					payload[date] = datetime.date if payload[date]?
 					payload[time] = datetime.time if payload[time]?
 
-		return
+		return payload
 	
 	buildDatetime: (date, time) =>
 		newDate = null

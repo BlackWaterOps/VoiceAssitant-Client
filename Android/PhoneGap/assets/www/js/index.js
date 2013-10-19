@@ -1,1 +1,0 @@
-../../../../../Browser/js/index.js
