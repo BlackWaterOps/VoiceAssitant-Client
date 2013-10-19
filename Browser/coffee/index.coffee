@@ -408,7 +408,7 @@ class window.Please
 			console.log('potential request loop detected')
 
 	auditorSuccessHandler: (response) =>
-		tempStates = ['disambiguate', 'inprogress', 'choice']
+		tempStates = ['inprogress', 'choice']
 
 		@currentState = 
 			state: response.status.replace(' ', '')

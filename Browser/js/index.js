@@ -438,7 +438,7 @@
 
     Please.prototype.auditorSuccessHandler = function(response) {
       var tempStates;
-      tempStates = ['disambiguate', 'inprogress', 'choice'];
+      tempStates = ['inprogress', 'choice'];
       this.currentState = {
         state: response.status.replace(' ', ''),
         origin: 'auditor'
