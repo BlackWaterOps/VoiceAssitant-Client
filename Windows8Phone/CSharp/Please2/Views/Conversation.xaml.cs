@@ -40,23 +40,21 @@ namespace Please2.Views
 
             vm = (ConversationViewModel)DataContext;
 
+            // add opening dialog before binding listener
+            vm.AddOpeningDialog();
+
             vm.DialogList.CollectionChanged += DialogCollectionChanged;
-
-            var dialogCount = vm.DialogList.Count; 
-
-            if (dialogCount == 0)
-            {
-                vm.AddOpeningDialog();
-            }
-
-            if (dialogCount > 0)
-            {
-                base.AddCancelButton();
-            }
-
-            ScrollTo();
             
-            base.AddDebugTextBox();
+            ScrollTo();            
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            vm.DialogList.CollectionChanged -= DialogCollectionChanged;
+
+            vm.RemoveOpeningDialog();
+
+            base.OnNavigatingFrom(e);
         }
 
         private void DialogCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -78,11 +76,6 @@ namespace Please2.Views
             Debug.WriteLine(dialog.message);
 
             Clipboard.SetText((string)dialog.message);
-        }
-
-        protected override void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
- 	        base.OnKeyDown(sender, e);
         }
 
         private void ScrollTo()

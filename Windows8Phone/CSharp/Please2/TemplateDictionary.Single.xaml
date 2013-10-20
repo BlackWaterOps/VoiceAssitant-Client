@@ -334,7 +334,7 @@
     </Style>
 
     <DataTemplate x:Key="real_estate">
-        <phone:Pivot DataContext="{Binding RealestateViewModel, Source={StaticResource Locator}}">
+        <phone:Pivot DataContext="{Binding RealEstateViewModel, Source={StaticResource Locator}}">
             <phone:PivotItem Header="Stats">
                 <ScrollViewer>
                     <Grid>

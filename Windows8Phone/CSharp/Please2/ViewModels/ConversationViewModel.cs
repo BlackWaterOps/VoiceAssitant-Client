@@ -57,10 +57,23 @@ namespace Please2.ViewModels
 
         public void AddOpeningDialog()
         {
-            AddDialog("please", phrase);
+            if (DialogList.Count == 0)
+            {
+                AddDialog("please", phrase);
 
-            // only send message to viewbase. Not to ourself
-            Messenger.Default.Send(new ShowMessage(null, phrase, null), "viewbase");
+                // only send message to viewbase. Not to ourself
+                Messenger.Default.Send(new ShowMessage(null, phrase, null), "viewbase");
+            }
+        }
+
+        public void RemoveOpeningDialog()
+        {
+            var openingDialog = DialogList.Where(x => (string)x.message == phrase).FirstOrDefault();
+
+            if (DialogList.Count == 1 && openingDialog != null)
+            {
+                DialogList.Clear();
+            }
         }
 
         public void AddDialog(string sender, string message, string link = null)
@@ -76,12 +89,8 @@ namespace Please2.ViewModels
 
             dialog.sender = sender;
             dialog.message = message;
-
-            if (link != null)
-            {
-                dialog.link = link;
-            }
-
+            dialog.link = link;
+            
             DialogList.Add(dialog);
         }
 

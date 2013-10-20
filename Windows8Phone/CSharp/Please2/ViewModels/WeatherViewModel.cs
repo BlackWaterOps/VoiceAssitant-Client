@@ -91,7 +91,7 @@ namespace Please2.ViewModels
         public void GetDefaultForecast()
         {
             // TODO: get city/state from device location data 
-            //pleaseService.HandleUserInput("weather today for scottsdale arizona");
+            pleaseService.Query("weather today for scottsdale arizona");
         }
     }
 }

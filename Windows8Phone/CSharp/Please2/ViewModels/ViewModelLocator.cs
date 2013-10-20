@@ -156,7 +156,7 @@ namespace Please2.ViewModels
             get { return GetViewModelInstance<GeopoliticsViewModel>(); }
         }
 
-        public RealEstateViewModel RealestateViewModel
+        public RealEstateViewModel RealEstateViewModel
         {
             get { return GetViewModelInstance<RealEstateViewModel>(); }
         }

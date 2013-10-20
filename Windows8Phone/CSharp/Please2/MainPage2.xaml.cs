@@ -44,7 +44,7 @@ namespace Please2
 
             NavigationService.NavigationFailed += OnNavigationFailed;
            
-            base.AddDebugTextBox();
+            //base.AddDebugTextBox();
 
             var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
@@ -55,13 +55,8 @@ namespace Please2
 
             base.OnNavigatingFrom(e);
         }
-
-        protected override void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            base.OnKeyDown(sender, e);
-        }
-
-        protected async void MenuItem_Tapped(object sender, EventArgs e)
+ 
+        protected void MenuItem_Tapped(object sender, EventArgs e)
         {
             try
             {

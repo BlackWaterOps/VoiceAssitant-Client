@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Please2.Util
 {
@@ -14,6 +18,23 @@ namespace Please2.Util
             }
 
             return Char.ToUpper(name[0]) + name.Substring(1);
+        }
+
+        public static T DeepCopy<T>(this object model) where T : class
+        {
+            var jsonSettings = new JsonSerializerSettings();
+
+            jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
+            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+
+            var serial = JsonConvert.SerializeObject(model, jsonSettings);
+           
+            var clone = JsonConvert.DeserializeObject<T>(serial, jsonSettings);
+
+            Debug.WriteLine("Deep Copy");
+            Debug.WriteLine(JsonConvert.SerializeObject(clone, jsonSettings));
+
+            return clone;
         }
     }
 }

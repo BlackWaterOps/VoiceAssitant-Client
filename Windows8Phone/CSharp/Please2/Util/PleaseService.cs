@@ -106,6 +106,10 @@ namespace Please2.Util
                     case "init":
                         await Classify((string)currentState.Response);
                         break;
+                    
+                    case "audit":
+                        await Auditor((ClassifierModel)currentState.Response);
+                        break;
 
                     case "disambiguate":
                         DisambiguatePassive((ResponderModel)currentState.Response);
@@ -275,8 +279,12 @@ namespace Please2.Util
                 }
                 else
                 {
-                    // should really trigger a state change here instead of calling method directly
-                    await Auditor(classifierResults);
+                    var context = await DoClientOperations(classifierResults, classifierResults.payload);
+
+                    currentState.Response = context;
+                    currentState.State = "audit";
+
+                    //await Auditor(classifierResults);
                 }
             }
             catch (Exception err)
@@ -356,7 +364,6 @@ namespace Please2.Util
 
             if (field.Contains("."))
             {
-                // payload = FindOrReplace(field);
                 payload = Find(field);
             }
             else
@@ -398,7 +405,6 @@ namespace Please2.Util
 
             if (field.Contains("."))
             {
-                //payload = FindOrReplace(field);
                 payload = Find(field);
             }
             else
@@ -419,6 +425,8 @@ namespace Please2.Util
 
         private async void DisambiguateResponseHandler(Dictionary<string, object> response, string field, string type)
         {
+            Debug.WriteLine("disambig handler");
+
             if (response != null)
             {
                 if (response.ContainsKey("error"))
@@ -430,18 +438,19 @@ namespace Please2.Util
                 }
                 else
                 {
-                    response = await DoClientOperations(response);
+                    var context = mainContext.DeepCopy<ClassifierModel>();                    
+
+                    context = await DoClientOperations(context, response);
 
                     if (response.ContainsKey(type))
                     {
                         if (field.Contains("."))
                         {
-                            //FindOrReplace(field, response[type]);
-                            Replace(field, response[type]);
+                            context = Replace(context, field, response[type]);
                         }
                         else
                         {
-                            mainContext.payload[field] = response[type];
+                            context.payload[field] = response[type];
                         }
                     }
                     else
@@ -449,22 +458,8 @@ namespace Please2.Util
                         Debug.WriteLine("Disambiguation response is missing type");
                     }
 
-                    // clone mainContext so we don't pollute with unused_tokens
-                    Dictionary<string, object> request = new Dictionary<string, object>();
-
-                    request.Add("action", mainContext.action);
-                    request.Add("model", mainContext.model);
-                    request.Add("payload", mainContext.payload);
-
-                    if (response.ContainsKey("unused_tokens"))
-                    {
-                        request.Add("unused_tokens", response["unused_tokens"]);
-                    }
-
-                    Debug.WriteLine("Disambiguate Response");
-                    Debug.WriteLine(SerializeData(request));
-
-                    await Auditor(request);
+                    currentState.Response = context;
+                    currentState.State = "audit";
                 }
             }
             else
@@ -485,7 +480,7 @@ namespace Please2.Util
 
             if (field.Contains("."))
             {
-                Replace(field, choice.data);
+                mainContext = Replace(mainContext, field, choice.data);
             }
             else
             {
@@ -506,14 +501,18 @@ namespace Please2.Util
                 return;
             }
 
-            await Auditor(data.data);
-        }
+            mainContext = data.data;
 
+            await Auditor(mainContext);
+        }
+        /*
         private async Task Auditor(ClassifierModel data)
         {
             mainContext = data;
 
             Dictionary<string, object> request = new Dictionary<string, object>();
+
+            var t = new ClassifierModel();
 
             request.Add("action", data.action);
             request.Add("model", data.model);
@@ -521,21 +520,27 @@ namespace Please2.Util
 
             await Auditor(request);
         }
-
-        private async Task Auditor(Dictionary<string, object> data)
+        */
+        //private async Task Auditor(Dictionary<string, object> data)
+        private async Task Auditor(ClassifierModel context)
         {
-
+            /*
             if (data.ContainsKey("payload"))
             {
                 var payload = (Dictionary<string, object>)data["payload"];
                 data["payload"] = await DoClientOperations(payload);
             }
+               
+            var payload = data.payload;
+            */
 
-            counter++;
+            // counter++;
 
-            if (counter < 3)
+            if (!context.Equals(mainContext))
             {
-                ResponderModel response = await RequestHelper<ResponderModel>(AppResources.ResponderEndpoint + "audit", "POST", mainContext);
+                mainContext = context;
+
+                ResponderModel response = await RequestHelper<ResponderModel>(AppResources.ResponderEndpoint + "audit", "POST", context);
 
                 if (response.error != null)
                 {
@@ -546,7 +551,10 @@ namespace Please2.Util
                 {
                     string state = response.status.Replace(" ", "");
 
-                    if (state == "inprogress" || state == "choice")
+                    var tempStates = new string[] { "inprogress", "choice" };
+
+                    // new 
+                    if (tempStates.Contains(state))
                     {
                         tempContext = response;
                         contextTimer.Start();
@@ -556,6 +564,10 @@ namespace Please2.Util
                     currentState.Response = response;
                     currentState.State = state;
                 }
+            }
+            else
+            {
+                Debug.WriteLine("potential request loop detected");
             }
         }
 
@@ -599,43 +611,38 @@ namespace Please2.Util
         }
 
         private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
-        {
-            var ret = new Dictionary<string, object>();
-            
-            var locator = App.Current.Resources["Locator"] as ViewModelLocator;
-
+        {            
             try
             {
+                var locator = App.Current.Resources["Locator"] as ViewModelLocator;
+
                 var viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
 
-                if (viewmodelProperty != null)
-                {
-                    var viewModel = viewmodelProperty.GetValue(locator, null);
-
-                    var populateMethod = viewModel.GetType().GetMethod("Populate");
-
-                    if (populateMethod != null)
-                    {
-                        var parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured};
-
-                        return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
-                    }
-                    else
-                    {
-                        Debug.WriteLine("reflection: 'Populate' method not implemented in " + templateName);
-                    }
-                }
-                else
+                if (viewmodelProperty == null)
                 {
                     Debug.WriteLine("reflection: view model " + templateName + " could not be found");
+                    return null;
                 }
+
+                var viewModel = viewmodelProperty.GetValue(locator, null);
+
+                var populateMethod = viewModel.GetType().GetMethod("Populate");
+
+                if (populateMethod == null)
+                {
+                    Debug.WriteLine("reflection: 'Populate' method not implemented in " + templateName);
+                    return null;
+                }
+
+                var parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
+
+                return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
             }
             catch (Exception err)
             {
                 Debug.WriteLine(err.Message);
+                return null;
             }
-
-            return ret;
         }
 
         private Uri LoadSingleResult(string templateName, Dictionary<string, object> structured)
@@ -644,33 +651,36 @@ namespace Please2.Util
 
             var page = ViewModelLocator.SingleResultPageUri;
 
-            if (templates[templateName] != null)
-            {
-                var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-                singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
-
-                var data = PopulateViewModel(templateName, structured);
-
-                if (data.ContainsKey("page"))
-                {
-                    page = (Uri)data["page"];
-                }
-
-                if (data.ContainsKey("title"))
-                {
-                    singleViewModel.Title = (string)data["title"];
-                }
-
-                if (data.ContainsKey("subtitle"))
-                {
-                    singleViewModel.SubTitle = (string)data["subtitle"];
-                }
-            }
-            else
+            if (templates[templateName] == null)
             {
                 Debug.WriteLine("single template not found: " + templateName);
                 return null;
+            }
+
+            var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+
+            singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+
+            var data = PopulateViewModel(templateName, structured);
+
+            if (data == null)
+            {
+                return null;
+            }
+
+            if (data.ContainsKey("page"))
+            {
+                page = (Uri)data["page"];
+            }
+
+            if (data.ContainsKey("title"))
+            {
+                singleViewModel.Title = (string)data["title"];
+            }
+
+            if (data.ContainsKey("subtitle"))
+            {
+                singleViewModel.SubTitle = (string)data["subtitle"];
             }
 
             return page;
@@ -690,8 +700,6 @@ namespace Please2.Util
                 Dictionary<string, object> data;
 
                 ResourceDictionary templates;
-
-                //SingleViewModel singleViewModel;
 
                 Uri page = ViewModelLocator.ConversationPageUri;
 
@@ -837,20 +845,20 @@ namespace Please2.Util
         // Note: 
 	    // data represents the payload object in response to classification
 	    // and represents the entire response object in response to disambiguation
-        private async Task<Dictionary<string, object>> DoClientOperations(Dictionary<string, object> response)
+        private async Task<ClassifierModel> DoClientOperations(ClassifierModel context, Dictionary<string, object> response)
         {
             response = await ReplaceLocation(response);
             response = BuildDateTime(response);
-            response = PrependTo(response);
+            context = PrependTo(context, response);
 
-            return response;
+            return context;
         }
 
-        private Dictionary<string, object> PrependTo(Dictionary<string, object> data)
+        private ClassifierModel PrependTo(ClassifierModel context, Dictionary<string, object> data)
         {
             if (!data.ContainsKey("unused_tokens"))
             {
-                return data;
+                return context;
             }
 
             var prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
@@ -859,26 +867,26 @@ namespace Please2.Util
 
             var payloadField = "";
 
-            if (mainContext.payload.ContainsKey(field) && mainContext.payload[field] != null)
+            if (context.payload.ContainsKey(field) && context.payload[field] != null)
             {
-                payloadField = " " + (string)mainContext.payload[field];
+                payloadField = " " + (string)context.payload[field];
             }
 
-            mainContext.payload[field] = prepend + payloadField;
+            context.payload[field] = prepend + payloadField;
 
-            return data;
+            return context;
         }
 
-        protected void Replace(string field, object type)
+        protected ClassifierModel Replace(ClassifierModel context, string field, object type)
         {
             var fields = field.Split('.').ToList();
 
             var last = fields[fields.Count - 1];
 
             // convert to generic object
-            var context = JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+            var obj = context.DeepCopy<object>();
 
-            var t = fields.Aggregate(context, (a, b) =>
+            var t = fields.Aggregate(obj, (a, b) =>
             {
                 if (b == last)
                 {
@@ -892,7 +900,7 @@ namespace Please2.Util
             );
 
             // convert back to classifier model
-            this.mainContext = JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(context));
+            return obj.DeepCopy<ClassifierModel>();
         }
 
         protected object Find(string field)
@@ -900,115 +908,11 @@ namespace Please2.Util
             var fields = field.Split('.').ToList();
 
             // convert to generic object
-            var context = JsonConvert.DeserializeObject<object>(SerializeData(this.mainContext));
+            var context = mainContext.DeepCopy<object>();
 
             return fields.Aggregate(context, (a, b) => ((JObject)a)[b]);
-
-            /*
-            return fields.Aggregate(context, (a, b) =>
-            {
-                if (a.GetType() == typeof(JObject))
-                {
-                    Debug.WriteLine("Find A");
-                    return ((JObject)a)[b];
-                }
-                else
-                {
-                    Debug.WriteLine("Find B");
-                    return b;
-                }
-            });
-             */
         }
 
-        // if type is null, it's a find. 
-        // if type has a value, it's a replace
-        // TODO: REFACTOR THIS POS. SPLIT FIND AND REPLACE INTO TWO SEPERATE METHODS
-        /*
-        private object FindOrReplace(string field, object type = null)
-        {
-            try
-            {
-                Debug.WriteLine("find or replace");
-                Debug.WriteLine(SerializeData(mainContext));
-
-                var fields = field.Split('.').ToList();
-
-                // turn our context into a jobject we can work with
-                var jObject = JsonConvert.DeserializeObject<JObject>(SerializeData(mainContext));
-
-                var stackToVisit = new Stack<JObject>();
-
-                stackToVisit.Push(jObject);
-
-                // keep visiting iterating until the stack of dictionaries to visit is empty
-                while (stackToVisit.Count > 0)
-                {
-                    var nextObject = stackToVisit.Pop();
-
-                    if (nextObject != null)
-                    {
-                        if (nextObject.Count == 0)
-                        {
-
-                            if (type != null)
-                            {
-                                nextObject.Add(fields.First(), JToken.FromObject(type));
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < nextObject.Count; i++)
-                            {
-                                var keyValuePair = nextObject.ElementAt<KeyValuePair<string, JToken>>(i);
-
-                                if (fields.Count() > 1 && keyValuePair.Key == fields.First())
-                                {
-                                    fields.RemoveAt(0);
-                                    stackToVisit.Push(keyValuePair.Value as JObject);
-                                }
-                                else if (keyValuePair.Key == fields.First())
-                                {
-                                    if (type == null)
-                                    {
-                                        return (object)nextObject[keyValuePair.Key];
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            nextObject[keyValuePair.Key] = JToken.FromObject(type);
-                                        }
-                                        catch (Exception err)
-                                        {
-                                            Debug.WriteLine(err.Message);
-                                        }
-                                    }
-                                }
-                                else if (nextObject[fields.First()] == null && type != null)
-                                {
-                                    nextObject.Add(fields.First(), JToken.FromObject(type));
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // turn our jobject back into the proper context model
-                if (type != null)
-                {
-                    mainContext = JsonConvert.DeserializeObject<ClassifierModel>(SerializeData(jObject));
-                }
-
-                return null;
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-                return null;
-            }
-        }
-        */
         private async Task<Dictionary<string, object>> ReplaceLocation(Dictionary<string, object> payload)
         {
             try
@@ -1141,7 +1045,7 @@ namespace Please2.Util
             var jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
-            jsonSettings.NullValueHandling = NullValueHandling.Include;
+            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
 
             return JsonConvert.SerializeObject(data, jsonSettings);
         }

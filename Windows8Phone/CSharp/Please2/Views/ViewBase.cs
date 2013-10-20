@@ -52,7 +52,7 @@ namespace Please2.Views
         // allow sub classes to interact/alter the appbar
         protected ApplicationBar applicationBar;
 
-        TextBox debuggerTextBox;
+        protected FrameworkElement debugger;
 
         public ViewBase()
         {
@@ -78,10 +78,7 @@ namespace Please2.Views
                     //recognizer.Settings.ShowConfirmation = false;
                 }
 
-                if (applicationBar == null)
-                {
-                    CreateApplicationBar();
-                }
+                CreateApplicationBar();
             }
             catch (Exception err)
             {
@@ -93,20 +90,16 @@ namespace Please2.Views
         {
             base.OnNavigatedTo(e);
 
-            CreatePageBackground();
-
             RegisterListeners();
 
-            var debuggerBox = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage).Descendants<TextBox>().Cast<TextBox>().Where( x => x.Name == "ManualInput");
-
-            debuggerTextBox = (debuggerBox.Count() > 0) ? debuggerBox.Single() : null;
-
-            //InProgress(true);
+            CreatePageBackground();
+            
+            AddDebugger();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-             UnRegisterListeners();
+            UnRegisterListeners();
 
             base.OnNavigatedFrom(e);
         }
@@ -162,15 +155,25 @@ namespace Please2.Views
 
         protected void CreateApplicationBar()
         {
-            applicationBar = new ApplicationBar();
+            if (applicationBar == null)
+            {
+                applicationBar = new ApplicationBar();
 
-            var micBtn = App.Current.Resources["MicBtn"] as ApplicationBarIconButton;
-           
-            micBtn.Click += Microphone_Click;
+                Debug.WriteLine("appbar count: " + applicationBar.Buttons.Count);
 
-            applicationBar.Buttons.Add(micBtn);
+                var micBtn = new ApplicationBarIconButton()
+                {
+                    IconUri = new Uri("/Assets/microphone.png", UriKind.Relative),
+                    Text = "speak",
+                    IsEnabled = true
+                };
 
-            ApplicationBar = applicationBar;
+                micBtn.Click += Microphone_Click;
+
+                applicationBar.Buttons.Add(micBtn);
+
+                ApplicationBar = applicationBar;
+            }
         }
 
         protected void AddCancelButton()
@@ -202,6 +205,8 @@ namespace Please2.Views
 
         protected void Microphone_Click(object sender, EventArgs e)
         {
+            Debug.WriteLine("mic click");
+
             PerformSpeechRecognition();
         }
 
@@ -255,7 +260,7 @@ namespace Please2.Views
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
-
+                Debug.WriteLine("please voice task cancelled");
             }
             catch (Exception err)
             {
@@ -465,10 +470,21 @@ namespace Please2.Views
         }
 
         #region debug helpers
-        protected void AddDebugTextBox()
+        protected void AddDebugger()
         {
-            if (debuggerTextBox != null)
+            if (debugger == null)
             {
+                var currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
+
+                var root = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").FirstOrDefault();
+
+         
+                var definition = new RowDefinition();
+                definition.Height = GridLength.Auto;
+                root.RowDefinitions.Add(definition);
+                
+
+                // create appbar menu item
                 var input = new ApplicationBarMenuItem()
                 {
                     Text = "Show Input"
@@ -476,40 +492,65 @@ namespace Please2.Views
 
                 input.Click += MenuItem_Click;
 
-                ApplicationBar.MenuItems.Add(input);
+                // attach menu item to appbar
+                applicationBar.MenuItems.Add(input);
 
+                // create input scope
                 InputScope scope = new InputScope();
                 InputScopeName name = new InputScopeName();
 
                 name.NameValue = InputScopeNameValue.Text;
                 scope.Names.Add(name);
 
-                debuggerTextBox.InputScope = scope;
+                // create textbox
+                var textBox = new TextBox();
+                textBox.Name = "ManualInput";
+                textBox.Width = 480;
+                textBox.Visibility = Visibility.Collapsed;
+                textBox.KeyDown += OnKeyDown;
+                textBox.InputScope = scope;
+                //textBox.Text = "how much does it cost to live here";
+
+                // create stackpanel
+                debugger = new StackPanel();
+                debugger.SetValue(Grid.RowProperty, (root.RowDefinitions.Count - 1));
+                (debugger as StackPanel).Background = new SolidColorBrush(Colors.DarkGray);
+                (debugger as StackPanel).Orientation = System.Windows.Controls.Orientation.Horizontal;
+                // add textbox to stackpanel
+                (debugger as StackPanel).Children.Add(textBox);
+
+                // add stack panel to page
+                root.Children.Add(debugger);
+               
             }
         }
 
         protected void MenuItem_Click(object sender, EventArgs e)
         {
-            if (debuggerTextBox != null)
+            var currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
+
+            var input = currentPage.Descendants<TextBox>().Cast<TextBox>().Where(x => x.Name == "ManualInput").FirstOrDefault();
+
+            if (input != null)
             {
                 var item = (sender as ApplicationBarMenuItem);
 
-                if (debuggerTextBox.Visibility.Equals(Visibility.Collapsed))
+                if (input.Visibility.Equals(Visibility.Collapsed))
                 {
-                    debuggerTextBox.Visibility = Visibility.Visible;
+                    input.Visibility = Visibility.Visible;
                     item.Text = "Hide Input";
                     disableSpeech = true;
                 }
                 else
                 {
-                    debuggerTextBox.Visibility = Visibility.Collapsed;
+                    input.Visibility = Visibility.Collapsed;
                     item.Text = "Show Input";
                     disableSpeech = false;
                 }
             }
         }
         
-        protected virtual void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        protected void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var input = sender as TextBox; 
 

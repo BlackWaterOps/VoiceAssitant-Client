@@ -74,7 +74,7 @@ namespace Please2.Util
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response, jsonSettings);
+            return JsonConvert.DeserializeObject<T>(response, jsonSettings);
         }
 
         public async Task<T> DoRequestJsonAsync<T>(String uri, String requestData = "")
@@ -92,7 +92,7 @@ namespace Please2.Util
                 Debug.WriteLine("RESPONSE DATA");
                 Debug.WriteLine(response.ToString());
 
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(response, jsonSettings);
+                return JsonConvert.DeserializeObject<T>(response, jsonSettings);
             }
             catch (WebException err)
             {
@@ -106,7 +106,7 @@ namespace Please2.Util
 
                     var errResp = reader.ReadToEnd();
 
-                    return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(errResp, jsonSettings);
+                    return JsonConvert.DeserializeObject<T>(errResp, jsonSettings);
                 }
 
                 return default(T);

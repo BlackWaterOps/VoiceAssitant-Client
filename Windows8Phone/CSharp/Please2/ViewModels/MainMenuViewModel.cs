@@ -118,7 +118,7 @@ namespace Please2.ViewModels
                 case "weather":
                     var weather = App.GetViewModelInstance<WeatherViewModel>();
                     weather.GetDefaultForecast();
-
+                    return;
                     singleViewModel.Title = "weather";
 
                     var pos = Please2.Util.Location.GeoPosition;

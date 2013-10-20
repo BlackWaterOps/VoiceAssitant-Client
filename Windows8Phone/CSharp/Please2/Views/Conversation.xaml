@@ -21,23 +21,18 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Background="DarkGray">
-            <TextBox x:Name="ManualInput" Width="480" KeyDown="OnKeyDown" Visibility="Collapsed"/>
-        </StackPanel>
         
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="1" Margin="12,17,0,28">
+        <StackPanel Grid.Row="0" Margin="12,17,0,28">
             <TextBlock Text="please" Style="{StaticResource AppTitle}"/>
             <TextBlock Text="conversation" Margin="9,-7,0,0" Style="{StaticResource PageTitle}"/>
             <TextBlock Text="{Binding SubTitle, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
         </StackPanel>
  
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="2" Margin="12,0,12,0">
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="85"/>
@@ -67,12 +62,14 @@
                                     <TextBlock Text="{Binding message}"
                                                Foreground="White" 
                                                TextWrapping="Wrap"/>
+                                    
                                     <HyperlinkButton Content="Click for more" 
                                                      TargetName="_blank" 
                                                      Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}" 
                                                      NavigateUri="{Binding link}" 
                                                      Foreground="#0000ee" 
                                                      HorizontalAlignment="Right"/>
+                                   
                                 </StackPanel>
                             </c4f:ChatBubble>
 
