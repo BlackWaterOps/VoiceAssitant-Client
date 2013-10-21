@@ -37,9 +37,9 @@ namespace Please2.Util
 
         private StateModel currentState = new StateModel();
 
-        private int counter = 0;
+        // private int counter = 0;
 
-        private int testCounter = 0;
+        // private int testCounter = 0;
 
         private INavigationService navigationService { get; set; }
 
@@ -49,7 +49,7 @@ namespace Please2.Util
 
         public PleaseService()
         {
-            testCounter++;
+            // testCounter++;
 
             // attach navigation service
             this.navigationService = ViewModelLocator.GetViewModelInstance<INavigationService>();
@@ -312,7 +312,7 @@ namespace Please2.Util
 
             try
             {
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/active", "POST", postData);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/active", "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -343,7 +343,7 @@ namespace Please2.Util
           
             try
             {
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/candidate", "POST", postData);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/candidate", "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -389,7 +389,10 @@ namespace Please2.Util
             postData.type = type;
             postData.device_info = deviceInfo;
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", "POST", postData);
+            Debug.WriteLine("disambig passive");
+            Debug.WriteLine(SerializeData(postData, true));
+
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(AppResources.DisambiguatorEndpoint + "/passive", "POST", postData, true);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -425,7 +428,8 @@ namespace Please2.Util
 
         private async void DisambiguateResponseHandler(Dictionary<string, object> response, string field, string type)
         {
-            Debug.WriteLine("disambig handler");
+            //Debug.WriteLine("disambig handler");
+            //Debug.WriteLine(SerializeData(response));
 
             if (response != null)
             {
@@ -493,7 +497,7 @@ namespace Please2.Util
         private async Task Auditor(ResponderModel data)
         {
             // reset counter
-            counter = 0;
+            // counter = 0;
 
             if (data.data == null)
             {
@@ -596,7 +600,7 @@ namespace Please2.Util
                 }
                 else
                 {
-                    //Debug.WriteLine("Actor response handler");
+                    Debug.WriteLine("Actor response handler");
                     Show(response.show, response.speak);
                     ActorResponseHandler(actor, response);
                 }
@@ -645,11 +649,21 @@ namespace Please2.Util
             }
         }
 
-        private Uri LoadSingleResult(string templateName, Dictionary<string, object> structured)
+        private Uri LoadSingleResult(Dictionary<string, object> structured)
         {
             var templates = ViewModelLocator.SingleTemplates;
 
             var page = ViewModelLocator.SingleResultPageUri;
+
+            string[] template = (structured["template"] as string).Split(':');
+
+            var type = template[0];
+            var templateName = template[1];
+
+            if (template.Count() > 2)
+            {
+                templateName += ":" + template[2];
+            }
 
             if (templates[templateName] == null)
             {
@@ -661,7 +675,7 @@ namespace Please2.Util
 
             singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
 
-            var data = PopulateViewModel(templateName, structured);
+            var data = PopulateViewModel(template[1], structured);
 
             if (data == null)
             {
@@ -688,6 +702,8 @@ namespace Please2.Util
 
         private void ActorResponseHandler(string actor, ActorModel response)
         {
+            Uri page = ViewModelLocator.ConversationPageUri;
+
             if (response.show.structured != null && response.show.structured.ContainsKey("template"))
             {
                 Dictionary<string, object> structured = response.show.structured;
@@ -701,8 +717,6 @@ namespace Please2.Util
 
                 ResourceDictionary templates;
 
-                Uri page = ViewModelLocator.ConversationPageUri;
-
                 Uri uri;
 
                 switch (type)
@@ -714,7 +728,7 @@ namespace Please2.Util
                         {
                             // override. list items that act like single items
                             case "news": 
-                                uri = LoadSingleResult(templateName, structured);
+                                uri = LoadSingleResult(structured);
 
                                 if (uri != null)
                                 {
@@ -736,8 +750,7 @@ namespace Please2.Util
                     
                     case "simple":
                     case "single":
-                        // !!create a method for this logic!!
-                        uri = LoadSingleResult(templateName, structured);
+                        uri = LoadSingleResult(structured);
 
                         if (uri != null)
                         {
@@ -745,9 +758,9 @@ namespace Please2.Util
                         }
                         break;
                 }
-
-                navigationService.NavigateTo(page);
             }
+
+            navigationService.NavigateTo(page);
         }
 
         // these are actor's that will be handled locally. no need to run out to web service
@@ -814,7 +827,7 @@ namespace Please2.Util
         }
 
         #region helpers
-        private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null)
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, bool includeNulls = false)
         {
             var req = new Request();
 
@@ -833,7 +846,7 @@ namespace Please2.Util
             {
                 req.ContentType = "application/json";
 
-                response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data));
+                response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data, includeNulls));
             }
             
             // Notify the view that the request is complete
@@ -1040,12 +1053,12 @@ namespace Please2.Util
             return deviceInfo;
         }
 
-        private string SerializeData(object data)
+        private string SerializeData(object data, bool includeNulls = false)
         {
             var jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
-            jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+            jsonSettings.NullValueHandling = (includeNulls == true) ? NullValueHandling.Include : NullValueHandling.Ignore;
 
             return JsonConvert.SerializeObject(data, jsonSettings);
         }

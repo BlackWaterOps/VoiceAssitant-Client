@@ -110,10 +110,12 @@ namespace Please2.ViewModels
                         break;
 
                     case "food":
+                    case "log-food":
                         ret = PopulateFood(item);
                         break;
 
-                    case "fitness":
+                    case "activity":
+                    case "log-activity":
                         ret = PopulateFitness(item);
                         break;
                 }    
@@ -138,7 +140,7 @@ namespace Please2.ViewModels
         {
             var ret = new Dictionary<string, object>();
 
-            foods = (item["food"] as JArray).ToObject<IEnumerable<FitbitFood>>();
+            foods = (item["foods"] as JArray).ToObject<IEnumerable<FitbitFood>>();
             foodGoals = item["goals"].ToObject<FitbitFoodGoals>();
             foodSummary = item["summary"].ToObject<FitbitFoodSummary>();
 

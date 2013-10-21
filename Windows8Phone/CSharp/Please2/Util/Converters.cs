@@ -493,7 +493,7 @@ namespace Please2.Util
                 { new List<string> { "3" }, new List<string> { "overcast", "overcast with haze" } },
                 { new List<string> { "a" }, new List<string> { "mostly cloudy", "mostly cloudy with haze" } },
                 { new List<string> { "A" }, new List<string> { "partly cloudy", "partly cloudy with haze",  } },
-                { new List<string> { "2", "6" }, new List<string> { "a few clouds", "a few clouds with haze", "mostly clear" } },
+                { new List<string> { "2", "6" }, new List<string> { "a few clouds", "a few clouds with haze", "mostly clear", "mostly sunny" } },
                 { new List<string> { "1", "6" }, new List<string> { "fair", "clear", "fair with haze", "fair and breezy", "clear and breezy", "sunny" } },
 
                 { new List<string> { "b" }, new List<string> { "mostly cloudy and breezy" } },

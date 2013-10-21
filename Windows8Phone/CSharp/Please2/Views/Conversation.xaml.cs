@@ -44,7 +44,12 @@ namespace Please2.Views
             vm.AddOpeningDialog();
 
             vm.DialogList.CollectionChanged += DialogCollectionChanged;
-            
+
+            if (vm.DialogList.Count > 1)
+            {
+                base.AddCancelButton();
+            }
+
             ScrollTo();            
         }
 

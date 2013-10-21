@@ -528,7 +528,7 @@
     </DataTemplate>
     
     <!-- Fitbit -->
-    <DataTemplate x:Key="fitbit">
+    <DataTemplate x:Key="fitbit:weight">
         <StackPanel DataContext="{Binding FitbitViewModel, Source={StaticResource Locator}}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Your Goal Weight is: " FontWeight="SemiBold" FontSize="{StaticResource PhoneFontSizeLarge}"/>
@@ -733,7 +733,7 @@
         </Setter>
     </Style>
 
-    <DataTemplate x:Key="fitbitFood">
+    <DataTemplate x:Key="fitbit:log-food">
         <phone:Pivot DataContext="{Binding FitbitViewModel, Source={StaticResource Locator}}">
             <phone:PivotItem Header="Food Log">
                 <ListBox ItemsSource="{Binding Foods}" ItemContainerStyle="{StaticResource ListBoxItem}">
@@ -746,8 +746,7 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-
-                                    
+  
                                     <TextBlock Grid.Row="0" 
                                                Text="{Binding loggedFood.name}" 
                                                TextWrapping="Wrap" 

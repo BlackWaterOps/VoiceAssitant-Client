@@ -49,7 +49,7 @@
 
         <!-- various page titles -->
         <Style x:Key="AppTitle" TargetType="TextBlock">
-            <Setter Property="Text" Value="please" />
+            <Setter Property="Text" Value="plexi" />
             <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}" />
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeNormal}" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />

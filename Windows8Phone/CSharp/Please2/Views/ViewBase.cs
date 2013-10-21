@@ -355,6 +355,25 @@ namespace Please2.Views
         private void InProgress(ProgressMessage message)
         {
             InProgress(message.InProgress);
+
+            if (applicationBar != null)
+            {
+                if (message.InProgress == true)
+                {
+                    foreach (ApplicationBarIconButton button in applicationBar.Buttons)
+                    {
+                        button.IsEnabled = false;
+                    }
+                }
+
+                if (message.InProgress == false)
+                {
+                    foreach (ApplicationBarIconButton button in applicationBar.Buttons)
+                    {
+                        button.IsEnabled = true;
+                    }
+                }
+            }
         }
 
         private void InProgress(bool inProgress)
