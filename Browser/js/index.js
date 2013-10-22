@@ -276,11 +276,10 @@
     };
 
     Please.prototype.replaceContext = function(e) {
-      var response;
-      this.counter = 0;
-      response = e.response;
-      this.mainContext = response.data;
-      return this.auditor(this.mainContext);
+      return $(document).trigger({
+        type: 'audit',
+        response: e.response.data
+      });
     };
 
     Please.prototype.classify = function(e) {
@@ -632,7 +631,7 @@
       var endpointName,
         _this = this;
       if (endpoint.indexOf(this.disambiguator) !== -1 && endpoint.indexOf('passive') !== -1) {
-        data = $.extend({}, data);
+        data = $.extend(true, {}, data);
         data.device_info = this.buildDeviceInfo();
       }
       if (this.debug === true) {

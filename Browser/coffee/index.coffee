@@ -231,13 +231,12 @@ class window.Please
 				createCookie k, v, -1
 	
 	replaceContext: (e) =>
-		@counter = 0
+		# @counter = 0
 		
-		response = e.response
-
-		@mainContext = response.data
-
-		@auditor(@mainContext)
+		$(document).trigger(
+			type: 'audit'
+			response: e.response.data
+		)
 
 	classify: (e) =>
 		query = if e instanceof $.Event then e.response else e
@@ -594,7 +593,7 @@ class window.Please
 
 	requestHelper: (endpoint, type, data, doneHandler) =>
 		if endpoint.indexOf(@disambiguator) isnt -1 and endpoint.indexOf('passive') isnt -1
-			data = $.extend({}, data)
+			data = $.extend(true, {}, data)
 			data.device_info = @buildDeviceInfo()
 
 		if @debug is true
