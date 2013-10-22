@@ -92,7 +92,7 @@ namespace Please2.ViewModels
             menu.Add(CreateTile("#1ab154", "conversation", "/Views/Conversation.xaml", "\uf130"));
             menu.Add(CreateTile("#1ec0c3", "weather", "/Views/SingleResult.xaml", "\uf0e9"));
             menu.Add(CreateTile("#f7301e", "notifications", "/Views/Notifications.xaml", "\uf0f3"));
-            menu.Add(CreateTile("#bd731b", "notes", "onenote:", "\uf15c", true));
+            menu.Add(CreateTile("#bd731b", "notes", "onenote", "\uf15c", true));
             menu.Add(CreateTile("#a3cd53", "search", "/Views/Search.xaml", "\uf002"));
             menu.Add(CreateTile("#9e9e9e", "settings", "/Views/Settings.xaml", "\uf013"));
 
@@ -141,7 +141,7 @@ namespace Please2.ViewModels
                     break;
             
                 case "notes":
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote://?todo=mytesttext"));
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
                     return;
                     break;
 

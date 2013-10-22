@@ -26,8 +26,8 @@
         
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="please" Style="{StaticResource AppTitle}"/>
-            <TextBlock Text="conversation" Margin="9,-7,0,0" Style="{StaticResource PageTitle}"/>
+            <TextBlock Style="{StaticResource AppTitle}"/>
+            <TextBlock Text="conversation" Style="{StaticResource PageTitle}"/>
             <TextBlock Text="{Binding SubTitle, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
         </StackPanel>
  

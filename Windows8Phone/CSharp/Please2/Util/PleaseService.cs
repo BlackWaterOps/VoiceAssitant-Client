@@ -116,9 +116,9 @@ namespace Please2.Util
                         break;
 
                     case "disambiguate:personal":
-                        ActorInterceptor(mainContext.model);
+                        //ActorInterceptor(mainContext.model);
 
-                        //DisambiguatePersonal((ResponderModel)currentState.Response);
+                        DisambiguatePersonal((ResponderModel)currentState.Response);
                         break;
 
                     case "disambiguate:active":
@@ -139,7 +139,7 @@ namespace Please2.Util
                         break;
 
                     case "restart":
-                        await Auditor((ResponderModel)currentState.Response);
+                        Restart((ResponderModel)currentState.Response);
                         break;
 
                     case "completed":
@@ -494,7 +494,7 @@ namespace Please2.Util
             await Auditor(mainContext);
         }
 
-        private async Task Auditor(ResponderModel data)
+        private void Restart(ResponderModel data)
         {
             // reset counter
             // counter = 0;
@@ -505,9 +505,11 @@ namespace Please2.Util
                 return;
             }
 
-            mainContext = data.data;
+            // mainContext = data.data;
+            //await Auditor(data.data);
 
-            await Auditor(mainContext);
+            currentState.Response = data.data;
+            currentState.State = "audit";
         }
         /*
         private async Task Auditor(ClassifierModel data)
@@ -624,7 +626,7 @@ namespace Please2.Util
 
                 if (viewmodelProperty == null)
                 {
-                    Debug.WriteLine("reflection: view model " + templateName + " could not be found");
+                    Debug.WriteLine("pouplateviewmodel: view model " + templateName + " could not be found");
                     return null;
                 }
 
@@ -634,7 +636,19 @@ namespace Please2.Util
 
                 if (populateMethod == null)
                 {
-                    Debug.WriteLine("reflection: 'Populate' method not implemented in " + templateName);
+                    Debug.WriteLine("populateviewmodel: 'Populate' method not implemented in " + templateName);
+                    return null;
+                }
+
+                if (structured.ContainsKey("items") && ((JArray)structured["items"]).Count <= 0)
+                {
+                    Debug.WriteLine("populateviewmodel: items list is emtpy nothing to set");
+                    return null;
+                }
+
+                if (structured.ContainsKey("item") && ((JObject)structured["item"]).Count <= 0)
+                {
+                    Debug.WriteLine("populateviewmodel: item object is emtpy nothing to set");
                     return null;
                 }
 
@@ -711,52 +725,60 @@ namespace Please2.Util
                 string[] template = (structured["template"] as string).Split(':');
 
                 var type = template[0];
-                var templateName = template[1];
+                string templateName = null;
 
-                Dictionary<string, object> data;
-
-                ResourceDictionary templates;
-
-                Uri uri;
-
-                switch (type)
+                if (template.Count() > 1)
                 {
-                    case "list":
-                        templates = ViewModelLocator.ListTemplates;
+                    templateName = template[1];
+                }
 
-                        switch (templateName)
-                        {
-                            // override. list items that act like single items
-                            case "news": 
-                                uri = LoadSingleResult(structured);
+                if (templateName != null)
+                {
+                    Dictionary<string, object> data;
 
-                                if (uri != null)
-                                {
-                                    page = uri;
-                                }
+                    ResourceDictionary templates;
 
-                                break;
+                    Uri uri;
 
-                            default:
-                                data = PopulateViewModel("list", structured);
+                    switch (type)
+                    {
+                        case "list":
+                            templates = ViewModelLocator.ListTemplates;
 
-                                if (data != null)
-                                {
-                                    page = ViewModelLocator.ListResultsPageUri;
-                                }
-                                break;
-                        }
-                        break;
-                    
-                    case "simple":
-                    case "single":
-                        uri = LoadSingleResult(structured);
+                            switch (templateName)
+                            {
+                                // override. list items that act like single items
+                                case "news":
+                                    uri = LoadSingleResult(structured);
 
-                        if (uri != null)
-                        {
-                            page = uri;
-                        }
-                        break;
+                                    if (uri != null)
+                                    {
+                                        page = uri;
+                                    }
+
+                                    break;
+
+                                default:
+                                    data = PopulateViewModel("list", structured);
+
+                                    if (data != null)
+                                    {
+                                        page = ViewModelLocator.ListResultsPageUri;
+                                    }
+                                    break;
+                            }
+                            break;
+
+                        case "simple":
+                        case "single":
+                            uri = LoadSingleResult(structured);
+
+                            if (uri != null)
+                            {
+                                page = uri;
+                            }
+                            break;
+                    }
                 }
             }
 
@@ -869,23 +891,35 @@ namespace Please2.Util
 
         private ClassifierModel PrependTo(ClassifierModel context, Dictionary<string, object> data)
         {
-            if (!data.ContainsKey("unused_tokens"))
+            try
             {
-                return context;
+                if (!data.ContainsKey("unused_tokens"))
+                {
+                    return context;
+                }
+
+                if (((JArray)data["unused_tokens"]).Count <= 0)
+                {
+                    return context;
+                }
+
+                var prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
+
+                var field = (string)data["prepend_to"];
+
+                var payloadField = "";
+
+                if (context.payload.ContainsKey(field) && context.payload[field] != null)
+                {
+                    payloadField = " " + (string)context.payload[field];
+                }
+
+                context.payload[field] = prepend + payloadField;
             }
-
-            var prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
-
-            var field = (string)data["prepend_to"];
-
-            var payloadField = "";
-
-            if (context.payload.ContainsKey(field) && context.payload[field] != null)
+            catch (Exception err)
             {
-                payloadField = " " + (string)context.payload[field];
+                Debug.WriteLine(err.Message);
             }
-
-            context.payload[field] = prepend + payloadField;
 
             return context;
         }

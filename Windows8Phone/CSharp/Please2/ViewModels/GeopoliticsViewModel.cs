@@ -62,6 +62,8 @@ namespace Please2.ViewModels
             Country = geoResults.country;
             Stats = geoResults.stats;
 
+            ret.Add("title", "Geopolitics");
+
             return ret;
         }
     }

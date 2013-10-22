@@ -19,7 +19,6 @@ namespace Please2.ViewModels
 {
     public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        /*
         private Visibility? reminderVisibility;
         public Visibility ReminderVisibility
         {
@@ -30,7 +29,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("ReminderVisibility");
             }
         }
-        */
+        
         private ObservableCollection<Reminder> reminders;
         public ObservableCollection<Reminder> Reminders
         {
@@ -41,7 +40,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("Reminders");
             }
         }
-        /*
+        
         private Visibility? alarmVisibility;
         public Visibility AlarmVisibility
         {
@@ -52,7 +51,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("AlarmVisibility");
             }
         }
-        */
+        
         private ObservableCollection<Please2.Models.Alarm> alarms;
         public ObservableCollection<Please2.Models.Alarm> Alarms
         {
@@ -93,8 +92,12 @@ namespace Please2.ViewModels
             {
                 reminders = new ObservableCollection<Reminder>(r);
             }
+            else
+            {
+                reminders = new ObservableCollection<Reminder>();
+            }
 
-                //reminderVisibility = (reminders.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+            reminderVisibility = (reminders.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public void CreateReminder(DateTime reminderDate, string title)
@@ -137,6 +140,25 @@ namespace Please2.ViewModels
         {
             DeleteNotification(reminder.Name);
         }
+
+        // only for demos. remove for prod
+        private void CreateDemoReminders()
+        {
+            // reset scheduled reminders
+            var currentReminders = ScheduledActionService.GetActions<Microsoft.Phone.Scheduler.Reminder>();
+
+            foreach (var reminder in currentReminders)
+            {
+                ScheduledActionService.Remove(reminder.Name);
+            }
+
+            // add dummy reminders
+            var today = DateTime.Today;
+
+            CreateReminder(today + new TimeSpan(1, 17, 30, 0), "go to grocery store");
+            CreateReminder(DateTime.Now + new TimeSpan(1, 15, 0, 0), "pick up the dog from the vet");
+            CreateReminder(DateTime.Now + new TimeSpan(2, 11, 30, 0), "brunch with the team");
+        }
         #endregion
 
         #region Alarms
@@ -156,14 +178,17 @@ namespace Please2.ViewModels
 
                     if (query.Count() > 0)
                     {
-                        Debug.WriteLine(query);
                         // TODO: order by beginDate
                         // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
 
                         this.alarms = new ObservableCollection<Please2.Models.Alarm>(query);
-
-                        // alarmVisibility = (this.alarms.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
                     }
+                    else
+                    {
+                        this.alarms = new ObservableCollection<Please2.Models.Alarm>();
+                    }
+
+                    alarmVisibility = (this.alarms.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
                 }
             }
             catch (Exception err)
@@ -352,6 +377,25 @@ namespace Please2.ViewModels
                 db.Alarms.DeleteOnSubmit(alarm);
                 db.SubmitChanges();
             }
+        }
+
+        // only for demos. remove for prod
+        private void CreateDemoAlarms()
+        {
+            // reset scheduled alarms
+            var currentAlarms = ScheduledActionService.GetActions<Microsoft.Phone.Scheduler.Alarm>();
+
+            foreach (var alarm in currentAlarms)
+            {
+                ScheduledActionService.Remove(alarm.Name);
+            }
+
+            // add dummy alarms
+            var now = DateTime.Now;
+
+            SaveAlarm(now + new TimeSpan(2, 0, 0), new List<DayOfWeek>() { DayOfWeek.Monday });
+            SaveAlarm(now + new TimeSpan(3, 0, 0), new List<DayOfWeek>() { DayOfWeek.Wednesday });
+            SaveAlarm(now + new TimeSpan(4, 0, 0), new List<DayOfWeek>() { DayOfWeek.Saturday, DayOfWeek.Sunday });
         }
         #endregion
 

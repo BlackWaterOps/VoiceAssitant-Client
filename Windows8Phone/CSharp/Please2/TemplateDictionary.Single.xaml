@@ -504,24 +504,31 @@
                 </Grid.RowDefinitions>
                 
                    
-                        <TextBlock Grid.Column="0" Text="{Binding Country}" FontWeight="SemiBold" FontSize="34" VerticalAlignment="Center"/>
-                        <Image Grid.Column="1" Source="{Binding Flag}" Width="226" Height="151" HorizontalAlignment="Right"/>
-
+                <TextBlock Grid.Column="0" Text="{Binding Country}" FontWeight="SemiBold" FontSize="34" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                <Image Grid.Column="1" Source="{Binding Flag}" Width="226" Height="151" HorizontalAlignment="Right"/>
+                
                 <StackPanel Grid.ColumnSpan="2" Grid.Row="2">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Leader: " FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Stats.leader}"/>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Leader: " FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Stats.leader}" TextWrapping="Wrap"/>
 
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Area: " FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Stats.area, StringFormat='{0} sq/km'}"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Population: " FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Stats.population}"/>
-                    </StackPanel>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="Area: " FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Stats.area, StringFormat='{0} sq/km'}" TextWrapping="Wrap"/>
+                    
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="Population: " FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Stats.population}" TextWrapping="Wrap"/>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </Border>

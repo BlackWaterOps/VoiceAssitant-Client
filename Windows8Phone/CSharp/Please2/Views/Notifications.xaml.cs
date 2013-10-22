@@ -34,14 +34,14 @@ namespace Please2.Views
         #region Reminders
         protected void ReminderButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Pages/ReminderPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/Reminder.xaml", UriKind.Relative));
         }
 
         protected void ReminderItem_Tapped(object sender, EventArgs e)
         {
             var reminder = (sender as FrameworkElement).DataContext as Reminder;
 
-            NavigationService.Navigate(new Uri("/Pages/ReminderPage.xaml?name=" + reminder.Name, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/Reminder.xaml?name=" + reminder.Name, UriKind.Relative));
         }
 
         protected void ReminderToggle_Click(object sender, EventArgs e)
@@ -56,14 +56,14 @@ namespace Please2.Views
         #region Alarms
         protected void AlarmButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Pages/AlarmPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/Alarm.xaml", UriKind.Relative));
         }
 
         protected void AlarmItem_Tapped(object sender, EventArgs e)
         {
             var alarm = (sender as FrameworkElement).DataContext as Please2.Models.Alarm;
 
-            NavigationService.Navigate(new Uri("/Pages/AlarmPage.xaml?id=" + alarm.ID, UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/Alarm.xaml?id=" + alarm.ID, UriKind.Relative));
         }
 
         protected void AlarmToggle_Click(object sender, EventArgs e)
