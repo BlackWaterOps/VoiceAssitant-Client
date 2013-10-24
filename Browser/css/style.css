@@ -18,30 +18,30 @@
 /* line 18, ../scss/templates.scss */
 .template-item-image {
   float: left;
-  min-width: 100px; }
-  /* line 22, ../scss/templates.scss */
-  .template-item-image img {
-    width: 100%; }
+  min-width: 100px;
+  margin-right: 20px; }
 
-/* line 27, ../scss/templates.scss */
+/* line 24, ../scss/templates.scss */
 .template-item-title {
   font-size: 1.125em;
   margin-bottom: 10px; }
 
-/* line 32, ../scss/templates.scss */
+/* line 29, ../scss/templates.scss */
 .template-item-details {
-  padding-left: 120px;
   vertical-align: top; }
 
-/* line 41, ../scss/templates.scss */
+/* line 35, ../scss/templates.scss */
 .shopping-item:last-child {
   padding-bottom: 0; }
+/* line 39, ../scss/templates.scss */
+.shopping-item .template-item-image {
+  width: 160px; }
 
-/* line 46, ../scss/templates.scss */
+/* line 44, ../scss/templates.scss */
 .shopping-price {
   font-weight: normal; }
 
-/* line 51, ../scss/templates.scss */
+/* line 49, ../scss/templates.scss */
 .images {
   min-height: 200px;
   width: 100%;
@@ -49,32 +49,32 @@
   overflow-y: hidden;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch; }
-  /* line 60, ../scss/templates.scss */
+  /* line 58, ../scss/templates.scss */
   .images img {
     border: solid white 2px;
     box-shadow: 0 0 10px black;
     margin: 5px;
     max-width: 250px; }
 
-/* line 69, ../scss/templates.scss */
+/* line 67, ../scss/templates.scss */
 .news-item {
   margin-bottom: 10px; }
-  /* line 71, ../scss/templates.scss */
+  /* line 69, ../scss/templates.scss */
   .news-item:last-child {
     margin-bottom: 0; }
 
-/* line 76, ../scss/templates.scss */
+/* line 74, ../scss/templates.scss */
 .news-title, .news-summary {
   font-weight: normal; }
 
-/* line 80, ../scss/templates.scss */
+/* line 78, ../scss/templates.scss */
 .news-title {
   font-size: 20px;
   padding: 0;
   margin: 0;
   font-family: 'Trebuchet MS'; }
 
-/* line 87, ../scss/templates.scss */
+/* line 85, ../scss/templates.scss */
 .news-pubdate, .news-source {
   display: inline-block;
   width: 49%;
@@ -84,101 +84,70 @@
   padding-top: 4px;
   margin-bottom: 6px; }
 
-/* line 97, ../scss/templates.scss */
+/* line 95, ../scss/templates.scss */
 .news-pubdate {
   text-align: left; }
 
-/* line 101, ../scss/templates.scss */
+/* line 99, ../scss/templates.scss */
 .news-source {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; }
 
-/* line 107, ../scss/templates.scss */
+/* line 105, ../scss/templates.scss */
 .news-summary {
   line-height: 20px; }
 
-/* line 112, ../scss/templates.scss */
+/* line 110, ../scss/templates.scss */
 .flights {
-  margin-top: 15px; }
-  /* line 115, ../scss/templates.scss */
-  .flights h2, .flights h3, .flights h4 {
-    margin: 0; }
-  /* line 119, ../scss/templates.scss */
-  .flights h2 {
-    font-size: 30px;
-    text-align: center;
-    line-height: 2.5em;
-    color: #333; }
+  color: black;
+  font-weight: normal; }
+
+/* line 115, ../scss/templates.scss */
+.flight-info-item {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dcdcdc; }
+  /* line 118, ../scss/templates.scss */
+  .flight-info-item:last-child {
+    border: 0; }
+
+/* line 123, ../scss/templates.scss */
+.flight-status {
+  color: green;
+  margin: 10px 0; }
   /* line 126, ../scss/templates.scss */
-  .flights h3 {
-    background-color: #cdcdcd;
-    color: #343434;
-    padding: 5px 15px; }
-  /* line 132, ../scss/templates.scss */
-  .flights h4 {
-    text-transform: uppercase;
-    color: #b4b4b4;
-    font-size: .875em; }
-  /* line 138, ../scss/templates.scss */
-  .flights .formatted-time {
-    display: block;
-    font-size: 1.5em;
-    color: #333; }
-  /* line 144, ../scss/templates.scss */
-  .flights .formatted-date {
-    font-size: .875em;
-    font-weight: normal; }
+  .flight-status.status-delay {
+    color: red; }
 
-/* line 150, ../scss/templates.scss */
-.flight-info {
-  padding: 10px; }
+/* line 133, ../scss/templates.scss */
+.flight-info div {
+  float: right;
+  text-align: right; }
 
-/* line 154, ../scss/templates.scss */
-.flights-info-item {
-  display: inline-block;
-  width: 33%;
-  vertical-align: top;
-  color: #666; }
+/* line 139, ../scss/templates.scss */
+.flight-location {
+  float: left; }
 
-/* line 166, ../scss/templates.scss */
-.flights-status {
-  line-height: 1.5em;
-  text-align: center;
-  color: #333; }
+/* line 143, ../scss/templates.scss */
+.flight-arrival-info {
+  margin-top: 20px; }
 
-/* line 174, ../scss/templates.scss */
-.movie-item .template-item-details {
-  padding-left: 140px; }
-
-/* line 179, ../scss/templates.scss */
+/* line 148, ../scss/templates.scss */
 .movie-rating {
   border: 1px solid #ccc;
   padding: 4px; }
 
-/* line 184, ../scss/templates.scss */
+/* line 153, ../scss/templates.scss */
 .movie-score {
   font-weight: normal; }
 
-/* line 190, ../scss/templates.scss */
-.event-item .template-item-details {
-  padding-left: 140px; }
-
-/* line 195, ../scss/templates.scss */
-.event-image {
-  min-height: 100px; }
-
-/* line 199, ../scss/templates.scss */
+/* line 158, ../scss/templates.scss */
 .event-time, .event-address {
   font-weight: normal; }
 
-/* line 203, ../scss/templates.scss */
+/* line 162, ../scss/templates.scss */
 .event-time {
   color: #999; }
-
-/* line 208, ../scss/templates.scss */
-.real-estate-item .template-item-details {
-  padding-left: 120px; }
 
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {

@@ -112,7 +112,7 @@
         results = _this.elapsedTimeHelper(dateString);
         return results.newDate + ' ' + results.newTime;
       });
-      Handlebars.registerHelper('flightDates', function(dateString, options) {
+      Handlebars.registerHelper('flightDates', function(dateString, type, options) {
         var am, day, dd, formatted, hh, min, mm, mon, result, yy;
         if (dateString == null) {
           return "--";
@@ -126,7 +126,11 @@
         min = formatted.minutes;
         day = formatted.dayOfWeek;
         mon = formatted.monthOfYear;
-        result = "<span class=\"formatted-time\">" + hh + ":" + min + "</span><span class=\"formatted-date\">" + day + ", " + mon + " " + dd + ", " + yy + "</span>";
+        if (type === 'actual') {
+          result = "<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>";
+        } else {
+          result = "<span class=\"formatted-date\">" + mm + "/" + dd + "/" + yy + "</span>&nbsp;<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>";
+        }
         return new Handlebars.SafeString(result);
       });
       return Handlebars.registerHelper('eventDates', function(dateString) {
@@ -512,7 +516,7 @@
         response: results
       });
       if ((results.show != null) && (results.show.structured != null) && (results.show.structured.template != null)) {
-        templateData = results.show.structured.items;
+        templateData = results.show.structured.items || results.show.structured.item;
         template = results.show.structured.template.split(':');
         templateBase = template[0];
         templateType = template[1];

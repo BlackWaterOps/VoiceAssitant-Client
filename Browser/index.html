@@ -119,42 +119,39 @@
 
         <script id="flights-template" type="text/x-handlebars-template">
             <div class="flights">
-                {{#each this}}
-                <div class="flights-route">
-                    <h2>
-                        <span>({{origin.airport_name}})</span>
-                        {{origin.airport_code}} &rarr; {{destination.airport_code}}
-                        <span>({{destination.airport_name}})</span>
-                    </h2>
-                </div>
+                <h2>{{airline.callsign}} {{flight_number}}</h2>
 
-                <div class="flights-status">
-                    <p>Status: {{status}} {{on_time}}</p>
-                </div>
+                {{#each details}}
+                <div class="flight-info-item">
 
-                <h3>Departure</h3>
+                    {{#if delay}}
+                    <h3 class="flight-status status-delay">Status: {{status}} delayed by {{delay}} mins</h3>
+                    {{else}}
+                    <h3 class="flight-status">Status: {{status}}</h3>
+                    {{/if}} 
 
-                <div class="flight-info flights-departure-info">
-                    <div class="flights-info-item">
-                        <h4>Filed</h4>
-                        <p>{{flightDates schedule.filed_departure}}</p>
+                    <div class="flight-info flight-departure-info cf">
+                        <p class="flight-location"><strong>From:</strong> {{origin.city}} ({{origin.airport_code}})</p>
+
+                        <div>
+                            <p><strong>Departs</strong></p>
+                            <p>{{flightDates schedule.filed_departure}}</p>
+                            {{#if schedule.actual_departure}}
+                            <p class="flight-info-actual">(was {{flightDates schedule.actual_departure "actual"}})</p>
+                            {{/if}}
+                        </div>
                     </div>
-                    <div class="flights-info-item">
-                        <h4>Actual</h4>
-                        <p>{{flightDates schedule.actual_departure}}</p>
-                    </div>
-                </div>
-                
-                <h3>Arrival <span></span></h3>
 
-                <div class="flight-info flights-arrival-info">
-                    <div class="flights-info-item">
-                        <h4>Estimated</h4>
-                        <p>{{flightDates schedule.estimated_arrival}}</p>
-                    </div>
-                    <div class="flights-info-item">
-                        <h4>Actual</h4>
-                        <p>{{flightDates schedule.actual_arrival}}</p>
+                    <div class="flight-info flight-arrival-info cf">
+                        <p class="flight-location"><strong>To:</strong> {{destination.city}} ({{destination.airport_code}})</p>
+
+                        <div>
+                            <p><strong>Arrives</strong></p>
+                            <p>{{flightDates schedule.estimated_arrival}}</p>
+                            {{#if schedule.actual_arrival}}
+                            <p class="flight-info-actual">(was {{flightDates schedule.actual_arrival "actual"}})</p>
+                            {{/if}}
+                        </div>
                     </div>
                 </div>
                 {{/each}}
@@ -186,7 +183,7 @@
                 <ul>
                     {{#each this}}
                     <li class="template-item event-item cf">
-                        <img class="template-item-image event-image" src="{{image}}" />
+                        <img class="template-item-image" src="{{image}}" />
                         
                         <div class="template-item-details">
                             <p class="template-item-title">{{title}}</p>
@@ -205,7 +202,7 @@
                     {{#each this}}
                     <li class="template-item real-estate-item cf">
                         <a href="{{url}}">
-                            <img class="template-item-image real-estate-image" src="{{images.[0].src}}" />
+                            <img class="template-item-image" src="{{images.[0].src}}" />
                         </a>
                         <div class="template-item-details">
                             <p class="template-item-title">

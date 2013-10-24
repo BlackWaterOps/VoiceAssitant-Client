@@ -16,12 +16,9 @@
 }
 
 .template-item-image {
-	//display: inline-block;
 	float: left;
 	min-width: 100px;
-	img {
-		width: 100%;
-	}
+	margin-right: 20px;
 }
 
 .template-item-title {
@@ -30,9 +27,6 @@
 }
 
 .template-item-details {
-	//display: inline-block;
-	//margin-left: 20px;
-	padding-left: 120px;
 	vertical-align: top;
 }
 
@@ -40,6 +34,10 @@
 .shopping-item {
 	&:last-child {
 		padding-bottom: 0;
+	}
+
+	.template-item-image {
+		width: 160px;
 	}
 }
 
@@ -110,72 +108,43 @@
 
 // FLIGHT STYLES
 .flights {
-	margin-top: 15px;
+	color: black;
+	font-weight: normal;
+}
 
-	h2, h3, h4 {
-		margin: 0;
+.flight-info-item {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #dcdcdc;
+	&:last-child {
+		border: 0;
 	}
+}
 
-	h2 {
-		font-size: 30px;
-		text-align: center;
-		line-height: 2.5em;
-		color: #333;
-	}
-
-	h3 {
-		background-color: #cdcdcd;
-		color: #343434;
-		padding: 5px 15px;
-	}
-
-	h4 {
-		text-transform: uppercase;
-		color: #b4b4b4;
-		font-size: .875em;
-	}
-
-	.formatted-time {
-		display: block;
-		font-size: 1.5em;
-		color: #333;
-	}
-
-	.formatted-date {
-		font-size: .875em;
-		font-weight: normal;
+.flight-status {
+	color: green;
+	margin: 10px 0;
+	&.status-delay {
+		color: red;
 	}
 }
 
 .flight-info {
-	padding: 10px;
-}
-
-.flights-info-item {
-	display: inline-block;
-	width: 33%;
-	vertical-align: top;
-	color: #666;
-}
-
-.flights-route {
-	//background-color: #f1f1f1;
-	//@include border-side-radius(5px, "top");
-}
-
-.flights-status {
-	line-height: 1.5em;
-	text-align: center;
-	color: #333;
-}
-
-// MOVIE STYLES
-.movie-item {
-	.template-item-details {
-		padding-left: 140px;
+	//padding: 10px;
+	div {
+		float: right;
+		text-align: right;
 	}
 }
 
+.flight-location {
+	float: left;
+}
+
+.flight-arrival-info {
+	margin-top: 20px;
+}
+
+// MOVIE STYLES
 .movie-rating {
 	border: 1px solid #ccc;
 	padding: 4px;
@@ -186,26 +155,10 @@
 }
 
 // EVENT STYLES
-.event-item {
-	.template-item-details {
-		padding-left: 140px;
-	}
-}
-
-.event-image {
-	min-height: 100px;
-}
-
 .event-time, .event-address {
 	font-weight: normal;
 }
 
 .event-time {
 	color: #999;
-}
-
-.real-estate-item {
-	.template-item-details {
-		padding-left: 120px;
-	}
 }

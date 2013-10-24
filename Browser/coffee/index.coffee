@@ -77,7 +77,7 @@ class window.Please
 			return results.newDate + ' ' + results.newTime 
 		)
 		
-		Handlebars.registerHelper('flightDates', (dateString, options) =>
+		Handlebars.registerHelper('flightDates', (dateString, type, options) =>
 			return "--" if not dateString?
 			
 			formatted = @formatDate(dateString)
@@ -91,7 +91,10 @@ class window.Please
 			day = formatted.dayOfWeek
 			mon = formatted.monthOfYear
 
-			result = "<span class=\"formatted-time\">" + hh + ":" + min + "</span><span class=\"formatted-date\">" + day + ", " + mon + " " + dd + ", " + yy + "</span>" 
+			if type is 'actual'
+				result = "<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>"
+			else
+				result = "<span class=\"formatted-date\">" + mm + "/" + dd + "/" + yy + "</span>&nbsp;<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>" 
 			
 			new Handlebars.SafeString(result)
 		)
@@ -465,6 +468,7 @@ class window.Please
 		
 		template = Handlebars.compile(template.html())
 
+		# TODO: create template wrapper div to inject templates into
 		@board.append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
 
 		$(document).trigger(
@@ -473,7 +477,7 @@ class window.Please
 		)
 
 		if results.show? and results.show.structured? and results.show.structured.template?
-			templateData = results.show.structured.items
+			templateData = results.show.structured.items || results.show.structured.item
 			template = results.show.structured.template.split(':')
 			templateBase = template[0]
 			templateType = template[1]
@@ -487,11 +491,6 @@ class window.Please
 				template = Handlebars.compile(template.html())
 
 				@board.find('.bubble:last').append(template(templateData)).scrollTop(@board.find('.bubble:last').offset().top)
-
-			# this should be done in cordova.coffee
-			# if (iScroll?)
-			#	boardScroll = new iScroll('', checkDOMChanges: true) if templateType is 'images'
-
 
 		@loader.hide()
 		@counter = 0
