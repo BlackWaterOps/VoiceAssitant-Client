@@ -634,7 +634,7 @@ class window.Please
 				@debugData.response = response
 			
 			@loader.hide()
-			@counter = 0
+			@mainContext = null
 		)
 
 	operators = 
