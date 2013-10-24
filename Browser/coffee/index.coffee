@@ -130,17 +130,10 @@ class window.Please
 		doc = $(document)
 
 		if @currentState.state is 'inprogress' or (@currentState.state is 'error' and @disambigContext?)
-			if @currentState.origin is 'actor'
-				# TODO: need to know what object should be used for response. @mainContext??
-				doc.trigger(
-					type: 'completed'
-					response: null
-				)
-			else
-				doc.trigger(
-					type: 'disambiguate:active'
-					response: text
-				)
+			doc.trigger(
+				type: 'disambiguate:active'
+				response: text
+			)
 		else if @currentState.state is 'choice'
 			doc.trigger(
 				type: 'disambiguate:candidate'
@@ -175,15 +168,17 @@ class window.Please
 		e.preventDefault()
 		$(e.target).parent().next().toggle()
 
-	cancel: (e) =>
-		@board.empty()
+	clearContext: =>
 		@mainContext = null
 		@disambigContext = null
-		@history = [ ]
 		@currentState = 
 			state: null
 			origin: null
 
+	cancel: (e) =>
+		@board.empty()
+		@history = [ ]
+		@clearContext()
 		$('.input-form').removeClass 'cancel'
 		@loader.hide()
 		@counter = 0
@@ -433,17 +428,8 @@ class window.Please
 			@requestHelper(endpoint, 'POST', @mainContext, @actorResponseHandler)
 	
 	actorResponseHandler: (response) =>
-		if response.status?
-			@currentState = 
-				state: response.status.replace(' ', '')
-				origin: 'actor'
-
-			$(document).trigger(
-				type: @currentState.state
-				response: response
-			)
-		else
-			@show(response)
+		@clearContext()
+		@show(response)
 
 	addDebug: (e) =>
 		return if @debug is false

@@ -46,6 +46,7 @@
       this.classify = __bind(this.classify, this);
       this.replaceContext = __bind(this.replaceContext, this);
       this.cancel = __bind(this.cancel, this);
+      this.clearContext = __bind(this.clearContext, this);
       this.expand = __bind(this.expand, this);
       this.keyup = __bind(this.keyup, this);
       this.ask = __bind(this.ask, this);
@@ -154,17 +155,10 @@
       $('.input-form').addClass('cancel');
       doc = $(document);
       if (this.currentState.state === 'inprogress' || (this.currentState.state === 'error' && (this.disambigContext != null))) {
-        if (this.currentState.origin === 'actor') {
-          return doc.trigger({
-            type: 'completed',
-            response: null
-          });
-        } else {
-          return doc.trigger({
-            type: 'disambiguate:active',
-            response: text
-          });
-        }
+        return doc.trigger({
+          type: 'disambiguate:active',
+          response: text
+        });
       } else if (this.currentState.state === 'choice') {
         return doc.trigger({
           type: 'disambiguate:candidate',
@@ -208,15 +202,19 @@
       return $(e.target).parent().next().toggle();
     };
 
-    Please.prototype.cancel = function(e) {
-      this.board.empty();
+    Please.prototype.clearContext = function() {
       this.mainContext = null;
       this.disambigContext = null;
-      this.history = [];
-      this.currentState = {
+      return this.currentState = {
         state: null,
         origin: null
       };
+    };
+
+    Please.prototype.cancel = function(e) {
+      this.board.empty();
+      this.history = [];
+      this.clearContext();
       $('.input-form').removeClass('cancel');
       this.loader.hide();
       this.counter = 0;
@@ -466,18 +464,8 @@
     };
 
     Please.prototype.actorResponseHandler = function(response) {
-      if (response.status != null) {
-        this.currentState = {
-          state: response.status.replace(' ', ''),
-          origin: 'actor'
-        };
-        return $(document).trigger({
-          type: this.currentState.state,
-          response: response
-        });
-      } else {
-        return this.show(response);
-      }
+      this.clearContext();
+      return this.show(response);
     };
 
     Please.prototype.addDebug = function(e) {
@@ -672,7 +660,7 @@
           _this.debugData.response = response;
         }
         _this.loader.hide();
-        return _this.counter = 0;
+        return _this.mainContext = null;
       });
     };
 
