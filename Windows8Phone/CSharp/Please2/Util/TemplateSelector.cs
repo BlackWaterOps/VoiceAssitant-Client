@@ -54,6 +54,32 @@ namespace Please2.Util
         }
     }
 
+    public class EventsTemplateSelector : TemplateSelector
+    {
+        public DataTemplate NoImage { get; set; }
+
+        public DataTemplate Image { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            if (item != null)
+            {
+                var result = (EventModel)item;
+
+                if (result.image == null)
+                {
+                    return NoImage;
+                }
+                else
+                {
+                    return Image;
+                }
+            }
+
+            return null;
+        }
+    }
+
     public class SearchTemplateSelector : TemplateSelector
     {
         public DataTemplate NoImage { get; set; }
