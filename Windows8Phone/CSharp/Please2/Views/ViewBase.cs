@@ -34,14 +34,9 @@ namespace Please2.Views
 {
     public class ViewBase : PhoneApplicationPage, IDialogService
     {
-        // Speech handling
-        private SpeechSynthesizer synthesizer;
-
-        private SpeechRecognizerUI recognizer;
-
-        private IAsyncOperation<SpeechRecognitionUIResult> recoOperation;
-
         private IPleaseService pleaseService;
+
+        private ISpeechService speechService;
 
         private string[] cancelCommands = new string[] {"cancel", "nevermind", "never mind"};
 
@@ -66,16 +61,9 @@ namespace Please2.Views
                     pleaseService = ViewModelLocator.GetViewModelInstance<IPleaseService>();
                 }
 
-                if (synthesizer == null)
+                if (speechService == null)
                 {
-                    synthesizer = new SpeechSynthesizer();
-                }
-
-                if (recognizer == null)
-                {
-                    recognizer = new SpeechRecognizerUI();
-                    recognizer.Settings.ReadoutEnabled = false;
-                    //recognizer.Settings.ShowConfirmation = false;
+                    speechService = ViewModelLocator.GetViewModelInstance<ISpeechService>();
                 }
 
                 CreateApplicationBar();
@@ -121,11 +109,10 @@ namespace Please2.Views
 
         private void RegisterListeners()
         {
+            // listen for http request progress message
             Messenger.Default.Register<ProgressMessage>(this, InProgress);
             // listen for any show messages
             Messenger.Default.Register<ShowMessage>(this, Speak);
-            // listen for only show messages with the token "viewbase"
-            Messenger.Default.Register<ShowMessage>(this, "viewbase", Speak);
         }
 
         private void UnRegisterListeners()
@@ -203,129 +190,41 @@ namespace Please2.Views
             await CancelConversation();
         }
 
-        protected void Microphone_Click(object sender, EventArgs e)
+        protected async void Microphone_Click(object sender, EventArgs e)
         {
-            Debug.WriteLine("mic click");
-
-            PerformSpeechRecognition();
-        }
-
-        protected async void PerformSpeechRecognition()
-        {
-            disableSpeech = false;
-
             pleaseService.ResetTimer();
 
-            synthesizer.CancelAll();
-
-            if (recoOperation != null && recoOperation.Status == AsyncStatus.Started)
+            if (speechService.isRecording == false)
             {
-                recoOperation.Cancel();
-            }
+                var query = await speechService.PerformSpeechRecognition();
 
-            try
-            {
-                recoOperation = recognizer.RecognizeWithUIAsync();
-
-                //micBtn.IsEnabled = false;
-
-                var recoResult = await recoOperation;
-
-                // reset the mic button if the user cancels the recognition gui
-                if (recoResult.ResultStatus == SpeechRecognitionUIStatus.Cancelled)
+                if (query != null)
                 {
-                    //micBtn.IsEnabled = true;
-                }
-                else if (recoResult.ResultStatus == SpeechRecognitionUIStatus.Succeeded)
-                {
-                    string query = recoResult.RecognitionResult.Text;
-
-                    // replace profanity text
-                    query = Regex.Replace(query, @"<profanity>(.*?)</profanity>", new MatchEvaluator(ProfanityFilter), RegexOptions.IgnoreCase);
-
-                    // is this check needed in a succeeded state
-                    if (recoResult.RecognitionResult.TextConfidence == SpeechRecognitionConfidence.Rejected)
-                    {
-                        //Say("please", "I didn't quite catch that. Can you say it again?");
-                    }
-                    else
-                    {
-                        //TODO: conditional is needed
-                        // check if speak is in response to a task filter ie. narrow down results for a phone task like email or sms
-                        // if (this.GetType() == typeof(ContactList))
-
-                        ProcessQuery(query);
-                    }
-                }
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                Debug.WriteLine("please voice task cancelled");
-            }
-            catch (Exception err)
-            {
-                //MicrophoneBtn.IsEnabled = true;
-
-                const int privacyPolicyHResult = unchecked((int)0x80045509);
-
-                if (err.HResult == privacyPolicyHResult)
-                {
-                    MessageBox.Show("To run this sample, you must first accept the speech privacy policy. To do so, navigate to Settings -> speech on your phone and check 'Enable Speech Recognition Service' ");
-                }
-                else
-                {
-                    Debug.WriteLine(err.Message);
-                    return;
+                    ProcessQuery(query);
                 }
             }
         }
 
         private async void Speak(ShowMessage message)
         {
-            Debug.WriteLine("viewbase catch show message");
-
-            await Speak(message.Speak);
-        }
-
-        public async void Speak(string type, string speak = "")
-        {
-            // say response
-            if (type.ToLower() == "please")
-            {
-                await Speak(speak);
-            }
-        }
-
-        public async Task Speak(string speak = "")
-        {
-            try
-            {
-                if (speak != "" && disableSpeech == false)
-                {
-                    await synthesizer.SpeakTextAsync(speak);
-                }
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-            }
+            await speechService.Speak(message.Speak);
         }
 
         private async Task CancelConversation()
         {
+            speechService.CancelSpeak();
+
+            pleaseService.ClearContext();
+
             var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
 
-            Debug.WriteLine("viewbase clear dialog");
             vm.ClearDialog();
-            pleaseService.ClearContext();
 
             var r = new Random();
 
             var ind = r.Next(0, cancelMessages.Length);
 
-            // if we give a nice cancel tts, it'll get trampled by the tts for 'How may I help you' for the initial dialog
-            // TODO: resolve this dilemma
-            //await Speak(cancelMessages[ind]);
+            //await speechService.Speak(cancelMessages[ind]);
         }
 
         private async void ProcessQuery(string query)

@@ -19,6 +19,59 @@ namespace Please2.Tests
     {
         private Dictionary<string, object> data = new Dictionary<string, object>();
 
+        private Dictionary<string, object> DictionaryTest()
+        {
+            var originalQuery = "define grab";
+
+            var locator = GetLocator();
+            
+            var vm = locator.DictionaryViewModel;
+
+            var test = "{\"show\":{\"simple\":{\"text\":\"grab, take hold of so as to seize or restrain or stop the motion of\"},\"structured\":{\"item\":{\"headword\":\"grab\",\"senses\":{\"verb\":[{\"definition\":\"take hold of so as to seize or restrain or stop the motion of\",\"kind\":\"contact\",\"examples\":[\"Catch the ball!\",\"Grab the elevator door!\"],\"lemmas\":[\"catch\",\"grab\",\"take hold of\"]},{\"definition\":\"get hold of or seize quickly and easily\",\"kind\":\"possession\",\"examples\":[\"I snapped up all the good buys during the garage sale\"],\"lemmas\":[\"snap up\",\"snaffle\",\"grab\"]},{\"definition\":\"make a grasping or snatching motion with the hand\",\"kind\":\"motion\",\"examples\":[\"The passenger grabbed for the oxygen mask\"],\"lemmas\":[\"grab\"]},{\"definition\":\"obtain illegally or unscrupulously\",\"kind\":\"possession\",\"examples\":[\"Grab power\"],\"lemmas\":[\"grab\"]},{\"definition\":\"take or grasp suddenly\",\"kind\":\"contact\",\"examples\":[\"She grabbed the child's hand and ran out of the room\"],\"lemmas\":[\"grab\"]},{\"definition\":\"capture the attention or imagination of\",\"kind\":\"cognition\",\"examples\":[\"This story will grab you\",\"The movie seized my imagination\"],\"lemmas\":[\"grab\",\"seize\"]}],\"noun\":[{\"definition\":\"a mechanical device for gripping an object\",\"kind\":\"artifact\",\"examples\":[],\"lemmas\":[\"grab\"]},{\"definition\":\"the act of catching an object with the hands\",\"kind\":\"act\",\"examples\":[\"Mays made the catch with his back to the plate\",\"he made a grab for the ball before it landed\",\"Martin's snatch at the bridle failed and the horse raced away\",\"the infielder's snap and throw was a single motion\"],\"lemmas\":[\"catch\",\"grab\",\"snatch\",\"snap\"]}]},\"pos\":[\"verb\",\"noun\"]},\"template\":\"single:dictionary\"}},\"speak\":\"grab, take hold of so as to seize or restrain or stop the motion of\"}";
+
+            var actor = JsonConvert.DeserializeObject<ActorModel>(test);
+
+            var show = actor.show;
+
+            var dictionaryResults = (show.structured["item"] as JObject).ToObject<DictionaryModel>();
+
+            var senses = dictionaryResults.senses;
+
+            vm.Senses = dictionaryResults.senses;
+            vm.Pos = dictionaryResults.pos;
+            vm.Headword = dictionaryResults.headword;
+
+            // take first value for now
+            /*
+            var sense = senses.FirstOrDefault();
+
+            string definition = null;
+            List<string> examples = new List<string>();
+
+            for (var i = 0; i < sense.Value.Count; i++)
+            {
+                var item = sense.Value[i];
+
+                var num = i + 1;
+
+                definition += num + "." + item.definition;
+
+                foreach (var example in item.examples)
+                {
+                    examples.Add(example);
+                }
+            }
+             * 
+            vm.Definitions = definition;
+            vm.Examples = examples;
+            vm.Part = dictionaryResults.pos.FirstOrDefault();
+            */
+
+            data.Add("title", "dictionary");
+
+            return data;
+        }
+
         private Dictionary<string, object> RealEstateTest()
         {
             try
@@ -51,13 +104,13 @@ namespace Please2.Tests
 
         private Dictionary<string, object> GeopoliticsTest()
         {
-            var originalQuery = "population of south africa";
+            var originalQuery = "what is the religion of italy";
 
             var locator = GetLocator();
 
             var vm = locator.GeopoliticsViewModel;
 
-            var test = "{\"show\":{\"simple\":{\"text\":\"The population of South Africa is 48,601,098.\"},\"structured\":{\"item\":{\"country\":\"South Africa\",\"flag\":\"http://stremor-apier.appspot.com/static/flags/sf-lgflag.gif\",\"stats\":{\"area\":\"1,219,090\",\"leader\":\"President Jacob Zuma\",\"population\":\"48,601,098\"}},\"template\":\"single:geopolitics\"}},\"speak\":\"The population of South Africa is 48,601,098.\"}";
+            var test = "{\"show\":{\"simple\":{\"text\":\"I'm sorry, I don't seem to have that information handy for Italy.\"},\"structured\":{\"item\":{\"country\":\"Italy\",\"flag\":\"http://stremor-apier.appspot.com/static/flags/it-lgflag.gif\",\"stats\":{\"area\":\"301,340\",\"leader\":\"Prime Minister Enrico Letta\",\"population\":\"61,482,297\"},\"text\":\"I'm sorry, I don't seem to have that information handy for Italy.\"},\"template\":\"single:geopolitics\"}},\"speak\":\"I'm sorry, I don't seem to have that information handy for Italy.\"}";
             
             var actor = JsonConvert.DeserializeObject<ActorModel>(test);
 
@@ -68,6 +121,7 @@ namespace Please2.Tests
             vm.Flag = geoResults.flag;
             vm.Country = geoResults.country;
             vm.Stats = geoResults.stats;
+            vm.Text = geoResults.text;
              
             data.Add("title", "fact book");
 

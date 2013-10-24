@@ -37,11 +37,15 @@ namespace Please2.Util
 
     public interface ISpeechService
     {
-        void PerformSpeechRecognition();
+        Task<string> PerformSpeechRecognition();
 
         void Speak(string type, string message);
 
-        void Speak(string message);
+        void CancelSpeak();
+
+        Task Speak(string message);
+
+        bool isRecording { get; }
     }
 
     public interface IPleaseService
@@ -66,12 +70,16 @@ namespace Please2.Util
     {
         ClassifierModel MainContext { get; set; }
 
+        void ComposeEmail(Dictionary<string, object> payload);
         void ComposeEmail(Contact contact);
         void ComposeEmail();
 
+
+        void ComposeSms(Dictionary<string, object> payload);
         void ComposeSms(Contact contact);
         void ComposeSms();
 
+        void PhoneCall(Dictionary<string, object> payload);
         void PhoneCall(Contact contact);
         void PhoneCall();
 

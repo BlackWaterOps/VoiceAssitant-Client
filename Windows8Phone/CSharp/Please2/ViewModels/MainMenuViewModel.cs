@@ -119,17 +119,6 @@ namespace Please2.ViewModels
                     var weather = App.GetViewModelInstance<WeatherViewModel>();
                     weather.GetDefaultForecast();
                     return;
-                    singleViewModel.Title = "weather";
-
-                    var pos = Please2.Util.Location.GeoPosition;
-                    /*
-                    if (pos != null)
-                    {
-                        subtitle += pos.CivicAddress.City + ", " + pos.CivicAddress.State + ": ";
-                    }
-                    */
-                    singleViewModel.SubTitle = DateTime.Now.ToString("dddd, MMMM d, yyyy");
-                    singleViewModel.ContentTemplate = templates[model.title] as DataTemplate;
                     break;
 
                 case "notifications":
@@ -141,7 +130,7 @@ namespace Please2.ViewModels
                     break;
             
                 case "notes":
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
+                    //await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
                     return;
                     break;
 
@@ -152,6 +141,10 @@ namespace Please2.ViewModels
                 case "search":
                     page = ViewModelLocator.SearchPageUri;
                     break;
+
+                    /*
+                     * default to reflection 
+                     */
             }
 
             navigationService.NavigateTo(page);

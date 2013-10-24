@@ -112,6 +112,7 @@ namespace Please2
         {
             if (Debugger.IsAttached)
             {
+                Debug.WriteLine(e.Exception.Message);
                 // A navigation has failed; break into the debugger
                 Debugger.Break();
             }
@@ -122,6 +123,7 @@ namespace Please2
         {
             if (Debugger.IsAttached)
             {
+                Debug.WriteLine(e.ExceptionObject.Message);
                 // An unhandled exception has occurred; break into the debugger
                 Debugger.Break();
             }

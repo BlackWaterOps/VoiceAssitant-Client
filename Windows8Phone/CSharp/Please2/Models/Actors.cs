@@ -6,6 +6,31 @@ using System.Threading.Tasks;
 
 namespace Please2.Models
 {
+    /* Search */
+    public class SearchModel
+    {
+        public string url { get; set; }
+        public string title { get; set; }
+        public string opengraph_image { get; set; }
+        public string summary { get; set; }
+    }
+
+    /* Dictionary */
+    public class DictionarySense
+    {
+        public string definition { get; set; }
+        public string kind { get; set; }
+        public List<string> examples { get; set; }
+        public List<string> lemmas { get; set; }
+    }
+
+    public class DictionaryModel
+    {
+        public string headword { get; set; }
+        public Dictionary<string, List<DictionarySense>> senses { get; set; }
+        public List<string> pos { get; set; }
+    }
+
     /* GeoPolitics */
     public class GeopoliticsStats
     {
@@ -19,6 +44,7 @@ namespace Please2.Models
         public string country { get; set; }
         public string flag { get; set; }
         public GeopoliticsStats stats { get; set; }
+        public string text { get; set; }
     }
 
     /* Horoscope */

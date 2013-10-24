@@ -71,6 +71,7 @@ namespace Please2.Views
             if (e.NewStartingIndex > 0)
             {
                 base.AddCancelButton();
+                ScrollTo();
             }
         }
 

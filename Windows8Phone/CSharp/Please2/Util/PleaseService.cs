@@ -29,6 +29,8 @@ namespace Please2.Util
 {
     public class PleaseService : IPleaseService
     {
+        private Stopwatch stopWatch;
+
         // gets completed with all the necessary fields in order to fulfill an action
         private ClassifierModel mainContext = null;
 
@@ -36,10 +38,6 @@ namespace Please2.Util
         private ResponderModel tempContext = null;
 
         private StateModel currentState = new StateModel();
-
-        // private int counter = 0;
-
-        // private int testCounter = 0;
 
         private INavigationService navigationService { get; set; }
 
@@ -49,8 +47,6 @@ namespace Please2.Util
 
         public PleaseService()
         {
-            // testCounter++;
-
             // attach navigation service
             this.navigationService = ViewModelLocator.GetViewModelInstance<INavigationService>();
             
@@ -58,6 +54,11 @@ namespace Please2.Util
             currentState.PropertyChanged += OnStateChanged;
 
             CreateTimer();
+
+            if (stopWatch == null)
+            {
+                stopWatch = new Stopwatch();
+            }
         }
 
         public void Query(string query)
@@ -482,16 +483,18 @@ namespace Please2.Util
 
             var t = choice.data;
 
+            var context = mainContext.DeepCopy<ClassifierModel>();
+
             if (field.Contains("."))
             {
-                mainContext = Replace(mainContext, field, choice.data);
+                context = Replace(mainContext, field, choice.data);
             }
             else
             {
-                mainContext.payload[field] = choice.data;
+                context.payload[field] = choice.data;
             }
 
-            await Auditor(mainContext);
+            await Auditor(context);
         }
 
         private void Restart(ResponderModel data)
@@ -583,6 +586,16 @@ namespace Please2.Util
 
             if (actor != null)
             {
+                /*
+                if (actor.Contains("_denial"))
+                {
+                    // Hack for now. this is the completely wrong approach for intercepting phone tasks
+                    // denial must mean it's an internal phone task
+                    ActorInterceptor(actor);
+                    return;
+                }
+                */
+
                 string endpoint = AppResources.ResponderEndpoint + "actors/" + actor;
 
                 if (actor.Contains("private:"))
@@ -701,10 +714,14 @@ namespace Please2.Util
                 page = (Uri)data["page"];
             }
 
+            singleViewModel.Title = null;
+
             if (data.ContainsKey("title"))
             {
                 singleViewModel.Title = (string)data["title"];
             }
+           
+            singleViewModel.SubTitle = null;
 
             if (data.ContainsKey("subtitle"))
             {
@@ -755,7 +772,6 @@ namespace Please2.Util
                                     {
                                         page = uri;
                                     }
-
                                     break;
 
                                 default:
@@ -808,12 +824,12 @@ namespace Please2.Util
 
                 case "email":
                 case "email_denial":
-                    tasks.ComposeEmail();
+                    tasks.ComposeEmail(payload);
                     break;
 
                 case "sms":
                 case "sms_denial":
-                    tasks.ComposeSms();
+                    tasks.ComposeSms(payload);
                     break;
 
                 case "directions":
@@ -823,7 +839,7 @@ namespace Please2.Util
 
                 case "call":
                 case "call_denial":
-                    tasks.PhoneCall();
+                    tasks.PhoneCall(payload);
                     break;
 
                 case "calendar":
@@ -860,6 +876,8 @@ namespace Please2.Util
 
             T response;
 
+            stopWatch.Start();
+
             if (method.ToLower() == "get")
             {
                 response = await req.DoRequestJsonAsync<T>(endpoint);
@@ -870,7 +888,13 @@ namespace Please2.Util
 
                 response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data, includeNulls));
             }
-            
+
+            stopWatch.Stop();
+
+            Debug.WriteLine("this request took " + stopWatch.Elapsed + " to complete");
+
+            stopWatch.Reset();
+
             // Notify the view that the request is complete
             Messenger.Default.Send(new ProgressMessage(false));
 
@@ -1058,10 +1082,11 @@ namespace Please2.Util
         {
             Dictionary<string, object> deviceInfo = new Dictionary<string, object>()
             {
-                {"latitude", ""},
-                {"longitude", ""}
+                {"latitude", 33.4930947},
+                {"longitude", -111.928558}
             };
 
+            /*
             deviceInfo["timestamp"] = Please2.Util.Datetime.ConvertToUnixTimestamp(DateTime.Now);
             deviceInfo["timeoffset"] = DateTimeOffset.Now.Offset.Hours;
 
@@ -1083,6 +1108,7 @@ namespace Please2.Util
                 // prob wanna throw an exception in the Location object
                 Debug.WriteLine(geolocation["error"]);
             }
+            */
 
             return deviceInfo;
         }

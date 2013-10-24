@@ -71,6 +71,13 @@ namespace Please2.ViewModels
             this.navigationService = navigationService;
         }
 
+        public void Reset()
+        {
+            title = null;
+            subTitle = null;
+            contentTemplate = null;
+        }
+
         public void RunTest(string templateName)
         {
             try

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.UserData;
 
@@ -54,6 +56,11 @@ namespace Please2.Util
             navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
 
+        public void ComposeEmail(Dictionary<string, object> payload)
+        {
+
+        }
+
         public void ComposeEmail(Contact contact)
         {
             DoEmailTask(contact, this.unused_tokens);
@@ -82,6 +89,29 @@ namespace Please2.Util
                     }
                 );
             }
+        }
+
+        public void ComposeSms(Dictionary<string, object> payload)
+        {
+            if (payload.ContainsKey("contact"))
+            {
+                var contact = payload["contact"] as JObject;
+
+                if (contact.GetValue("phone_numbers") != null)
+                {
+                    var numbers = contact["phone_numbers"] as JArray;
+
+                    if (numbers.Count > 0)
+                    {
+                        var primary = numbers.First();
+
+
+                    }
+
+                }
+            }
+
+            return;
         }
 
         public void ComposeSms(Contact contact)
@@ -120,6 +150,11 @@ namespace Please2.Util
                     }
                 });
             }
+        }
+
+        public void PhoneCall(Dictionary<string, object> payload)
+        {
+
         }
 
         public void PhoneCall(Contact contact)
@@ -297,47 +332,94 @@ namespace Please2.Util
 
         private void DoEmailTask(Contact contact, List<string> unused_tokens)
         {
-            var task = new EmailComposeTask();
 
-            task.To = contact.EmailAddresses.First().EmailAddress;
+            var email = contact.EmailAddresses.First().EmailAddress;
 
+            string subject = null;
             if (payload.ContainsKey("subject") && payload["subject"] != null)
             {
-                task.Subject = (string)payload["subject"];
+                subject = (string)payload["subject"];
             }
 
-            task.Body = unused_tokens.Aggregate((i, j) => i + " " + j) + (string)payload["message"];
+            var message = unused_tokens.Aggregate((i, j) => i + " " + j) + (string)payload["message"];
+
+            DoEmailTask(email, message, subject);
+        }
+
+        private void DoEmailTask(string email, string message, string subject = null)
+        {
+            var task = new EmailComposeTask();
+
+            task.To = email;
+
+            if (subject != null)
+            {
+                task.Subject = subject;
+            }
+
+            task.Body = message;
 
             task.Show();
         }
 
         private void DoSmsTask(Contact contact, List<string> unused_tokens)
         {
+           
+            var phone = contact.PhoneNumbers.First().PhoneNumber;
+            var message = unused_tokens.Aggregate((i, j) => i + " " + j) + (string)payload["message"];
+
+            DoSmsTask(phone, message);
+        }
+
+        private void DoSmsTask(string phoneNumber, string message)
+        {
             var task = new SmsComposeTask();
 
-            /*
-            var contact = (JObject)payload["contact"];
-            var numbers = (JArray)contact.GetValue("phone_numbers");
-            var number = (JObject)numbers.First;
-            */
-
-            task.To = contact.PhoneNumbers.First().PhoneNumber;
-            task.Body = unused_tokens.Aggregate((i, j) => i + " " + j) + (string)payload["message"];
+            task.To = phoneNumber;
+            task.Body = message;
 
             task.Show();
         }
-        
+
         private void DoPhoneCallTask(Contact contact)
+        {
+            var displayName = contact.DisplayName;
+            var phoneNumber = contact.PhoneNumbers.First().PhoneNumber;
+
+            DoPhoneCallTask(displayName, phoneNumber);
+        }
+
+        private void DoPhoneCallTask(string displayName, string phoneNumber)
         {
             var task = new PhoneCallTask();
 
-            task.DisplayName = contact.DisplayName;
-            task.PhoneNumber = contact.PhoneNumbers.First().PhoneNumber;
+            task.DisplayName = displayName;
+            task.PhoneNumber = phoneNumber;
 
             task.Show();
         }
 
+        private void GeoQuery(string searchTerm, Action<GeoCoordinate> callback)
+        {
+            var query = new GeocodeQuery();
+            query.GeoCoordinate = new GeoCoordinate(0, 0);
+            query.SearchTerm = searchTerm;
+            query.MaxResultCount = 5;
 
+            query.QueryCompleted += (s, e) =>
+                {
+                    // take first vlaue for now.
+                    // possibly return all results and show list
+                    if (e.Result.Count > 0)
+                    {
+                        var first = e.Result.FirstOrDefault();
+
+                        var geo = first.GeoCoordinate;
+
+                        callback(geo);
+                    }
+                };
+        }
         #endregion
     }
 }

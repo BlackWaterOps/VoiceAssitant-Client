@@ -109,8 +109,10 @@
     <Compile Include="Util\Interfaces.cs" />
     <Compile Include="Util\NavigationService.cs" />
     <Compile Include="Util\PleaseService.cs" />
+    <Compile Include="Util\SpeechService.cs" />
     <Compile Include="Util\TaskService.cs" />
     <Compile Include="ViewModels\DetailsViewModel.cs" />
+    <Compile Include="ViewModels\DictionaryViewModel.cs" />
     <Compile Include="ViewModels\FitbitViewModel.cs" />
     <Compile Include="ViewModels\FlightsViewModel.cs" />
     <Compile Include="ViewModels\GeopoliticsViewModel.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="ViewModels\RealEstateViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />
+    <Compile Include="ViewModels\TimeViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\AddPreferencePage.xaml.cs">
       <DependentUpon>AddPreferencePage.xaml</DependentUpon>
@@ -186,65 +189,65 @@
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
       <Link>Assets\sync.png</Link>
     </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-Bold.ttf">
+    <Resource Include="Assets\Fonts\RobotoCondensed-Bold.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-BoldItalic.ttf">
+    </Resource>
+    <Resource Include="Assets\Fonts\RobotoCondensed-BoldItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-Italic.ttf">
+    </Resource>
+    <Resource Include="Assets\Fonts\RobotoCondensed-Italic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-Light.ttf">
+    </Resource>
+    <Resource Include="Assets\Fonts\RobotoCondensed-Light.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-LightItalic.ttf">
+    </Resource>
+    <Resource Include="Assets\Fonts\RobotoCondensed-LightItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\RobotoCondensed-Regular.ttf">
+    </Resource>
+    <Resource Include="Assets\Fonts\RobotoCondensed-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
     <None Include="ChildBrowser.xaml.cs">
       <DependentUpon>ChildBrowser.xaml</DependentUpon>
     </None>
     <Compile Include="LocalizedStrings.cs" />
     <Content Include="Assets\feature.alarm.png" />
-    <Content Include="Assets\Fonts\Roboto-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-BlackItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-Bold.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-BoldItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-Italic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-Light.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-LightItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-Medium.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-MediumItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\Roboto-Regular.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Assets\Fonts\Roboto-Thin.ttf">
+    <Resource Include="Assets\Fonts\Roboto-Black.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Assets\Fonts\Roboto-ThinItalic.ttf">
+    <Resource Include="Assets\Fonts\Roboto-BlackItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-BoldItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-Italic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-Light.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-LightItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-Medium.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-MediumItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Fonts\Roboto-Regular.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="Assets\Fonts\Roboto-Thin.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Assets\Fonts\Roboto-ThinItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

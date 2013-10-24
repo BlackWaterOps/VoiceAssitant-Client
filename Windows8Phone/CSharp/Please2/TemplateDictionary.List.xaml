@@ -6,6 +6,74 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
     
+    <!-- Search -->
+    <Style x:Key="SearchTitle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="Blue"/>
+    </Style>
+    
+    <Style x:Key="SearchUrl" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+    </Style>
+    
+    <Style x:Key="SearchSummary" TargetType="TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    
+    <DataTemplate x:Key="SearchWithoutImage">
+        <Border Background="White" Padding="10" Margin="0,15,0,0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.SearchItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <StackPanel Margin="12,0,0,0">
+                <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
+                <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
+                <TextBlock Text="{Binding summary}" Style="{StaticResource SearchSummary}"/>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SearchWithImage">
+        <Border Background="White" Padding="10" Margin="0,15,0,0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.SearchItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="104"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <Image Source="{Binding opengraph_image}" Width="104" Height="104"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                    <StackPanel Margin="12,0,0,0">
+                        <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
+                        <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
+                        <TextBlock Text="{Binding summary}" Style="{StaticResource SearchSummary}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="search">
+        <util:SearchTemplateSelector Content="{Binding}" 
+                                     Image="{StaticResource SearchWithImage}" 
+                                     NoImage="{StaticResource SearchWithoutImage}"
+                                     HorizontalContentAlignment="Stretch"/>
+    </DataTemplate>
+
     <!-- Images -->
     <DataTemplate x:Key="images">
         <Grid Margin="5">
@@ -180,7 +248,7 @@
 
     <!-- Movies -->
     <DataTemplate x:Key="movies">
-        <Border Background="White" Padding="15">
+        <Border Background="White" Padding="15" Margin="0,0,0,10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
                     <command:EventToCommand Command="{Binding Path=ListViewModel.MovieItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>

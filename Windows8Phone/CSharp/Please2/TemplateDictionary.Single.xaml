@@ -9,6 +9,75 @@
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
     
+    <!-- Time -->
+    <!--
+    <Storyboard x:Key="SecondHand" x:Name="SecondHand" RepeatBehavior="Forever">
+        <DoubleAnimation  
+                Duration="0:1:0" From="0" To="360" 
+                Storyboard.TargetName="Sec" 
+                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
+                d:IsOptimized="True" />
+    </Storyboard>
+    <Storyboard x:Key="LongHand" x:Name="LongHand" RepeatBehavior="Forever">
+        <DoubleAnimation  
+                Duration="1:0:0" From="0" To="360" 
+                Storyboard.TargetName="Min" 
+                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
+                d:IsOptimized="True" />
+    </Storyboard>
+    <Storyboard x:Key="HourHand" x:Name="HourHand" RepeatBehavior="Forever">
+        <DoubleAnimation  
+                Duration="12:0:0" From="0" To="360" 
+                Storyboard.TargetName="Hour" 
+                Storyboard.TargetProperty="(Polygon.RenderTransform).(RotateTransform.Angle)" 
+                d:IsOptimized="True" />
+    </Storyboard>
+    
+    <LinearGradientBrush x:Key="ClockFaceBackground" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#000000" Offset="0.0" />
+        <GradientStop Color="#414141" Offset="1.0" />
+    </LinearGradientBrush>
+    
+    <DataTemplate x:Key="time">
+        <StackPanel VerticalAlignment="Center">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Loaded">
+                    <command:EventToCommand Command="{Binding Path=ListViewModel.ImageItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+            <Border Background="{StaticResource ClockFaceBackground}" 
+                        Height="350" 
+                        Width="350"
+                        BorderBrush="White" 
+                        BorderThickness="3" 
+                        CornerRadius="200">
+                <Canvas>
+                    <Polygon x:Name="Min" Points="175,25 170,170 175,180 180,170 175,25" Stroke="White" StrokeThickness="3" Fill="DarkGreen">
+                        <Polygon.RenderTransform>
+                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                        </Polygon.RenderTransform>
+                    </Polygon>
+
+                    <Polygon x:Name="Hour" Points="175,45 170,170 175,180 180,170 175,45" Stroke="White" StrokeThickness="3" Fill="White">
+                        <Polygon.RenderTransform>
+                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                        </Polygon.RenderTransform>
+                    </Polygon>
+
+                    <Polygon x:Name="Sec" Points="175,10 175,180" Stroke="Red">
+                        <Polygon.RenderTransform>
+                            <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                        </Polygon.RenderTransform>
+                    </Polygon>
+                </Canvas>
+            </Border>
+
+            <TextBlock x:Name="TimeTextBlock" TextAlignment="Center" Margin="0,50,0,0" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+        </StackPanel>
+    </DataTemplate>
+    -->
+    
     <!-- Horoscope -->
     <DataTemplate x:Key="horoscope">
         <Grid DataContext="{Binding HoroscopeViewModel, Source={StaticResource Locator}}">
@@ -245,6 +314,57 @@
     </DataTemplate>
 
     <!-- Dictionary -->
+    <DataTemplate x:Key="dictionary">
+        <Border DataContext="{Binding DictionaryViewModel, Source={StaticResource Locator}}">
+            <StackPanel>
+                <TextBlock Text="{Binding Headword}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" FontWeight="SemiBold"/>
+
+                <ListBox ItemsSource="{Binding Senses}" 
+                         ItemContainerStyle="{StaticResource ListBoxItem}" 
+                         Height="500">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,20">
+                                    <TextBlock Text="part of speech: " FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                                    <TextBlock Text="{Binding Key}" FontSize="{StaticResource PhoneFontSizeLarge}" FontStyle="Italic"/>
+                                </StackPanel>
+
+                                <ListBox ItemsSource="{Binding Value}"
+                                         ItemContainerStyle="{StaticResource ListBoxItem}" 
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,10" Background="White" BorderBrush="Black" Padding="10" HorizontalAlignment="Stretch">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding definition}" Foreground="Black" FontSize="{StaticResource PhoneFontSizeMedium}" TextWrapping="Wrap"/>
+
+                                                    <TextBlock Text="Examples" FontWeight="SemiBold" Foreground="Black" Visibility="{Binding examples, Converter={StaticResource VisibilityConverter}}"/>
+
+                                                    <ListBox ItemsSource="{Binding examples}"
+                                                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                Margin="10,0,0,0">
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding StringFormat='&#x2022; {0}'}" Foreground="Black" TextWrapping="Wrap"/>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
     
     <!-- Flight -->
     <DataTemplate x:Key="flights">
@@ -518,6 +638,8 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         
                         <TextBlock Grid.Column="0" Grid.Row="0" Text="Leader: " FontWeight="SemiBold"/>
@@ -528,6 +650,8 @@
                     
                         <TextBlock Grid.Column="0" Grid.Row="2" Text="Population: " FontWeight="SemiBold"/>
                         <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding Stats.population}" TextWrapping="Wrap"/>
+                        
+                        <TextBlock Grid.ColumnSpan="2" Grid.Row="4" Text="{Binding Text}" TextWrapping="Wrap"/>
                     </Grid>
                 </StackPanel>
             </Grid>

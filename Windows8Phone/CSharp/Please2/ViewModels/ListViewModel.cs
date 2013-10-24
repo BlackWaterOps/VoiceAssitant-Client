@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Tasks;
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -101,7 +102,8 @@ namespace Please2.ViewModels
         public RelayCommand<string> ImageItemSelection { get; set; }
         public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
         public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
-        
+        public RelayCommand<SearchModel> SearchItemSelection { get; set; }
+
         public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
             this.navigationService = navigationService;
@@ -118,9 +120,19 @@ namespace Please2.ViewModels
             ImageItemSelection = new RelayCommand<string>(ImageItemSelected);
             FuelItemSelection = new RelayCommand<AltFuelModel>(FuelItemSelected);
             ChoiceItemSelection = new RelayCommand<ChoiceModel>(ChoiceItemSelected);
+            SearchItemSelection = new RelayCommand<SearchModel>(SearchItemSelected);
         }
 
         #region event handlers
+        public void SearchItemSelected(SearchModel result)
+        {
+            Debug.WriteLine(result.url);
+            // pass selection to please service to process and send to auditor
+            var browser = new WebBrowserTask();
+            browser.Uri = new Uri(result.url, UriKind.Absolute);
+            browser.Show();
+        }
+
         public async void ChoiceItemSelected(ChoiceModel choice)
         {
             // pass selection to please service to process and send to auditor
@@ -274,6 +286,10 @@ namespace Please2.ViewModels
                 case "choice":
                     ret = arr.ToObject<IEnumerable<ChoiceModel>>();
                     break;
+
+                case "search":
+                    ret = arr.ToObject<IEnumerable<SearchModel>>();
+                    break;
             }
 
             return ret;
@@ -337,8 +353,6 @@ namespace Please2.ViewModels
                 {
                     GridCellSize = (Size)response["gridcellsize"];
                 }
-
-                Debug.WriteLine("bottom");
             }
             catch (Exception err)
             {

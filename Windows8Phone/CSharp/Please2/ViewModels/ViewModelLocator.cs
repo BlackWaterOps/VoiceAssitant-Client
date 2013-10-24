@@ -79,8 +79,8 @@ namespace Please2.ViewModels
             ////}
 
             SimpleIoc.Default.Register<INavigationService, NavigationService>();
-            
             SimpleIoc.Default.Register<IPleaseService, PleaseService>();
+            SimpleIoc.Default.Register<ISpeechService, SpeechService>();
 
             SimpleIoc.Default.Register<MainMenuViewModel>();
             SimpleIoc.Default.Register<ConversationViewModel>();
@@ -161,6 +161,17 @@ namespace Please2.ViewModels
             get { return GetViewModelInstance<RealEstateViewModel>(); }
         }
 
+        public DictionaryViewModel DictionaryViewModel
+        {
+            get { return GetViewModelInstance<DictionaryViewModel>(); }
+        }
+
+        /*
+        public TimeViewModel TimeViewModel
+        {
+            get { return GetViewModelInstance<TimeViewModel>(); }
+        }
+        */
         public static void Cleanup()
         {
             // TODO Clear the ViewModels

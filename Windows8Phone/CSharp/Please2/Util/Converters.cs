@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
+
 using System.Windows.Data;
 using System.Windows.Media;
 
 using Coding4Fun.Toolkit.Controls;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.ViewModels;
@@ -257,7 +262,6 @@ namespace Please2.Util
         }
     }
 
-
     public class MarginConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -291,46 +295,38 @@ namespace Please2.Util
         }
     }
     //TODO: see if this can be replaced with toolkit's nulltovisibility converter
-    /*
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {            
-            if (value == null)
+        {   
+            Visibility visible = Visibility.Visible;
+
+            var param = (string)parameter;
+
+            object val;
+
+            Debug.WriteLine(value.GetType().GetGenericTypeDefinition());
+
+            if (value.GetType() == typeof(JArray) && ((JArray)value).Count <= 0)
             {
-                return System.Windows.Visibility.Collapsed;
+                val = null;
+            } 
+            else if (value.GetType() == typeof(JObject) && ((JObject)value).Count <= 0)
+            {
+                val = null;
             }
-
-            Visibility visible;
-
-            if (value.GetType() == typeof(Visibility))
+            else if (value.GetType() == typeof(List<string>) && ((List<string>)value).Count <= 0)
             {
-                visible = (Visibility)value;
-
-                if ((string)parameter == "opposite")
-                {
-                    if (visible == Visibility.Visible)
-                    {
-                        visible = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        visible = Visibility.Visible;
-                    }
-                }
+                val = null;
             }
             else
             {
-                string link = ((string)value).ToLower();
+                val = value;
+            }
 
-                if (link == "" || link == null)
-                {
-                    visible = System.Windows.Visibility.Collapsed;
-                }
-                else
-                {
-                    visible = System.Windows.Visibility.Visible;
-                }
+            if (val == null)
+            {
+                visible = (param != null && param == "invert") ? Visibility.Visible : Visibility.Collapsed;
             }
 
             return visible;
@@ -341,7 +337,7 @@ namespace Please2.Util
             return null;
         }
     }
-    */
+    
     public class EntityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

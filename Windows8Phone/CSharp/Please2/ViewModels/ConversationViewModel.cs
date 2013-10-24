@@ -41,11 +41,15 @@ namespace Please2.ViewModels
 
         IPleaseService pleaseService;
 
-        public ConversationViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        ISpeechService speechService;
+
+        public ConversationViewModel(INavigationService navigationService, IPleaseService pleaseService, ISpeechService speechService)
         {
             this.navigationService = navigationService;
 
             this.pleaseService = pleaseService;
+
+            this.speechService = speechService;
 
             Messenger.Default.Register<ShowMessage>(this, Show);
 
@@ -55,14 +59,16 @@ namespace Please2.ViewModels
             }
         }
 
-        public void AddOpeningDialog()
+        public async void AddOpeningDialog(bool speak = true)
         {
             if (DialogList.Count == 0)
             {
                 AddDialog("please", phrase);
 
-                // only send message to viewbase. Not to ourself
-                Messenger.Default.Send(new ShowMessage(null, phrase, null), "viewbase");
+                if (speak == true)
+                {
+                    await speechService.Speak(phrase);
+                }
             }
         }
 

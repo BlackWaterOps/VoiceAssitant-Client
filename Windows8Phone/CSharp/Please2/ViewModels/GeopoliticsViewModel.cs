@@ -1,8 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Maps.Services;
+using Microsoft.Phone.Maps.Toolkit;
+using Microsoft.Phone.Maps.Controls;
+
+using LinqToVisualTree;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -47,6 +56,17 @@ namespace Please2.ViewModels
             }
         }
 
+        private string text;
+        public string Text
+        {
+            get { return text; }
+            set
+            {
+                text = value;
+                RaisePropertyChanged("Text");
+            }
+        }
+
         public GeopoliticsViewModel(INavigationService naivgationService, IPleaseService pleaseService)
         {
 
@@ -61,10 +81,79 @@ namespace Please2.ViewModels
             Flag = geoResults.flag;
             Country = geoResults.country;
             Stats = geoResults.stats;
+            Text = geoResults.text;
+            /*
+             * BuildMap();
+             */
 
             ret.Add("title", "Geopolitics");
 
             return ret;
         }
+        /*
+        private void BuildMap()
+        {
+            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+
+            var maps = currentPage.Descendants<Map>().Cast<Map>();
+
+            if (maps.Count() > 0)
+            {
+                var map = maps.Single();
+
+                GeoQuery(Country, (geo) =>
+                    {
+                        var layer = CreateMapLayer(geo.Latitude, geo.Longitude);
+
+                        map.Layers.Add(layer);
+                        map.Center = new GeoCoordinate(geo.Latitude, geo.Longitude);      
+                    }
+                );
+            }
+        }
+
+        private MapLayer CreateMapLayer(double lat, double lon)
+        {
+            var coord = new GeoCoordinate(lat, lon);
+
+            var EventMapPushpin = new UserLocationMarker();
+
+            MapOverlay overlay = new MapOverlay();
+
+            overlay.Content = EventMapPushpin;
+
+            overlay.GeoCoordinate = coord;
+
+            overlay.PositionOrigin = new Point(0, 0.5);
+
+            MapLayer layer = new MapLayer();
+
+            layer.Add(overlay);
+
+            return layer;
+        }
+
+        private void GeoQuery(string searchTerm, Action<GeoCoordinate> callback)
+        {
+            var query = new GeocodeQuery();
+            query.GeoCoordinate = new GeoCoordinate(0, 0);
+            query.SearchTerm = searchTerm;
+            query.MaxResultCount = 5;
+
+            query.QueryCompleted += (s, e) =>
+            {
+                // take first vlaue for now.
+                // possibly return all results and show list
+                if (e.Result.Count > 0)
+                {
+                    var first = e.Result.FirstOrDefault();
+
+                    var geo = first.GeoCoordinate;
+
+                    callback(geo);
+                }
+            };
+        }
+        */
     }
 }

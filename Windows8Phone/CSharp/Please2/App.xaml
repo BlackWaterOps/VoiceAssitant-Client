@@ -290,6 +290,7 @@
         <util:StatusConverter x:Key="StatusConverter"/>
         <util:ColorConverter x:Key="ColorConverter"/>
         <util:MarginConverter x:Key="MarginConverter"/>
+        <util:VisibilityConverter x:Key="VisibilityConverter"/>
         <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter"/>
         <util:NotificationDateConverter x:Key="NotificationDateConverter"/>
         <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter"/>
