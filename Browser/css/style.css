@@ -149,6 +149,39 @@
 .event-time {
   color: #999; }
 
+/* line 167, ../scss/templates.scss */
+.stock {
+  max-height: 330px; }
+
+/* line 171, ../scss/templates.scss */
+.stock-name {
+  font-size: 1em; }
+
+/* line 175, ../scss/templates.scss */
+.stock-arrow, .stock-share-price span.stock-down:before, .stock-share-price span.stock-up:before {
+  margin: 0 5px 0 20px;
+  vertical-align: text-bottom; }
+
+/* line 181, ../scss/templates.scss */
+.stock-share-price {
+  font-size: 1.5em;
+  margin: 5px 0; }
+  /* line 184, ../scss/templates.scss */
+  .stock-share-price span {
+    font-size: .75em; }
+    /* line 186, ../scss/templates.scss */
+    .stock-share-price span.stock-down {
+      color: red; }
+      /* line 188, ../scss/templates.scss */
+      .stock-share-price span.stock-down:before {
+        content: "\2193"; }
+    /* line 193, ../scss/templates.scss */
+    .stock-share-price span.stock-up {
+      color: green; }
+      /* line 195, ../scss/templates.scss */
+      .stock-share-price span.stock-up:before {
+        content: "\2191"; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;

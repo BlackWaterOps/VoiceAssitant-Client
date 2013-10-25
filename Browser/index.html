@@ -222,10 +222,10 @@
         </script>     
 
         <script id="stock-template" type="text/x-handlebars-template">
-            <div class="stock">
-                <h2>{{name}}({{symbol}})</h2>
+            <div class="stock bubble template-data">
+                <h2 class="stock-name">{{name}}({{symbol}})</h2>
 
-                <p>${{share_price}}{{stockShare share_price_change share_price_change_percent}}</p>
+                <h3 class="stock-share-price">${{share_price}}{{stockShare share_price_direction share_price_change share_price_change_percent}}</h3>
 
                 <table>
                     <tr>
