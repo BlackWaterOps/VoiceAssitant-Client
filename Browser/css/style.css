@@ -182,6 +182,29 @@
       .stock-share-price span.stock-up:before {
         content: "\2191"; }
 
+/* line 204, ../scss/templates.scss */
+.search-item {
+  font-weight: normal; }
+
+/* line 208, ../scss/templates.scss */
+.search-image {
+  width: 120px; }
+
+/* line 212, ../scss/templates.scss */
+.search-title {
+  color: blue;
+  text-decoration: underline;
+  font-size: 1em; }
+
+/* line 218, ../scss/templates.scss */
+.search-url {
+  color: green;
+  font-size: .8125em; }
+
+/* line 223, ../scss/templates.scss */
+.search-summary {
+  font-size: .8125em; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;

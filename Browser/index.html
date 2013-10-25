@@ -264,6 +264,29 @@
             </div>
         </script>
 
+        <script id="search-template" type="text/x-handlebars-template">
+            <div class="bubble template-data">
+                <ul>
+                    {{#each this}}
+                    <li class="template-item search-item cf">
+                        {{#if opengraph_image}}
+                        <a href="{{url}}">
+                            <img class="template-item-image search-image" src="{{opengraph_image}}" />
+                        </a>
+                        {{/if}}
+                        <div class="template-item-details">
+                            <p class="search-title">
+                                <a href="{{url}}">{{title}}</a>
+                            </p>
+                            <p class="search-url">{{url}}</p>
+                            <p class="search-summary">{{summary}}</p>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">
