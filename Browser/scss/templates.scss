@@ -238,3 +238,27 @@
 .geopolitics-text {
 	margin: 30px 0 0;
 }
+
+// DICTIONARY
+.dictionary {
+	font-weight: normal !important;
+}
+
+.dictionary-headword {
+	margin: 10px 0;
+}
+
+.dictionary-pos {
+	margin: 30px 0 0;
+}
+
+.dictionary-definition-item {
+	margin: 10px 0;
+	border-top: 1px solid #dcdcdc;
+	padding: 10px 0;
+}
+
+.dictionary-examples {
+	list-style: disc !important;
+	padding-left: 40px;
+}

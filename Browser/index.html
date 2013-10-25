@@ -313,6 +313,30 @@
             </div>
         </script>
 
+        <script id="dictionary-template" type="text/x-handlebars-template">
+            <div class="dictionary bubble template-data">
+                <h2 class="dictionary-headword">{{headword}}</h2>
+
+                {{#each senses}}
+                <h4 class="dictionary-pos">part of speech: <em>{{@key}}</em></h4>
+
+                {{#each this}}
+                <div class="dictionary-definition-item">
+                    <p class="dictionary-definition">{{definition}}</p>
+
+                    <p><strong>Examples</strong></p>
+                    <ul class="dictionary-examples">
+                        {{#each examples}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/each}}
+
+                {{/each}}
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">

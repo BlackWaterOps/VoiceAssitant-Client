@@ -219,6 +219,29 @@
 .geopolitics-text {
   margin: 30px 0 0; }
 
+/* line 243, ../scss/templates.scss */
+.dictionary {
+  font-weight: normal !important; }
+
+/* line 247, ../scss/templates.scss */
+.dictionary-headword {
+  margin: 10px 0; }
+
+/* line 251, ../scss/templates.scss */
+.dictionary-pos {
+  margin: 30px 0 0; }
+
+/* line 255, ../scss/templates.scss */
+.dictionary-definition-item {
+  margin: 10px 0;
+  border-top: 1px solid #dcdcdc;
+  padding: 10px 0; }
+
+/* line 261, ../scss/templates.scss */
+.dictionary-examples {
+  list-style: disc !important;
+  padding-left: 40px; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;
