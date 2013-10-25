@@ -113,7 +113,7 @@
         return results.newDate + ' ' + results.newTime;
       });
       Handlebars.registerHelper('flightDates', function(dateString, type, options) {
-        var am, day, dd, formatted, hh, min, mm, mon, result, yy;
+        var am, date, day, dd, formatted, hh, min, mm, mon, result, time, yy;
         if (dateString == null) {
           return "--";
         }
@@ -126,14 +126,16 @@
         min = formatted.minutes;
         day = formatted.dayOfWeek;
         mon = formatted.monthOfYear;
+        time = $('<span/>').addClass('formatted-time').text(hh + ":" + min + " " + am);
+        date = $('<span/>').addClass('formatted-date').text(mm + "/" + dd + "/" + yy);
         if (type === 'actual') {
-          result = "<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>";
+          result = time.get(0).outerHTML;
         } else {
-          result = "<span class=\"formatted-date\">" + mm + "/" + dd + "/" + yy + "</span>&nbsp;<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>";
+          result = date.get(0).outerHTML + "&nbsp;" + time.get(0).outerHTML;
         }
         return new Handlebars.SafeString(result);
       });
-      return Handlebars.registerHelper('eventDates', function(dateString) {
+      Handlebars.registerHelper('eventDates', function(dateString) {
         var day, dd, formatted, mm, mon, yy;
         formatted = _this.formatDate(dateString);
         mm = formatted.month;
@@ -142,6 +144,18 @@
         day = formatted.dayOfWeek;
         mon = formatted.monthOfYear;
         return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy;
+      });
+      return Handlebars.registerHelper('stockShare', function(direction, price_change, price_change_percent) {
+        var change, result;
+        change = $('<span/>').text(price_change + " " + price_change_percent + "%");
+        if (direction === "up") {
+          change.addClass('stock-up');
+        }
+        if (direction === "down") {
+          change.addClass('stock-down');
+        }
+        result = change.get(0).outerHTML;
+        return new Handlebars.SafeString(result);
       });
     };
 

@@ -221,6 +221,49 @@
             </div>
         </script>     
 
+        <script id="stock-template" type="text/x-handlebars-template">
+            <div class="stock">
+                <h2>{{name}}({{symbol}})</h2>
+
+                <p>${{share_price}}{{stockShare share_price_change share_price_change_percent}}</p>
+
+                <table>
+                    <tr>
+                        <td>Opening Price</td>
+                        <td>{{opening_price}}</td>
+                    </tr>
+                    <tr>
+                        <td>Low Price</td>
+                        <td>{{low_price}}</td>
+                    </tr>
+                    <tr>
+                        <td>Trade Volume</td>
+                        <td>{{trade_volume}}</td>
+                    </tr>
+                    <tr>
+                        <td>Avg Trade Volume</td>
+                        <td>{{average_trade_volume}}</td>
+                    </tr>
+                    <tr>
+                        <td>PE</td>
+                        <td>{{pe}}</td>
+                    </tr>
+                    <tr>
+                        <td>High Price</td>
+                        <td>{{high_price}}</td>
+                    </tr>
+                    <tr>
+                        <td>Market Cap</td>
+                        <td>{{market_cap}}</td>
+                    </tr>
+                    <tr>
+                        <td>Yield</td>
+                        <td>{{yield}}</td>
+                    </tr>
+                </table>
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">

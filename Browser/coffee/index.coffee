@@ -91,10 +91,13 @@ class window.Please
 			day = formatted.dayOfWeek
 			mon = formatted.monthOfYear
 
+			time = $('<span/>').addClass('formatted-time').text(hh + ":" + min + " " + am)
+			date = $('<span/>').addClass('formatted-date').text(mm + "/" + dd + "/" + yy)
+
 			if type is 'actual'
-				result = "<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>"
+				result = time.get(0).outerHTML
 			else
-				result = "<span class=\"formatted-date\">" + mm + "/" + dd + "/" + yy + "</span>&nbsp;<span class=\"formatted-time\">" + hh + ":" + min + " " + am + "</span>" 
+				result = date.get(0).outerHTML + "&nbsp;" + time.get(0).outerHTML 
 			
 			new Handlebars.SafeString(result)
 		)
@@ -112,6 +115,17 @@ class window.Please
 			mon = formatted.monthOfYear
 
 			return day.substr(0, 3) + ", " + mon.substr(0, 3) + " " + dd + ", " + yy
+		)
+
+		Handlebars.registerHelper('stockShare', (direction, price_change, price_change_percent) =>
+			change = $('<span/>').text(price_change + " " + price_change_percent + "%")
+
+			change.addClass('stock-up') if direction is "up"
+			change.addClass('stock-down') if direction is "down"
+			
+			result = change.get(0).outerHTML
+
+			new Handlebars.SafeString(result)
 		)
 
 	ask: (input) =>
