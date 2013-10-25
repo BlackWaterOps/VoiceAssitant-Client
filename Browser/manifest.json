@@ -4,14 +4,14 @@
       "scripts": ["js/background.js"]
     }
   },
-   "description": "Demo Please's language analysis.",
+   "description": "Demo Plexi's language analysis.",
    "icons": {
       "128": "img/128.png",
       "16": "img/16.png",
       "256": "img/256.png"
    },
    "minimum_chrome_version": "14",
-   "name": "Please Demo",
+   "name": "Plexi Demo",
    "permissions": [ 
       "tts"      
    ],
