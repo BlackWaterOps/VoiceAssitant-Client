@@ -188,6 +188,19 @@ namespace Please2.ViewModels
 
             // navigate to generic details page with movies id and template name
             //navigationService.NavigateTo(new Uri(uri, UriKind.Absolute));
+            var isSet = SetDetails(this.templateName, fuel);
+
+            if (isSet)
+            {
+                var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
+
+                navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            }
+            else
+            {
+                // no template found message
+            }
+
         }
         #endregion
 
@@ -331,7 +344,7 @@ namespace Please2.ViewModels
                     GoTo("home");
                     return;
                 }
-                
+
                 ListResults = (IEnumerable<object>)response["list"];
 
                 if (response.ContainsKey("title"))
@@ -356,7 +369,7 @@ namespace Please2.ViewModels
             }
             catch (Exception err)
             {
-                Debug.WriteLine("outer excep: " + err.Message);
+                Debug.WriteLine("run test: " + err.Message);
             }
         }
 

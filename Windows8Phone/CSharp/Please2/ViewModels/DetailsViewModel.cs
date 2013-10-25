@@ -51,7 +51,7 @@ namespace Please2.ViewModels
 
         public RelayCommand EventDirectionsLoaded { get; set; }
         public RelayCommand ListingDirectionsLoaded { get; set; }
-
+        public RelayCommand FuelDirectionsLoaded { get; set; }
 
         public DetailsViewModel(INavigationService navigationService, IPleaseService pleaseService)
         {
@@ -75,6 +75,7 @@ namespace Please2.ViewModels
 
             EventDirectionsLoaded = new RelayCommand(AddDirectionsMap);
             ListingDirectionsLoaded = new RelayCommand(AddListingDirectionsMap);
+            FuelDirectionsLoaded = new RelayCommand(AddFuelDirectionsMap);
         }
 
         private void PinToStart(object e)
@@ -149,6 +150,25 @@ namespace Please2.ViewModels
 
                 map.Layers.Add(layer);
                 map.Center = new GeoCoordinate(item.location.latitude, item.location.longitude);
+            }
+        }
+
+        private void AddFuelDirectionsMap()
+        {
+            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+
+            var maps = currentPage.Descendants<Map>().Cast<Map>();
+
+            if (maps.Count() > 0)
+            {
+                var map = maps.Single();
+
+                var item = CurrentItem as AltFuelModel;
+
+                var layer = CreateMapLayer(item.latitude, item.longitude);
+
+                map.Layers.Add(layer);
+                map.Center = new GeoCoordinate(item.latitude, item.longitude);
             }
         }
 

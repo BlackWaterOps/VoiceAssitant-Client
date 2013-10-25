@@ -161,11 +161,22 @@
         </phone:Pivot>
     </DataTemplate>
     
-    <!-- Movies -->
-    <!--
-    <DataTemplate x:Key="movies">
-        
+    <!-- Fuel -->
+    <DataTemplate x:Key="fuel">
+        <phone:Pivot DataContext="{Binding DetailsViewModel, Source={StaticResource Locator}}" Title="{Binding CurrentItem.station_name}" x:Name="FuelDetailsPivotView">
+            <phone:PivotItem Header="Location">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <command:EventToCommand Command="{Binding FuelDirectionsLoaded}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <StackPanel>
+                    <map:Map x:Name="FuelMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
+
+                    <Button x:Name="FuelMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
+                </StackPanel>
+            </phone:PivotItem>
+        </phone:Pivot>
     </DataTemplate>
-    -->
-    
 </ResourceDictionary>
