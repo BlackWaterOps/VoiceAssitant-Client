@@ -205,6 +205,20 @@
 .search-summary {
   font-size: .8125em; }
 
+/* line 228, ../scss/templates.scss */
+.geopolitics {
+  max-height: 300px; }
+
+/* line 232, ../scss/templates.scss */
+.geopolitics-flag {
+  width: 120px;
+  vertical-align: middle;
+  margin-right: 5px; }
+
+/* line 238, ../scss/templates.scss */
+.geopolitics-text {
+  margin: 30px 0 0; }
+
 /* line 4, ../scss/style.scss */
 *, *:before, *:after {
   -webkit-font-smoothing: subpixel-antialiased;

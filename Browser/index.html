@@ -287,6 +287,32 @@
             </div>
         </script>
 
+        <script id="geopolitics-template" type="text/x-handlebars-template">
+            <div class="geopolitics bubble template-data">
+                <h2 class="geopolitics-country">
+                    <img src="{{flag}}" class="geopolitics-flag"/>
+                    {{country}}
+                </h2>
+
+                <table cellspacing="0" cellpadding="0" border="0">
+                    <tr>
+                        <td width="135">Leader:</td>
+                        <td>{{stats.leader}}</td>
+                    </tr>
+                    <tr>
+                        <td width="135">Area:</td>
+                        <td>{{stats.area}} sq/km</td>
+                    </tr>
+                    <tr>
+                        <td width="135">Population:</td>
+                        <td>{{stats.population}}</td>
+                    </tr>
+                </table>
+
+                <p class="geopolitics-text">{{text}}</p>
+            </div>
+        </script>
+
         <script id="debug-template" type="text/x-handlebars-template">
             <div class="debug">
                 <div class="underspeak">
