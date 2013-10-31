@@ -100,10 +100,24 @@
     <Content Include="Assets\Fonts\artill_clean_icons.otf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Models\Actors.cs" />
+    <Compile Include="Models\AltFuelModel.cs" />
     <Compile Include="Models\Api.cs" />
+    <Compile Include="Models\DictionaryModel.cs" />
+    <Compile Include="Models\EventModel.cs" />
+    <Compile Include="Models\FitbitFoodModel.cs" />
+    <Compile Include="Models\FitbitWeightModel.cs" />
+    <Compile Include="Models\FlightModel.cs" />
+    <Compile Include="Models\GeopoliticsModel.cs" />
+    <Compile Include="Models\HoroscopeModel.cs" />
     <Compile Include="Models\MainMenuModel.cs" />
     <Compile Include="Models\Messages.cs" />
+    <Compile Include="Models\MoviesModel.cs" />
+    <Compile Include="Models\NewsModel.cs" />
+    <Compile Include="Models\RealEstateModel.cs" />
+    <Compile Include="Models\SearchModel.cs" />
+    <Compile Include="Models\ShoppingModel.cs" />
+    <Compile Include="Models\StockModel.cs" />
+    <Compile Include="Models\WeatherModel.cs" />
     <Compile Include="Tests\List.cs" />
     <Compile Include="Tests\Single.cs" />
     <Compile Include="Util\Interfaces.cs" />

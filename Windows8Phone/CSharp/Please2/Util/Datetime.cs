@@ -48,19 +48,27 @@ namespace Please2.Util
             if (date != null)
             {
                 if (date.GetType() == typeof(string) && dateRegex.IsMatch((string)date) == false)
+                {
                     dateObj = Datetime.BuildDatetimeHelper((string)date);
+                }
 
                 if (date.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+                {
                     dateObj = Datetime.BuildDatetimeHelper((Newtonsoft.Json.Linq.JObject)date);
+                }
             }
 
             if (time != null)
             {
                 if (time.GetType() == typeof(string) && timeRegex.IsMatch((string)time) == false)
+                {
                     dateObj = Datetime.BuildDatetimeHelper((string)time, dateObj);
+                }
 
                 if (time.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+                {
                     dateObj = Datetime.BuildDatetimeHelper((Newtonsoft.Json.Linq.JObject)time, dateObj);
+                }
             }
 
             Dictionary<string, string> newDate = new Dictionary<string,string>();
@@ -82,7 +90,9 @@ namespace Please2.Util
                 IQueryable<PreferenceItem> query = from PreferenceItem preference in db.Preferences where preference.Name == name select preference;
 
                 if (query.Count().Equals(0))
+                {
                     return false;
+                }
 
                 return query.First();
             }
@@ -93,9 +103,6 @@ namespace Please2.Util
             DateTime date = DateTime.Now;
 
             int currentDay = (int)date.DayOfWeek;
-
-            //if (currentDay == dayOfWeek)
-              //  return date;
 
             int offset = (currentDay < dayOfWeek) ? (dayOfWeek - currentDay) : (7 - (currentDay - dayOfWeek));
 
@@ -114,10 +121,14 @@ namespace Please2.Util
             foreach (var i in datetime)
             {
                 if (i.Key.Equals("label"))
+                {
                     label = (string)i.Value;
+                }
 
                 if (i.Key.Equals("default"))
+                {
                     def = (string)i.Value;
+                }
             }
 
             object preference = GetPreference(label);
@@ -130,8 +141,6 @@ namespace Please2.Util
         // this will fail if we have a date obj and time is a string.
         private static DateTime? BuildDatetimeHelper(string dateortime, DateTime? newDate = null)
         {
-            Regex timeRegex = new Regex(@"\d{1,2}[:]\d{2}[:]\d{2}");
-
             if (newDate.Equals(null))
             {
                 Debug.WriteLine("item is a string");
@@ -139,6 +148,11 @@ namespace Please2.Util
             }
             else
             {
+                if (timeRegex.IsMatch(dateortime) && newDate > DateTime.Parse(dateortime))
+                {
+                    ((DateTime)newDate).AddDays(1);
+                }
+                /*
                 if (timeRegex.IsMatch(dateortime))
                 {
                     var split = dateortime.Split(':').Select(n => int.Parse(n)).ToArray();
@@ -151,6 +165,7 @@ namespace Please2.Util
                         newDate.Value.AddDays(1);
                     }
                 }
+                */
             }
             
             return newDate;

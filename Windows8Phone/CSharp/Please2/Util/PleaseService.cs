@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +30,13 @@ namespace Please2.Util
 {
     public class PleaseService : IPleaseService
     {
+        // used by auditor
+        private string[] auditorStates = new string[] { "inprogress", "choice" };
+
+        // used by BuildDateTime
+        private List<Tuple<string, string>> datetimes = new List<Tuple<string, string>>();
+
+        // used in RequestHelper to benchmark request times
         private Stopwatch stopWatch;
 
         // gets completed with all the necessary fields in order to fulfill an action
@@ -51,50 +59,53 @@ namespace Please2.Util
             this.navigationService = ViewModelLocator.GetViewModelInstance<INavigationService>();
             
             // listen for Please API state changes 
-            currentState.PropertyChanged += OnStateChanged;
+            this.currentState.PropertyChanged += OnStateChanged;
 
             CreateTimer();
 
-            if (stopWatch == null)
+            if (this.stopWatch == null)
             {
-                stopWatch = new Stopwatch();
+                this.stopWatch = new Stopwatch();
             }
         }
 
         public void Query(string query)
         {
-            OriginalQuery = query;
+            this.OriginalQuery = query;
 
-            currentState.Response = query;
+            string newState;
 
             if (currentState.State == "inprogress" || currentState.State == "error")
             {
-                currentState.State = "disambiguate:active";
+                newState = "disambiguate:active";
             }
             else if (currentState.State == "choice")
             {
-                currentState.State = "disambiguate:candidate";
+                newState = "disambiguate:candidate";
             }
             else
             {
-                currentState.State = "init";
+                newState = "init";
             }
+
+            this.currentState.Set(newState, query);
         }
 
         public void ResetTimer()
         {
-            contextTimer.Stop();
+            this.contextTimer.Stop();
             CreateTimer();
         }
 
         public void ClearContext()
         {
-            Debug.WriteLine("clear context");
-            mainContext = null;
-            tempContext = null;
-            currentState = new StateModel();
+            this.mainContext = null;
+            this.tempContext = null;
+            this.currentState.Reset();
+            /*
+            this.currentState = new StateModel();
             currentState.PropertyChanged += OnStateChanged;
-
+            */
             ResetTimer();
         }
 
@@ -156,9 +167,9 @@ namespace Please2.Util
 
         private void CreateTimer()
         {
-            contextTimer = new DispatcherTimer();
-            contextTimer.Interval = TimeSpan.FromMinutes(2);
-            contextTimer.Tick += Reset;
+            this.contextTimer = new DispatcherTimer();
+            this.contextTimer.Interval = TimeSpan.FromMinutes(2);
+            this.contextTimer.Tick += Reset;
         }
 
         private void Reset(object sender, EventArgs e)
@@ -166,7 +177,7 @@ namespace Please2.Util
             Debug.WriteLine("please service reset");
             ClearContext();
 
-            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+            ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
             vm.ClearDialog();
 
             navigationService.NavigateTo(ViewModelLocator.MainMenuPageUri);
@@ -176,15 +187,15 @@ namespace Please2.Util
         {
             try
             {
-                var simple = response.show.simple;
+                Dictionary<string, object> simple = response.show.simple;
 
                 if (simple.ContainsKey("list"))
                 {
-                    var templates = ViewModelLocator.ListTemplates;
+                    ResourceDictionary templates = ViewModelLocator.ListTemplates;
 
-                    var list = ((JArray)simple["list"]).ToObject<List<ChoiceModel>>();
+                    List<ChoiceModel> list = ((JArray)simple["list"]).ToObject<List<ChoiceModel>>();
 
-                    var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+                    ListViewModel vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
 
                     vm.ListResults = list.ToList<object>();
                     vm.Template = (DataTemplate)templates["choice"];
@@ -210,7 +221,7 @@ namespace Please2.Util
         {
             try
             {
-                var frame = App.Current.RootVisual as PhoneApplicationFrame;
+                PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
 
                 if (frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
                 {
@@ -218,7 +229,7 @@ namespace Please2.Util
                 }
                 else
                 {
-                    //var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+                    //ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
                     
                     // this won't have any speak
                     //vm.AddDialog("please", (string)response.show.simple["text"]);
@@ -226,7 +237,7 @@ namespace Please2.Util
                     Show(response.show, response.speak);
 
                     // navigate to conversation.xaml
-                    navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                    this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
                 }
             }
             catch (Exception err)
@@ -259,7 +270,7 @@ namespace Please2.Util
         private void ErrorMessage(string message)
         {
             // pass message to view
-            var response = MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
+            MessageBoxResult response = MessageBox.Show(message, "Server Error", MessageBoxButton.OK);
 
             if (response == MessageBoxResult.OK)
             {
@@ -271,21 +282,17 @@ namespace Please2.Util
         {
             try
             {
-                var classifierResults = await RequestHelper<ClassifierModel>((AppResources.ClassifierEndpoint + "?query=" + query), "GET");
+                ClassifierModel classifierResults = await RequestHelper<ClassifierModel>((AppResources.ClassifierEndpoint + "?query=" + query), "GET");
 
                 if (classifierResults.error != null)
                 {
-                    currentState.Response = classifierResults.error.message;
-                    currentState.State = "exception";
+                    currentState.Set("exception", classifierResults.error.message);
                 }
                 else
                 {
-                    var context = await DoClientOperations(classifierResults, classifierResults.payload);
+                    ClassifierModel context = await DoClientOperations(classifierResults, classifierResults.payload);
 
-                    currentState.Response = context;
-                    currentState.State = "audit";
-
-                    //await Auditor(classifierResults);
+                    currentState.Set("audit", context);
                 }
             }
             catch (Exception err)
@@ -296,17 +303,13 @@ namespace Please2.Util
 
         private async void DisambiguateActive(string data)
         {
-            List<string> types = new List<string>();
-
             string field = tempContext.field;
 
             string type = tempContext.type;
 
-            types.Add(type);
-
             string payload = data;
 
-            var postData = new DisambiguatorModel();
+            DisambiguatorModel postData = new DisambiguatorModel();
 
             postData.payload = payload;
             postData.type = type;
@@ -326,17 +329,17 @@ namespace Please2.Util
 
         private async void DisambiguateCandidate(string data)
         {
-            var simple = tempContext.show.simple;
+            Dictionary<string, object> simple = tempContext.show.simple;
 
             string field = tempContext.field;
 
             string type = tempContext.type;
 
-            var list = (simple.ContainsKey("list")) ? (JArray)simple["list"] : new JArray();
+            JArray list = (simple.ContainsKey("list")) ? (JArray)simple["list"] : new JArray();
 
             string payload = data;
 
-            var postData = new DisambiguatorModel();
+            DisambiguatorModel postData = new DisambiguatorModel();
 
             postData.payload = payload;
             postData.type = type;
@@ -369,7 +372,7 @@ namespace Please2.Util
             }
             else
             {
-                payload = mainContext.payload[field];
+                payload = this.mainContext.payload[field];
             }
 
             Dictionary<string, object> deviceInfo = new Dictionary<string, object>();
@@ -384,7 +387,7 @@ namespace Please2.Util
                 return;
             }
 
-            var postData = new DisambiguatorModel();
+            DisambiguatorModel postData = new DisambiguatorModel();
 
             postData.payload = payload;
             postData.type = type;
@@ -413,10 +416,10 @@ namespace Please2.Util
             }
             else
             {
-                payload = mainContext.payload[field];
+                payload = this.mainContext.payload[field];
             }
 
-            var postData = new DisambiguatorModel();
+            DisambiguatorModel postData = new DisambiguatorModel();
 
             postData.payload = payload;
             postData.type = type;
@@ -436,14 +439,13 @@ namespace Please2.Util
             {
                 if (response.ContainsKey("error"))
                 {
-                    var er = (ErrorModel)response["error"];
+                    ErrorModel er = (ErrorModel)response["error"];
 
-                    currentState.Response = er.message;
-                    currentState.State = "exception";
+                    currentState.Set("exception", er.message);
                 }
                 else
                 {
-                    var context = mainContext.DeepCopy<ClassifierModel>();                    
+                    ClassifierModel context = this.mainContext.DeepCopy<ClassifierModel>();                    
 
                     context = await DoClientOperations(context, response);
 
@@ -463,8 +465,7 @@ namespace Please2.Util
                         Debug.WriteLine("Disambiguation response is missing type");
                     }
 
-                    currentState.Response = context;
-                    currentState.State = "audit";
+                    this.currentState.Set("audit", context);
                 }
             }
             else
@@ -473,105 +474,30 @@ namespace Please2.Util
             }
         }
 
-        public async Task Auditor(ChoiceModel choice)
-        {
-            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-
-            vm.AddDialog("user", choice.text);
-
-            var field = tempContext.field;
-
-            var t = choice.data;
-
-            var context = mainContext.DeepCopy<ClassifierModel>();
-
-            if (field.Contains("."))
-            {
-                context = Replace(mainContext, field, choice.data);
-            }
-            else
-            {
-                context.payload[field] = choice.data;
-            }
-
-            await Auditor(context);
-        }
-
-        private void Restart(ResponderModel data)
-        {
-            // reset counter
-            // counter = 0;
-
-            if (data.data == null)
-            {
-                Debug.WriteLine("missing new replacement context");
-                return;
-            }
-
-            // mainContext = data.data;
-            //await Auditor(data.data);
-
-            currentState.Response = data.data;
-            currentState.State = "audit";
-        }
-        /*
-        private async Task Auditor(ClassifierModel data)
-        {
-            mainContext = data;
-
-            Dictionary<string, object> request = new Dictionary<string, object>();
-
-            var t = new ClassifierModel();
-
-            request.Add("action", data.action);
-            request.Add("model", data.model);
-            request.Add("payload", data.payload);
-
-            await Auditor(request);
-        }
-        */
-        //private async Task Auditor(Dictionary<string, object> data)
         private async Task Auditor(ClassifierModel context)
         {
-            /*
-            if (data.ContainsKey("payload"))
+            if (!context.Equals(this.mainContext))
             {
-                var payload = (Dictionary<string, object>)data["payload"];
-                data["payload"] = await DoClientOperations(payload);
-            }
-               
-            var payload = data.payload;
-            */
-
-            // counter++;
-
-            if (!context.Equals(mainContext))
-            {
-                mainContext = context;
+                this.mainContext = context;
 
                 ResponderModel response = await RequestHelper<ResponderModel>(AppResources.ResponderEndpoint + "audit", "POST", context);
 
                 if (response.error != null)
                 {
-                    currentState.Response = response.error.msg;
-                    currentState.State = "exception";
+                    this.currentState.Set("exception", response.error.msg);
                 }
                 else
                 {
                     string state = response.status.Replace(" ", "");
 
-                    var tempStates = new string[] { "inprogress", "choice" };
-
-                    // new 
-                    if (tempStates.Contains(state))
+                    if (this.auditorStates.Contains(state))
                     {
                         tempContext = response;
                         contextTimer.Start();
                     }
 
                     // create event and trigger based on status
-                    currentState.Response = response;
-                    currentState.State = state;
+                    this.currentState.Set(state, response);
                 }
             }
             else
@@ -580,22 +506,47 @@ namespace Please2.Util
             }
         }
 
+        public void Choice(ChoiceModel choice)
+        {
+            ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+
+            vm.AddDialog("user", choice.text);
+
+            string field = tempContext.field;
+
+            Dictionary<string, object> t = choice.data;
+
+            ClassifierModel context = this.mainContext.DeepCopy<ClassifierModel>();
+
+            if (field.Contains("."))
+            {
+                context = Replace(this.mainContext, field, choice.data);
+            }
+            else
+            {
+                context.payload[field] = choice.data;
+            }
+
+            this.currentState.Set("audit", context);
+        }
+
+        private void Restart(ResponderModel data)
+        {
+            if (data.data == null)
+            {
+                Debug.WriteLine("missing new replacement context");
+                return;
+            }
+
+            this.currentState.Set("audit", data.data);
+        }
+
         private async void Actor(ResponderModel data)
         {
             string actor = data.actor;
 
             if (actor != null)
             {
-                /*
-                if (actor.Contains("_denial"))
-                {
-                    // Hack for now. this is the completely wrong approach for intercepting phone tasks
-                    // denial must mean it's an internal phone task
-                    ActorInterceptor(actor);
-                    return;
-                }
-                */
-
                 string endpoint = AppResources.ResponderEndpoint + "actors/" + actor;
 
                 if (actor.Contains("private:"))
@@ -609,9 +560,7 @@ namespace Please2.Util
                 
                 if (response.error != null)
                 {
-                    //Debug.WriteLine("Actor exception");
-                    currentState.Response = response.error.msg;
-                    currentState.State = "exception";
+                    this.currentState.Set("exception", response.error.msg);
                 }
                 else
                 {
@@ -633,9 +582,9 @@ namespace Please2.Util
         {            
             try
             {
-                var locator = App.Current.Resources["Locator"] as ViewModelLocator;
+                ViewModelLocator locator = App.Current.Resources["Locator"] as ViewModelLocator;
 
-                var viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
+                PropertyInfo viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
 
                 if (viewmodelProperty == null)
                 {
@@ -643,9 +592,9 @@ namespace Please2.Util
                     return null;
                 }
 
-                var viewModel = viewmodelProperty.GetValue(locator, null);
+                object viewModel = viewmodelProperty.GetValue(locator, null);
 
-                var populateMethod = viewModel.GetType().GetMethod("Populate");
+                MethodInfo populateMethod = viewModel.GetType().GetMethod("Populate");
 
                 if (populateMethod == null)
                 {
@@ -665,7 +614,7 @@ namespace Please2.Util
                     return null;
                 }
 
-                var parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
+                object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
 
                 return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
             }
@@ -678,14 +627,14 @@ namespace Please2.Util
 
         private Uri LoadSingleResult(Dictionary<string, object> structured)
         {
-            var templates = ViewModelLocator.SingleTemplates;
+            ResourceDictionary templates = ViewModelLocator.SingleTemplates;
 
-            var page = ViewModelLocator.SingleResultPageUri;
+            Uri page = ViewModelLocator.SingleResultPageUri;
 
             string[] template = (structured["template"] as string).Split(':');
 
-            var type = template[0];
-            var templateName = template[1];
+            string type = template[0];
+            string templateName = template[1];
 
             if (template.Count() > 2)
             {
@@ -698,11 +647,11 @@ namespace Please2.Util
                 return null;
             }
 
-            var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+            SingleViewModel singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
 
             singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
 
-            var data = PopulateViewModel(template[1], structured);
+            Dictionary<string, object> data = PopulateViewModel(template[1], structured);
 
             if (data == null)
             {
@@ -741,7 +690,7 @@ namespace Please2.Util
 
                 string[] template = (structured["template"] as string).Split(':');
 
-                var type = template[0];
+                string type = template[0];
                 string templateName = null;
 
                 if (template.Count() > 1)
@@ -805,16 +754,16 @@ namespace Please2.Util
         // all the data needed to fulfill the tasks should be in the mainContext var.
         private void ActorInterceptor(string actor)
         {
-            var payload = mainContext.payload;
+            Dictionary<string, object> payload = this.mainContext.payload;
 
             if (!SimpleIoc.Default.IsRegistered<ITaskService>())
             {
                 SimpleIoc.Default.Register<ITaskService, TaskService>();
             }
 
-            var tasks = SimpleIoc.Default.GetInstance<ITaskService>();
+            ITaskService tasks = SimpleIoc.Default.GetInstance<ITaskService>();
 
-            tasks.MainContext = mainContext;
+            tasks.MainContext = this.mainContext;
 
             switch (actor)
             {
@@ -867,7 +816,7 @@ namespace Please2.Util
         #region helpers
         private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, bool includeNulls = false)
         {
-            var req = new Request();
+            Request req = new Request();
 
             req.Method = method;
 
@@ -876,7 +825,7 @@ namespace Please2.Util
 
             T response;
 
-            stopWatch.Start();
+            this.stopWatch.Start();
 
             if (method.ToLower() == "get")
             {
@@ -889,11 +838,11 @@ namespace Please2.Util
                 response = await req.DoRequestJsonAsync<T>(endpoint, SerializeData(data, includeNulls));
             }
 
-            stopWatch.Stop();
+            this.stopWatch.Stop();
 
             Debug.WriteLine("this request took " + stopWatch.Elapsed + " to complete");
 
-            stopWatch.Reset();
+            this.stopWatch.Reset();
 
             // Notify the view that the request is complete
             Messenger.Default.Send(new ProgressMessage(false));
@@ -927,11 +876,11 @@ namespace Please2.Util
                     return context;
                 }
 
-                var prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
+                string prepend = (string)((JArray)data["unused_tokens"]).Aggregate((i, j) => i + " " + j);
 
-                var field = (string)data["prepend_to"];
+                string field = (string)data["prepend_to"];
 
-                var payloadField = "";
+                string payloadField = "";
 
                 if (context.payload.ContainsKey(field) && context.payload[field] != null)
                 {
@@ -950,14 +899,14 @@ namespace Please2.Util
 
         protected ClassifierModel Replace(ClassifierModel context, string field, object type)
         {
-            var fields = field.Split('.').ToList();
+            List<string> fields = field.Split('.').ToList();
 
-            var last = fields[fields.Count - 1];
+            string last = fields[fields.Count - 1];
 
             // convert to generic object
-            var obj = context.DeepCopy<object>();
+            object obj = context.DeepCopy<object>();
 
-            var t = fields.Aggregate(obj, (a, b) =>
+            object t = fields.Aggregate(obj, (a, b) =>
             {
                 if (b == last)
                 {
@@ -976,10 +925,10 @@ namespace Please2.Util
 
         protected object Find(string field)
         {
-            var fields = field.Split('.').ToList();
+            List<string> fields = field.Split('.').ToList();
 
             // convert to generic object
-            var context = mainContext.DeepCopy<object>();
+            object context = this.mainContext.DeepCopy<object>();
 
             return fields.Aggregate(context, (a, b) => ((JObject)a)[b]);
         }
@@ -992,7 +941,7 @@ namespace Please2.Util
                 {
                     if (payload["location"].GetType() == typeof(string))
                     {
-                        var location = (string)payload["location"];
+                        string location = (string)payload["location"];
                         if (location.Contains("current_location"))
                         {
                             //Debug.WriteLine(SerializeData(GetDeviceInfo()));
@@ -1011,19 +960,18 @@ namespace Please2.Util
 
         private Dictionary<string, object> BuildDateTime(Dictionary<string, object> data)
         {
-            Debug.WriteLine(SerializeData(data));
-
             try
             {
                 if (data != null)
                 {
-                    List<Tuple<string, string>> datetimes = new List<Tuple<string, string>>();
+                    if (this.datetimes.Count <= 0)
+                    {
+                        this.datetimes.Add(new Tuple<string, string>("date", "time"));
+                        this.datetimes.Add(new Tuple<string, string>("start_date", "start_time"));
+                        this.datetimes.Add(new Tuple<string, string>("end_date", "end_time"));
+                    }
 
-                    datetimes.Add(new Tuple<string, string>("date", "time"));
-                    datetimes.Add(new Tuple<string, string>("start_date", "start_time"));
-                    datetimes.Add(new Tuple<string, string>("end_date", "end_time"));
-
-                    foreach (var datetime in datetimes)
+                    foreach (Tuple<string, string> datetime in datetimes)
                     {
                         if (data.ContainsKey(datetime.Item1) || data.ContainsKey(datetime.Item2))
                         {
@@ -1059,10 +1007,14 @@ namespace Please2.Util
 
                             // cleanup
                             if (removeDate == true)
+                            {
                                 data.Remove(datetime.Item1);
+                            }
 
                             if (removeTime == true)
+                            {
                                 data.Remove(datetime.Item2);
+                            }
                         }
                     }
                 }
@@ -1115,7 +1067,7 @@ namespace Please2.Util
 
         private string SerializeData(object data, bool includeNulls = false)
         {
-            var jsonSettings = new JsonSerializerSettings();
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
             jsonSettings.NullValueHandling = (includeNulls == true) ? NullValueHandling.Include : NullValueHandling.Ignore;

@@ -133,10 +133,10 @@ namespace Please2.ViewModels
             browser.Show();
         }
 
-        public async void ChoiceItemSelected(ChoiceModel choice)
+        public void ChoiceItemSelected(ChoiceModel choice)
         {
             // pass selection to please service to process and send to auditor
-            await pleaseService.Auditor(choice);   
+            pleaseService.Choice(choice);   
         }
 
         public void EventItemSelected(EventModel e)

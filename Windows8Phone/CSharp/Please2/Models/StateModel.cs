@@ -21,8 +21,28 @@ namespace Please2.Models
             }
         }
 
-        // this will be a ResponderModel most of the time if not all the time
-        // consider switching types
         public object Response { get; set; }
+
+        public StateModel()
+        {
+
+        }
+
+        public StateModel(string state, object response)
+        {
+            Set(state, response);
+        }
+
+        public void Set(string state, object response)
+        {
+            this.Response = response;
+            this.State = state;
+        }
+
+        public void Reset()
+        {
+            this.Response = null;
+            this.state = null;
+        }
     }
 }

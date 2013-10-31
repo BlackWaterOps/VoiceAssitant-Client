@@ -58,7 +58,7 @@ namespace Please2.Util
 
         void Query(string query);
 
-        Task Auditor(ChoiceModel choice);
+        void Choice(ChoiceModel choice);
     }
 
     public interface IViewModel
