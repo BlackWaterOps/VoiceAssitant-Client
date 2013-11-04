@@ -38,9 +38,9 @@
       this.clearChoiceList = __bind(this.clearChoiceList, this);
       this.handleChoice = __bind(this.handleChoice, this);
       this.choose = __bind(this.choose, this);
-      this.disambiguateCandidate = __bind(this.disambiguateCandidate, this);
       this.disambiguatePassive = __bind(this.disambiguatePassive, this);
       this.disambiguatePersonal = __bind(this.disambiguatePersonal, this);
+      this.disambiguateCandidate = __bind(this.disambiguateCandidate, this);
       this.disambiguateActive = __bind(this.disambiguateActive, this);
       this.disambiguateSuccessHandler = __bind(this.disambiguateSuccessHandler, this);
       this.classify = __bind(this.classify, this);
@@ -313,8 +313,8 @@
       });
     };
 
-    Please.prototype.disambiguateSuccessHandler = function(response, field, type) {
-      var context, debuggable;
+    Please.prototype.disambiguateSuccessHandler = function(response) {
+      var context, debuggable, field, type;
       debuggable = ['inprogress', 'error', 'choice'];
       if (debuggable.indexOf(this.currentState.state) !== -1) {
         $(document).trigger($.Event('debug'));
@@ -322,6 +322,8 @@
       if (response != null) {
         context = $.extend(true, {}, this.mainContext);
         context = this.clientOperations(context, response);
+        field = this.disambigContext.field;
+        type = this.disambigContext.type;
         if (field.indexOf('.') !== -1) {
           context = this.replace(context, field, response[type]);
         } else {
@@ -337,56 +339,24 @@
     };
 
     Please.prototype.disambiguateActive = function(e) {
-      var field, postData, text, type,
-        _this = this;
-      field = this.disambigContext.field;
+      var postData, text, type;
       type = this.disambigContext.type;
       text = e.response;
       postData = {
         payload: text,
         type: type
       };
-      return this.requestHelper(this.disambiguator + '/active', 'POST', postData, function(response) {
-        return _this.disambiguateSuccessHandler(response, field, type);
-      });
-    };
+      return this.requestHelper(this.disambiguator + '/active', 'POST', postData, this.disambiguateSuccessHandler);
+      /*
+      		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
+      			@disambiguateSuccessHandler(response, field, type)
+      		)
+      */
 
-    Please.prototype.disambiguatePersonal = function(e) {
-      var data, field, postData, text, type,
-        _this = this;
-      data = e.response;
-      field = data.field;
-      type = data.type;
-      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
-      postData = {
-        type: type,
-        payload: text
-      };
-      return this.requestHelper(this.personal + 'disambiguate', 'POST', postData, function(response) {
-        return _this.disambiguateSuccessHandler(response, field, type);
-      });
-    };
-
-    Please.prototype.disambiguatePassive = function(e) {
-      var data, field, postData, text, type,
-        _this = this;
-      data = e.response;
-      field = data.field;
-      type = data.type;
-      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
-      postData = {
-        type: type,
-        payload: text
-      };
-      return this.requestHelper(this.disambiguator + '/passive', 'POST', postData, function(response) {
-        return _this.disambiguateSuccessHandler(response, field, type);
-      });
     };
 
     Please.prototype.disambiguateCandidate = function(e) {
-      var field, list, postData, text, type,
-        _this = this;
-      field = this.disambigContext.field;
+      var list, postData, text, type;
       type = this.disambigContext.type;
       text = e.response;
       list = this.disambigContext.show.simple.list;
@@ -395,9 +365,51 @@
         type: type,
         candidates: list
       };
-      return this.requestHelper(this.disambiguator + '/candidate', 'POST', postData, function(response) {
-        return _this.disambiguateSuccessHandler(response, field, type);
-      });
+      return this.requestHelper(this.disambiguator + '/candidate', 'POST', postData, this.disambiguateSuccessHandler);
+      /*
+      		@requestHelper(@disambiguator + '/candidate', 'POST', postData, (response) =>
+      			@disambiguateSuccessHandler(response, field, type)
+      		)
+      */
+
+    };
+
+    Please.prototype.disambiguatePersonal = function(e) {
+      var data, field, postData, text, type;
+      data = e.response;
+      field = data.field;
+      type = data.type;
+      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
+      postData = {
+        type: type,
+        payload: text
+      };
+      return this.requestHelper(this.personal + 'disambiguate', 'POST', postData, this.disambiguateSuccessHandler);
+      /*
+      		@requestHelper(@personal + 'disambiguate', 'POST', postData, (response) =>
+      			@disambiguateSuccessHandler(response, field, type)
+      		)
+      */
+
+    };
+
+    Please.prototype.disambiguatePassive = function(e) {
+      var data, field, postData, text, type;
+      data = e.response;
+      field = data.field;
+      type = data.type;
+      text = field.indexOf('.') !== -1 ? this.find(this.mainContext, field) : this.mainContext.payload[field];
+      postData = {
+        type: type,
+        payload: text
+      };
+      return this.requestHelper(this.disambiguator + '/passive', 'POST', postData, this.disambiguateSuccessHandler);
+      /*
+      		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
+      			@disambiguateSuccessHandler(response, field, type)
+      		)
+      */
+
     };
 
     Please.prototype.choose = function(e) {
@@ -450,15 +462,17 @@
     };
 
     Please.prototype.auditorSuccessHandler = function(response) {
-      var tempStates;
-      tempStates = ['inprogress', 'choice'];
-      this.currentState = {
-        state: response.status.replace(' ', ''),
-        origin: 'auditor'
-      };
-      if (tempStates.indexOf(this.currentState.state) !== -1) {
+      var crossCheck, state, tempStates;
+      state = response.status.replace(' ', '');
+      crossCheck = state.split(':')[0];
+      tempStates = ['disambiguate', 'inprogress', 'choice'];
+      if (tempStates.indexOf(crossCheck) !== -1) {
         this.disambigContext = response;
       }
+      this.currentState = {
+        state: state,
+        origin: 'auditor'
+      };
       return $(document).trigger({
         type: this.currentState.state,
         response: response

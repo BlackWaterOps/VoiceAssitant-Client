@@ -264,7 +264,8 @@ class window.Please
 			)
 		)
 
-	disambiguateSuccessHandler: (response, field, type) =>
+	# disambiguateSuccessHandler: (response, field, type) =>
+	disambiguateSuccessHandler: (response) =>
 		debuggable = ['inprogress', 'error', 'choice']
 
 		$(document).trigger($.Event('debug')) if debuggable.indexOf(@currentState.state) isnt -1				
@@ -274,6 +275,10 @@ class window.Please
 			context = $.extend(true, {}, @mainContext)
 
 			context = @clientOperations(context, response)
+
+			field = @disambigContext.field
+
+			type = @disambigContext.type
 
 			# find & replace the specific field indicated in the response 
 			if field.indexOf('.') isnt -1
@@ -289,7 +294,7 @@ class window.Please
 			console.log 'oops no responder response', results
 
 	disambiguateActive: (e) =>
-		field = @disambigContext.field
+		# field = @disambigContext.field
 
 		type = @disambigContext.type
 		
@@ -299,9 +304,35 @@ class window.Please
 			payload: text
 			type: type
 
+		@requestHelper(@disambiguator + '/active', 'POST', postData, @disambiguateSuccessHandler)
+
+		###
 		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
 		)
+		###
+
+	disambiguateCandidate: (e) =>
+		# field = @disambigContext.field
+
+		type = @disambigContext.type
+		
+		text = e.response
+
+		list = @disambigContext.show.simple.list
+
+		postData =
+			payload: text
+			type: type
+			candidates: list
+
+		@requestHelper(@disambiguator + '/candidate', 'POST', postData, @disambiguateSuccessHandler)
+		
+		###
+		@requestHelper(@disambiguator + '/candidate', 'POST', postData, (response) =>
+			@disambiguateSuccessHandler(response, field, type)
+		)
+		###
 
 	disambiguatePersonal: (e) =>
 		# in the future we'll need to send a userid for personal data 
@@ -317,9 +348,13 @@ class window.Please
 			type: type
 			payload: text
 
+		@requestHelper(@personal + 'disambiguate', 'POST', postData, @disambiguateSuccessHandler)
+		
+		###
 		@requestHelper(@personal + 'disambiguate', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
 		)
+		###
 
 	disambiguatePassive: (e) =>	
 		data = e.response
@@ -334,28 +369,13 @@ class window.Please
 			type: type
 			payload: text
 
+		@requestHelper(@disambiguator + '/passive', 'POST', postData, @disambiguateSuccessHandler)
+		
+		###
 		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
 			@disambiguateSuccessHandler(response, field, type)
 		)
-
-	disambiguateCandidate: (e) =>
-		field = @disambigContext.field
-
-		type = @disambigContext.type
-		
-		text = e.response
-
-		# this is what makes this different than an 'active' disambiguation
-		list = @disambigContext.show.simple.list
-
-		postData =
-			payload: text
-			type: type
-			candidates: list
-
-		@requestHelper(@disambiguator + '/candidate', 'POST', postData, (response) =>
-			@disambiguateSuccessHandler(response, field, type)
-		)
+		###
 
 	choose: (e) =>
 		data = e.response
@@ -415,13 +435,17 @@ class window.Please
 			console.log('potential request loop detected')
 
 	auditorSuccessHandler: (response) =>
-		tempStates = ['inprogress', 'choice']
+		state = response.status.replace(' ', '')
+
+		crossCheck = state.split(':')[0]
+
+		tempStates = ['disambiguate', 'inprogress', 'choice']
+	
+		@disambigContext = response if tempStates.indexOf(crossCheck) isnt -1
 
 		@currentState = 
-			state: response.status.replace(' ', '')
+			state: state
 			origin: 'auditor'
-	
-		@disambigContext = response if tempStates.indexOf(@currentState.state) isnt -1
 
 		$(document).trigger(
 			type: @currentState.state
