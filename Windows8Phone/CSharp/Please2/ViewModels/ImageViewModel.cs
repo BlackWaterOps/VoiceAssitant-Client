@@ -52,10 +52,5 @@ namespace Please2.ViewModels
         {
             get { return App.Current.Host.Content.ActualWidth; }
         }
-
-        public ImageViewModel(INavigationService navigationService, IPleaseService pleaseService)
-        {
-
-        }
     }
 }

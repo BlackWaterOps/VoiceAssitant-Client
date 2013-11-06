@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -86,7 +87,7 @@ namespace Please2.ViewModels
             }
         }
 
-        public FitbitViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public FitbitViewModel(INavigationService navigationService, IPlexiService pleaseService)
         {
             // TODO: create pie chart 
             // 4, 4, 9 rule

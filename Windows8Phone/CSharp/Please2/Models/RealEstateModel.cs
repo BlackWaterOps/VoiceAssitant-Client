@@ -53,6 +53,7 @@ namespace Please2.Models
         public string amenities { get; set; }
         public string has_photo { get; set; }
         public string user_id { get; set; }
+        public string pets_allowed { get; set; }
     }
 
     public class RealEstateUser

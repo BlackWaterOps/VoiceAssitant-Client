@@ -10,6 +10,7 @@ using System.Windows;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Toolkit;
+using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 
@@ -20,10 +21,13 @@ using GalaSoft.MvvmLight.Command;
 using Please2.Util;
 using Please2.Models;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class DetailsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        private Map currentMap;
+        
         private object currentItem;
         public object CurrentItem
         {
@@ -47,14 +51,18 @@ namespace Please2.ViewModels
         }
 
         public RelayCommand<object> PinToStartCommand { get; set; }
-        public RelayCommand<object> ShowFullMapCommand { get; set; }
+        public RelayCommand<string> ShowFullMapCommand { get; set; }
 
         public RelayCommand EventDirectionsLoaded { get; set; }
         public RelayCommand ListingDirectionsLoaded { get; set; }
         public RelayCommand FuelDirectionsLoaded { get; set; }
 
-        public DetailsViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        IPlexiService plexiService;
+
+        public DetailsViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
+            this.plexiService = plexiService;
+
             AttachEventHandlers();
         }
 
@@ -71,7 +79,7 @@ namespace Please2.ViewModels
         private void AttachEventHandlers()
         {
             PinToStartCommand = new RelayCommand<object>(PinToStart);
-            ShowFullMapCommand = new RelayCommand<object>(ShowFullMap);
+            ShowFullMapCommand = new RelayCommand<string>(ShowFullMap);
 
             EventDirectionsLoaded = new RelayCommand(AddDirectionsMap);
             ListingDirectionsLoaded = new RelayCommand(AddListingDirectionsMap);
@@ -90,31 +98,59 @@ namespace Please2.ViewModels
            // ShellTile.Create(new Uri("/EventDetailsPage.xaml?id=" + currentEvent.id), tile);
         }
 
-        private void ShowFullMap(object e)
+        private async void ShowFullMap(string e)
         {
-            /*
-            var fullMap = new MapsDirectionsTask();
+            GeoCoordinate geo = null;
 
-            var currPos = Please2.Util.Location.CurrentPosition;
+            string title = null;
 
-            var startGeo = new GeoCoordinate((double)currPos["latitude"], (double)currPos["longitude"]);
+            switch (e)
+            {
+                case "real_estate":
+                    RealEstateListing listing = CurrentItem as RealEstateListing;
+                    geo = new GeoCoordinate(listing.location.latitude, listing.location.longitude);
+                    title = listing.title;
+                    break;
 
-            var startLabeledMap = new LabeledMapLocation("current location", startGeo);
+                case "fuel":
+                    AltFuelModel fuel = CurrentItem as AltFuelModel;
+                    geo = new GeoCoordinate(fuel.latitude, fuel.longitude);
+                    title = fuel.station_name;
+                    break;
 
-            fullMap.Start = startLabeledMap;
+                case "events":
+                    EventModel ev = CurrentItem as EventModel;
+                    geo = new GeoCoordinate(ev.location.lat, ev.location.lon);
+                    title = ev.title;
+                    break;
+            }
 
-            var endGeo = new GeoCoordinate(currentEvent.location.lat, currentEvent.location.lon);
+            if (geo != null && title != null)
+            {
+                var fullMap = new MapsDirectionsTask();
 
-            var endLabeledMap = new LabeledMapLocation(currentEvent.title, endGeo);
+                var currPos = await plexiService.GetDeviceInfo();
 
-            fullMap.End = endLabeledMap;
+                var startGeo = new GeoCoordinate((double)currPos["latitude"], (double)currPos["longitude"]);
 
-            fullMap.Show();
-            */
+                var startLabeledMap = new LabeledMapLocation("current location", startGeo);
+
+                fullMap.Start = startLabeledMap;
+
+                var endLabeledMap = new LabeledMapLocation(title, geo);
+
+                fullMap.End = endLabeledMap;
+
+                fullMap.Show();
+            }
+            else
+            {
+                Debug.WriteLine("show full map: unfulfilled geo or title");
+            }
         }
 
         // Do to the lack of binding support in the maps api, we have to
-        // resort to adding the map layer in code. XAML binding would be prefered.
+        // resort to adding the map layer in code. XAML binding would be preferred.
         private void AddDirectionsMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
@@ -134,7 +170,7 @@ namespace Please2.ViewModels
             }
         }
 
-        private void AddListingDirectionsMap()
+        private async void AddListingDirectionsMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
 
@@ -142,14 +178,30 @@ namespace Please2.ViewModels
 
             if (maps.Count() > 0)
             {
-                var map = maps.Single();
-
+                currentMap = maps.Single();
+                
                 var item = CurrentItem as RealEstateListing;
+                
+                /*
+                List<GeoCoordinate> coords = new List<GeoCoordinate>();
+
+                Dictionary<string, object> deviceInfo = await plexiService.GetDeviceInfo();
+                
+                coords.Add(new GeoCoordinate((double)deviceInfo["latitude"], (double)deviceInfo["longitude"]));
+                coords.Add(new GeoCoordinate(item.location.latitude, item.location.longitude));
+
+                RouteQuery routeQuery = new RouteQuery();
+                routeQuery.Waypoints = coords;
+                routeQuery.QueryCompleted += RouteQuery_Completed;
+                routeQuery.QueryAsync();
+                */
 
                 var layer = CreateMapLayer(item.location.latitude, item.location.longitude);
 
-                map.Layers.Add(layer);
-                map.Center = new GeoCoordinate(item.location.latitude, item.location.longitude);
+                currentMap.Layers.Add(layer);
+               
+                //currentMap.Center = new GeoCoordinate((double)deviceInfo["latitude"], (double)deviceInfo["longitude"]); 
+                currentMap.Center = new GeoCoordinate(item.location.latitude, item.location.longitude);
             }
         }
 
@@ -192,5 +244,21 @@ namespace Please2.ViewModels
 
             return layer;
         }
+        /*
+        private void RouteQuery_Completed(object sender, QueryCompletedEventArgs<Route> e)
+        {
+            if (e.Error == null)
+            {
+                
+                Route route = e.Result;
+                MapRoute mapRoute = new MapRoute(route);
+
+                if (currentMap != null)
+                {
+                    currentMap.AddRoute(mapRoute);
+                }
+            }
+        }
+        */
     }
 }

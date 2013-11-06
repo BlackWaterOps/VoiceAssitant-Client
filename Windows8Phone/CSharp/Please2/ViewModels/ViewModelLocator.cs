@@ -20,6 +20,8 @@ using Microsoft.Practices.ServiceLocation;
 
 using Please2.Util;
 
+using Plexi;
+
 namespace Please2.ViewModels
 {
     /// <summary>
@@ -38,7 +40,7 @@ namespace Please2.ViewModels
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 
-        public static readonly Uri MainMenuPageUri = new Uri("/MainPage2.xaml", UriKind.Relative);
+        public static readonly Uri MainMenuPageUri = new Uri("/MainMenu.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
 
@@ -79,91 +81,95 @@ namespace Please2.ViewModels
             ////}
 
             SimpleIoc.Default.Register<INavigationService, NavigationService>();
-            SimpleIoc.Default.Register<IPleaseService, PleaseService>();
+            
+            SimpleIoc.Default.Register<IPlexiService, Plexi.Core>();
+            
             SimpleIoc.Default.Register<ISpeechService, SpeechService>();
 
             SimpleIoc.Default.Register<MainMenuViewModel>();
             SimpleIoc.Default.Register<ConversationViewModel>();
+
+            new PlexiHandler();
         }
 
         public MainMenuViewModel MainMenuViewModel
         {
-            get { return GetViewModelInstance<MainMenuViewModel>(); }
+            get { return GetServiceInstance<MainMenuViewModel>(); }
         }
 
         public ConversationViewModel ConversationViewModel
         {
-            get { return GetViewModelInstance<ConversationViewModel>(); }
+            get { return GetServiceInstance<ConversationViewModel>(); }
         }
 
         public ListViewModel ListViewModel
         {
-            get { return GetViewModelInstance<ListViewModel>(); }
+            get { return GetServiceInstance<ListViewModel>(); }
         }
 
         public SingleViewModel SingleViewModel
         {
-            get { return GetViewModelInstance<SingleViewModel>(); }
+            get { return GetServiceInstance<SingleViewModel>(); }
         }
 
         public DetailsViewModel DetailsViewModel
         {
-            get { return GetViewModelInstance<DetailsViewModel>(); }
+            get { return GetServiceInstance<DetailsViewModel>(); }
         }
 
         public WeatherViewModel WeatherViewModel
         {
-            get { return GetViewModelInstance<WeatherViewModel>(); }
+            get { return GetServiceInstance<WeatherViewModel>(); }
         }
 
         public StockViewModel StockViewModel
         {
-            get { return GetViewModelInstance<StockViewModel>(); }
+            get { return GetServiceInstance<StockViewModel>(); }
         }
 
         public NotificationsViewModel NotificationsViewModel
         {
-            get { return GetViewModelInstance<NotificationsViewModel>(); }
+            get { return GetServiceInstance<NotificationsViewModel>(); }
         }
 
         public FitbitViewModel FitbitViewModel
         {
-            get { return GetViewModelInstance<FitbitViewModel>(); }
+            get { return GetServiceInstance<FitbitViewModel>(); }
         }
 
         public NewsViewModel NewsViewModel
         {
-            get { return GetViewModelInstance<NewsViewModel>(); }
+            get { return GetServiceInstance<NewsViewModel>(); }
         }
 
         public ImageViewModel ImageViewModel
         {
-            get { return GetViewModelInstance<ImageViewModel>(); }
+            get { return GetServiceInstance<ImageViewModel>(); }
         }
 
         public FlightsViewModel FlightsViewModel
         {
-            get { return GetViewModelInstance<FlightsViewModel>(); }
+            get { return GetServiceInstance<FlightsViewModel>(); }
         }
 
         public HoroscopeViewModel HoroscopeViewModel
         {
-            get { return GetViewModelInstance<HoroscopeViewModel>(); }
+            get { return GetServiceInstance<HoroscopeViewModel>(); }
         }
 
         public GeopoliticsViewModel GeopoliticsViewModel
         {
-            get { return GetViewModelInstance<GeopoliticsViewModel>(); }
+            get { return GetServiceInstance<GeopoliticsViewModel>(); }
         }
 
         public RealEstateViewModel RealEstateViewModel
         {
-            get { return GetViewModelInstance<RealEstateViewModel>(); }
+            get { return GetServiceInstance<RealEstateViewModel>(); }
         }
 
         public DictionaryViewModel DictionaryViewModel
         {
-            get { return GetViewModelInstance<DictionaryViewModel>(); }
+            get { return GetServiceInstance<DictionaryViewModel>(); }
         }
 
         /*
@@ -177,7 +183,7 @@ namespace Please2.ViewModels
             // TODO Clear the ViewModels
         }
 
-        public static T GetViewModelInstance<T>() where T : class
+        public static T GetServiceInstance<T>() where T : class
         {
             if (!SimpleIoc.Default.IsRegistered<T>())
             {

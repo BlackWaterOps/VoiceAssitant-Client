@@ -63,11 +63,6 @@ namespace Please2.ViewModels
             }
         }
 
-        public NotificationsViewModel()
-        {
-            
-        }
-
         public void LoadNotifications()
         {
             LoadReminders();

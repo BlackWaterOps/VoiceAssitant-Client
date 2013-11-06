@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class FlightsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -49,7 +50,7 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        public FlightsViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public FlightsViewModel(INavigationService navigationService, IPlexiService pleaseService)
         {
             this.navigationService = navigationService;
         }

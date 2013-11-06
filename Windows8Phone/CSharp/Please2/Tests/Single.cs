@@ -10,8 +10,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
-using Please2.Util;
 using Please2.ViewModels;
+
+using Plexi.Models;
 
 namespace Please2.Tests
 {
@@ -160,7 +161,7 @@ namespace Please2.Tests
 
             var test = "{\"show\":{\"simple\":{\"text\":\"Facebook stock is trading at $49.19, down 2.17%\"},\"structured\":{\"item\":{\"opening_price\":50.46,\"low_price\":49.06,\"P/E Ratio\":227.51,\"share_price\":49.19,\"stock_exchange\":\"NasdaqNM\",\"trade_volume\":\"48.20 million\",\"52_week_high\":51.6,\"average_trade_volume\":\"70.12 million\",\"pe\":0.221,\"high_price\":50.72,\"share_price_change\":-1.09,\"market_cap\":\"119.80 billion\",\"5_day_moving_average\":43.542,\"symbol\":\"FB\",\"share_price_change_percent\":2.17,\"name\":\"Facebook\",\"yield\":\"N/A\",\"52_week_low\":18.8,\"share_price_direction\":\"down\"},\"template\":\"simple:stock\"}},\"speak\":\"Facebook stock is trading at $49.19, down 2.17%\"}";
 
-            var actor = JsonConvert.DeserializeObject<Please2.Models.ActorModel>(test);
+            var actor = JsonConvert.DeserializeObject<ActorModel>(test);
 
             var show = actor.show;
 

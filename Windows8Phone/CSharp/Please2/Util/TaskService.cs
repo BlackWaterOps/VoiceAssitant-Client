@@ -16,9 +16,9 @@ using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Please2.Models;
 using Please2.ViewModels;
 
+using Plexi.Models;
 namespace Please2.Util
 {
     class TaskService : ITaskService
@@ -53,7 +53,7 @@ namespace Please2.Util
 
         public TaskService()
         {
-            navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
+            navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
         }
 
         public void ComposeEmail(Dictionary<string, object> payload)
@@ -322,7 +322,7 @@ namespace Please2.Util
         {
             Debug.WriteLine("show contact list. Count " + contacts.Count);
 
-            var listView = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+            var listView = ViewModelLocator.GetServiceInstance<ListViewModel>();
 
             //set data
             listView.ListResults = contacts.ToList<object>();

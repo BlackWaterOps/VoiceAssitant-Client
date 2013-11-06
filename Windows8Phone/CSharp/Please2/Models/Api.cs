@@ -37,7 +37,7 @@ namespace Please2.Models
     {
         public object payload { get; set; }
         public string type { get; set; }
-        public Newtonsoft.Json.Linq.JArray candidates;
+        public JArray candidates;
         public Dictionary<string, object> device_info { get; set; }
     }
 

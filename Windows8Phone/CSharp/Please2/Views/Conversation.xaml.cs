@@ -48,9 +48,12 @@ namespace Please2.Views
             if (vm.DialogList.Count > 1)
             {
                 base.AddCancelButton();
-            }
+            }           
+        }
 
-            ScrollTo();            
+        private void Conversation_Loaded(object sender, RoutedEventArgs e)
+        {
+            ScrollTo();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -93,8 +96,6 @@ namespace Please2.Views
 
             if (enumerable.Count() > 0 && index > 0)
             {
-                Debug.WriteLine("scroll to");
-
                 var scrollViewer = enumerable.Single();
 
                 scrollViewer.ScrollToVerticalOffset(index);

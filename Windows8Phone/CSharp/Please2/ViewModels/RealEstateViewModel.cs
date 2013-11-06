@@ -12,11 +12,12 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class RealEstateViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
-        private string templateName = "realestate";
+        private string templateName = "real_estate";
 
         private List<RealEstateListing> listings;
         public List<RealEstateListing> Listings
@@ -44,7 +45,7 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        public RealEstateViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public RealEstateViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
 
@@ -90,7 +91,7 @@ namespace Please2.ViewModels
 
             if (templates[template] != null)
             {
-                var vm = ViewModelLocator.GetViewModelInstance<DetailsViewModel>();
+                var vm = ViewModelLocator.GetServiceInstance<DetailsViewModel>();
 
                 vm.CurrentItem = model;
                 isSet = true;

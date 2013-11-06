@@ -12,8 +12,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
-using Please2.Util;
 using Please2.ViewModels;
+
+using Plexi.Models;
 
 namespace Please2.Tests
 {
@@ -166,7 +167,7 @@ namespace Please2.Tests
         // hijack ListViewModel's method to reduce redundant code
         private IEnumerable<object> CreateTypedList(string name, object items)
         {
-            var vm = ViewModelLocator.GetViewModelInstance<ListViewModel>();
+            var vm = ViewModelLocator.GetServiceInstance<ListViewModel>();
 
             return vm.CreateTypedList(name, items);
         }

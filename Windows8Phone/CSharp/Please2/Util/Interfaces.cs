@@ -9,6 +9,7 @@ using Microsoft.Phone.UserData;
 
 using Please2.Models;
 
+using Plexi.Models;
 namespace Please2.Util
 {
     public interface INavigationService
@@ -47,7 +48,7 @@ namespace Please2.Util
 
         bool isRecording { get; }
     }
-
+    /*
     public interface IPleaseService
     { 
         string OriginalQuery { get; }
@@ -60,7 +61,7 @@ namespace Please2.Util
 
         void Choice(ChoiceModel choice);
     }
-
+    */
     public interface IViewModel
     {
         Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured);

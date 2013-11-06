@@ -17,7 +17,9 @@ using Microsoft.Phone.Shell;
 
 using Windows.Foundation;
 using Windows.Phone.Speech.Recognition;
-using Windows.Phone.Speech.Synthesis; 
+using Windows.Phone.Speech.Synthesis;
+
+using LinqToVisualTree;
 
 using Newtonsoft.Json;
 
@@ -28,13 +30,12 @@ using Please2.Models;
 using Please2.Util;
 using Please2.ViewModels;
 
-using LinqToVisualTree;
-
+using Plexi;
 namespace Please2.Views
 {
     public class ViewBase : PhoneApplicationPage, IDialogService
     {
-        private IPleaseService pleaseService;
+        private IPlexiService plexiService;
 
         private ISpeechService speechService;
 
@@ -56,14 +57,14 @@ namespace Please2.Views
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
 
                 // SystemTray.ProgressIndicator.IsIndeterminate = true;
-                if (pleaseService == null)
+                if (plexiService == null)
                 {
-                    pleaseService = ViewModelLocator.GetViewModelInstance<IPleaseService>();
+                    plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
                 }
 
                 if (speechService == null)
                 {
-                    speechService = ViewModelLocator.GetViewModelInstance<ISpeechService>();
+                    speechService = ViewModelLocator.GetServiceInstance<ISpeechService>();
                 }
 
                 CreateApplicationBar();
@@ -192,7 +193,7 @@ namespace Please2.Views
 
         protected async void Microphone_Click(object sender, EventArgs e)
         {
-            pleaseService.ResetTimer();
+            plexiService.ResetTimer();
 
             if (speechService.isRecording == false)
             {
@@ -214,9 +215,9 @@ namespace Please2.Views
         {
             speechService.CancelSpeak();
 
-            pleaseService.ClearContext();
+            plexiService.ClearContext();
 
-            var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+            var vm = ViewModelLocator.GetServiceInstance<ConversationViewModel>();
 
             vm.ClearDialog();
 
@@ -231,7 +232,7 @@ namespace Please2.Views
         {
             try
             {
-                var vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
+                var vm = ViewModelLocator.GetServiceInstance<ConversationViewModel>();
 
                 if (Array.IndexOf(cancelCommands, query.Trim().ToLower()) != -1)
                 {
@@ -243,7 +244,7 @@ namespace Please2.Views
                 vm.AddDialog("user", query);
 
                 // send message to pleaseService to start the api adventure!!
-                pleaseService.Query(query);
+                plexiService.Query(query);
             }
             catch (Exception err)
             {
@@ -308,31 +309,7 @@ namespace Please2.Views
 
                         var deviceHeight =  App.Current.Host.Content.ActualHeight;
                         var deviceWidth = App.Current.Host.Content.ActualWidth;
-                        /*
-                        var loadingScreen = App.Current.Resources["LoadingScreen"];
-
-                        if (loadingScreen != null)
-                        {
-                            canvas = (loadingScreen as Canvas);
-
-                            canvas.Width = deviceWidth;
-                            canvas.Height = deviceHeight;
-
-                            var border = canvas.FindName("LoadingScreenBorder") as Border;
-                            
-                            var stack = canvas.FindName("LoadingScreenStackPanel") as StackPanel;
-
-                            if (stack != null)
-                            {
-                                stack.SetValue(Canvas.TopProperty, (deviceHeight / 2));
-                            }
-
-                            layoutRoot.Children.Add(canvas);
-
-                            VisualStateManager.GoToState(this, "Enabled", true);
-                        }
-                        */
-                       
+                        
                         var background = new SolidColorBrush();
                         background.Color = Colors.Black;
 

@@ -15,6 +15,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class ConversationViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -39,15 +40,15 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        IPleaseService pleaseService;
+        IPlexiService plexiService;
 
         ISpeechService speechService;
 
-        public ConversationViewModel(INavigationService navigationService, IPleaseService pleaseService, ISpeechService speechService)
+        public ConversationViewModel(INavigationService navigationService, IPlexiService plexiService, ISpeechService speechService)
         {
             this.navigationService = navigationService;
 
-            this.pleaseService = pleaseService;
+            this.plexiService = plexiService;
 
             this.speechService = speechService;
 
@@ -56,6 +57,18 @@ namespace Please2.ViewModels
             if (DialogList == null)
             {
                 DialogList = new ObservableCollection<DialogModel>();
+            }
+
+            //AddDummyDialog(15);
+        }
+
+        private void AddDummyDialog(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                string sender = (i % 2 == 0) ? "user" : "please";
+
+                AddDialog(sender, " dummy message " + i);
             }
         }
 
@@ -112,7 +125,6 @@ namespace Please2.ViewModels
 
         private void Show(ShowMessage message)
         {
-            Debug.WriteLine("viewmodel catch show message");
             var text = message.Text;
             var link = message.Link;
 

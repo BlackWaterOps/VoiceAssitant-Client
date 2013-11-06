@@ -19,6 +19,10 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
+using Plexi.Models;
+using Plexi.Util;
+
 namespace Please2.ViewModels
 {
     public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -92,7 +96,8 @@ namespace Please2.ViewModels
         }
 
         INavigationService navigationService;
-        IPleaseService pleaseService;
+        //IPleaseService pleaseService;
+        IPlexiService plexiService;
 
         public RelayCommand<EventModel> EventItemSelection { get; set; }
         public RelayCommand<MoviesModel> MovieItemSelection { get; set; }
@@ -104,10 +109,12 @@ namespace Please2.ViewModels
         public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
         public RelayCommand<SearchModel> SearchItemSelection { get; set; }
 
-        public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        //public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public ListViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
-            this.pleaseService = pleaseService;
+            //this.pleaseService = pleaseService;
+            this.plexiService = plexiService;
 
             AttachEventHandlers();
         }
@@ -136,7 +143,8 @@ namespace Please2.ViewModels
         public void ChoiceItemSelected(ChoiceModel choice)
         {
             // pass selection to please service to process and send to auditor
-            pleaseService.Choice(choice);   
+            //pleaseService.Choice(choice); 
+            plexiService.Choice(choice);
         }
 
         public void EventItemSelected(EventModel e)
@@ -254,7 +262,7 @@ namespace Please2.ViewModels
 
             if (templates[template] != null)
             {
-                var vm = ViewModelLocator.GetViewModelInstance<DetailsViewModel>();
+                var vm = ViewModelLocator.GetServiceInstance<DetailsViewModel>();
 
                 vm.CurrentItem = model;
                 isSet = true;

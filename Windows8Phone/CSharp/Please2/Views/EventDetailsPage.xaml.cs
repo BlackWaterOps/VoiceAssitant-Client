@@ -17,8 +17,8 @@ using Microsoft.Phone.Tasks;
 using Newtonsoft.Json;
 
 using Please2.Models;
-using Please2.Util;
 
+using Plexi.Util;
 namespace Please2.Views
 {
     public partial class EventDetailsPage : PhoneApplicationPage
@@ -154,7 +154,7 @@ namespace Please2.Views
             {
                 var fullMap = new MapsDirectionsTask();
 
-                var currPos = Please2.Util.Location.CurrentPosition;
+                var currPos = LocationTracker.CurrentPosition;
 
                 var startGeo = new GeoCoordinate((double)currPos["latitude"], (double)currPos["longitude"]);
 

@@ -270,7 +270,7 @@ namespace Please2.Util
 
             var item = (MainMenuModel)value;
 
-            var vm = ViewModelLocator.GetViewModelInstance<MainMenuViewModel>();
+            var vm = ViewModelLocator.GetServiceInstance<MainMenuViewModel>();
 
             var items = vm.MainMenu;
             var gridMargin = vm.Margin;

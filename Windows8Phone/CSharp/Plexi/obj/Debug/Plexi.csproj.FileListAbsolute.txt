@@ -1,0 +1,7 @@
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\obj\Debug\Plexi.csprojResolveAssemblyReference.cache
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\Bin\Debug\PlexiCore.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\Bin\Debug\PlexiCore.pdb
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\Bin\Debug\Newtonsoft.Json.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\Bin\Debug\Newtonsoft.Json.xml
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\obj\Debug\PlexiCore.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\Plexi\obj\Debug\PlexiCore.pdb

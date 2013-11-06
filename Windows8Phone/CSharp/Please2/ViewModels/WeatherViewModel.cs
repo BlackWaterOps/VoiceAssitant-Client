@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class WeatherViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -48,13 +49,13 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        IPleaseService pleaseService;
+        IPlexiService plexiService;
      
-        public WeatherViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public WeatherViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
 
-            this.pleaseService = pleaseService;            
+            this.plexiService = plexiService;            
         }
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
@@ -91,7 +92,7 @@ namespace Please2.ViewModels
         public void GetDefaultForecast()
         {
             // TODO: get city/state from device location data 
-            pleaseService.Query("weather today for scottsdale arizona");
+            plexiService.Query("weather today for scottsdale arizona");
         }
     }
 }

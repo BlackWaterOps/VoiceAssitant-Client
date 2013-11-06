@@ -67,11 +67,6 @@ namespace Please2.ViewModels
             }
         }
 
-        public GeopoliticsViewModel(INavigationService naivgationService, IPleaseService pleaseService)
-        {
-
-        }
-
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
             var ret = new Dictionary<string, object>();

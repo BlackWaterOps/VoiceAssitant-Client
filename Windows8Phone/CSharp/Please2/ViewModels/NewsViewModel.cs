@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class NewsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -24,11 +25,12 @@ namespace Please2.ViewModels
             }
         }
 
-        private IPleaseService pleaseService;
+        //private IPleaseService pleaseService;
+        private IPlexiService plexiService;
 
-        public NewsViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public NewsViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
-            this.pleaseService = pleaseService;
+            this.plexiService = plexiService;
         }
         
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
@@ -39,16 +41,16 @@ namespace Please2.ViewModels
             {
                 var page = ViewModelLocator.SingleResultPageUri;
 
-                var news = ViewModelLocator.GetViewModelInstance<NewsViewModel>();
+                var news = ViewModelLocator.GetServiceInstance<NewsViewModel>();
 
                 stories = (structured["items"] as JArray).ToObject<List<NewsModel>>();
 
-                var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+                var singleViewModel = ViewModelLocator.GetServiceInstance<SingleViewModel>();
 
                 // return title, subtitle, and page back to service so we can be decoupled from singleviewmodel
 
                 ret.Add("title", "news results");
-                ret.Add("subtitle", String.Format("news search on \"{0}\"", this.pleaseService.OriginalQuery));
+                ret.Add("subtitle", String.Format("news search on \"{0}\"", this.plexiService.OriginalQuery));
                 ret.Add("page", ViewModelLocator.SingleResultPageUri);
             }
 

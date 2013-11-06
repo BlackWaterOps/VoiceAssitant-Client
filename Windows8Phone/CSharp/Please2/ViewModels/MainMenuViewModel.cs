@@ -18,6 +18,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
 namespace Please2.ViewModels
 {
     public class MainMenuViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -59,7 +60,7 @@ namespace Please2.ViewModels
 
         private INavigationService navigationService;
 
-        public MainMenuViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public MainMenuViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
 
@@ -105,7 +106,7 @@ namespace Please2.ViewModels
         {
             var templates = ViewModelLocator.SingleTemplates;
 
-            var singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
+            var singleViewModel = ViewModelLocator.GetServiceInstance<SingleViewModel>();
 
             Uri page = ViewModelLocator.SingleResultPageUri;
 
@@ -116,7 +117,7 @@ namespace Please2.ViewModels
                     break;
 
                 case "weather":
-                    var weather = App.GetViewModelInstance<WeatherViewModel>();
+                    var weather = ViewModelLocator.GetServiceInstance<WeatherViewModel>();
                     weather.GetDefaultForecast();
                     return;
                     break;
@@ -124,7 +125,7 @@ namespace Please2.ViewModels
                 case "notifications":
                     page = ViewModelLocator.NotificationsPageUri;
 
-                    var notifications = App.GetViewModelInstance<NotificationsViewModel>();
+                    var notifications = ViewModelLocator.GetServiceInstance<NotificationsViewModel>();
 
                     notifications.LoadNotifications();
                     break;

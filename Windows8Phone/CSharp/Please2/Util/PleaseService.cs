@@ -26,12 +26,13 @@ using Please2.Models;
 using Please2.Resources;
 using Please2.ViewModels;
 
+// TODO: remove dependencies on mvvm light
 namespace Please2.Util
 {
     public class PleaseService : IPleaseService
     {
         // used by auditor
-        private string[] auditorStates = new string[] { "inprogress", "choice" };
+        private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
 
         // used by BuildDateTime
         private List<Tuple<string, string>> datetimes = new List<Tuple<string, string>>();
@@ -223,6 +224,14 @@ namespace Please2.Util
             {
                 PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
 
+                Show(response.show, response.speak);
+
+                if (!frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
+                {
+                    this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                }
+
+                /*
                 if (frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
                 {
                     Show(response.show, response.speak);
@@ -239,6 +248,7 @@ namespace Please2.Util
                     // navigate to conversation.xaml
                     this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
                 }
+                */
             }
             catch (Exception err)
             {
@@ -490,7 +500,9 @@ namespace Please2.Util
                 {
                     string state = response.status.Replace(" ", "");
 
-                    if (this.auditorStates.Contains(state))
+                    string crossCheck = state.Split(':')[0];
+
+                    if (this.auditorStates.Contains(crossCheck))
                     {
                         tempContext = response;
                         contextTimer.Start();

@@ -91,8 +91,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MainPage2.xaml.cs">
-      <DependentUpon>MainPage2.xaml</DependentUpon>
+    <Compile Include="MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
     <Resource Include="Assets\Fonts\forcasticons.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -101,7 +101,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Models\AltFuelModel.cs" />
-    <Compile Include="Models\Api.cs" />
     <Compile Include="Models\DictionaryModel.cs" />
     <Compile Include="Models\EventModel.cs" />
     <Compile Include="Models\FitbitFoodModel.cs" />
@@ -122,7 +121,7 @@
     <Compile Include="Tests\Single.cs" />
     <Compile Include="Util\Interfaces.cs" />
     <Compile Include="Util\NavigationService.cs" />
-    <Compile Include="Util\PleaseService.cs" />
+    <Compile Include="Util\PlexiHandler.cs" />
     <Compile Include="Util\SpeechService.cs" />
     <Compile Include="Util\TaskService.cs" />
     <Compile Include="ViewModels\DetailsViewModel.cs" />
@@ -138,7 +137,6 @@
     <Compile Include="ViewModels\RealEstateViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />
-    <Compile Include="ViewModels\TimeViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Views\AddPreferencePage.xaml.cs">
       <DependentUpon>AddPreferencePage.xaml</DependentUpon>
@@ -162,7 +160,6 @@
       <DependentUpon>EventDetailsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\DialogModel.cs" />
-    <Compile Include="Models\StateModel.cs" />
     <Compile Include="Views\Image.xaml.cs">
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
@@ -197,7 +194,6 @@
     <Compile Include="Util\TemplateSelector.cs" />
     <Compile Include="ViewModels\ConversationViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\NotificationsViewModel.cs" />
     <Compile Include="ViewModels\WeatherViewModel.cs" />
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
@@ -262,9 +258,6 @@
     <Resource Include="Assets\Fonts\Roboto-ThinItalic.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Views\PreferencesPage.xaml.cs">
@@ -276,10 +269,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Util\Datetime.cs" />
-    <Compile Include="Util\Extensions.cs" />
-    <Compile Include="Util\Location.cs" />
-    <Compile Include="Util\Request.cs" />
     <Compile Include="ViewModels\PreferencesViewModel.cs" />
     <Resource Include="Assets\Fonts\FontAwesome.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -298,7 +287,7 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainPage2.xaml">
+    <Page Include="MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -331,10 +320,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EventDetailsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -435,13 +420,13 @@
     <Reference Include="Coding4Fun.Toolkit.Controls">
       <HintPath>..\packages\Coding4Fun.Toolkit.Controls.2.0.7\lib\windowsphone8\Coding4Fun.Toolkit.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WP8, Version=4.1.27.22645, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GalaSoft.MvvmLight.Extras.WP8, Version=4.2.30.23483, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.1\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.WP8, Version=4.1.27.22645, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GalaSoft.MvvmLight.WP8, Version=4.2.30.23483, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.1\lib\wp8\GalaSoft.MvvmLight.WP8.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.WP8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Live.Controls, Version=5.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Controls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
@@ -451,16 +436,17 @@
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.1\lib\wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\portable-net45+wp80+win8\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\portable-net45+wp80+win8\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Sparrow.Chart.WP8.45">
       <HintPath>..\packages\Sparrow.Chart.WP8.13.1.0.113\lib\windowsphone8\Sparrow.Chart.WP8.45.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=3.9.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.4.1.27.1\lib\wp8\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="WPControls">
       <HintPath>..\packages\WPControls.1.5.2\lib\wp8\WPControls.dll</HintPath>
@@ -468,6 +454,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Plexi\Plexi.csproj">
+      <Project>{B7493D43-DE39-40B3-ADB8-772385B03B5F}</Project>
+      <Name>Plexi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

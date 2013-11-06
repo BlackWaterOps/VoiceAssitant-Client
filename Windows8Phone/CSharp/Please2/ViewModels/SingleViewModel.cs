@@ -16,6 +16,8 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
+using Plexi;
+using Plexi.Util;
 namespace Please2.ViewModels
 {
     public class SingleViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -66,7 +68,7 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        public SingleViewModel(INavigationService navigationService, IPleaseService pleaseService)
+        public SingleViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
         }

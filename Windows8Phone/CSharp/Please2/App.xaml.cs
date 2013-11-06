@@ -21,23 +21,6 @@ namespace Please2
 {
     public partial class App : Application
     {
-        // convenience shortcut
-        //public static PhoneApplicationPage currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
-
-        /// <summary>
-        /// Provides easy access View Models in SimpleIoc.
-        /// </summary>
-        /// <returns>The ViewModel associated with Type.</returns>
-        public static T GetViewModelInstance<T>() where T : class
-        {
-            if (!SimpleIoc.Default.IsRegistered<T>())
-            {
-                SimpleIoc.Default.Register<T>();
-            }
-
-            return SimpleIoc.Default.GetInstance<T>();
-        }
-
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>

@@ -72,7 +72,5 @@ namespace Please2.Util
 
             return false;
         }
-
-
     }
 }

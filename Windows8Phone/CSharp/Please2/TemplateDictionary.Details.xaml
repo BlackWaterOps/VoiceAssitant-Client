@@ -57,7 +57,7 @@
                 <StackPanel>
                     <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
                         
-                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
+                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}" CommandParameter="events"/>
                 </StackPanel>
             </phone:PivotItem>
            
@@ -66,12 +66,13 @@
 
     <!-- Real Estate -->
     <DataTemplate x:Key="real_estate">
-        <phone:Pivot DataContext="{Binding RealEstateViewModel, Source={StaticResource Locator}}" Title="{Binding CurrentItem.title}" x:Name="ListingDetailsPivotView">
+        <phone:Pivot DataContext="{Binding DetailsViewModel, Source={StaticResource Locator}}" Title="{Binding CurrentItem.title}" x:Name="ListingDetailsPivotView">
             <phone:PivotItem Header="Details" x:Name="DetailsPivotPanel">
                 <ScrollViewer Background="White" Foreground="Black" Margin="10" Padding="10">
                     <StackPanel HorizontalAlignment="Stretch">
-                        <Image Source="{Binding CurrentItem.image}" MaxHeight="250"/>
-
+                        <!--
+                        <Image Source="{Binding CurrentItem.images[0]}" MaxHeight="250"/>
+                        -->
                         <Grid Margin="0,20,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*"/>
@@ -86,32 +87,32 @@
 
                             <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
                                 <TextBlock Text="Asking: "/>
-                                <TextBlock Text="{Binding attributes.price_display}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.price, StringFormat='{0:c}'}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
                                 <TextBlock Text="Bedrooms: "/>
-                                <TextBlock Text="{Binding attributes.bedrooms}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.bedrooms}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
                                 <TextBlock Text="Bathrooms: "/>
-                                <TextBlock Text="{Binding attributes.bathrooms}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.bathrooms}"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
                                 <TextBlock Text="Amenities: "/>
-                                <TextBlock Text="{Binding attributes.amenities}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.amenities}"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Visibility="{Binding CurrentItem.attributes.pets_allowed, Converter={StaticResource NullToVisibilityConverter}}">
                                 <TextBlock Text="Pets Allowed: "/>
-                                <TextBlock Text="{Binding attributes.pets_allowed}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.pets_allowed}"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal">
+                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Visibility="Collapsed">
                                 <TextBlock Text="Pets Allowed: "/>
-                                <TextBlock Text="{Binding attributes.pets_allowed}"/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.pets_allowed}"/>
                             </StackPanel>
                         </Grid>
                         <!--
@@ -125,7 +126,6 @@
                             <TextBlock x:Name="ListingLocation" Grid.Column="1" Text="{Binding CurrentItem.location.address}" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                       
-                        
                         <Grid Margin="0,20,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="75"/>
@@ -144,7 +144,7 @@
                 </ScrollViewer>
             </phone:PivotItem>
 
-            <phone:PivotItem Header="Directions" x:Name="DirectionsPivotPanel">
+            <phone:PivotItem Header="Location" x:Name="DirectionsPivotPanel">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Loaded">
                         <command:EventToCommand Command="{Binding ListingDirectionsLoaded}"/>
@@ -154,7 +154,7 @@
                 <StackPanel>
                     <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
 
-                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
+                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}" CommandParameter="real_estate"/>
                 </StackPanel>
             </phone:PivotItem>
 
@@ -174,7 +174,7 @@
                 <StackPanel>
                     <map:Map x:Name="FuelMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
 
-                    <Button x:Name="FuelMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}"/>
+                    <Button x:Name="FuelMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}" CommandParameter="fuel"/>
                 </StackPanel>
             </phone:PivotItem>
         </phone:Pivot>

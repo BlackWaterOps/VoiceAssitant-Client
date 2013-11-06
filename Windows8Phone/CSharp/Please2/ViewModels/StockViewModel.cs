@@ -38,11 +38,6 @@ namespace Please2.ViewModels
             set { directionSymbol = value; }
         }
 
-        public StockViewModel(INavigationService navigationService, IPleaseService pleaseService)
-        {
-
-        }
-
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
             var ret = new Dictionary<string, object>();
