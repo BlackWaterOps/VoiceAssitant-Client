@@ -48,6 +48,25 @@ namespace Please2.Util
             plexiService.onAct += ActorHandler;
         }
 
+        private void Show(ShowModel model, string speak = "")
+        {
+            Dictionary<string, object> simple = model.simple;
+
+            if (simple.ContainsKey("text"))
+            {
+                string show = (string)simple["text"];
+
+                string link = null;
+
+                if (simple.ContainsKey("link"))
+                {
+                    link = (string)simple["link"];
+                }
+
+                Messenger.Default.Send(new ShowMessage(show, speak, link));
+            }
+        }
+
         private void ChoiceHandler(object sender, ChoiceEventArgs e)
         {
             Dictionary<string, object> simple = e.results.show.simple;
@@ -62,20 +81,8 @@ namespace Please2.Util
             vm.Template = (DataTemplate)templates["choice"];
             vm.Title = (string)simple["text"];
 
-            if (simple.ContainsKey("text"))
-            {
-                string show = (string)simple["text"];
-
-                string link = null;
-
-                if (simple.ContainsKey("link"))
-                {
-                    link = (string)simple["link"];
-                }
-
-                Messenger.Default.Send(new ShowMessage(show, e.results.speak, link));
-            }
-
+            Show(e.results.show, e.results.speak);
+           
             navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
         }
 
@@ -112,6 +119,8 @@ namespace Please2.Util
         private void ActorHandler(object sender, ActorEventArgs e)
         {
             ActorModel response = e.actor;
+
+            Show(response.show, response.speak);
 
             Uri page = ViewModelLocator.ConversationPageUri;
 

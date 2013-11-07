@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.IsolatedStorage; // remove after beta is over
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -84,6 +85,8 @@ namespace Please2.Views
             CreatePageBackground();
             
             AddDebugger();
+
+            //AddVerifyPrompt();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -364,8 +367,105 @@ namespace Please2.Views
             }
         }
 
+        #region beta verify prompt
+        private void AddVerifyPrompt()
+        {
+            // check database if we already have credentials
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            if (!settings.Contains("StremorBetaTestKey"))
+            {
+                // show verify control if no credentials are found
+                var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+                var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").Single();
+
+                if (layoutRoot != null)
+                {
+                    VerifyPrompt verifyPrompt = new VerifyPrompt();
+
+                    var deviceHeight = App.Current.Host.Content.ActualHeight;
+                    var deviceWidth = App.Current.Host.Content.ActualWidth;
+
+                    var colSpan = layoutRoot.ColumnDefinitions.Count;
+                    var rowSpan = layoutRoot.RowDefinitions.Count;
+
+                    verifyPrompt.OverlayBorder.Height = deviceHeight;
+                    verifyPrompt.OverlayBorder.Width = deviceWidth;
+
+                    if (colSpan > 0)
+                    {
+                        verifyPrompt.OverlayBorder.SetValue(Grid.ColumnSpanProperty, colSpan);
+                    }
+
+                    if (rowSpan > 0)
+                    {
+                        verifyPrompt.OverlayBorder.SetValue(Grid.RowSpanProperty, rowSpan);
+                    }
+
+                    layoutRoot.Children.Add(verifyPrompt);
+
+                    verifyPrompt.Show();
+
+                    verifyPrompt.Closed += (s, e) => 
+                        { 
+                            // save crendentials to database
+                            layoutRoot.Children.Remove(verifyPrompt); 
+                        };
+
+                    /*
+                    var colSpan = layoutRoot.ColumnDefinitions.Count;
+                    var rowSpan = layoutRoot.RowDefinitions.Count;
+
+                    var deviceHeight = App.Current.Host.Content.ActualHeight;
+                    var deviceWidth = App.Current.Host.Content.ActualWidth;
+
+                    var background = new SolidColorBrush();
+                    background.Color = Colors.Black;
+
+                    canvas = new Canvas();
+                    canvas.Name = "BetaVerify";
+                    canvas.Height = deviceHeight;
+                    canvas.Width = deviceWidth;
+                    canvas.Background = background;
+                    canvas.Opacity = .75;
+
+                    if (colSpan > 0)
+                    {
+                        canvas.SetValue(Grid.ColumnSpanProperty, colSpan);
+                    }
+
+                    if (rowSpan > 0)
+                    {
+                        canvas.SetValue(Grid.RowSpanProperty, rowSpan);
+                    }
+
+                    VerifyPrompt verifyPrompt = new VerifyPrompt();
+
+                    try
+                    {
+                        canvas.Children.Add(verifyPrompt);
+
+                        layoutRoot.Children.Add(canvas);
+
+                        verifyPrompt.OverlayBorder.
+
+                        verifyPrompt.Show();
+
+                        verifyPrompt.Closed += (s, e) => { layoutRoot.Children.Remove(canvas); };
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                    }
+                    */
+                }
+            }
+
+        }
+        #endregion
+
         #region debug helpers
-        protected void AddDebugger()
+        private void AddDebugger()
         {
             if (debugger == null)
             {
@@ -420,7 +520,7 @@ namespace Please2.Views
             }
         }
 
-        protected void MenuItem_Click(object sender, EventArgs e)
+        private void MenuItem_Click(object sender, EventArgs e)
         {
             var currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
 
@@ -445,7 +545,7 @@ namespace Please2.Views
             }
         }
         
-        protected void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var input = sender as TextBox; 
 

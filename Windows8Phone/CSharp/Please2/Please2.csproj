@@ -185,6 +185,9 @@
     <Compile Include="Views\Single.xaml.cs">
       <DependentUpon>Single.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VerifyPrompt.xaml.cs">
+      <DependentUpon>VerifyPrompt.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ViewBase.cs" />
     <Compile Include="Views\Reminder.xaml.cs">
       <DependentUpon>Reminder.xaml</DependentUpon>
@@ -359,6 +362,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Single.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VerifyPrompt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
