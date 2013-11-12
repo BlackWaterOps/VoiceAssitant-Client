@@ -185,7 +185,7 @@
     <Compile Include="Views\Single.xaml.cs">
       <DependentUpon>Single.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VerifyPrompt.xaml.cs">
+    <Compile Include="Controls\VerifyPrompt.xaml.cs">
       <DependentUpon>VerifyPrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ViewBase.cs" />
@@ -365,7 +365,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\VerifyPrompt.xaml">
+    <Page Include="Controls\VerifyPrompt.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

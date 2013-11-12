@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 
+using Please2.Controls;
 using Please2.Models;
 using Please2.Util;
 using Please2.ViewModels;
@@ -86,7 +87,7 @@ namespace Please2.Views
             
             AddDebugger();
 
-            //AddVerifyPrompt();
+            AddVerifyPrompt();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -389,22 +390,18 @@ namespace Please2.Views
                     var colSpan = layoutRoot.ColumnDefinitions.Count;
                     var rowSpan = layoutRoot.RowDefinitions.Count;
 
-                    verifyPrompt.OverlayBorder.Height = deviceHeight;
-                    verifyPrompt.OverlayBorder.Width = deviceWidth;
+                    verifyPrompt.Height = deviceHeight;
+                    verifyPrompt.Width = deviceWidth;
 
                     if (colSpan > 0)
                     {
-                        verifyPrompt.OverlayBorder.SetValue(Grid.ColumnSpanProperty, colSpan);
+                        verifyPrompt.SetValue(Grid.ColumnSpanProperty, colSpan);
                     }
 
                     if (rowSpan > 0)
                     {
-                        verifyPrompt.OverlayBorder.SetValue(Grid.RowSpanProperty, rowSpan);
+                        verifyPrompt.SetValue(Grid.RowSpanProperty, rowSpan);
                     }
-
-                    layoutRoot.Children.Add(verifyPrompt);
-
-                    verifyPrompt.Show();
 
                     verifyPrompt.Closed += (s, e) => 
                         { 
@@ -412,6 +409,7 @@ namespace Please2.Views
                             layoutRoot.Children.Remove(verifyPrompt); 
                         };
 
+                    layoutRoot.Children.Add(verifyPrompt);
                     /*
                     var colSpan = layoutRoot.ColumnDefinitions.Count;
                     var rowSpan = layoutRoot.RowDefinitions.Count;
