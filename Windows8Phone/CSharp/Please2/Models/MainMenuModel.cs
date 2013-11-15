@@ -17,6 +17,6 @@ namespace Please2.Models
         public bool isIntent { get; set; }
 
         // optional
-        public string detail { get; set; }
+        public object detail { get; set; }
     }
 }

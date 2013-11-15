@@ -16,5 +16,24 @@ namespace Please2.Views
         {
             InitializeComponent();
         }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            SystemTray.ProgressIndicator = new ProgressIndicator();
+
+            SystemTray.ProgressIndicator.IsIndeterminate = true;
+
+            SystemTray.ProgressIndicator.IsVisible = true;
+        }
+
+        private void WebBrowser_LoadCompleted(object sender, NavigationEventArgs e)
+        {
+            if (SystemTray.ProgressIndicator != null)
+            {
+                SystemTray.ProgressIndicator.IsVisible = false;
+            }
+        }
     }
 }

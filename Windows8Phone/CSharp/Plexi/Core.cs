@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Notification;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.UserData;
 
@@ -39,22 +40,24 @@ namespace Plexi
 
         Task<Dictionary<string, object>> GetDeviceInfo();
 
-        event EventHandler<ShowEventArgs> onShow;
+        event EventHandler<ShowEventArgs> Show;
 
-        event EventHandler<ActorEventArgs> onAct;
+        event EventHandler<ActorEventArgs> Act;
 
-        event EventHandler<ChoiceEventArgs> onChoice;
+        event EventHandler<ChoiceEventArgs> Choose;
 
-        event EventHandler<ErrorEventArgs> onError;
+        event EventHandler<ErrorEventArgs> Error;
 
-        event EventHandler<ProgressEventArgs> onProgress;
+        event EventHandler<ProgressEventArgs> InProgress;
+
+        event EventHandler<NotificationEventArgs> PushNotificationReceived;
     }
 
     public class Core : IPlexiService
     {
         private static string CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
 
-        private static string DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
+        private static string DISAMBIGUATOR = String.Format("{0}/disambiguate", CLASSIFIER);
 
         private static string RESPONDER = "http://rez.stremor-apier.appspot.com/v1";
 
@@ -81,9 +84,26 @@ namespace Plexi
 
         public string OriginalQuery { get; private set; }
 
+        public event EventHandler<ShowEventArgs> Show;
+
+        public event EventHandler<ActorEventArgs> Act;
+
+        public event EventHandler<ErrorEventArgs> Error;
+
+        public event EventHandler<ChoiceEventArgs> Choose;
+
+        public event EventHandler<ProgressEventArgs> InProgress;
+
+        public event EventHandler<NotificationEventArgs> PushNotificationReceived;
+
         public Core()
         {
             Debug.WriteLine("plexi core initialized");
+
+            IPushService pushService = new PushService();
+
+            // listen for push notifications
+            pushService.NotificationReceived += PushNotificationReceived;
 
             // listen for Plexi state changes 
             this.currentState.PropertyChanged += OnStateChanged;
@@ -95,16 +115,6 @@ namespace Plexi
                 this.stopWatch = new Stopwatch();
             }
         }
-
-        public event EventHandler<ShowEventArgs> onShow;
-
-        public event EventHandler<ActorEventArgs> onAct;
-
-        public event EventHandler<ErrorEventArgs> onError;
-
-        public event EventHandler<ChoiceEventArgs> onChoice;
-
-        public event EventHandler<ProgressEventArgs> onProgress;
 
         public void Query(string query)
         {
@@ -180,7 +190,7 @@ namespace Plexi
 
                     case "inprogress":
                     case "error":
-                        Show((ResponderModel)currentState.Response);
+                        ShowDialog((ResponderModel)currentState.Response);
                         break;
 
                     case "choice":
@@ -222,7 +232,7 @@ namespace Plexi
 
                 if (simple.ContainsKey("list"))
                 {
-                    EventHandler<ChoiceEventArgs> handler = onChoice;
+                    EventHandler<ChoiceEventArgs> handler = Choose;
 
                     if (handler != null)
                     {
@@ -241,11 +251,11 @@ namespace Plexi
         }
 
         // NOTE: called from inprogress status
-        private void Show(ResponderModel response)
+        private void ShowDialog(ResponderModel response)
         {
             try
             {
-                Show(response.show, response.speak);
+                ShowDialog(response.show, response.speak);
             }
             catch (Exception err)
             {
@@ -254,7 +264,7 @@ namespace Plexi
         }
 
         // NOTE: called from Actor method
-        private void Show(ShowModel showModel, string speak = "")
+        private void ShowDialog(ShowModel showModel, string speak = "")
         {
             if (showModel.simple.ContainsKey("text"))
             {
@@ -265,13 +275,13 @@ namespace Plexi
                 if (showModel.simple.ContainsKey("link"))
                     link = (string)showModel.simple["link"];
 
-                Show("please", speak, show, link);
+                ShowDialog("please", speak, show, link);
             }
         }
 
-        private void Show(string type, string speak = "", string show = null, string link = null)
+        private void ShowDialog(string type, string speak = "", string show = null, string link = null)
         {
-            EventHandler<ShowEventArgs> handler = onShow;
+            EventHandler<ShowEventArgs> handler = Show;
 
             if (handler != null)
             {
@@ -281,7 +291,7 @@ namespace Plexi
 
         private void ErrorMessage(string message)
         {
-            EventHandler<ErrorEventArgs> handler = onError;
+            EventHandler<ErrorEventArgs> handler = Error;
 
             if (handler != null)
             {
@@ -293,7 +303,9 @@ namespace Plexi
         {
             try
             {
-                ClassifierModel classifierResults = await RequestHelper<ClassifierModel>((CLASSIFIER + "?query=" + query), "GET");
+                string endpoint = String.Format("{0}?query={1}", CLASSIFIER, query);
+
+                ClassifierModel classifierResults = await RequestHelper<ClassifierModel>(endpoint, "GET");
 
                 if (classifierResults.error != null)
                 {
@@ -327,7 +339,9 @@ namespace Plexi
 
             try
             {
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(DISAMBIGUATOR + "/active", "POST", postData, true);
+                string endpoint = String.Format("{0}/active", DISAMBIGUATOR);
+
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -358,7 +372,9 @@ namespace Plexi
 
             try
             {
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(DISAMBIGUATOR + "/candidate", "POST", postData, true);
+                string endpoint = String.Format("{0}/candidate", DISAMBIGUATOR);
+
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -394,7 +410,7 @@ namespace Plexi
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message);
+                ErrorMessage(err.Message);
                 return;
             }
 
@@ -407,7 +423,9 @@ namespace Plexi
             Debug.WriteLine("disambig passive");
             Debug.WriteLine(SerializeData(postData, true));
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(DISAMBIGUATOR + "/passive", "POST", postData, true);
+            String endpoint = String.Format("{0}/passive", DISAMBIGUATOR);
+
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -435,7 +453,9 @@ namespace Plexi
             postData.payload = payload;
             postData.type = type;
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(PUD + "/disambiguate", "POST", postData);
+            String endpoint = String.Format("{0}/disambiguate", PUD);
+
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -488,7 +508,9 @@ namespace Plexi
             {
                 this.mainContext = context;
 
-                ResponderModel response = await RequestHelper<ResponderModel>(RESPONDER + "/audit", "POST", context);
+                string endpoint = String.Format("{0}/audit", RESPONDER);
+
+                ResponderModel response = await RequestHelper<ResponderModel>(endpoint, "POST", context);
 
                 if (response.error != null)
                 {
@@ -518,12 +540,6 @@ namespace Plexi
 
         public void Choice(ChoiceModel choice)
         {   
-            /*
-            ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-
-            vm.AddDialog("user", choice.text);
-            */
-
             string field = tempContext.field;
 
             Dictionary<string, object> t = choice.data;
@@ -559,11 +575,11 @@ namespace Plexi
 
             if (actor != null)
             {
-                string endpoint = RESPONDER + "/actors/" + actor;
+                string endpoint = String.Format("{0}/actors/{1}", RESPONDER, actor);
 
                 if (actor.Contains("private:"))
                 {
-                    endpoint = PUD + "/actors/" + actor.Replace("private:", "");
+                    endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
                 }
 
                 ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
@@ -576,10 +592,7 @@ namespace Plexi
                 }
                 else
                 {
-                    // Show(response.show, response.speak);
-                    // ActorResponseHandler(actor, response);
-
-                    EventHandler<ActorEventArgs> handler = onAct;
+                    EventHandler<ActorEventArgs> handler = Act;
 
                     if (handler != null)
                     {
@@ -590,185 +603,13 @@ namespace Plexi
             else
             {
                 // we have no actor, so send responder object to show
-                Show(data);
+                ShowDialog(data);
             }
 
             return;
         }
 
-        /* all these methods belong in the main app
-        private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
-        {
-            try
-            {
-                ViewModelLocator locator = App.Current.Resources["Locator"] as ViewModelLocator;
-
-                PropertyInfo viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
-
-                if (viewmodelProperty == null)
-                {
-                    Debug.WriteLine("pouplateviewmodel: view model " + templateName + " could not be found");
-                    return null;
-                }
-
-                object viewModel = viewmodelProperty.GetValue(locator, null);
-
-                MethodInfo populateMethod = viewModel.GetType().GetMethod("Populate");
-
-                if (populateMethod == null)
-                {
-                    Debug.WriteLine("populateviewmodel: 'Populate' method not implemented in " + templateName);
-                    return null;
-                }
-
-                if (structured.ContainsKey("items") && ((JArray)structured["items"]).Count <= 0)
-                {
-                    Debug.WriteLine("populateviewmodel: items list is emtpy nothing to set");
-                    return null;
-                }
-
-                if (structured.ContainsKey("item") && ((JObject)structured["item"]).Count <= 0)
-                {
-                    Debug.WriteLine("populateviewmodel: item object is emtpy nothing to set");
-                    return null;
-                }
-
-                object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
-
-                return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-                return null;
-            }
-        }
-
-        private Uri LoadSingleResult(Dictionary<string, object> structured)
-        {
-            ResourceDictionary templates = ViewModelLocator.SingleTemplates;
-
-            Uri page = ViewModelLocator.SingleResultPageUri;
-
-            string[] template = (structured["template"] as string).Split(':');
-
-            string type = template[0];
-            string templateName = template[1];
-
-            if (template.Count() > 2)
-            {
-                templateName += ":" + template[2];
-            }
-
-            if (templates[templateName] == null)
-            {
-                Debug.WriteLine("single template not found: " + templateName);
-                return null;
-            }
-
-            SingleViewModel singleViewModel = ViewModelLocator.GetViewModelInstance<SingleViewModel>();
-
-            singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
-
-            Dictionary<string, object> data = PopulateViewModel(template[1], structured);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            if (data.ContainsKey("page"))
-            {
-                page = (Uri)data["page"];
-            }
-
-            singleViewModel.Title = null;
-
-            if (data.ContainsKey("title"))
-            {
-                singleViewModel.Title = (string)data["title"];
-            }
-
-            singleViewModel.SubTitle = null;
-
-            if (data.ContainsKey("subtitle"))
-            {
-                singleViewModel.SubTitle = (string)data["subtitle"];
-            }
-
-            return page;
-        }
-
-        private void ActorResponseHandler(string actor, ActorModel response)
-        {
-            Uri page = ViewModelLocator.ConversationPageUri;
-
-            if (response.show.structured != null && response.show.structured.ContainsKey("template"))
-            {
-                Dictionary<string, object> structured = response.show.structured;
-
-                string[] template = (structured["template"] as string).Split(':');
-
-                string type = template[0];
-                string templateName = null;
-
-                if (template.Count() > 1)
-                {
-                    templateName = template[1];
-                }
-
-                if (templateName != null)
-                {
-                    Dictionary<string, object> data;
-
-                    ResourceDictionary templates;
-
-                    Uri uri;
-
-                    switch (type)
-                    {
-                        case "list":
-                            templates = ViewModelLocator.ListTemplates;
-
-                            switch (templateName)
-                            {
-                                // override. list items that act like single items
-                                case "news":
-                                    uri = LoadSingleResult(structured);
-
-                                    if (uri != null)
-                                    {
-                                        page = uri;
-                                    }
-                                    break;
-
-                                default:
-                                    data = PopulateViewModel("list", structured);
-
-                                    if (data != null)
-                                    {
-                                        page = ViewModelLocator.ListResultsPageUri;
-                                    }
-                                    break;
-                            }
-                            break;
-
-                        case "simple":
-                        case "single":
-                            uri = LoadSingleResult(structured);
-
-                            if (uri != null)
-                            {
-                                page = uri;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            navigationService.NavigateTo(page);
-        }
- 
+        /*
         // these are actor's that will be handled locally. no need to run out to web service
         // all the data needed to fulfill the tasks should be in the mainContext var.
         private void ActorInterceptor(string actor)
@@ -840,7 +681,7 @@ namespace Plexi
 
             req.Method = method;
 
-            EventHandler<ProgressEventArgs> handler = onProgress;
+            EventHandler<ProgressEventArgs> handler = InProgress;
 
             // Notify the view that the request has begun
             if (handler != null)
@@ -878,9 +719,6 @@ namespace Plexi
             return response;
         }
 
-        // Note: 
-        // data represents the payload object in response to classification
-        // and represents the entire response object in response to disambiguation
         private async Task<ClassifierModel> DoClientOperations(ClassifierModel context, Dictionary<string, object> response)
         {
             response = await ReplaceLocation(response);
@@ -1065,11 +903,11 @@ namespace Plexi
             deviceInfo["timestamp"] = Datetime.ConvertToUnixTimestamp(DateTime.Now);
             deviceInfo["timeoffset"] = DateTimeOffset.Now.Offset.Hours;
 
-            Dictionary<string, object> geolocation = LocationTracker.CurrentPosition;
+            Dictionary<string, object> geolocation = LocationService.CurrentPosition;
             // geo fell down so 'manually' get geolocation
             if (geolocation == null)
             {
-                geolocation = await LocationTracker.GetGeolocation();
+                geolocation = await LocationService.GetGeolocation();
             }
 
             if (!geolocation.ContainsKey("error") && geolocation.Count > 1)

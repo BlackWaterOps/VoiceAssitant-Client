@@ -32,8 +32,6 @@ namespace Please2
             InitializeComponent();
 
             vm = (MainMenuViewModel)DataContext;
-
-            //base.applicationBar.IsVisible = false;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -42,12 +40,10 @@ namespace Please2
 
             // kick off geolocation listener
             // this should be done somewhere else!!
-            LocationTracker.StartTrackingGeolocation();
+            LocationService.StartTrackingGeolocation();
 
             NavigationService.NavigationFailed += OnNavigationFailed;
            
-            //base.AddDebugTextBox();
-
             var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
 

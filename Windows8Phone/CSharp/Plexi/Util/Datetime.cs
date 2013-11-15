@@ -12,7 +12,7 @@ using Plexi.Models;
 
 namespace Plexi.Util
 {
-    public class Datetime
+    public static class Datetime
     {
         private static Regex dateRegex = new Regex(@"/\d{2,4}[-]\d{2}[-]\d{2}/i");
         private static Regex timeRegex = new Regex(@"/\d{1,2}[:]\d{2}[:]\d{2}/i");
@@ -40,7 +40,7 @@ namespace Plexi.Util
             return Math.Floor(diff.TotalSeconds);
         }
 
-        public static Dictionary<string, string> BuildDatetimeFromJson(object date = null, object time = null)
+        internal static Dictionary<string, string> BuildDatetimeFromJson(object date = null, object time = null)
         {
             DateTime? dateObj = null;
 

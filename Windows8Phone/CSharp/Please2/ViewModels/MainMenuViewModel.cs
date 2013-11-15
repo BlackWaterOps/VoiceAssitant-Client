@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Scheduler;
 
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
@@ -88,11 +90,13 @@ namespace Please2.ViewModels
             if (MainMenu != null)
                 return;
 
+            IEnumerable<ScheduledNotification> notifications = ScheduledActionService.GetActions<ScheduledNotification>();
+
             var menu = new ObservableCollection<MainMenuModel>();
 
             menu.Add(CreateTile("#1ab154", "conversation", "/Views/Conversation.xaml", "\uf130"));
             menu.Add(CreateTile("#1ec0c3", "weather", "/Views/SingleResult.xaml", "\uf0e9"));
-            menu.Add(CreateTile("#f7301e", "notifications", "/Views/Notifications.xaml", "\uf0f3"));
+            menu.Add(CreateTile("#f7301e", "notifications", "/Views/Notifications.xaml", "\uf0f3", false, notifications.Count()));
             menu.Add(CreateTile("#bd731b", "notes", "onenote", "\uf15c", true));
             menu.Add(CreateTile("#a3cd53", "search", "/Views/Search.xaml", "\uf002"));
             menu.Add(CreateTile("#9e9e9e", "settings", "/Views/Settings.xaml", "\uf013"));
@@ -146,12 +150,59 @@ namespace Please2.ViewModels
                     /*
                      * default to reflection 
                      */
+                    /*
+                default:
+                    try
+                    {
+                        ViewModelLocator locator = App.Current.Resources["Locator"] as ViewModelLocator;
+
+                        PropertyInfo viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
+
+                        if (viewmodelProperty == null)
+                        {
+                            Debug.WriteLine("pouplateviewmodel: view model " + templateName + " could not be found");
+                            return null;
+                        }
+
+                        object viewModel = viewmodelProperty.GetValue(locator, null);
+
+                        MethodInfo populateMethod = viewModel.GetType().GetMethod("Populate");
+
+                        if (populateMethod == null)
+                        {
+                            Debug.WriteLine("populateviewmodel: 'Populate' method not implemented in " + templateName);
+                            return null;
+                        }
+
+                        if (structured.ContainsKey("items") && ((JArray)structured["items"]).Count <= 0)
+                        {
+                            Debug.WriteLine("populateviewmodel: items list is emtpy nothing to set");
+                            return null;
+                        }
+
+                        if (structured.ContainsKey("item") && ((JObject)structured["item"]).Count <= 0)
+                        {
+                            Debug.WriteLine("populateviewmodel: item object is emtpy nothing to set");
+                            return null;
+                        }
+
+                        object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
+
+                        return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine(err.Message);
+                        return null;
+                    }
+                    break;
+                    */
             }
 
             navigationService.NavigateTo(page);
         }
       
-        private MainMenuModel CreateTile(string background, string title, string page, string icon, bool initent = false)
+        private MainMenuModel CreateTile(string background, string title, string page, string icon, bool intent = false, object detail = null)
         { 
             var tile = new MainMenuModel()
             {
@@ -159,8 +210,21 @@ namespace Please2.ViewModels
                 title = title,
                 page = page,
                 icon = icon,
-                isIntent = initent
+                isIntent = intent
             };
+
+            if (detail != null)
+            {
+                tile.detail = detail;
+                /*
+                Type t = detail.GetType();
+
+                if ( t == typeof(string) || (t == typeof(int) && (int)detail > 0) )
+                {
+                    tile.detail = detail;
+                }
+                */
+            }
 
             return tile;
         }

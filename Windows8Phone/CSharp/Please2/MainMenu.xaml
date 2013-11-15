@@ -52,6 +52,16 @@
                                 Tag="{Binding page}"
                                 Tap="MenuItem_Tapped">
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
                                 <Glyphs UnicodeString="{Binding icon}" 
                                         FontUri="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" 
                                         FontRenderingEmSize="100" 

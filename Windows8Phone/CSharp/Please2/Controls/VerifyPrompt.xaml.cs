@@ -15,9 +15,23 @@ using Microsoft.Phone.Shell;
 
 namespace Please2.Controls
 {
+    public class VerifyEventArgs : EventArgs
+    {
+        public string email;
+
+        public string code;
+
+        public VerifyEventArgs(string email, string code)
+        {
+            this.email = email;
+
+            this.code = code;
+        }
+    }
+
     public partial class VerifyPrompt : UserControl
     {
-        public event EventHandler Closed;
+        public event EventHandler<VerifyEventArgs> Closed;
 
         private bool isVisible;
 
@@ -26,6 +40,10 @@ namespace Please2.Controls
         private const string codePlaceholder = "verify code";
 
         private const string message = "Please enter your email address and verification code that was sent to you.";
+
+        private string email = null;
+
+        private string code = null;
 
         private PhoneApplicationFrame rootFrame = null;
 
@@ -67,7 +85,7 @@ namespace Please2.Controls
                 {
                     if (Closed != null)
                     {
-                        Closed(this, EventArgs.Empty);
+                        Closed(this, new VerifyEventArgs(email, code));
                     }
                 }
             );
@@ -223,7 +241,10 @@ namespace Please2.Controls
 
             if (base64.Substring(0, 10) == code)
             {
-                // all is good so hide prompt
+                this.email = email;
+
+                this.code = code;
+
                 Hide();
             }
             else

@@ -41,11 +41,11 @@ namespace Please2.Util
             // attach plexi service
             this.plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
 
-            plexiService.onChoice += ChoiceHandler;
-            plexiService.onError += ErrorHandler;
-            plexiService.onProgress += ProgressHandler;
-            plexiService.onShow += ShowHandler;
-            plexiService.onAct += ActorHandler;
+            plexiService.Choose += OnChoose;
+            plexiService.Error += OnError;
+            plexiService.InProgress += OnProgress;
+            plexiService.Show += OnShow;
+            plexiService.Act += OnAct;
         }
 
         private void Show(ShowModel model, string speak = "")
@@ -67,7 +67,7 @@ namespace Please2.Util
             }
         }
 
-        private void ChoiceHandler(object sender, ChoiceEventArgs e)
+        private void OnChoose(object sender, ChoiceEventArgs e)
         {
             Dictionary<string, object> simple = e.results.show.simple;
 
@@ -86,7 +86,7 @@ namespace Please2.Util
             navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
         }
 
-        private void ErrorHandler(object sender, ErrorEventArgs e)
+        private void OnError(object sender, ErrorEventArgs e)
         {
             MessageBoxResult response = MessageBox.Show(e.message, "Server Error", MessageBoxButton.OK);
 
@@ -96,12 +96,12 @@ namespace Please2.Util
             }
         }
 
-        private void ProgressHandler(object sender, ProgressEventArgs e)
+        private void OnProgress(object sender, ProgressEventArgs e)
         {
             Messenger.Default.Send(new ProgressMessage(e.inProgress));
         }
 
-        private void ShowHandler(object sender, ShowEventArgs e)
+        private void OnShow(object sender, ShowEventArgs e)
         {
             Messenger.Default.Send(new ShowMessage(e.show, e.speak, e.link));
 
@@ -116,7 +116,7 @@ namespace Please2.Util
             }
         }
 
-        private void ActorHandler(object sender, ActorEventArgs e)
+        private void OnAct(object sender, ActorEventArgs e)
         {
             ActorModel response = e.actor;
 

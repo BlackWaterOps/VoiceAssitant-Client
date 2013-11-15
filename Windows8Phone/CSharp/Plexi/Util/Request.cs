@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Plexi.Util
 {
@@ -65,53 +66,85 @@ namespace Plexi.Util
             return tr;
         }
 
+        #region json methods 
         public async Task<T> DoRequestJsonAsync<T>(WebRequest req, String requestData = "")
         {
-            var ret = await DoRequestAsync(req, requestData);
-            var response = await ret.ReadToEndAsync();
+            try
+            {
+                System.IO.TextReader ret = await DoRequestAsync(req, requestData);
+                String response = await ret.ReadToEndAsync();
 
-            var jsonSettings = new JsonSerializerSettings();
-
-            jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            jsonSettings.NullValueHandling = NullValueHandling.Include;
-
-            return JsonConvert.DeserializeObject<T>(response, jsonSettings);
+                return DeserializeData<T>(response);
+            }
+            catch (WebException err)
+            {
+                return HandleWebException<T>(err);
+            }
         }
 
         public async Task<T> DoRequestJsonAsync<T>(String uri, String requestData = "")
         {
-            var jsonSettings = new JsonSerializerSettings();
+            try
+            {
+                System.IO.TextReader ret = await DoRequestAsync(uri, requestData);
+                String response = await ret.ReadToEndAsync();
+
+                Debug.WriteLine("RESPONSE DATA");
+                Debug.WriteLine(response);
+
+                return DeserializeData<T>(response);
+            }
+            catch (WebException err)
+            {
+                return HandleWebException<T>(err);
+            }
+        }
+
+        public async Task<T> DoRequestJsonAsync<T>(String uri, object requestData)
+        {
+            return await DoRequestJsonAsync<T>(uri, SerializeData(requestData));
+        }
+        #endregion
+
+        #region helpers
+        private string SerializeData(object data, bool includeNulls = false)
+        {
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+
+            jsonSettings.DefaultValueHandling = DefaultValueHandling.Include;
+            jsonSettings.NullValueHandling = (includeNulls == true) ? NullValueHandling.Include : NullValueHandling.Ignore;
+
+            return JsonConvert.SerializeObject(data, jsonSettings);
+        }
+
+        private T DeserializeData<T>(String data)
+        {
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;
 
-            try
-            {
-                var ret = await DoRequestAsync(uri, requestData);
-                var response = await ret.ReadToEndAsync();
-
-                Debug.WriteLine("RESPONSE DATA");
-                Debug.WriteLine(response.ToString());
-
-                return JsonConvert.DeserializeObject<T>(response, jsonSettings);
-            }
-            catch (WebException err)
-            {
-                var resp = (HttpWebResponse)err.Response;
-
-                if (resp.StatusCode != HttpStatusCode.OK)
-                {
-                    var stream = resp.GetResponseStream();
-
-                    var reader = new System.IO.StreamReader(stream);
-
-                    var errResp = reader.ReadToEnd();
-
-                    return JsonConvert.DeserializeObject<T>(errResp, jsonSettings);
-                }
-
-                return default(T);
-            }
+            return JsonConvert.DeserializeObject<T>(data, jsonSettings);
         }
+
+        private T HandleWebException<T>(WebException e)
+        {
+            var resp = (HttpWebResponse)e.Response;
+
+            if (resp.StatusCode != HttpStatusCode.OK)
+            {
+                System.IO.Stream stream = resp.GetResponseStream();
+
+                System.IO.StreamReader reader = new System.IO.StreamReader(stream);
+
+                String errResp = reader.ReadToEnd();
+
+                return DeserializeData<T>(errResp);
+            }
+
+            return default(T);
+        }
+
+        #endregion
     }
 }

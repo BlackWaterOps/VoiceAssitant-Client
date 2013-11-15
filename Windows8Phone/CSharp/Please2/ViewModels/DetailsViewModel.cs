@@ -86,18 +86,56 @@ namespace Please2.ViewModels
             FuelDirectionsLoaded = new RelayCommand(AddFuelDirectionsMap);
         }
 
+        // TODO: use reflection and send CurrentItem to appropriate viewmodel
         private void PinToStart(object e)
         {
+            Type t = currentItem.GetType();
+
+            string id = null;
+            string image = null;
+            string title = null;
+            string content = null;
+
+            if (t == typeof(RealEstateListing))
+            {
+                RealEstateListing listing = CurrentItem as RealEstateListing;
+                title = listing.title;
+                content = listing.location.address;
+                image = (listing.images as List<RealEstateImage>).ElementAt(0).src;
+                id = listing.id;
+            }
+
+            if (t == typeof(AltFuelModel))
+            {
+                AltFuelModel fuel = CurrentItem as AltFuelModel;
+                title = fuel.station_name;
+                content = fuel.address;
+                id = fuel.id.ToString();
+            }
+
+            if (t == typeof(EventModel))
+            {
+                EventModel ev = CurrentItem as EventModel;
+                title = ev.title;
+                content = ev.location.address;
+                image = ev.image;
+                id = ev.id;
+            }
+ 
             var tile = new FlipTileData();
 
-           // tile.BackgroundImage = new Uri(currentEvent.image, UriKind.Absolute);
-           // tile.BackContent = currentEvent.title;
-           // tile.Title = tile.BackTitle = "please event";
-           // tile.Count = 0;
+            if (image != null)
+            {
+                tile.BackgroundImage = new Uri(image, UriKind.Absolute);
+            }
+            tile.BackContent = content;
+            tile.Title = tile.BackTitle = title;
+            tile.Count = 0;
 
-           // ShellTile.Create(new Uri("/EventDetailsPage.xaml?id=" + currentEvent.id), tile);
+            ShellTile.Create(new Uri("/EventDetailsPage.xaml?id=" + id), tile);
         }
 
+        // TODO: use reflection and send CurrentItem to appropriate viewmodel
         private async void ShowFullMap(string e)
         {
             GeoCoordinate geo = null;
@@ -170,7 +208,7 @@ namespace Please2.ViewModels
             }
         }
 
-        private async void AddListingDirectionsMap()
+        private void AddListingDirectionsMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
 
@@ -182,25 +220,10 @@ namespace Please2.ViewModels
                 
                 var item = CurrentItem as RealEstateListing;
                 
-                /*
-                List<GeoCoordinate> coords = new List<GeoCoordinate>();
-
-                Dictionary<string, object> deviceInfo = await plexiService.GetDeviceInfo();
-                
-                coords.Add(new GeoCoordinate((double)deviceInfo["latitude"], (double)deviceInfo["longitude"]));
-                coords.Add(new GeoCoordinate(item.location.latitude, item.location.longitude));
-
-                RouteQuery routeQuery = new RouteQuery();
-                routeQuery.Waypoints = coords;
-                routeQuery.QueryCompleted += RouteQuery_Completed;
-                routeQuery.QueryAsync();
-                */
-
                 var layer = CreateMapLayer(item.location.latitude, item.location.longitude);
 
                 currentMap.Layers.Add(layer);
                
-                //currentMap.Center = new GeoCoordinate((double)deviceInfo["latitude"], (double)deviceInfo["longitude"]); 
                 currentMap.Center = new GeoCoordinate(item.location.latitude, item.location.longitude);
             }
         }
@@ -244,21 +267,5 @@ namespace Please2.ViewModels
 
             return layer;
         }
-        /*
-        private void RouteQuery_Completed(object sender, QueryCompletedEventArgs<Route> e)
-        {
-            if (e.Error == null)
-            {
-                
-                Route route = e.Result;
-                MapRoute mapRoute = new MapRoute(route);
-
-                if (currentMap != null)
-                {
-                    currentMap.AddRoute(mapRoute);
-                }
-            }
-        }
-        */
     }
 }

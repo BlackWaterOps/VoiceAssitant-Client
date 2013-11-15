@@ -156,9 +156,6 @@
     <Compile Include="Views\Details.xaml.cs">
       <DependentUpon>Details.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EventDetailsPage.xaml.cs">
-      <DependentUpon>EventDetailsPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Models\DialogModel.cs" />
     <Compile Include="Views\Image.xaml.cs">
       <DependentUpon>Image.xaml</DependentUpon>
@@ -322,10 +319,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\EventDetailsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Image.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -395,6 +388,7 @@
     <Content Include="Assets\Horoscope\zodiac-taurus.png" />
     <Content Include="Assets\Horoscope\zodiac-virgo.png" />
     <Content Include="Assets\microphone.png" />
+    <Content Include="Assets\pin.png" />
     <Content Include="Assets\plexi-100x100.png" />
     <Content Include="Assets\plexi-big-black-720.png" />
     <Content Include="Assets\save.png" />

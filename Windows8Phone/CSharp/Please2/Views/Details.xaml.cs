@@ -14,7 +14,7 @@ using Please2.ViewModels;
 
 namespace Please2.Views
 {
-    public partial class Details : PhoneApplicationPage
+    public partial class Details : ViewBase
     {
         DetailsViewModel vm;
 
@@ -40,6 +40,18 @@ namespace Please2.Views
             }
 
             vm.SetDetailsTemplate(template);
+        }
+
+        // TODO: add pin to start button to appbar
+        private void AddMenuButtons()
+        {
+            var pin = new ApplicationBarIconButton();
+
+            pin.IconUri = new Uri("/Assets/pin.png", UriKind.Relative);
+            pin.Text = "pin to start";
+            pin.Click += (s, e) => { vm.PinToStartCommand.Execute(null); };
+
+            base.applicationBar.Buttons.Add(pin);
         }
     }
 }

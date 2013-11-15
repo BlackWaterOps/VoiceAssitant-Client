@@ -102,6 +102,7 @@
     <Compile Include="Util\Datetime.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\LocationTracker.cs" />
+    <Compile Include="Util\PushService.cs" />
     <Compile Include="Util\Request.cs" />
   </ItemGroup>
   <ItemGroup>

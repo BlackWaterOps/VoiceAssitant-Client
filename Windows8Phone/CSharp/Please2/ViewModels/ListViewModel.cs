@@ -142,8 +142,12 @@ namespace Please2.ViewModels
 
         public void ChoiceItemSelected(ChoiceModel choice)
         {
+            // add choice to conversation page
+            ConversationViewModel vm = ViewModelLocator.GetServiceInstance<ConversationViewModel>();
+
+            vm.AddDialog("user", choice.text);
+
             // pass selection to please service to process and send to auditor
-            //pleaseService.Choice(choice); 
             plexiService.Choice(choice);
         }
 

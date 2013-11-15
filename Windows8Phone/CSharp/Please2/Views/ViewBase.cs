@@ -371,10 +371,12 @@ namespace Please2.Views
         #region beta verify prompt
         private void AddVerifyPrompt()
         {
+            string betaKey = "StremorBetaTestKey";
+
             // check database if we already have credentials
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
-            if (!settings.Contains("StremorBetaTestKey"))
+            if (!settings.Contains(betaKey))
             {
                 // show verify control if no credentials are found
                 var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
@@ -404,58 +406,20 @@ namespace Please2.Views
                     }
 
                     verifyPrompt.Closed += (s, e) => 
-                        { 
-                            // save crendentials to database
+                        {
+                            // save credentials to database
+                            Dictionary<string, string> beta = new Dictionary<string,string>();
+
+                            beta.Add("email", e.email);
+                            beta.Add("code", e.code);
+
+                            settings.Add(betaKey, beta);
+
+                            // remove prompt from page
                             layoutRoot.Children.Remove(verifyPrompt); 
                         };
 
                     layoutRoot.Children.Add(verifyPrompt);
-                    /*
-                    var colSpan = layoutRoot.ColumnDefinitions.Count;
-                    var rowSpan = layoutRoot.RowDefinitions.Count;
-
-                    var deviceHeight = App.Current.Host.Content.ActualHeight;
-                    var deviceWidth = App.Current.Host.Content.ActualWidth;
-
-                    var background = new SolidColorBrush();
-                    background.Color = Colors.Black;
-
-                    canvas = new Canvas();
-                    canvas.Name = "BetaVerify";
-                    canvas.Height = deviceHeight;
-                    canvas.Width = deviceWidth;
-                    canvas.Background = background;
-                    canvas.Opacity = .75;
-
-                    if (colSpan > 0)
-                    {
-                        canvas.SetValue(Grid.ColumnSpanProperty, colSpan);
-                    }
-
-                    if (rowSpan > 0)
-                    {
-                        canvas.SetValue(Grid.RowSpanProperty, rowSpan);
-                    }
-
-                    VerifyPrompt verifyPrompt = new VerifyPrompt();
-
-                    try
-                    {
-                        canvas.Children.Add(verifyPrompt);
-
-                        layoutRoot.Children.Add(canvas);
-
-                        verifyPrompt.OverlayBorder.
-
-                        verifyPrompt.Show();
-
-                        verifyPrompt.Closed += (s, e) => { layoutRoot.Children.Remove(canvas); };
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.Message);
-                    }
-                    */
                 }
             }
 
