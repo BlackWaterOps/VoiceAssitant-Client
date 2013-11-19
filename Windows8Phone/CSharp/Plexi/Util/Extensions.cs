@@ -20,7 +20,7 @@ namespace Plexi.Util
             return Char.ToUpper(name[0]) + name.Substring(1);
         }
 
-        public static T DeepCopy<T>(this object model) where T : class
+        internal static T DeepCopy<T>(this object model) where T : class
         {
             var jsonSettings = new JsonSerializerSettings();
 

@@ -83,8 +83,6 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
-
             var dictionaryResults = (structured["item"] as JObject).ToObject<DictionaryModel>();
 
             var senses = dictionaryResults.senses;
@@ -93,9 +91,12 @@ namespace Please2.ViewModels
             Pos = dictionaryResults.pos;
             Headword = dictionaryResults.headword;
 
-            ret.Add("title", "dictionary");
+            var data = new Dictionary<string, object>();
 
-            return ret;
+            data.Add("title", "dictionary");
+            data.Add("scheme", "information");
+
+            return data;
         }
     }
 }

@@ -15,8 +15,11 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
+using Plexi.Util;
+
 namespace Please2.Util
 {
+    /*
     public class BackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -120,21 +123,67 @@ namespace Please2.Util
             return null;
         }
     }
+    */
+    public class SchemeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null || parameter == null)
+            {
+                return null;
+            }
+
+            string brush = null;
+
+            ResourceDictionary schemes = App.Current.Resources["SchemeDictionary"] as ResourceDictionary;
+
+            switch ((string)parameter)
+            {
+                case "background":
+                    brush = String.Format("{0}Background", value);
+                    break;
+
+                case "item":
+                case "apptitle":
+                    brush = String.Format("{0}AppTitle", value);
+                    break;
+
+                case "pagetitle":
+                    brush = String.Format("{0}PageTitle", value);
+                    break;
+
+                case "pagesubtitle":
+                    brush = String.Format("{0}PageSubTitle", value);
+                    break;
+            }
+
+            return (brush != null) ? schemes[brush] : null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
 
     public class PrettyDateConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string param = ((string)parameter != null) ? (string)parameter : "";
+            string param = ((string)parameter != null) ? (string)parameter : null;
 
             string parseString = null;
 
             switch (param)
-            {
+            {   
                 case "news":
+                    /*
                     DateTime storyDate = (DateTime)value;
 
                     parseString = storyDate.ToString("dddd d, yyyy: h:mm tt");
+                     */
+                    
+                    parseString = Datetime.GetTimeElapsed((DateTime)value);
                     break;
 
                 case "notifications":

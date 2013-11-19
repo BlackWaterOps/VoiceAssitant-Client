@@ -29,6 +29,17 @@ namespace Please2.ViewModels
     {
         private string templateName;
 
+        private string scheme;
+        public string Scheme
+        {
+            get { return scheme; }
+            set 
+            {
+                scheme = value.CamelCase();
+                RaisePropertyChanged("Scheme");
+            }
+        }
+
         private string title;
         public string Title
         {
@@ -96,7 +107,6 @@ namespace Please2.ViewModels
         }
 
         INavigationService navigationService;
-        //IPleaseService pleaseService;
         IPlexiService plexiService;
 
         public RelayCommand<EventModel> EventItemSelection { get; set; }
@@ -109,11 +119,9 @@ namespace Please2.ViewModels
         public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
         public RelayCommand<SearchModel> SearchItemSelection { get; set; }
 
-        //public ListViewModel(INavigationService navigationService, IPleaseService pleaseService)
         public ListViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.navigationService = navigationService;
-            //this.pleaseService = pleaseService;
             this.plexiService = plexiService;
 
             AttachEventHandlers();
@@ -254,8 +262,9 @@ namespace Please2.ViewModels
                 Debug.WriteLine("could not find \"items\" key in structured response");
                 GoTo("conversation");
             }
+
             // nothing really to send back. everything is set on this page
-            return ret;
+            return null;
         }
 
         public bool SetDetails(string template, object model)
@@ -285,35 +294,38 @@ namespace Please2.ViewModels
             {
                 case "images":
                     ret = arr.ToObject<IEnumerable<string>>();
+                    Scheme = "default";
                     break;
 
                 case "fuel":
                     ret = arr.ToObject<IEnumerable<AltFuelModel>>();
+                    Scheme = "information";
                     break;
 
                 case "product":
                 case "shopping":
                     ret = arr.ToObject<IEnumerable<ShoppingModel>>();
+                    Scheme = "commerce";
                     break;
 
                 case "events":
                     ret = arr.ToObject<IEnumerable<EventModel>>();
+                    Scheme = "commerce";
                     break;
 
                 case "movies":
                     ret = arr.ToObject<IEnumerable<MoviesModel>>();
-                    break;
-
-                case "real_estate":
-                    ret = arr.ToObject<IEnumerable<RealEstateModel>>();
+                    Scheme = "commerce";
                     break;
 
                 case "choice":
                     ret = arr.ToObject<IEnumerable<ChoiceModel>>();
+                    Scheme = "default";
                     break;
 
                 case "search":
                     ret = arr.ToObject<IEnumerable<SearchModel>>();
+                    Scheme = "information";
                     break;
             }
 

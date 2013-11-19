@@ -69,8 +69,6 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
-
             var geoResults = (structured["item"] as JObject).ToObject<GeopoliticsModel>();
 
             Flag = geoResults.flag;
@@ -81,9 +79,12 @@ namespace Please2.ViewModels
              * BuildMap();
              */
 
-            ret.Add("title", "Geopolitics");
+            var data = new Dictionary<string, object>();
 
-            return ret;
+            data.Add("title", "Geopolitics");
+            data.Add("scheme", "information");
+
+            return data;
         }
         /*
         private void BuildMap()

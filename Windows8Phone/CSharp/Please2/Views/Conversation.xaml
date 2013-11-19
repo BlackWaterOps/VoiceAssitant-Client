@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:util="clr-namespace:Please2.Util"
     xmlns:local="clr-namespace:Please2.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -17,67 +18,110 @@
     shell:SystemTray.IsVisible="True"
     DataContext="{Binding ConversationViewModel, Source={StaticResource Locator}}"
     Loaded="Conversation_Loaded">
+    
+    <local:ViewBase.Resources>
+        <Style x:Key="ChatBubbleStyle" TargetType="c4f:ChatBubble">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="MaxWidth" Value="400"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        
+        <Style x:Key="MessageStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="-5,0,0,0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
+        <DataTemplate x:Key="UserDialogTemplate">
+            <Grid>
+                <c4f:ChatBubble Style="{StaticResource ChatBubbleStyle}"
+                     Background="#1ba0e1" 
+                     BorderBrush="#1ba0e1"
+                     HorizontalAlignment="Right" 
+                     ChatBubbleDirection="LowerRight">
 
+                    <TextBlock Text="{Binding message}" Style="{StaticResource MessageStyle}"/> 
+                </c4f:ChatBubble>
+
+                <toolkit:ContextMenuService.ContextMenu>
+                    <toolkit:ContextMenu Name="BubbleContextMenu">
+                        <toolkit:MenuItem Header="Copy" Click="ContextMenuItem_Click"/>
+                    </toolkit:ContextMenu>
+                </toolkit:ContextMenuService.ContextMenu>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PlexiDialogTemplate">
+            <Grid>
+                <c4f:ChatBubble Style="{StaticResource ChatBubbleStyle}"
+                     Background="#60aa17" 
+                     BorderBrush="#60aa17"        
+                     HorizontalAlignment="Left" 
+                     ChatBubbleDirection="UpperLeft">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding message}" Style="{StaticResource MessageStyle}"/>
+
+                        <Glyphs Style="{StaticResource FontAwesomeBase}"
+                                Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}"
+                                UnicodeString="&#xf01b;"
+                                OriginX="0" OriginY="0"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center"
+                                Fill="White" FontRenderingEmSize="40"
+                                Tap="Glyphs_Tap">
+                            <Glyphs.RenderTransform>
+                                <RotateTransform Angle="90"/>
+                            </Glyphs.RenderTransform>
+                        </Glyphs>
+                    </StackPanel>
+                </c4f:ChatBubble>
+
+                <toolkit:ContextMenuService.ContextMenu>
+                    <toolkit:ContextMenu Name="BubbleContextMenu">
+                        <toolkit:MenuItem Header="Copy" Click="ContextMenuItem_Click"/>
+                    </toolkit:ContextMenu>
+                </toolkit:ContextMenuService.ContextMenu>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SelectingTemplate">
+            <util:DialogTemplateSelector Content="{Binding}" 
+                                         PlexiDialog="{StaticResource PlexiDialogTemplate}" 
+                                         UserDialog="{StaticResource UserDialogTemplate}"
+                                         HorizontalContentAlignment="Stretch"/>
+        </DataTemplate>
+    </local:ViewBase.Resources>
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="#1c719c">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Style="{StaticResource AppTitle}"/>
-            <TextBlock Text="conversation" Style="{StaticResource PageTitle}"/>
-            <TextBlock Text="{Binding SubTitle, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
+        <StackPanel Grid.Row="0">
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                <Image Style="{StaticResource AppTitleIcon}"/>
+            </Border>
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}">
+                <TextBlock Text="conversation" Style="{StaticResource PageTitle}"/>                
+            </Border>
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
+                <TextBlock Text="{Binding SubTitle, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}" Style="{StaticResource PageSubTitle}"/>
+            </Border>
         </StackPanel>
  
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <ListBox x:Name="DialogList" ItemsSource="{Binding DialogList}">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <c4f:ChatBubble 
-                                    Background="{Binding sender, Converter={StaticResource BackgroundConverter}}" 
-                                    BorderThickness="0" 
-                                    BorderBrush="{Binding sender, Converter={StaticResource BackgroundConverter}}"
-                                    MaxWidth="400"
-                                    Margin="0,0,0,10" 
-                                    Padding="20" 
-                                    HorizontalContentAlignment="Stretch"
-                                    HorizontalAlignment="{Binding sender, Converter={StaticResource AlignmentConverter}}" 
-                                    ChatBubbleDirection="{Binding sender, Converter={StaticResource ChatBubbleConverter}}">
-                                <StackPanel x:Name="StackTest">
-                                    <TextBlock Text="{Binding message}"
-                                               Foreground="White" 
-                                               TextWrapping="Wrap"/>
-                                    
-                                    <HyperlinkButton Content="Click for more" 
-                                                     TargetName="_blank" 
-                                                     Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}" 
-                                                     NavigateUri="{Binding link}" 
-                                                     Foreground="#0000ee" 
-                                                     HorizontalAlignment="Right"/>
-                                   
-                                </StackPanel>
-                            </c4f:ChatBubble>
-
-                            <toolkit:ContextMenuService.ContextMenu>
-                                <toolkit:ContextMenu Name="BubbleContextMenu">
-                                    <toolkit:MenuItem Header="Copy" Click="ContextMenuItem_Click"/>
-                                </toolkit:ContextMenu>
-                            </toolkit:ContextMenuService.ContextMenu>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Background="{StaticResource ContentBackground}">
+            <ListBox x:Name="DialogList" 
+                     Margin="12" 
+                     ItemsSource="{Binding DialogList}" 
+                     ItemTemplate="{StaticResource SelectingTemplate}"
+                     ItemContainerStyle="{StaticResource ListBoxItem}"/>
         </Grid>
     </Grid>
 </local:ViewBase>

@@ -10,8 +10,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 using GalaSoft.MvvmLight.Messaging;
 
@@ -48,7 +50,7 @@ namespace Please2.Views
             if (vm.DialogList.Count > 1)
             {
                 base.AddCancelButton();
-            }           
+            }
         }
 
         private void Conversation_Loaded(object sender, RoutedEventArgs e)
@@ -78,9 +80,25 @@ namespace Please2.Views
             }
         }
 
-        protected void ContextMenuItem_Click(object sender, EventArgs e)
+        private void Glyphs_Tap(object sender, EventArgs e)
         {
-            var dialog = (sender as MenuItem).DataContext as DialogModel;
+            DialogModel dialog = (sender as System.Windows.Documents.Glyphs).DataContext as DialogModel;
+
+            if (dialog.link == null)
+            {
+                return;
+            }
+
+            WebBrowserTask task = new WebBrowserTask();
+
+            task.Uri = new Uri(dialog.link, UriKind.Absolute);
+
+            task.Show();
+        }
+
+        private void ContextMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogModel dialog = (sender as MenuItem).DataContext as DialogModel;
 
             Debug.WriteLine(dialog.message);
 

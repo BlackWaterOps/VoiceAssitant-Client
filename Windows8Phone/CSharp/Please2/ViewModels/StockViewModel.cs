@@ -40,29 +40,28 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
+            StockData = ((JToken)structured["item"]).ToObject<StockModel>();
 
-            if (structured.ContainsKey("item"))
+            var direction = stockData.share_price_direction;
+
+            if (direction == "down")
             {
-                stockData = ((JToken)structured["item"]).ToObject<StockModel>();
-
-                var direction = stockData.share_price_direction;
-
-                if (direction == "down")
-                {
-                    directionSymbol = "\uf063"; // arrow down
-                    directionColor = "#dc143c"; // red
-                }
-                else if (direction == "up")
-                {
-                    directionSymbol = "\uf062"; // arrow up
-                    directionColor = "#008000"; // green
-                }
-
-                ret.Add("title", "stock");
-                ret.Add("subtitle", stockData.name + "(" + stockData.symbol + ")");
+                directionSymbol = "\uf063"; // arrow down
+                directionColor = "#dc143c"; // red
             }
-            return ret;
+            else if (direction == "up")
+            {
+                directionSymbol = "\uf062"; // arrow up
+                directionColor = "#008000"; // green
+            }
+
+            var data = new Dictionary<string, object>();
+
+            data.Add("title", "stock");
+            data.Add("subtitle", stockData.name + "(" + stockData.symbol + ")");
+            data.Add("scheme", "information");
+
+            return data;
         }
     }
 }

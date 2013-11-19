@@ -57,20 +57,20 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
-
             var flightResults = (structured["item"] as JObject).ToObject<FlightModel>();
 
             Flights = flightResults.details;
             Airline = flightResults.airline;
             FlightNumber = flightResults.flight_number;
 
-            ret.Add("title", "flights");
-            ret.Add("subtitle", "flight results");
+            var data = new Dictionary<string, object>();
 
-            //ret.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
+            data.Add("title", "flights");
+            data.Add("subtitle", "flight results");
+            //data.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
+            data.Add("scheme", "default");
 
-            return ret;
+            return data;
         }
 
 

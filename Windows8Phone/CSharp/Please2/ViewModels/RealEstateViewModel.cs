@@ -97,6 +97,7 @@ namespace Please2.ViewModels
             Stats = realestateResults.stats;
 
             ret.Add("title", "real estate");
+            ret.Add("scheme", "commerce");
             //ret.Add("subtitle", ZodiacSign + " for " + date);
 
             return ret;

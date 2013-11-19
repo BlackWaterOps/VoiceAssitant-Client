@@ -26,6 +26,26 @@ namespace Please2.Util
         }
     }
 
+    public class DialogTemplateSelector : TemplateSelector
+    {
+        public DataTemplate PlexiDialog { get; set; }
+
+        public DataTemplate UserDialog { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            if (item != null)
+            {
+                ConversationViewModel vm = ViewModelLocator.GetServiceInstance<ConversationViewModel>();
+
+                DialogModel model = item as DialogModel;
+
+                return (model.sender == "user") ? UserDialog : PlexiDialog;
+            }
+            return null;
+        }
+    }
+
     public class WeatherTemplateSelector : TemplateSelector
     {
         public DataTemplate WeatherFull { get; set; }
@@ -33,21 +53,14 @@ namespace Please2.Util
         public DataTemplate WeatherShort { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
-        {                 
-            var wvm = SimpleIoc.Default.GetInstance<WeatherViewModel>();
-
-            var index = wvm.MultiForecast.IndexOf((WeatherDay)item);
-
+        {
             if (item != null)
-            {
-                if (index == 0)
-                {
-                    return WeatherFull;
-                }
-                else
-                {
-                    return WeatherShort;
-                }
+            { 
+                WeatherViewModel vm = ViewModelLocator.GetServiceInstance<WeatherViewModel>();
+
+                int index = vm.MultiForecast.IndexOf((WeatherDay)item);
+
+                return (index == 0) ?  WeatherFull : WeatherShort;                
             }
 
             return null;
@@ -64,16 +77,9 @@ namespace Please2.Util
         {
             if (item != null)
             {
-                var result = (EventModel)item;
+                EventModel result = item as EventModel;
 
-                if (result.image == null)
-                {
-                    return NoImage;
-                }
-                else
-                {
-                    return Image;
-                }
+                return (result.image == null) ? NoImage : Image;
             }
 
             return null;
@@ -90,16 +96,11 @@ namespace Please2.Util
         {
             if (item != null)
             {
-                var result = (SearchModel)item;
+                SearchModel result = item as SearchModel;
 
-                if (result.opengraph_image == null)
-                {
-                    return NoImage;
-                }
-                else
-                {
-                    return Image;
-                }
+                Debug.WriteLine(result.opengraph_image);
+
+                return (result.opengraph_image == null) ? NoImage : Image;
             }
 
             return null;

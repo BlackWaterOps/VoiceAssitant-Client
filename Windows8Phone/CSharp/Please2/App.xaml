@@ -18,53 +18,82 @@
         <local:LocalizedStrings xmlns:local="clr-namespace:Please2" x:Key="LocalizedStrings" />
         
         <shell:ApplicationBarIconButton x:Key="CancelBtn" IconUri="/Assets/close.png" Text="cancel" />
+        
         <LinearGradientBrush x:Key="AppBackground" StartPoint="0.5,0" EndPoint="0.5,1">
             <GradientStop Color="#192128" Offset="0.0" />
             <GradientStop Color="#32393f" Offset="1.0" />
         </LinearGradientBrush>
+   
+        <ImageBrush x:Key="ContentBackground" 
+                    ImageSource="/Assets/plexi-background.png"
+                    AlignmentX="Center"
+                    AlignmentY="Center"
+                    Stretch="UniformToFill"/>
+                         
         <LinearGradientBrush x:Key="ResultItemBackground" StartPoint="0.5,0" EndPoint="0.5,1">
             <GradientStop Color="#000000" Offset="0.0" />
             <GradientStop Color="#51575c" Offset="1.0" />
         </LinearGradientBrush>
+        
         <Style x:Key="ResultItemStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource ResultItemBackground}" />
             <Setter Property="BorderBrush" Value="#666666" />
             <Setter Property="BorderThickness" Value="3" />
         </Style>
+        
         <!-- chat bubble colors -->
-        <SolidColorBrush x:Key="UserDialogBackground" Color="#1ec0c3" Opacity=".85" />
-        <SolidColorBrush x:Key="PleaseDialogBackground" Color="#1ab154" Opacity=".85" />
-        <SolidColorBrush x:Key="UserDialogForeground" Color="Black" />
-        <SolidColorBrush x:Key="PleaseDialogForeground" Color="Black" />
+        <!--
+        <SolidColorBrush x:Key="UserDialogBackground" Color="#1ba0e1" />
+        <SolidColorBrush x:Key="PleaseDialogBackground" Color="#60aa17" />
+        <SolidColorBrush x:Key="UserDialogForeground" Color="White" />
+        <SolidColorBrush x:Key="PleaseDialogForeground" Color="White" />
+        -->
+        
         <!-- listbox item 100% width -->
         <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
+        
         <!-- various page titles -->
+        <Style x:Key="AppTitleIcon" TargetType="Image">
+            <Setter Property="Source" Value="/Assets/plexi-UI-logo.png"/>
+            <Setter Property="Width" Value="41"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="16,10"/>
+        </Style>
+        
         <Style x:Key="AppTitle" TargetType="TextBlock">
             <Setter Property="Text" Value="plexi" />
             <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}" />
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeNormal}" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="Margin" Value="16,10" />
         </Style>
+        
         <Style x:Key="PageTitleBase" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="/Please2;component/Assets/Fonts/Roboto-Thin.ttf#Roboto Thin" />
+            <Setter Property="FontFamily" Value="Segoe WP" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        
         <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
-            <Setter Property="FontSize" Value="50" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeExtraLarge}" />
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="16,0" />
+            <Setter Property="FontWeight" Value="Light"/>
         </Style>
+        
         <Style x:Key="PageSubTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="Margin" Value="16,10" />
         </Style>
+        
         <!-- global fontawesome uri -->
         <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
             <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" />
         </Style>
+        
         <!-- toolkit page transitions -->
         <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
             <Setter Property="toolkit:TransitionService.NavigationInTransition">
@@ -255,14 +284,15 @@
             </Setter>
         </Style>
         <!-- converters -->
+        <!--
         <util:BackgroundConverter x:Key="BackgroundConverter" />
         <util:ForegroundConverter x:Key="ForegroundConverter" />
         <util:AlignmentConverter x:Key="AlignmentConverter" />
-        <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />
-        <util:PrettyDateConverter x:Key="PrettyDateConverter" />
-        <!--
+        <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />  
         <util:VisibilityConverter x:Key="VisibilityConverter"/>
         -->
+        <util:PrettyDateConverter x:Key="PrettyDateConverter" />
+        <util:SchemeConverter x:Key="SchemeConverter" />
         <util:EntityConverter x:Key="EntityConverter" />
         <util:WeatherConverter x:Key="WeatherConverter" />
         <util:StatusConverter x:Key="StatusConverter" />
@@ -277,7 +307,8 @@
         <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
         <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
         <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="TemplateDictionary.Details.xaml" />
-
+        <ResourceDictionary x:Key="SchemeDictionary" Source="ColorScheme.xaml" />
+        
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
     </Application.Resources>
     

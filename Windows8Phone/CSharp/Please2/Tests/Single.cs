@@ -43,6 +43,7 @@ namespace Please2.Tests
             vm.Headword = dictionaryResults.headword;
 
             data.Add("title", "dictionary");
+            data.Add("scheme", "information");
 
             return data;
         }
@@ -69,11 +70,13 @@ namespace Please2.Tests
                 vm.Stats = realestateResults.stats;
 
                 data.Add("title", "real estate");
+                data.Add("scheme", "commerce");
             }
             catch (Exception err)
             {
                 Debug.WriteLine(err.Message);
             }
+
             return data;
         }
 
@@ -99,6 +102,7 @@ namespace Please2.Tests
             vm.Text = geoResults.text;
              
             data.Add("title", "fact book");
+            data.Add("scheme", "information");
 
             return data;
         }
@@ -125,30 +129,40 @@ namespace Please2.Tests
 
             data.Add("title", "flights");
             data.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
+            data.Add("scheme", "default");
 
             return data;
         }
 
         private Dictionary<string, object> NewsTest()
         {
-            var originalQuery = "what's up with obama";
+            try
+            {
+                var originalQuery = "what's up with obama";
 
-            var locator = GetLocator();
+                var locator = GetLocator();
 
-            var vm = locator.NewsViewModel;
+                var vm = locator.NewsViewModel;
 
-            var test = "{\"show\":{\"simple\":{\"text\":\"According to news.yahoo.com, President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\",\"link\":\"http://news.yahoo.com/obama-nominate-yellen-federal-chief-231027971.html\"},\"structured\":{\"items\":[{\"description\":\"Washington (AFP) - President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. The move would put a woman at the ...\",\"title\":\"Obama chooses Yellen to lead Fed\",\"url\":\"http://news.yahoo.com/obama-nominate-yellen-federal-chief-231027971.html\",\"summary\":\"President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\",\"source\":\"Yahoo! News\",\"date\":\"2013-10-09T15:41:20Z\"},{\"url\":\"http://www.bloomberg.com/news/2013-10-09/obama-seeks-post-debt-talks-with-senate-republicans-open.html\",\"source\":\"Bloomberg\",\"date\":\"2013-10-09T14:36:54Z\",\"description\":\"Giving priority to interest payments would prevent the U.S. from defaulting on its debt while requiring the government to balance its budget ... to go home,” said Stu Shea, president and chief operating officer of Leidos. A debt-ceiling ...\",\"title\":\"Obama Seeks Post-Debt Talks With Senate Republicans Open\"},{\"description\":\"WASHINGTON — President Obama will meet with congressional caucuses from both parties in the coming days, starting Wednesday in a session with House Democrats. The meeting is scheduled for 4:30 p.m. ET, and Obama and the Democrats will discuss ...\",\"title\":\"Obama to meet with congressional caucuses\",\"url\":\"http://www.usatoday.com/story/news/politics/2013/10/09/obama-house-senate-government-shutdown/2950557/\",\"summary\":\"WASHINGTON President Obama will meet with congressional caucuses from both parties in the coming days, starting Wed. in a session with House Democrats. The meeting is scheduled for 4:30 p.m. ET, and Obama and the Democrats will discuss the ongoing government shutdown and the prospect of a debt ceiling default. In recent days, Obama has refused Republican requests to negotiate a new spending plan that would end the government shutdown now in its ninth day.\",\"source\":\"USA Today\",\"date\":\"2013-10-09T14:22:35Z\"}],\"template\":\"list:news\"}},\"speak\":\"According to news.yahoo.com, President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\"}";
+                var test = "{\"show\":{\"simple\":{\"text\":\"According to news.yahoo.com, President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\",\"link\":\"http://news.yahoo.com/obama-nominate-yellen-federal-chief-231027971.html\"},\"structured\":{\"items\":[{\"description\":\"Washington (AFP) - President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. The move would put a woman at the ...\",\"title\":\"Obama chooses Yellen to lead Fed\",\"url\":\"http://news.yahoo.com/obama-nominate-yellen-federal-chief-231027971.html\",\"summary\":\"President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\",\"source\":\"Yahoo! News\",\"date\":\"2013-10-09T15:41:20Z\"},{\"url\":\"http://www.bloomberg.com/news/2013-10-09/obama-seeks-post-debt-talks-with-senate-republicans-open.html\",\"source\":\"Bloomberg\",\"date\":\"2013-10-09T14:36:54Z\",\"description\":\"Giving priority to interest payments would prevent the U.S. from defaulting on its debt while requiring the government to balance its budget ... to go home,” said Stu Shea, president and chief operating officer of Leidos. A debt-ceiling ...\",\"title\":\"Obama Seeks Post-Debt Talks With Senate Republicans Open\"},{\"description\":\"WASHINGTON — President Obama will meet with congressional caucuses from both parties in the coming days, starting Wednesday in a session with House Democrats. The meeting is scheduled for 4:30 p.m. ET, and Obama and the Democrats will discuss ...\",\"title\":\"Obama to meet with congressional caucuses\",\"url\":\"http://www.usatoday.com/story/news/politics/2013/10/09/obama-house-senate-government-shutdown/2950557/\",\"summary\":\"WASHINGTON President Obama will meet with congressional caucuses from both parties in the coming days, starting Wed. in a session with House Democrats. The meeting is scheduled for 4:30 p.m. ET, and Obama and the Democrats will discuss the ongoing government shutdown and the prospect of a debt ceiling default. In recent days, Obama has refused Republican requests to negotiate a new spending plan that would end the government shutdown now in its ninth day.\",\"source\":\"USA Today\",\"date\":\"2013-10-09T14:22:35Z\"}],\"template\":\"list:news\"}},\"speak\":\"According to news.yahoo.com, President Barack Obama has chosen Janet Yellen to lead the Federal Reserve in a move expected to sustain outgoing chairman Ben Bernanke's focus on cutting joblessness in the still-struggling economy. Obama was to announce his nomination of Yellen, currently Fed vice chair, at a White House event at 1900 GMT Wed. also attended by Bernanke, an official said.\"}";
 
-            var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<ActorModel>(test);
+                var actor = Newtonsoft.Json.JsonConvert.DeserializeObject<ActorModel>(test);
 
-            var show = actor.show;
+                var show = actor.show;
 
-            IEnumerable<object> stories = ((JToken)show.structured["items"]).ToObject<IEnumerable<NewsModel>>();
+                IEnumerable<object> stories = ((JToken)show.structured["items"]).ToObject<IEnumerable<NewsModel>>();
 
-            vm.Stories = stories.Cast<NewsModel>().ToList<NewsModel>();
+                vm.Stories = stories.Cast<NewsModel>().ToList<NewsModel>();
 
-            data.Add("title", "news results");
-            data.Add("subtitle", String.Format("news search on \"{0}\"", originalQuery));
+                data.Add("title", "news results");
+                data.Add("subtitle", String.Format("news search on \"{0}\"", originalQuery));
+                data.Add("scheme", "information");
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("news test failure");
+                Debug.WriteLine(err.Message);
+            }
 
             return data;
         }
@@ -182,6 +196,7 @@ namespace Please2.Tests
 
             data.Add("title", "stock results");
             data.Add("subtitle", vm.StockData.name + "(" + vm.StockData.symbol + ")");
+            data.Add("scheme", "information");
 
             return data;
         }
@@ -218,6 +233,7 @@ namespace Please2.Tests
             vm.CurrentCondition = weatherResults.now;
 
             data.Add("title", "weather results");
+            data.Add("scheme", "weather");
 
             return data;
         }
@@ -240,6 +256,7 @@ namespace Please2.Tests
             vm.Goals = fitbitResults.goals;
 
             data.Add("title", "fitbit results");
+            data.Add("scheme", "application");
 
             return data;
         }
@@ -269,6 +286,7 @@ namespace Please2.Tests
 
             data.Add("title", "fitbit food results");
             data.Add("titlevisibility", Visibility.Collapsed);
+            data.Add("scheme", "application");
 
             return data;
         }
@@ -296,6 +314,7 @@ namespace Please2.Tests
 
             data.Add("title", "horoscope");
             data.Add("subtitle", sign + " for " + date);
+            data.Add("scheme", "information");
 
             return data;
         }

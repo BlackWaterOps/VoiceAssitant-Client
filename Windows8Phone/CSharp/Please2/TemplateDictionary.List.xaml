@@ -8,12 +8,13 @@
     
     <!-- Search -->
     <Style x:Key="SearchTitle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Blue"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="FontWeight" Value="Bold"/>
     </Style>
     
     <Style x:Key="SearchUrl" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
        
     </Style>
@@ -21,13 +22,14 @@
     <Style x:Key="SearchSummary" TargetType="TextBlock">
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="Margin" Value="0,10,0,0"/>
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
     
     <DataTemplate x:Key="SearchWithoutImage">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
-            <StackPanel Margin="12,0,0,0">
+        <Border Padding="10" Margin="0,0,0,10"
+                Background="{Binding ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
+            <StackPanel>
                 <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
                 <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
                 <TextBlock Text="{Binding summary}" Style="{StaticResource SearchSummary}"/>
@@ -36,10 +38,10 @@
     </DataTemplate>
 
     <DataTemplate x:Key="SearchWithImage">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
+        <Border Margin="0,0,0,10" >
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="104"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
@@ -48,17 +50,20 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <StackPanel Grid.Column="0" Grid.Row="0">
+                <Border Background="White" Padding="10">
                     <Image Source="{Binding opengraph_image}" Width="104"/>
-                </StackPanel>
+                </Border>
                 
-                
-                <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                    <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
-                    <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
-                </StackPanel>
+                <Border Grid.Column="1" Padding="10" Background="{Binding ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
+                    <StackPanel Margin="12,0,0,0">
+                        <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
+                        <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
+                    </StackPanel>
+                </Border>
 
-                <TextBlock Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding summary}" Style="{StaticResource SearchSummary}"/>
+                <Border Grid.ColumnSpan="2" Grid.Row="1" Background="{Binding ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
+                    <TextBlock Text="{Binding summary}" Margin="10" Style="{StaticResource SearchSummary}"/>
+                </Border>
             </Grid>
         </Border>
     </DataTemplate>
@@ -99,7 +104,7 @@
     </Style>
     
     <DataTemplate x:Key="fuel">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
+        <Border Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}" Padding="10" Margin="0,0,0,10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
                     <command:EventToCommand Command="{Binding Path=ListViewModel.FuelItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -127,12 +132,12 @@
                     <TextBlock Text="{Binding station_name}" 
                                TextWrapping="Wrap" 
                                FontWeight="SemiBold"
-                               Foreground="Black"
+                               Foreground="White"
                                FontSize="{StaticResource PhoneFontSizeMedium}"/>
 
                     <TextBlock Text="{Binding address}" 
                                TextWrapping="Wrap"
-                               Foreground="Black"
+                               Foreground="White"
                                FontSize="{StaticResource PhoneFontSizeSmall}"/>
 
                     <StackPanel Orientation="Horizontal">
@@ -160,62 +165,53 @@
     
     <!-- Shopping/Product -->
     <DataTemplate x:Key="shopping">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
-            <Grid>
+            <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="104"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="6"/>
-                </Grid.RowDefinitions>
-
-                <StackPanel Grid.Column="0" Grid.Row="0">
+                <Border Background="White" Padding="10">
                     <Image Source="{Binding image}" Width="104" Height="104"/>
-                </StackPanel>
+                </Border>
 
-                <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                    <HyperlinkButton x:Name="ShoppingTitle" 
-                                         NavigateUri="{Binding url}" 
-                                         TargetName="shopping" 
-                                         Content="{Binding title}"
-                                         Style="{StaticResource CustomHyperlinkButtonStyle}"
-                                         Foreground="Blue" 
-                                         Margin="-12,0,0,0" 
-                                         HorizontalAlignment="Left"/>
-                    <TextBlock x:Name="ShoppingPrice" 
+            <Border Grid.Column="1" Padding="10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                    <StackPanel>
+                        <TextBlock x:Name="ShoppingTitle"
+                                   Text="{Binding title}"
+                                   Foreground="White"
+                                   HorizontalAlignment="Left"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock x:Name="ShoppingPrice" 
                                    Text="{Binding price}" 
                                    Margin="0,10,0,0" 
-                                   Foreground="Black" 
+                                   Foreground="White" 
                                    FontSize="{StaticResource PhoneFontSizeLarge}" 
                                    FontWeight="SemiBold"/>
-                </StackPanel>
+                    </StackPanel>
+                </Border>
             </Grid>
-        </Border>
     </DataTemplate>
 
     <!-- Events -->
     <Style x:Key="EventTitle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
     <Style x:Key="EventTime" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="0,10"/>
     </Style>
 
     <Style x:Key="EventLocation" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
     
     <DataTemplate x:Key="EventWithoutImage">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
+        <Border Padding="10" Margin="0,0,0,10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
                     <command:EventToCommand Command="{Binding Path=ListViewModel.EventItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -231,7 +227,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="EventWithImage">
-        <Border Background="White" Padding="10" Margin="0,15,0,0">
+        <Border Margin="0,0,0,10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
                     <command:EventToCommand Command="{Binding Path=ListViewModel.EventItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -241,7 +237,6 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
@@ -250,21 +245,22 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <StackPanel Grid.Column="0" Grid.Row="0">
+                <Border Padding="10" Background="White">
                     <Image Source="{Binding image}" Width="128"/>
-                </StackPanel>
+                </Border>
 
-                <StackPanel Grid.Column="2" Grid.Row="0">
-                    <TextBlock Text="{Binding title}" 
-                               Style="{StaticResource EventTitle}"/>
+                <Border Grid.Column="1" Padding="10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding title}" 
+                                   Style="{StaticResource EventTitle}"/>
 
-                    <TextBlock Text="{Binding start_time, StringFormat='ddd, MMM d, yyyy'}" 
-                               Style="{StaticResource EventTime}"/>
+                        <TextBlock Text="{Binding start_time, StringFormat='ddd, MMM d, yyyy'}" 
+                                   Style="{StaticResource EventTime}"/>
 
-                    <TextBlock Text="{Binding location.address}" 
-                           Style="{StaticResource EventLocation}"/>
-                </StackPanel>
-                
+                        <TextBlock Text="{Binding location.address}" 
+                                   Style="{StaticResource EventLocation}"/>
+                    </StackPanel>
+                </Border>
                 <!--
                 <TextBlock Grid.ColumnSpan="2" Grid.Row="1" 
                            Text="{Binding location.address}" 
@@ -283,7 +279,7 @@
 
     <!-- Movies -->
     <DataTemplate x:Key="movies">
-        <Border Background="White" Padding="15" Margin="0,0,0,10">
+        <Border Margin="0,0,0,10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Tap">
                     <command:EventToCommand Command="{Binding Path=ListViewModel.MovieItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -293,32 +289,29 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="12"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0">
-                    <Image Source="{Binding image}" Width="120"/>
-                </StackPanel>
+                <Border Background="White" Padding="10">
+                    <Image Source="{Binding image}" Width="120" HorizontalAlignment="Center"/>
+                </Border>
 
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="{Binding title}" 
-                               Foreground="Black" 
-                               TextWrapping="Wrap" 
-                               FontWeight="SemiBold"/>
-                    
-                    <Border BorderBrush="Black" 
-                            BorderThickness="1" 
-                            HorizontalAlignment="Left" 
-                            Padding="5" Margin="0,10">
-                        <TextBlock Text="{Binding mpaa_rating}" 
-                                   Foreground="Black"/>
-                    </Border>
-                    
-                    <TextBlock Text="{Binding critics_consensus}" 
-                               Foreground="Black" 
-                               TextWrapping="Wrap"/>
-                </StackPanel>
+                <Border Grid.Column="1" Padding="10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding title}" 
+                                   TextWrapping="Wrap" 
+                                   FontWeight="SemiBold"/>
+
+                        <Border BorderBrush="White" 
+                                BorderThickness="1" 
+                                HorizontalAlignment="Left" 
+                                Padding="5" Margin="0,10">
+                                <TextBlock Text="{Binding mpaa_rating}"/>
+                        </Border>
+
+                        <TextBlock Text="{Binding critics_consensus}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
     </DataTemplate>
@@ -329,10 +322,10 @@
 
             <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                 <TextBlock x:Name="NewsTitle" 
-                               Text="{Binding DisplayName}" 
-                               Foreground="Black" 
-                               TextWrapping="Wrap" 
-                               FontWeight="SemiBold"/>
+                             Text="{Binding DisplayName}" 
+                             Foreground="Black" 
+                             TextWrapping="Wrap" 
+                             FontWeight="SemiBold"/>
             </StackPanel>
         </Border>
     </DataTemplate>
@@ -340,7 +333,7 @@
     <!-- Please Disambiguation Choices -->
     <DataTemplate x:Key="choice">
         <StackPanel>
-            <Border Padding="10">
+            <Border Padding="10,20" Margin="0,0,0,10" Background="{Binding ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Tap">
                         <command:EventToCommand Command="{Binding Path=ListViewModel.ChoiceItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -348,7 +341,6 @@
                 </i:Interaction.Triggers>
                 <TextBlock Text="{Binding text}" FontSize="{StaticResource PhoneFontSizeMedium}"/>
             </Border>
-            <Border BorderThickness="1" BorderBrush="#eeeeee"/>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

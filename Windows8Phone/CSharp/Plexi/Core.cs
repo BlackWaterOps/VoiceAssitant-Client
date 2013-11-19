@@ -100,10 +100,12 @@ namespace Plexi
         {
             Debug.WriteLine("plexi core initialized");
 
+            /*
             IPushService pushService = new PushService();
 
             // listen for push notifications
             pushService.NotificationReceived += PushNotificationReceived;
+            */
 
             // listen for Plexi state changes 
             this.currentState.PropertyChanged += OnStateChanged;

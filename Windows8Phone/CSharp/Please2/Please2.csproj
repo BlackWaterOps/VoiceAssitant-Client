@@ -94,12 +94,6 @@
     <Compile Include="MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
-    <Resource Include="Assets\Fonts\forcasticons.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Assets\Fonts\artill_clean_icons.otf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="Models\AltFuelModel.cs" />
     <Compile Include="Models\DictionaryModel.cs" />
     <Compile Include="Models\EventModel.cs" />
@@ -199,65 +193,11 @@
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
       <Link>Assets\sync.png</Link>
     </Content>
-    <Resource Include="Assets\Fonts\RobotoCondensed-Bold.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\RobotoCondensed-BoldItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\RobotoCondensed-Italic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\RobotoCondensed-Light.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\RobotoCondensed-LightItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\RobotoCondensed-Regular.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <None Include="ChildBrowser.xaml.cs">
       <DependentUpon>ChildBrowser.xaml</DependentUpon>
     </None>
     <Compile Include="LocalizedStrings.cs" />
     <Content Include="Assets\feature.alarm.png" />
-    <Resource Include="Assets\Fonts\Roboto-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-BlackItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-Bold.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-BoldItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-Italic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-Light.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-LightItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-Medium.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-MediumItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\Roboto-Regular.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Assets\Fonts\Roboto-Thin.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Assets\Fonts\Roboto-ThinItalic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Views\PreferencesPage.xaml.cs">
@@ -270,15 +210,16 @@
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\PreferencesViewModel.cs" />
-    <Resource Include="Assets\Fonts\FontAwesome.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="ColorScheme.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="TemplateDictionary.Details.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
@@ -375,6 +316,8 @@
     <Content Include="Assets\AlignmentGrid.png" />
     <Content Include="Assets\close.png" />
     <Content Include="Assets\feature.calendar.png" />
+    <Content Include="Assets\Fonts\artill_clean_icons.otf" />
+    <Content Include="Assets\Fonts\Roboto-Thin.ttf" />
     <Content Include="Assets\Horoscope\zodiac-aquarius.png" />
     <Content Include="Assets\Horoscope\zodiac-aries.png" />
     <Content Include="Assets\Horoscope\zodiac-cancer.png" />
@@ -390,7 +333,9 @@
     <Content Include="Assets\microphone.png" />
     <Content Include="Assets\pin.png" />
     <Content Include="Assets\plexi-100x100.png" />
+    <Content Include="Assets\plexi-background.png" />
     <Content Include="Assets\plexi-big-black-720.png" />
+    <Content Include="Assets\plexi-UI-logo.png" />
     <Content Include="Assets\save.png" />
     <Content Include="Assets\Tiles\IconicTileMediumLarge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -461,6 +406,27 @@
       <Project>{B7493D43-DE39-40B3-ADB8-772385B03B5F}</Project>
       <Name>Plexi</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\FontAwesome.otf" />
+    <Resource Include="Assets\Fonts\forcasticons.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Black.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-BlackItalic.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Light.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-LightItalic.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-Regular.ttf" />
+    <Resource Include="Assets\Fonts\Roboto-ThinItalic.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-Bold.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-Italic.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-Light.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-LightItalic.ttf" />
+    <Resource Include="Assets\Fonts\RobotoCondensed-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

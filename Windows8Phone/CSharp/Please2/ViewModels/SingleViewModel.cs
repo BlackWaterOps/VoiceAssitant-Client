@@ -22,6 +22,17 @@ namespace Please2.ViewModels
 {
     public class SingleViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        private string scheme;
+        public string Scheme
+        {
+            get { return scheme; }
+            set
+            {
+                scheme = value.CamelCase();
+                RaisePropertyChanged("Scheme");
+            }
+        }
+
         private Visibility? titleVisibility;
         public Visibility TitleVisibility
         {
@@ -122,9 +133,15 @@ namespace Please2.ViewModels
                 {
                     TitleVisibility = (Visibility)response["titlevisibility"];
                 }
+
+                if (response.ContainsKey("scheme"))
+                {
+                    Scheme = (string)response["scheme"];
+                }
             }
             catch (Exception err)
             {
+                Debug.WriteLine("run test failure");
                 Debug.WriteLine(err.Message);
             }
         }

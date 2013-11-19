@@ -60,33 +60,31 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
+            var weatherResults = ((JToken)structured["item"]).ToObject<WeatherModel>();
 
-            if (structured.ContainsKey("item"))
+            // since the api drops the daytime info for today part way through the afternoon, 
+            // lets fill in the missing pieces with what we do have
+            var today = weatherResults.week[0];
+
+            if (today.daytime == null)
             {
-                var weatherResults = ((JToken)structured["item"]).ToObject<WeatherModel>();
-
-                // since the api drops the daytime info for today part way through the afternoon, 
-                // lets fill in the missing pieces with what we do have
-                var today = weatherResults.week[0];
-
-                if (today.daytime == null)
+                today.daytime = new WeatherDayDetails()
                 {
-                    today.daytime = new WeatherDayDetails()
-                    {
-                        temp = weatherResults.now.temp,
-                        text = today.night.text
-                    };
-                }
-
-                multiForecast = weatherResults.week;
-                currentCondition = weatherResults.now;
-
-                ret.Add("title", "weather");
-                ret.Add("subtitle", DateTime.Now.ToString("dddd, MMMM d, yyyy"));
+                    temp = weatherResults.now.temp,
+                    text = today.night.text
+                };
             }
 
-            return ret;
+            multiForecast = weatherResults.week;
+            currentCondition = weatherResults.now;
+
+            var data = new Dictionary<string, object>();
+
+            data.Add("title", "weather");
+            data.Add("subtitle", DateTime.Now.ToString("dddd, MMMM d, yyyy"));
+            data.Add("scheme", "weather");
+
+            return data;
         }
 
         public void GetDefaultForecast()

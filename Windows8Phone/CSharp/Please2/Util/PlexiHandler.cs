@@ -122,7 +122,7 @@ namespace Please2.Util
 
             Show(response.show, response.speak);
 
-            Uri page = ViewModelLocator.ConversationPageUri;
+            Uri view = ViewModelLocator.ConversationPageUri;
 
             if (response.show.structured != null && response.show.structured.ContainsKey("template"))
             {
@@ -159,7 +159,7 @@ namespace Please2.Util
 
                                     if (uri != null)
                                     {
-                                        page = uri;
+                                        view = uri;
                                     }
                                     break;
 
@@ -168,7 +168,7 @@ namespace Please2.Util
 
                                     if (data != null)
                                     {
-                                        page = ViewModelLocator.ListResultsPageUri;
+                                        view = ViewModelLocator.ListResultsPageUri;
                                     }
                                     break;
                             }
@@ -180,14 +180,14 @@ namespace Please2.Util
 
                             if (uri != null)
                             {
-                                page = uri;
+                                view = uri;
                             }
                             break;
                     }
                 }
             }
 
-            navigationService.NavigateTo(page);
+            navigationService.NavigateTo(view);
         }
 
         private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
@@ -211,6 +211,12 @@ namespace Please2.Util
                 if (populateMethod == null)
                 {
                     Debug.WriteLine("populateviewmodel: 'Populate' method not implemented in " + templateName);
+                    return null;
+                }
+
+                if (!structured.ContainsKey("item") && !structured.ContainsKey("items"))
+                {
+                    Debug.WriteLine("populateviewmodel: unable to find 'item' or 'items' in response");
                     return null;
                 }
 
@@ -241,7 +247,7 @@ namespace Please2.Util
         {
             ResourceDictionary templates = ViewModelLocator.SingleTemplates;
 
-            Uri page = ViewModelLocator.SingleResultPageUri;
+            Uri view = ViewModelLocator.SingleResultPageUri;
 
             string[] template = (structured["template"] as string).Split(':');
 
@@ -270,9 +276,10 @@ namespace Please2.Util
                 return null;
             }
 
+            // allow viewmodel to override default view. Currently not in use! 
             if (data.ContainsKey("page"))
             {
-                page = (Uri)data["page"];
+                view = (Uri)data["page"];
             }
 
             singleViewModel.Title = null;
@@ -289,7 +296,7 @@ namespace Please2.Util
                 singleViewModel.SubTitle = (string)data["subtitle"];
             }
 
-            return page;
+            return view;
         }
 
         /*

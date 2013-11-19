@@ -22,6 +22,8 @@ namespace Please2.ViewModels
     {
         private const string phrase = "how may I help you?";
 
+        public string Scheme { get { return "Default"; } }
+
         public DateTime SubTitle
         {
             get { return DateTime.Now; }
@@ -59,7 +61,7 @@ namespace Please2.ViewModels
                 DialogList = new ObservableCollection<DialogModel>();
             }
 
-            //AddDummyDialog(15);
+            AddDummyDialog(15);
         }
 
         private void AddDummyDialog(int count)
@@ -68,7 +70,7 @@ namespace Please2.ViewModels
             {
                 string sender = (i % 2 == 0) ? "user" : "please";
 
-                AddDialog(sender, " dummy message " + i);
+                AddDialog( sender, " dummy message " + i, ((i % 5 == 0) ? "http://www.plexisearch.com" : null) );
             }
         }
 

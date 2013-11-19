@@ -32,29 +32,18 @@ namespace Please2.ViewModels
         {
             this.plexiService = plexiService;
         }
-        
+
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
+            Stories = (structured["items"] as JArray).ToObject<List<NewsModel>>();
 
-            if (structured.ContainsKey("items"))
-            {
-                var page = ViewModelLocator.SingleResultPageUri;
+            var data = new Dictionary<string, object>();
 
-                var news = ViewModelLocator.GetServiceInstance<NewsViewModel>();
+            data.Add("title", "news results");
+            //data.Add("subtitle", String.Format("news search on \"{0}\"", this.plexiService.OriginalQuery));
+            data.Add("scheme", "information");
 
-                stories = (structured["items"] as JArray).ToObject<List<NewsModel>>();
-
-                var singleViewModel = ViewModelLocator.GetServiceInstance<SingleViewModel>();
-
-                // return title, subtitle, and page back to service so we can be decoupled from singleviewmodel
-
-                ret.Add("title", "news results");
-                ret.Add("subtitle", String.Format("news search on \"{0}\"", this.plexiService.OriginalQuery));
-                ret.Add("page", ViewModelLocator.SingleResultPageUri);
-            }
-
-            return ret;
+            return data;
         }
     }
 }

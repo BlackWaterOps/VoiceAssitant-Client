@@ -96,7 +96,7 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
+            var data = new Dictionary<string, object>();
 
             string[] template = (structured["template"] as string).Split(':');
 
@@ -107,51 +107,53 @@ namespace Please2.ViewModels
                 switch (template.Last())
                 {
                     case "weight":
-                        ret = PopulateWeight(item);
+                        data = PopulateWeight(item);
                         break;
 
                     case "food":
                     case "log-food":
-                        ret = PopulateFood(item);
+                        data = PopulateFood(item);
                         break;
 
                     case "activity":
                     case "log-activity":
-                        ret = PopulateFitness(item);
+                        data = PopulateFitness(item);
                         break;
                 }    
             }
 
-            return ret;
+            data.Add("scheme", "application");
+
+            return data;
         }
 
         private Dictionary<string, object> PopulateWeight(JObject item)
         {
-            var ret = new Dictionary<string, object>();
+            Points = (item["timeseries"] as JArray).ToObject<IEnumerable<FitbitWeightTimeseries>>();
+            Goals = item["goals"].ToObject<FitbitWeightGoals>();
 
-            points = (item["timeseries"] as JArray).ToObject<IEnumerable<FitbitWeightTimeseries>>();
-            goals = item["goals"].ToObject<FitbitWeightGoals>();
+            var data = new Dictionary<string, object>();
 
-            ret.Add("title", "fitbit weight");
-
-            return ret;
+            data.Add("title", "fitbit weight");
+            
+            return data;
         }
 
         private Dictionary<string, object> PopulateFood(JObject item)
         {
-            var ret = new Dictionary<string, object>();
-
-            foods = (item["foods"] as JArray).ToObject<IEnumerable<FitbitFood>>();
-            foodGoals = item["goals"].ToObject<FitbitFoodGoals>();
-            foodSummary = item["summary"].ToObject<FitbitFoodSummary>();
+            Foods = (item["foods"] as JArray).ToObject<IEnumerable<FitbitFood>>();
+            FoodGoals = item["goals"].ToObject<FitbitFoodGoals>();
+            FoodSummary = item["summary"].ToObject<FitbitFoodSummary>();
 
             var remaining = foodGoals.calories - foodSummary.calories;
 
             caloriesRemaining = (remaining > 0) ? remaining : 0;
 
-            ret.Add("title", "fitbit food");
+            var data = new Dictionary<string, object>();
 
-            return ret;
+            data.Add("title", "fitbit food");
+
+            return data;
         }
 
         private Dictionary<string, object> PopulateFitness(JObject item)

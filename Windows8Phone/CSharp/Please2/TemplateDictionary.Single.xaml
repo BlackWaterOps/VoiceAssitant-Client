@@ -111,7 +111,8 @@
 
     <!-- Stocks -->
     <Style x:Key="StockLabel" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="DarkGray"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
     </Style>
 
     <DataTemplate x:Key="stock">
@@ -190,7 +191,7 @@
     
     <!-- Weather -->
     <DataTemplate x:Key="WeatherShort">
-        <Border Background="#169ea0" BorderBrush="Black" BorderThickness="2" Padding="10" Margin="0,15,0,0">
+        <Border Background="#169ea0" Padding="10" Margin="0,15,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
@@ -201,8 +202,8 @@
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
-
-                <Glyphs Grid.Column="0" 
+             
+                <Glyphs
                         Height="110"
                         Margin="0,-35,0,0"
                         VerticalAlignment="Top"
@@ -211,7 +212,7 @@
                         Fill="White" 
                         FontRenderingEmSize="100"
                         FontUri="/Please2;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
-
+             
                 <StackPanel Grid.Column="1" Margin="12,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding daytime.temp, StringFormat='H {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold"/>
@@ -228,7 +229,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="WeatherFull">
-        <Border Background="#1dc0c2" BorderBrush="Black" BorderThickness="2" Padding="25,15">
+        <Border Background="#1dc0c2" Padding="25,15">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
@@ -282,33 +283,68 @@
 
     <!-- News -->
     <DataTemplate x:Key="news">
-        <phone:Pivot Padding="0,0,0,10" DataContext="{Binding NewsViewModel, Source={StaticResource Locator}}" ItemsSource="{Binding Stories}">
+        <phone:Pivot DataContext="{Binding NewsViewModel, Source={StaticResource Locator}}" ItemsSource="{Binding Stories}">
+            <phone:Pivot.ItemContainerStyle>
+                <Style TargetType="phone:PivotItem">
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </phone:Pivot.ItemContainerStyle>
+            
             <phone:Pivot.HeaderTemplate>
                 <DataTemplate/>
             </phone:Pivot.HeaderTemplate>
             <phone:Pivot.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="#999999" 
-                            BorderThickness="3" 
-                            Background="{StaticResource ResultItemBackground}" 
+                    <Border Background="{Binding SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}" 
                             Padding="10">
-                        <StackPanel>
+                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="20"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
                             <TextBlock Text="{Binding title}" 
-                                       FontSize="{StaticResource PhoneFontSizeMediumLarge}" 
+                                       FontSize="{StaticResource PhoneFontSizeLarge}"
                                        TextWrapping="Wrap" 
-                                       Margin="0,0,0,40" 
                                        FontWeight="SemiBold"/>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
-                                <TextBlock Text="{Binding source, StringFormat='{0} '}" 
-                                           FontSize="{StaticResource PhoneFontSizeSmall}"
-                                           FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding date, Converter={StaticResource PrettyDateConverter}, ConverterParameter=news}" 
-                                           FontSize="{StaticResource PhoneFontSizeSmall}"/>
-                            </StackPanel>
-                            <ScrollViewer>
+                            
+                            <TextBlock Grid.Row="1" 
+                                       Text="{Binding date, Converter={StaticResource PrettyDateConverter}, ConverterParameter=news}" 
+                                       FontSize="{StaticResource PhoneFontSizeSmall}"
+                                       Margin="0,3"/>
+                            
+                            <TextBlock Grid.Row="2" 
+                                       Text="{Binding source, StringFormat='{0} '}" 
+                                       FontSize="{StaticResource PhoneFontSizeSmall}"
+                                       Margin="0,3"/>
+                            
+                            <ScrollViewer Grid.Row="4">
                                 <TextBlock Text="{Binding summary}" TextWrapping="Wrap" FontSize="{StaticResource PhoneFontSizeMedium}"/>
                             </ScrollViewer>
-                        </StackPanel>
+                            
+                            <!--
+                            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                <TextBlock Text="read the full story on the web" VerticalAlignment="Center"/>
+                                <Glyphs Style="{StaticResource FontAwesomeBase}"
+                                        Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}"
+                                        UnicodeString="&#xf01b;"
+                                        OriginX="0" OriginY="0"
+                                        Margin="10,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Fill="White" FontRenderingEmSize="40">
+                                    <Glyphs.RenderTransform>
+                                        <RotateTransform Angle="90"/>
+                                    </Glyphs.RenderTransform>
+                                </Glyphs>
+                            </StackPanel>
+                            -->
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </phone:Pivot.ItemTemplate>
@@ -339,11 +375,20 @@
                                          ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Margin="0,0,0,10" Background="White" BorderBrush="Black" Padding="10" HorizontalAlignment="Stretch">
+                                            <Border Margin="0,0,0,10"
+                                                    Padding="10" 
+                                                    HorizontalAlignment="Stretch"
+                                                    Background="{Binding SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
                                                 <StackPanel>
-                                                    <TextBlock Text="{Binding definition}" Foreground="Black" FontSize="{StaticResource PhoneFontSizeMedium}" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding definition}" 
+                                                               Foreground="White" 
+                                                               FontSize="{StaticResource PhoneFontSizeMedium}" 
+                                                               TextWrapping="Wrap"/>
 
-                                                    <TextBlock Text="Examples" FontWeight="SemiBold" Foreground="Black" Visibility="{Binding examples, Converter={StaticResource VisibilityConverter}}"/>
+                                                    <TextBlock Text="Examples" 
+                                                               FontWeight="SemiBold" 
+                                                               Foreground="White" 
+                                                               Visibility="{Binding examples, Converter={StaticResource VisibilityConverter}}"/>
 
                                                     <ListBox ItemsSource="{Binding examples}"
                                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -351,7 +396,7 @@
                                                                 Margin="10,0,0,0">
                                                         <ListBox.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding StringFormat='&#x2022; {0}'}" Foreground="Black" TextWrapping="Wrap"/>
+                                                                <TextBlock Text="{Binding StringFormat='&#x2022; {0}'}" Foreground="White" TextWrapping="Wrap"/>
                                                             </DataTemplate>
                                                         </ListBox.ItemTemplate>
                                                     </ListBox>
@@ -437,6 +482,7 @@
     <!-- Real Estate -->
     <Style x:Key="RealEstateLabel" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="White"/>
     </Style>
 
     <Style x:Key="RealEstateAverageLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
@@ -454,7 +500,7 @@
     <Style x:Key="RealEstateHeader" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
         <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}"/>
     </Style>
-
+    
     <DataTemplate x:Key="real_estate">
         <phone:Pivot DataContext="{Binding RealEstateViewModel, Source={StaticResource Locator}}">
             <phone:PivotItem Header="Stats">
@@ -542,7 +588,7 @@
                 <phone:LongListSelector ItemsSource="{Binding Listings}" toolkit:TiltEffect.IsTiltEnabled="True">
                     <phone:LongListSelector.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="White" Padding="10" Margin="0,0,0,10">
+                            <Border Background="White" Margin="0,0,0,10">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Tap">
                                         <command:EventToCommand Command="{Binding Path=RealEstateViewModel.RealEstateItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
@@ -554,43 +600,41 @@
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <Border VerticalAlignment="Center" Padding="10" Background="White">
                                         <Image Source="{Binding images[0].src}" MaxWidth="100" VerticalAlignment="Center"/>
-                                    </StackPanel>
+                                    </Border>
 
-                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="price: " Foreground="Black" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" 
-                                                       Foreground="Black" 
-                                                       TextWrapping="Wrap" 
-                                                       FontWeight="SemiBold"/>
-                                        </StackPanel>
+                                    <Border Grid.Column="1" Padding="10" Background="{Binding Path=SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="price: " Style="{StaticResource RealEstateLabel}"/>
+                                                <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" 
+                                                           Foreground="White" 
+                                                           TextWrapping="Wrap"/>
+                                            </StackPanel>
 
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="sqft: " Foreground="Black" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0}'}" 
-                                                       Foreground="Black" 
-                                                       TextWrapping="Wrap" 
-                                                       FontWeight="SemiBold"/>
-                                        </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="sqft: " Style="{StaticResource RealEstateLabel}"/>
+                                                <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0}'}" 
+                                                           Foreground="White" 
+                                                           TextWrapping="Wrap"/> 
+                                            </StackPanel>
 
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="bedrooms: " Foreground="Black" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding attributes.bedrooms}" 
-                                                       Foreground="Black" 
-                                                       TextWrapping="Wrap" 
-                                                       FontWeight="SemiBold"/>
-                                        </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="bedrooms: " Style="{StaticResource RealEstateLabel}"/>
+                                                <TextBlock Text="{Binding attributes.bedrooms}" 
+                                                           Foreground="White" 
+                                                           TextWrapping="Wrap"/>
+                                            </StackPanel>
 
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="bathrooms: " Foreground="Black" FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding attributes.bathrooms}" 
-                                                       Foreground="Black" 
-                                                       TextWrapping="Wrap" 
-                                                       FontWeight="SemiBold"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="bathrooms: " Style="{StaticResource RealEstateLabel}"/>
+                                                <TextBlock Text="{Binding attributes.bathrooms}" 
+                                                           Foreground="White" 
+                                                           TextWrapping="Wrap"/>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
+                                    </Border>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -617,7 +661,9 @@
     
     <!-- Geopolitics -->
     <DataTemplate x:Key="geopolitics">
-        <Border Style="{StaticResource ResultItemStyle}" Padding="15" DataContext="{Binding GeopoliticsViewModel, Source={StaticResource Locator}}">
+        <Border Padding="15" 
+                DataContext="{Binding GeopoliticsViewModel, Source={StaticResource Locator}}"
+                Background="{Binding SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>

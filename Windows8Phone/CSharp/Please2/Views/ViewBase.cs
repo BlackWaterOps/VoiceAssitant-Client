@@ -83,11 +83,11 @@ namespace Please2.Views
 
             RegisterListeners();
 
-            CreatePageBackground();
+            //CreatePageBackground();
             
             AddDebugger();
 
-            AddVerifyPrompt();
+            //AddVerifyPrompt();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -126,6 +126,7 @@ namespace Please2.Views
             Messenger.Default.Unregister<ShowMessage>(this, Speak);
         }
 
+        /*
         protected void CreatePageBackground()
         {
             var bg = new ImageBrush();
@@ -144,6 +145,7 @@ namespace Please2.Views
                 layoutRoot.Background = bg;
             }
         }
+        */
 
         protected void CreateApplicationBar()
         {

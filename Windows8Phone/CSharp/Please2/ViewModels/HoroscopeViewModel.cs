@@ -43,19 +43,20 @@ namespace Please2.ViewModels
 
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
-
-            var horoscopeResults = ((JObject)structured["item"]).ToObject<HoroscopeModel>();
+            HoroscopeModel horoscopeResults = ((JObject)structured["item"]).ToObject<HoroscopeModel>();
 
             ZodiacSign = horoscopeResults.zodiac_sign;
             Horoscope = horoscopeResults.horoscope;
 
-            var date = DateTime.Now.ToString("dddd, MMMM d, yyyy");
+            string date = DateTime.Now.ToString("dddd, MMMM d, yyyy");
 
-            ret.Add("title", "horoscope");
-            ret.Add("subtitle", ZodiacSign + " for " + date);
+            var data = new Dictionary<string, object>();
 
-            return ret;
+            data.Add("title", "horoscope");
+            data.Add("subtitle", ZodiacSign + " for " + date);
+            data.Add("scheme", "default");
+
+            return data;
         }
     }
 }

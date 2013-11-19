@@ -35,6 +35,7 @@ namespace Please2.Tests
             data.Add("list", CreateTypedList("search", show.structured["items"]));
             data.Add("title", "search results");
             data.Add("subtitle", show.simple["text"]);
+            data.Add("scheme", "information");
 
             return data;
         }
@@ -54,6 +55,7 @@ namespace Please2.Tests
                 data.Add("subtitle", show.simple["text"]);
                 data.Add("layoutmode", LongListSelectorLayoutMode.Grid);
                 data.Add("gridcellsize", new Size(145, 145));
+                data.Add("scheme", "default");
             }
             catch (Exception err)
             {
@@ -75,6 +77,7 @@ namespace Please2.Tests
             data.Add("list", CreateTypedList("events", show.structured["items"]));
             data.Add("title", "event results");
             data.Add("subtitle", "events for \"events nearby\"");
+            data.Add("scheme", "commerce");
 
             return data;
         }
@@ -94,6 +97,7 @@ namespace Please2.Tests
                 data.Add("list", CreateTypedList("movies", show.structured["items"]));
                 data.Add("title", "movie results");
                 data.Add("subtitle", show.simple["text"]);
+                data.Add("scheme", "commerce");
             }
             catch (Exception err)
             {
@@ -117,6 +121,7 @@ namespace Please2.Tests
                 data.Add("list", CreateTypedList("shopping", show.structured["items"]));
                 data.Add("title", "shopping results");
                 data.Add("subtitle", show.simple["text"]);
+                data.Add("scheme", "commerce");
             }
             catch (Exception err)
             {
@@ -139,6 +144,8 @@ namespace Please2.Tests
             data.Add("list", CreateTypedList("fuel", show.structured["items"]));
             data.Add("title", "fuel");
             data.Add("subtitle", show.simple["text"]);
+            data.Add("scheme", "information");
+
             return data;
         }
 
@@ -154,7 +161,7 @@ namespace Please2.Tests
 
                 data.Add("list", CreateTypedList("choice", simple["list"]));
                 data.Add("subtitle", simple["text"]);
-
+                data.Add("scheme", "default");
             }
             catch (Exception err)
             {

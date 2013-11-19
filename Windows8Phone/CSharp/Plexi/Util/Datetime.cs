@@ -40,6 +40,51 @@ namespace Plexi.Util
             return Math.Floor(diff.TotalSeconds);
         }
 
+        /// <summary>
+        ///  Get the elapsed time of a DateTime object in minutes, hours, or date if over 24 hours
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns>A string representation of the elapsed time</returns>
+        public static string GetTimeElapsed(DateTime date)
+        {
+            DateTime now = DateTime.Now;
+
+            TimeSpan elapsed = now.Subtract(date);
+
+            double daysAgo = Math.Round(Math.Abs(elapsed.TotalDays));
+
+            string elapseString = "";
+
+            if (daysAgo <= 1)
+            {
+                double minutesAgo = Math.Round(Math.Abs(elapsed.TotalMinutes));
+
+                double hoursAgo = Math.Round(Math.Abs(elapsed.TotalHours));
+
+                if (minutesAgo < 60)
+                {
+                    elapseString = String.Format("About {0} minutes ago", minutesAgo);
+                }
+                else
+                {
+                    if (hoursAgo == 1)
+                    {
+                        elapseString = String.Format("About {0} hour ago", hoursAgo);
+                    }
+                    else
+                    {
+                        elapseString = String.Format("About {0} hours ago", hoursAgo);
+                    }
+                }
+            }
+            else
+            {
+                elapseString = date.ToString("MM/dd/yyyy h:mm tt");
+            }
+
+            return elapseString;
+        }
+
         internal static Dictionary<string, string> BuildDatetimeFromJson(object date = null, object time = null)
         {
             DateTime? dateObj = null;
