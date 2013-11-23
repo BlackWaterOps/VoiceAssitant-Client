@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
     xmlns:util="clr-namespace:Please2.Util"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
@@ -414,6 +415,7 @@
     </DataTemplate>
     
     <!-- Flight -->
+    <!-- TODO: get airline icons -->
     <DataTemplate x:Key="flights">
         <Border>
             <StackPanel DataContext="{Binding FlightsViewModel, Source={StaticResource Locator}}">
@@ -425,60 +427,81 @@
                 <ListBox ItemsSource="{Binding Flights}" ItemContainerStyle="{StaticResource ListBoxItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="White" BorderBrush="Black" BorderThickness="2" Padding="10">
+                            <Border>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="250"/>
-                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="50"/>
-                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" 
+                                    
+                                    <!-- TODO: possible status icons -->
+                                    <TextBlock Grid.ColumnSpan="2" 
                                                Text="{Binding delay, Converter={StaticResource StatusConverter}, StringFormat='status: {0}'}" 
                                                Foreground="{Binding delay, Converter={StaticResource ColorConverter}, ConverterParameter=flights}" 
                                                FontWeight="SemiBold"/>
-
-                                    <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                        <TextBlock Text="{Binding origin.city, StringFormat='From: {0}'}" Foreground="Black"/>
-                                        <TextBlock Text="{Binding origin.airport_code, StringFormat=' ({0})'}" Foreground="Black"/>
+                                    
+                                    <TextBlock Grid.ColumnSpan="2" Grid.Row="1" Text="{Binding duration, StringFormat='duration: {0}'}" Foreground="White"/>
+                                    
+                                    <StackPanel Grid.Row="2">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding origin.city, StringFormat='From: {0}'}" Foreground="White"/>
+                                            <TextBlock Text="{Binding origin.airport_code, StringFormat=' ({0})'}" Foreground="White"/>
+                                        </StackPanel>
+                                        
+                                        <TextBlock Text="Gate ?" Foreground="Silver"/>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="1" Grid.Column="1">
-                                        <TextBlock Text="Departs" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold" Foreground="Black"/>
-                                        <TextBlock Text="{Binding schedule.filed_departure, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right" Foreground="Black"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1">
+                                        <TextBlock Text="Departs" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold" Foreground="White"/>
+                                        <TextBlock Text="{Binding schedule.filed_departure, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right" Foreground="White"/>
                                         <TextBlock Text="{Binding schedule.actual_departure, StringFormat='(wa\\s h:mm tt)'}"
                                                    Visibility="{Binding schedule.actual_departure, Converter={StaticResource NullToVisibilityConverter}}"
-                                                   Foreground="#666666" TextAlignment="Right"/>
+                                                   Foreground="Silver" TextAlignment="Right"/>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal">
-                                        <TextBlock Text="{Binding destination.city, StringFormat='To: {0}'}" Foreground="Black"/>
-                                        <TextBlock Text="{Binding destination.airport_code, StringFormat=' ({0})'}" Foreground="Black"/>
+                                    <StackPanel Grid.Row="4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding destination.city, StringFormat='To: {0}'}" Foreground="White"/>
+                                            <TextBlock Text="{Binding destination.airport_code, StringFormat=' ({0})'}" Foreground="White"/>
+                                        </StackPanel>
+                                        
+                                        <TextBlock Text="Terminal ?, Gate ?" Foreground="Silver"/>
                                     </StackPanel>
 
-                                    <StackPanel Grid.Row="3" Grid.Column="1">
-                                        <TextBlock Text="Arrives" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold" Foreground="Black"/>
-                                        <TextBlock Text="{Binding schedule.estimated_arrival, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right" Foreground="Black"/>
+                                    <StackPanel Grid.Row="4" Grid.Column="1">
+                                        <TextBlock Text="Arrives" TextAlignment="Right" FontSize="{StaticResource PhoneFontSizeMedium}" FontWeight="SemiBold" Foreground="White"/>
+                                        <TextBlock Text="{Binding schedule.estimated_arrival, StringFormat='M/d/yyyy h:mm tt'}" TextAlignment="Right" Foreground="White"/>
                                         <TextBlock Text="{Binding schedule.actual_arrival, StringFormat='(wa\\s h:mm tt)'}"
                                                    Visibility="{Binding schedule.actual_arrival, Converter={StaticResource NullToVisibilityConverter}}"
-                                                   Foreground="#666666" TextAlignment="Right"/>
+                                                   Foreground="Silver" TextAlignment="Right"/>
                                     </StackPanel>
-
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+                
+                <!--
+                <map:Map Grid.Row="4" Grid.ColumnSpan="2" x:Name="FlightsMap" Margin="0,20,0,0" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="4">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <command:EventToCommand Command="{Binding MapLoaded}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </map:Map>
+                -->
             </StackPanel>
         </Border>
     </DataTemplate>
-
+    
     <!-- Real Estate -->
     <Style x:Key="RealEstateLabel" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold"/>
@@ -641,6 +664,21 @@
                     </phone:LongListSelector.ItemTemplate>
                 </phone:LongListSelector>
             </phone:PivotItem>
+            
+            <phone:PivotItem Header="Map">
+                <map:Map x:Name="RealEstateMap" 
+                         VerticalAlignment="Stretch" 
+                         VerticalContentAlignment="Stretch" 
+                         HorizontalAlignment="Stretch" 
+                         HorizontalContentAlignment="Stretch" 
+                         ZoomLevel="">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <command:EventToCommand Command="{Binding MapLoaded}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </map:Map>
+            </phone:PivotItem>
         </phone:Pivot>
     </DataTemplate>
     
@@ -676,7 +714,6 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 
-                   
                 <TextBlock Grid.Column="0" Text="{Binding Country}" FontWeight="SemiBold" FontSize="34" VerticalAlignment="Center" TextWrapping="Wrap"/>
                 <Image Grid.Column="1" Source="{Binding Flag}" Width="226" Height="151" HorizontalAlignment="Right"/>
                 
@@ -706,6 +743,14 @@
                         
                         <TextBlock Grid.ColumnSpan="2" Grid.Row="4" Text="{Binding Text}" TextWrapping="Wrap"/>
                     </Grid>
+
+                    <map:Map x:Name="GeopoliticsMap" Margin="0,20,0,0" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="4">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Loaded">
+                                <command:EventToCommand Command="{Binding MapLoaded}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </map:Map>
                 </StackPanel>
             </Grid>
         </Border>
@@ -735,7 +780,7 @@
     
     <Style x:Key="FitbitNutritionLabel" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}"/>
     </Style>
     
@@ -745,7 +790,7 @@
     
     <Style x:Key="FitbitNutritionValue" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="#ff3366"/>
+        <Setter Property="Foreground" Value="DarkOrange"/>
         <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}"/>
     </Style>
 
@@ -919,11 +964,18 @@
 
     <DataTemplate x:Key="fitbit:log-food">
         <phone:Pivot DataContext="{Binding FitbitViewModel, Source={StaticResource Locator}}">
+            <phone:Pivot.ItemContainerStyle>
+                <Style TargetType="phone:PivotItem">
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </phone:Pivot.ItemContainerStyle>
+            
             <phone:PivotItem Header="Food Log">
                 <ListBox ItemsSource="{Binding Foods}" ItemContainerStyle="{StaticResource ListBoxItem}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="MyTest" Background="White" Margin="0,0,0,10" Padding="10">
+                            <Border Background="{Binding SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=item}" Margin="0,0,0,10" Padding="10">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -936,7 +988,7 @@
                                                TextWrapping="Wrap" 
                                                FontSize="{StaticResource PhoneFontSizeLarge}" 
                                                FontWeight="SemiBold" 
-                                               Foreground="#666666" 
+                                               Foreground="White" 
                                                VerticalAlignment="Center"/>
 
                                     <StackPanel Grid.Row="1" Orientation="Horizontal">

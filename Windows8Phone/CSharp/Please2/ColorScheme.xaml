@@ -32,7 +32,13 @@
     <SolidColorBrush x:Key="CommercePageTitle" Color="#5f4a72"/>
     <SolidColorBrush x:Key="CommercePageSubTitle" Color="#69547d"/>
     <SolidColorBrush x:Key="CommerceBackground" Color="#78618a"/>
-    
+
+    <!-- Settings -->
+    <SolidColorBrush x:Key="SettingsAppTitle" Color="#152530"/>
+    <SolidColorBrush x:Key="SettingsPageTitle" Color="#182934"/>
+    <SolidColorBrush x:Key="SettingsPageSubTitle" Color="#1b2e39"/>
+    <SolidColorBrush x:Key="SettingsBackground" Color="#1f343f"/>
+
     <!--
     <SolidColorBrush x:Key="NotificationAppTitle" Color="#554168"/>
     <SolidColorBrush x:Key="NotificationPageTitle" Color="#5f4a72"/>

@@ -34,6 +34,9 @@ namespace Please2.Tests
 
             var show = actor.show;
 
+            return vm.Populate((string)show.structured["template"], show.structured);
+
+            /*
             var dictionaryResults = (show.structured["item"] as JObject).ToObject<DictionaryModel>();
 
             var senses = dictionaryResults.senses;
@@ -44,6 +47,7 @@ namespace Please2.Tests
 
             data.Add("title", "dictionary");
             data.Add("scheme", "information");
+            */
 
             return data;
         }
@@ -64,6 +68,9 @@ namespace Please2.Tests
 
                 var show = actor.show;
 
+                return vm.Populate((string)show.structured["template"], show.structured);
+
+                /*
                 var realestateResults = (show.structured["item"] as JObject).ToObject<RealEstateModel>();
 
                 vm.Listings = realestateResults.listings;
@@ -71,6 +78,7 @@ namespace Please2.Tests
 
                 data.Add("title", "real estate");
                 data.Add("scheme", "commerce");
+                */
             }
             catch (Exception err)
             {
@@ -94,6 +102,9 @@ namespace Please2.Tests
 
             var show = actor.show;
 
+            return vm.Populate((string)show.structured["template"], show.structured);
+            
+            /*
             var geoResults = (show.structured["item"] as JObject).ToObject<GeopoliticsModel>();
 
             vm.Flag = geoResults.flag;
@@ -105,6 +116,7 @@ namespace Please2.Tests
             data.Add("scheme", "information");
 
             return data;
+            */
         }
 
         private Dictionary<string, object> FlightsTest()
@@ -115,12 +127,15 @@ namespace Please2.Tests
 
             var vm = locator.FlightsViewModel;
 
-            var test = "{\"show\":{\"simple\":{\"text\":\"UAL1053 departed at 10:29 pm yesterday, and is set to arrive in Cleveland, OH at 12:33 am.\"},\"structured\":{\"item\":{\"flight_number\":\"1053\",\"airline\":{\"code\":\"UAL\",\"name\":\"United Air Lines Inc.\",\"url\":\"http://www.united.com/\",\"country\":\"US\",\"phone\":\"+1-800-225-5833\",\"callsign\":\"United\",\"location\":\"\",\"shortname\":\"United\"},\"details\":[{\"origin\":{\"city\":\"Newark, NJ\",\"airport_code\":\"KEWR\",\"airport_name\":\"Newark Liberty Intl\"},\"status\":\"departed\",\"schedule\":{\"estimated_arrival\":\"2013-10-12T00:33:34\",\"actual_departure\":\"2013-10-11T23:38:00\",\"filed_departure\":\"2013-10-11T22:29:00\"},\"destination\":{\"city\":\"Cleveland, OH\",\"airport_code\":\"KCLE\",\"airport_name\":\"Cleveland-Hopkins Intl\"},\"delay\":44,\"identification\":\"UAL1053\"}]},\"template\":\"single:flights\"}},\"speak\":\"UAL1053 departed at 10:29 pm yesterday, and is set to arrive in Cleveland, OH at 12:33 am.\"}";
+            var test = "{\"show\":{\"simple\":{\"text\":\"UAL1053 departed at 10:29 pm yesterday, and is set to arrive in Cleveland, OH at 12:33 am.\"},\"structured\":{\"item\":{\"flight_number\":\"1053\",\"airline\":{\"code\":\"UAL\",\"name\":\"United Air Lines Inc.\",\"url\":\"http://www.united.com/\",\"country\":\"US\",\"phone\":\"+1-800-225-5833\",\"callsign\":\"United\",\"location\":\"\",\"shortname\":\"United\"},\"details\":[{\"origin\":{\"city\":\"Newark, NJ\",\"airport_code\":\"KEWR\",\"airport_name\":\"Newark Liberty Intl\"},\"status\":\"departed\",\"schedule\":{\"estimated_arrival\":\"2013-10-12T00:33:34\",\"actual_departure\":\"2013-10-11T23:38:00\",\"filed_departure\":\"2013-10-11T22:29:00\"},\"destination\":{\"city\":\"Cleveland, OH\",\"airport_code\":\"KCLE\",\"airport_name\":\"Cleveland-Hopkins Intl\"},\"delay\":44,\"duration\":\"1:58\",\"identification\":\"UAL1053\"}]},\"template\":\"single:flights\"}},\"speak\":\"UAL1053 departed at 10:29 pm yesterday, and is set to arrive in Cleveland, OH at 12:33 am.\"}";
 
             var actor = JsonConvert.DeserializeObject<ActorModel>(test);
 
             var show = actor.show;
 
+            return vm.Populate((string)show.structured["template"], show.structured);
+
+            /*
             var flightResults = (show.structured["item"] as JObject).ToObject<FlightModel>();
 
             vm.Flights = flightResults.details;
@@ -132,6 +147,7 @@ namespace Please2.Tests
             data.Add("scheme", "default");
 
             return data;
+            */
         }
 
         private Dictionary<string, object> NewsTest()
@@ -150,6 +166,9 @@ namespace Please2.Tests
 
                 var show = actor.show;
 
+                return vm.Populate((string)show.structured["template"], show.structured);
+
+                /*
                 IEnumerable<object> stories = ((JToken)show.structured["items"]).ToObject<IEnumerable<NewsModel>>();
 
                 vm.Stories = stories.Cast<NewsModel>().ToList<NewsModel>();
@@ -157,6 +176,7 @@ namespace Please2.Tests
                 data.Add("title", "news results");
                 data.Add("subtitle", String.Format("news search on \"{0}\"", originalQuery));
                 data.Add("scheme", "information");
+                */
             }
             catch (Exception err)
             {
@@ -179,6 +199,9 @@ namespace Please2.Tests
 
             var show = actor.show;
 
+            return vm.Populate((string)show.structured["template"], show.structured);
+
+            /*
             vm.StockData = ((JToken)show.structured["item"]).ToObject<StockModel>();
 
             var direction = vm.StockData.share_price_direction;
@@ -199,6 +222,7 @@ namespace Please2.Tests
             data.Add("scheme", "information");
 
             return data;
+             */
         }
 
         private Dictionary<string, object> WeatherTest()
@@ -238,7 +262,7 @@ namespace Please2.Tests
             return data;
         }
 
-        private Dictionary<string, object> FitbitTest()
+        private Dictionary<string, object> FitbitWeightTest()
         {
             var locator = GetLocator();
 
@@ -261,7 +285,7 @@ namespace Please2.Tests
             return data;
         }
 
-        private Dictionary<string, object> FitbitFoodTest()
+        private Dictionary<string, object> FitbitLogFoodTest()
         {
             var locator = GetLocator();
 

@@ -240,22 +240,24 @@ namespace Please2.Util
 
                     if (direction == "down")
                     {
-                        color = "#dc143c"; // red
+                        //color = "#dc143c"; // red
+                        color = "#b22222";
                     }
                     else if (direction == "up")
                     {
-                        color = "#008000"; // green
+                        color = "#006400"; // green
                     }
                     break;
 
                 case "flights":
                     var delay = System.Convert.ToInt64(value);
 
-                    color =  "#008000"; // green
+                    color =  "#006400"; // green
 
                     if (delay > 0)
                     {
-                        color = "#dc143c"; // red
+                        //color = "#dc143c"; // red
+                        color = "#b22222";
                     }
                     break;
             }

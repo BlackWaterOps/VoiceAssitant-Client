@@ -27,7 +27,8 @@
   
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Style="{StaticResource AppTitle}"/>
+            <!--<TextBlock Style="{StaticResource AppTitle}"/>-->
+            <Image Style="{StaticResource AppTitleIcon}"/>
             <TextBlock Text="main menu" Style="{StaticResource PageTitle}"/>
             <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
         </StackPanel>
@@ -58,18 +59,29 @@
                                 </Grid.ColumnDefinitions>
                                 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 
                                 <Glyphs UnicodeString="{Binding icon}" 
                                         FontUri="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" 
                                         FontRenderingEmSize="100" 
-                                        Fill="White" 
-                                        VerticalAlignment="Center" 
-                                        Margin="10,0,0,0"/>
-                                
-                                <TextBlock Text="{Binding title}" 
+                                        Fill="White"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Margin="10,20,0,0"/>
+                                <!--
+                                <TextBlock Text="20"
+                                           Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"
+                                           FontSize="{StaticResource PhoneFontSizeExtraLarge}"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,20,0"/>                                
+                                -->
+                                <TextBlock Text="{Binding title}"
+                                           Grid.ColumnSpan="2"
+                                           Grid.Row="1"
                                            VerticalAlignment="Bottom" 
                                            FontSize="30"/>
                             </Grid>

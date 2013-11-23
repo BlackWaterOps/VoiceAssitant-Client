@@ -108,7 +108,9 @@ namespace Please2.ViewModels
 
                 var singleTest = new Please2.Tests.Single();
 
-                var test = singleTest.GetType().GetMethod(templateName.CamelCase() + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo test = singleTest.GetType().GetMethod(templateName.CamelCase() + "Test", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                Debug.WriteLine(templateName.CamelCase());
 
                 if (test == null)
                 {

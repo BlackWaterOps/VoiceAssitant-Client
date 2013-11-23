@@ -14,11 +14,11 @@
       <Capability Name="ID_CAP_MAP" />
       <Capability Name="ID_CAP_LOCATION" />
       <Capability Name="ID_CAP_PROXIMITY" />
-      <Capability Name="ID_CAP_CONTACTS" />
-      <Capability Name="ID_CAP_APPOINTMENTS" />
+      <Capability Name="ID_CAP_IDENTITY_USER" />
+      <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="/Views/List.xaml?test=search" />
+      <DefaultTask Name="_default" NavigationPage="/Views/Registration.xaml" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="Please2Token" TaskName="_default">

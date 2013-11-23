@@ -112,6 +112,7 @@ namespace Please2.ViewModels
 
                     case "food":
                     case "log-food":
+                    case "calories":
                         data = PopulateFood(item);
                         break;
 

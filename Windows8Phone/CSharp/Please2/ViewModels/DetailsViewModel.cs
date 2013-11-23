@@ -22,12 +22,25 @@ using Please2.Util;
 using Please2.Models;
 
 using Plexi;
+using Plexi.Util;
+
 namespace Please2.ViewModels
 {
     public class DetailsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private Map currentMap;
-        
+
+        private string scheme;
+        public string Scheme
+        {
+            get { return scheme; }
+            set 
+            {
+                scheme = value.CamelCase();
+                RaisePropertyChanged("Scheme");
+            }
+        }
+
         private object currentItem;
         public object CurrentItem
         {

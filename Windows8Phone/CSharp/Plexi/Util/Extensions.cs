@@ -11,10 +11,10 @@ namespace Plexi.Util
     {
         public static string CamelCase(this string name)
         {
-            if (name.IndexOf("_") != -1)
+            if (Regex.IsMatch(name, @"[-_:]"))
             {
-                name = Regex.Replace(name, @"[_-][a-z]{1}", (match) => match.ToString().ToUpper());
-                name = Regex.Replace(name, @"[_-]", "");
+                name = Regex.Replace(name, @"[-_:][a-z]{1}", (match) => match.ToString().ToUpper());
+                name = Regex.Replace(name, @"[-_:]", "");
             }
 
             return Char.ToUpper(name[0]) + name.Substring(1);

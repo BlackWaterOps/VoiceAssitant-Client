@@ -47,12 +47,13 @@ namespace Please2.ViewModels
             if (direction == "down")
             {
                 directionSymbol = "\uf063"; // arrow down
-                directionColor = "#dc143c"; // red
+                //directionColor = "#dc143c"; // red
+                directionColor = "#b22222"; // firebrick
             }
             else if (direction == "up")
             {
                 directionSymbol = "\uf062"; // arrow up
-                directionColor = "#008000"; // green
+                directionColor = "#006400"; // darkgreen
             }
 
             var data = new Dictionary<string, object>();

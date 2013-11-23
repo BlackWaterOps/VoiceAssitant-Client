@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Device.Location;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Maps.Controls;
+
 using GalaSoft.MvvmLight.Command;
+
+using LinqToVisualTree;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +24,8 @@ namespace Please2.ViewModels
 {
     public class RealEstateViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
+        private string scheme = "commerce";
+
         private string templateName = "real_estate";
 
         private List<RealEstateListing> listings;
@@ -43,6 +51,7 @@ namespace Please2.ViewModels
         }
 
         public RelayCommand<RealEstateListing> RealEstateItemSelection { get; set; }
+        public RelayCommand MapLoaded { get; set; }
 
         INavigationService navigationService;
 
@@ -51,6 +60,7 @@ namespace Please2.ViewModels
             this.navigationService = navigationService;
 
             RealEstateItemSelection = new RelayCommand<RealEstateListing>(RealEstateItemSelected);
+            MapLoaded = new RelayCommand(BuildMap);
         }
 
         private void RealEstateItemSelected(RealEstateListing model)
@@ -80,10 +90,41 @@ namespace Please2.ViewModels
                 var vm = ViewModelLocator.GetServiceInstance<DetailsViewModel>();
 
                 vm.CurrentItem = model;
+                vm.Scheme = this.scheme;
+
                 isSet = true;
             }
 
             return isSet;
+        }
+
+        private void BuildMap()
+        {
+            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
+
+            var maps = currentPage.Descendants<Map>().Cast<Map>();
+
+            if (maps.Count() > 0)
+            {
+                Map map = maps.FirstOrDefault();
+
+                List<GeoCoordinate> geoList = new List<GeoCoordinate>();
+
+                foreach (RealEstateListing listing in listings)
+                {
+                    Debug.WriteLine(String.Format("{0}:{1}", listing.location.latitude, listing.location.longitude));
+
+                    GeoCoordinate geo = new GeoCoordinate(listing.location.latitude, listing.location.longitude);
+
+                    geoList.Add(geo);
+
+                    MapLayer mapLayer = MapService.CreateMapLayer(geo);
+
+                    map.Layers.Add(mapLayer);
+                }
+
+                map.Center = MapService.GetCentrePointFromListOfCoordinates(geoList);
+            }
         }
 
         #region reflection methods
@@ -97,7 +138,7 @@ namespace Please2.ViewModels
             Stats = realestateResults.stats;
 
             ret.Add("title", "real estate");
-            ret.Add("scheme", "commerce");
+            ret.Add("scheme", this.scheme);
             //ret.Add("subtitle", ZodiacSign + " for " + date);
 
             return ret;

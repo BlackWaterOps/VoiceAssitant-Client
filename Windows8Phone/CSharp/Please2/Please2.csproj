@@ -114,6 +114,7 @@
     <Compile Include="Tests\List.cs" />
     <Compile Include="Tests\Single.cs" />
     <Compile Include="Util\Interfaces.cs" />
+    <Compile Include="Util\MapService.cs" />
     <Compile Include="Util\NavigationService.cs" />
     <Compile Include="Util\PlexiHandler.cs" />
     <Compile Include="Util\SpeechService.cs" />
@@ -166,6 +167,9 @@
     </Compile>
     <Compile Include="Views\PeerFinder.xaml.cs">
       <DependentUpon>PeerFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Registration.xaml.cs">
+      <DependentUpon>Registration.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Search.xaml.cs">
       <DependentUpon>Search.xaml</DependentUpon>
@@ -278,6 +282,9 @@
     <Page Include="Views\PeerFinder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Registration.xaml">
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Reminder.xaml">
       <SubType>Designer</SubType>

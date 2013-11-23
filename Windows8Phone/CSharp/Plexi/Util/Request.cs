@@ -16,7 +16,7 @@ namespace Plexi.Util
 {
     public class Request
     {
-        CookieContainer cookieJar = new CookieContainer();
+        //CookieContainer cookieJar = new CookieContainer();
 
         public String ContentType = null;
         public String AcceptType = null;
@@ -60,7 +60,7 @@ namespace Plexi.Util
             req.ContentType = ContentType;
             req.Accept = this.AcceptType;
             //req.CookieContainer = this.cookieJar;
-            
+
             var tr = await DoRequestAsync(req, requestData);
 
             return tr;

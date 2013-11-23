@@ -36,6 +36,7 @@ namespace Please2.Models
         public FlightDestination destination { get; set; }
         public object delay { get; set; }
         public string identification { get; set; }
+        public string duration { get; set; }
     }
 
     public class FlightAirline

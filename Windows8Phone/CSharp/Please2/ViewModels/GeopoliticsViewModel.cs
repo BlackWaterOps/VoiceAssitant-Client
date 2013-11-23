@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Device.Location;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,15 @@ using Microsoft.Phone.Maps.Controls;
 
 using LinqToVisualTree;
 
+using GalaSoft.MvvmLight.Command;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
+
+using Plexi;
 
 namespace Please2.ViewModels
 {
@@ -67,6 +72,13 @@ namespace Please2.ViewModels
             }
         }
 
+        public RelayCommand MapLoaded { get; set; }
+
+        public GeopoliticsViewModel(INavigationService navigationService, IPlexiService plexiService)
+        {
+            MapLoaded = new RelayCommand(BuildMap);
+        }
+
         public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
         {
             var geoResults = (structured["item"] as JObject).ToObject<GeopoliticsModel>();
@@ -75,10 +87,7 @@ namespace Please2.ViewModels
             Country = geoResults.country;
             Stats = geoResults.stats;
             Text = geoResults.text;
-            /*
-             * BuildMap();
-             */
-
+        
             var data = new Dictionary<string, object>();
 
             data.Add("title", "Geopolitics");
@@ -86,7 +95,7 @@ namespace Please2.ViewModels
 
             return data;
         }
-        /*
+
         private void BuildMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
@@ -102,7 +111,7 @@ namespace Please2.ViewModels
                         var layer = CreateMapLayer(geo.Latitude, geo.Longitude);
 
                         map.Layers.Add(layer);
-                        map.Center = new GeoCoordinate(geo.Latitude, geo.Longitude);      
+                        map.Center = new GeoCoordinate(geo.Latitude, geo.Longitude); 
                     }
                 );
             }
@@ -138,7 +147,7 @@ namespace Please2.ViewModels
 
             query.QueryCompleted += (s, e) =>
             {
-                // take first vlaue for now.
+                // take first value for now.
                 // possibly return all results and show list
                 if (e.Result.Count > 0)
                 {
@@ -149,7 +158,8 @@ namespace Please2.ViewModels
                     callback(geo);
                 }
             };
+
+            query.QueryAsync();
         }
-        */
     }
 }
