@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.IO;
+using System.Reflection;
+using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Collections.Generic;
+using System.Windows;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,9 +21,10 @@ namespace Plexi.Util
     {
         //CookieContainer cookieJar = new CookieContainer();
 
-        public String ContentType = null;
-        public String AcceptType = null;
-        public String Method = "GET";
+        public string ContentType = null;
+        public string AcceptType = null;
+        public string Method = "GET";
+        public Dictionary<string, string> Headers = new Dictionary<string, string>(); 
 
         public async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
@@ -47,7 +51,7 @@ namespace Plexi.Util
 
             var resp = result;
             var stream = resp.GetResponseStream();
-            var sr = new System.IO.StreamReader(stream);
+            var sr = new StreamReader(stream);
 
             return sr;
         }
@@ -60,6 +64,14 @@ namespace Plexi.Util
             req.ContentType = ContentType;
             req.Accept = this.AcceptType;
             //req.CookieContainer = this.cookieJar;
+
+            if (this.Headers.Count > 0)
+            {
+                foreach (KeyValuePair<string, string> header in this.Headers)
+                {
+                    req.Headers[header.Key] = header.Value;
+                }
+            }
 
             var tr = await DoRequestAsync(req, requestData);
 

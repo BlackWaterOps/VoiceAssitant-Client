@@ -238,20 +238,32 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-
+                
+                <!--
                 <Glyphs Grid.Row="0" 
-                        Grid.Column="0" 
-                        Margin="0,-65,0,0" 
+                        Grid.Column="0"
+                        Margin="0,-65,0,0"                        
                         VerticalAlignment="Top"
                         HorizontalAlignment="Center"
                         UnicodeString="{Binding Converter={StaticResource WeatherConverter}}" 
                         Fill="White" 
                         FontRenderingEmSize="200" 
                         FontUri="/Please2;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
-
+                -->
+                
+                <Glyphs Grid.Row="0" 
+                        Grid.Column="0"
+                        Margin="0,-65,0,0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        UnicodeString="1" 
+                        Fill="White" 
+                        FontRenderingEmSize="160" 
+                        FontUri="/Please2;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
+                
                 <StackPanel Grid.Row="0" Grid.Column="1">
                     <TextBlock DataContext="{Binding WeatherViewModel, Source={StaticResource Locator}}" Text="{Binding CurrentCondition.temp, StringFormat='{0}&#176;'}" 
                                    FontSize="{StaticResource PhoneFontSizeExtraExtraLarge}" 

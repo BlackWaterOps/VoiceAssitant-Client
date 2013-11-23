@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -13,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 
 using Microsoft.Phone.Controls;
+using Microsoft.Phone.Info;
 using Microsoft.Phone.Notification;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.UserData;
@@ -38,6 +40,8 @@ namespace Plexi
 
         void Choice(ChoiceModel choice);
 
+        Task<Dictionary<string, object>> RegisterUser(string accountName, string password);
+
         Task<Dictionary<string, object>> GetDeviceInfo();
 
         event EventHandler<ShowEventArgs> Show;
@@ -62,6 +66,8 @@ namespace Plexi
         private static string RESPONDER = "http://rez.stremor-apier.appspot.com/v1";
 
         private static string PUD = "http://stremor-pud.appspot.com/v1";
+
+        private static string REGISTRATION = "";
 
         // used by auditor
         private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
@@ -116,6 +122,18 @@ namespace Plexi
             {
                 this.stopWatch = new Stopwatch();
             }
+        }
+
+        public async Task<Dictionary<string, object>> RegisterUser(string accountName, string password)
+        {
+            Dictionary<string, object> postData = new Dictionary<string, object>();
+
+            postData.Add("duid", DeviceExtendedProperties.GetValue("DeviceUniqueId"));
+            postData.Add("anid", UserExtendedProperties.GetValue("ANID2"));
+            postData.Add("username", accountName);
+            postData.Add("password", password);
+
+            return await RequestHelper<Dictionary<string, object>>(REGISTRATION, "POST", postData);
         }
 
         public void Query(string query)
@@ -209,6 +227,10 @@ namespace Plexi
 
                     case "exception":
                         ErrorMessage((string)currentState.Response);
+                        break;
+                    
+                    case "noaccount":
+
                         break;
                 }
             }
@@ -343,7 +365,7 @@ namespace Plexi
             {
                 string endpoint = String.Format("{0}/active", DISAMBIGUATOR);
 
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -376,7 +398,7 @@ namespace Plexi
             {
                 string endpoint = String.Format("{0}/candidate", DISAMBIGUATOR);
 
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -427,7 +449,7 @@ namespace Plexi
 
             String endpoint = String.Format("{0}/passive", DISAMBIGUATOR);
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -579,12 +601,17 @@ namespace Plexi
             {
                 string endpoint = String.Format("{0}/actors/{1}", RESPONDER, actor);
 
+                Dictionary<string, string> headers = null;
+
                 if (actor.Contains("private:"))
                 {
                     endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
+
+                    headers = new Dictionary<string, string>();
+                    headers.Add("stremor-auth", GetAuthToken());
                 }
 
-                ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext);
+                ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);
 
                 ClearContext();
 
@@ -677,15 +704,20 @@ namespace Plexi
         */
 
         #region helpers
-        private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, bool includeNulls = false)
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, Dictionary<string, string> headers = null, bool includeNulls = false)
         {
             Request req = new Request();
 
             req.Method = method;
 
+            if (headers != null)
+            {
+                req.Headers = headers;
+            }
+
             EventHandler<ProgressEventArgs> handler = InProgress;
 
-            // Notify the view that the request has begun
+            // Notify the listener that the request has begun
             if (handler != null)
             {
                 handler(this, new ProgressEventArgs(true));
@@ -708,17 +740,55 @@ namespace Plexi
 
             this.stopWatch.Stop();
 
-            Debug.WriteLine("this request took " + stopWatch.Elapsed + " to complete");
+            Debug.WriteLine(String.Format("this request took {0} to complete", stopWatch.Elapsed));
 
             this.stopWatch.Reset();
 
-            // Notify the view that the request is complete
+            // Notify the listener that the request is complete
             if (handler != null)
             {
                 handler(this, new ProgressEventArgs(false));
             }
 
             return response;
+        }
+
+        private string GetAuthToken()
+        {
+            try
+            {
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+                if (!settings.Contains("AuthToken"))
+                {
+                    throw new Exception("no auth token could be found");
+                }
+
+                byte[] tokenBytes = (byte[])settings["AuthToken"];
+
+                return Security.Decrypt(tokenBytes);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("GetAuthToken Error: {0}", err.Message));
+                return null;
+            }
+        }
+
+        private void StoreAuthToken(string token)
+        {
+            try
+            {
+                byte[] byteToken = Security.Encrypt(token);
+
+                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+                settings.Add("AuthToken", byteToken);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("StoreAuthToken Error: {0}", err.Message));
+            }
         }
 
         private async Task<ClassifierModel> DoClientOperations(ClassifierModel context, Dictionary<string, object> response)

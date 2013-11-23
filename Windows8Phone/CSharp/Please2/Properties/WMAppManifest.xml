@@ -18,7 +18,7 @@
       <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="/Views/Registration.xaml" />
+      <DefaultTask Name="_default" NavigationPage="/Views/Single.xaml?test=weather" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="Please2Token" TaskName="_default">
