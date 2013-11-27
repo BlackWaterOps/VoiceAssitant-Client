@@ -12,6 +12,7 @@
   See http://www.galasoft.ch/mvvm
 */
 using System;
+using System.Diagnostics;
 using System.Windows;
 
 using GalaSoft.MvvmLight;
@@ -40,6 +41,8 @@ namespace Please2.ViewModels
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 
+        public const string ChildBrowserUri = @"/ChildBrowser.xaml?url={0}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/MainMenu.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
@@ -61,6 +64,8 @@ namespace Please2.ViewModels
         public static readonly Uri SearchPageUri = new Uri("/Views/Search.xaml", UriKind.Relative);
 
         public static readonly Uri ImagePageUri = new Uri("/Views/Image.xaml", UriKind.Relative);
+
+        public static readonly Uri RegistrationUri = new Uri("/Views/Registration.xaml", UriKind.Relative);
 
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.

@@ -121,6 +121,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Canvas x:Key="LoadingScreen" x:Name="LoadingScreen">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="ProgressStates">
@@ -143,6 +144,7 @@
                 </StackPanel>
             </Border>
         </Canvas>
+        
         <!-- chat bubble with rounded corners -->
         <Style x:Key="RoundedChatBubble" TargetType="c4f:ChatBubble">
             <Setter Property="Background" Value="{StaticResource PhoneAccentBrush}" />

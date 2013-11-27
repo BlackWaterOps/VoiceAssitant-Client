@@ -69,6 +69,15 @@ namespace Please2.ViewModels
             MenuLoaded = new RelayCommand(SetGridSize);
 
             AddDefaultMenuItems();
+
+            try
+            {
+                plexiService.LoginUser("testuser", "thisisatest");
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
         }
 
         private void SetGridSize()

@@ -12,17 +12,24 @@ namespace Please2
 {
     public partial class ChildBrowser : PhoneApplicationPage
     {
-        const string facebookEndpoint = "https://graph.facebook.com/oauth/access_token";
-        const string redirectUri = "https://www.facebook.com/connect/login_success.html";
-
         public ChildBrowser()
         {
             InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            string url = "";
+            NavigationContext.QueryString.TryGetValue("url", out url);
+
+            WebBrowser.Navigate(new Uri(url));
+        }
+
         protected void WebBrowser_Navigated(object sender, NavigationEventArgs e)
         {
-           
+            // check uri after navigation. if success, reverse off of backstack
         }
     }
 }

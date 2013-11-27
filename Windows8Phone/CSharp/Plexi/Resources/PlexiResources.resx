@@ -120,6 +120,9 @@
   <data name="Auditor" xml:space="preserve">
     <value>http://rez.stremor-apier.appspot.com/v1</value>
   </data>
+  <data name="Authorization" xml:space="preserve">
+    <value>http://stremor-pud.appspot.com/v1/auth</value>
+  </data>
   <data name="Classifier" xml:space="preserve">
     <value>http://casper-cached.stremor-nli.appspot.com/v1</value>
   </data>

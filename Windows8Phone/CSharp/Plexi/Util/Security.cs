@@ -60,12 +60,19 @@ namespace Plexi.Util
             try
             {
                 byte[] duid = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
+
+                HMACSHA256 hmac;
+#if DEBUG
+                hmac = new HMACSHA256();
+#else
                 string anid = UserExtendedProperties.GetValue("ANID2") as string;
+
+                Debug.WriteLine(anid);
 
                 byte[] anidAsBytes = Encoding.Unicode.GetBytes(anid);
 
-                HMACSHA256 hmac = new HMACSHA256(anidAsBytes);
-
+                hmac = new HMACSHA256(anidAsBytes);
+#endif
                 salt = hmac.ComputeHash(duid);
             }
             catch (Exception err)

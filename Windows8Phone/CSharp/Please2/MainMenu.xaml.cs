@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
@@ -21,6 +22,7 @@ using Please2.Views;
 using Please2.ViewModels;
 
 using Plexi.Util;
+
 namespace Please2
 {
     public partial class MainMenu : ViewBase

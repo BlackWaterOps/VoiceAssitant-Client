@@ -104,7 +104,7 @@ namespace Please2.Views
 
         private async void CreateButton_Tap(object sender, EventArgs e)
         {
-            
+           
             if (!Regex.IsMatch(AccountName.Text, accountNamePattern))
             {
                 // invalid username
@@ -126,9 +126,37 @@ namespace Please2.Views
                 return;
             }
 
+            string accountName = AccountName.Text;
+            string password = Password.Password;
+
             Plexi.IPlexiService plexiService = ViewModelLocator.GetServiceInstance<Plexi.IPlexiService>();
 
-            Dictionary<string, object> response = await plexiService.RegisterUser(AccountName.Text, Password.Password);
+            Dictionary<string, object> response = await plexiService.RegisterUser(accountName, password);
+
+            if (response.ContainsKey("status"))
+            {
+                string status = (string)response["status"];
+
+                if (status == "success")
+                {
+                    Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
+                }
+                else
+                {
+                    MessageBox.Show((string)response["error"]);
+                }
+            }
+            else
+            {
+                if (response.ContainsKey("msg"))
+                {
+                    Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
+                }
+                else
+                {
+                    MessageBox.Show((string)response["error"]);
+                }
+            }
         }
 
         private void AccountName_LostFocus(object sender, RoutedEventArgs e)

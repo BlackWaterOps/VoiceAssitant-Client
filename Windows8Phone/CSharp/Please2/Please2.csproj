@@ -114,6 +114,7 @@
     <Compile Include="Models\WeatherModel.cs" />
     <Compile Include="Tests\List.cs" />
     <Compile Include="Tests\Single.cs" />
+    <Compile Include="Util\AccountHelper.cs" />
     <Compile Include="Util\Interfaces.cs" />
     <Compile Include="Util\MapService.cs" />
     <Compile Include="Util\NavigationService.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Views\Image.xaml.cs">
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
+    <None Include="Assets\Fonts\weather.ttf" />
     <None Include="Views\Images.xaml.cs">
       <DependentUpon>Images.xaml</DependentUpon>
     </None>
@@ -198,9 +200,9 @@
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
       <Link>Assets\sync.png</Link>
     </Content>
-    <None Include="ChildBrowser.xaml.cs">
+    <Compile Include="ChildBrowser.xaml.cs">
       <DependentUpon>ChildBrowser.xaml</DependentUpon>
-    </None>
+    </Compile>
     <Compile Include="LocalizedStrings.cs" />
     <Content Include="Assets\feature.alarm.png" />
     <Compile Include="Models\DatabaseModel.cs" />
@@ -249,10 +251,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Include="ChildBrowser.xaml">
+    <Page Include="ChildBrowser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </None>
+    </Page>
     <Page Include="Views\Alarm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

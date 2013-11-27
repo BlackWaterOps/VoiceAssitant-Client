@@ -28,38 +28,45 @@ namespace Plexi.Util
 
         public async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
-            Debug.WriteLine("POST DATA");
-            Debug.WriteLine(req.RequestUri.AbsolutePath);
-            
-            // if we have post/put data, write it to the request stream
-            if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
+            try
             {
-                Debug.WriteLine(requestData);
+                Debug.WriteLine(String.Format("post data: {0}", req.RequestUri.AbsolutePath));
 
-                byte[] data = Encoding.UTF8.GetBytes(requestData);
-                req.ContentLength = data.Length;
-
-                using (var reqStream = await Task<Stream>.Factory.FromAsync(req.BeginGetRequestStream, req.EndGetRequestStream, req))
+                // if we have post/put data, write it to the request stream
+                if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
                 {
-                    await reqStream.WriteAsync(data, 0, data.Length);
+                    Debug.WriteLine(requestData);
+
+                    byte[] data = Encoding.UTF8.GetBytes(requestData);
+                    req.ContentLength = data.Length;
+
+                    using (var reqStream = await Task<Stream>.Factory.FromAsync(req.BeginGetRequestStream, req.EndGetRequestStream, req))
+                    {
+                        await reqStream.WriteAsync(data, 0, data.Length);
+                    }
                 }
+
+                var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
+
+                var result = await task;
+
+                var resp = result;
+                var stream = resp.GetResponseStream();
+                var sr = new StreamReader(stream);
+
+                return sr;
             }
-
-            var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
-
-            var result = await task;
-
-            var resp = result;
-            var stream = resp.GetResponseStream();
-            var sr = new StreamReader(stream);
-
-            return sr;
+            catch (WebException webErr)
+            {
+                Debug.WriteLine(String.Format("DoRequestAsync Error: {0}", webErr.Message));
+                return null;
+            }
         }
 
         public async Task<System.IO.TextReader> DoRequestAsync(String url, String requestData = "")
         {
             HttpWebRequest req = HttpWebRequest.CreateHttp(url);
-            req.Method = Method;
+            req.Method = this.Method;
             req.AllowReadStreamBuffering = true;
             req.ContentType = ContentType;
             req.Accept = this.AcceptType;
@@ -101,8 +108,7 @@ namespace Plexi.Util
                 System.IO.TextReader ret = await DoRequestAsync(uri, requestData);
                 String response = await ret.ReadToEndAsync();
 
-                Debug.WriteLine("RESPONSE DATA");
-                Debug.WriteLine(response);
+                Debug.WriteLine(String.Format("Response Data: {0}", response));
 
                 return DeserializeData<T>(response);
             }

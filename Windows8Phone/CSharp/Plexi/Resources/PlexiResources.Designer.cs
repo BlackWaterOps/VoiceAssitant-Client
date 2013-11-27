@@ -70,6 +70,15 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/auth.
+        /// </summary>
+        internal static string Authorization {
+            get {
+                return ResourceManager.GetString("Authorization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://casper-cached.stremor-nli.appspot.com/v1.
         /// </summary>
         internal static string Classifier {

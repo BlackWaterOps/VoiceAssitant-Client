@@ -6,6 +6,7 @@ using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,6 +43,10 @@ namespace Plexi
 
         Task<Dictionary<string, object>> RegisterUser(string accountName, string password);
 
+        Task<Dictionary<string, object>> LoginUser(string accountName, string password);
+
+        void LogoutUser();
+
         Task<Dictionary<string, object>> GetDeviceInfo();
 
         event EventHandler<ShowEventArgs> Show;
@@ -59,15 +64,17 @@ namespace Plexi
 
     public class Core : IPlexiService
     {
-        private static string CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
+        private const string CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
 
         private static string DISAMBIGUATOR = String.Format("{0}/disambiguate", CLASSIFIER);
 
-        private static string RESPONDER = "http://rez.stremor-apier.appspot.com/v1";
+        private const string RESPONDER = "http://rez.stremor-apier.appspot.com/v1";
 
-        private static string PUD = "http://stremor-pud.appspot.com/v1";
+        private const string PUD = "http://stremor-pud.appspot.com/v1";
 
-        private static string REGISTRATION = "";
+        private static string REGISTRATION = String.Format("{0}/signup", PUD);
+
+        private static string LOGIN = String.Format("{0}/login", PUD);
 
         // used by auditor
         private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
@@ -128,12 +135,55 @@ namespace Plexi
         {
             Dictionary<string, object> postData = new Dictionary<string, object>();
 
-            postData.Add("duid", DeviceExtendedProperties.GetValue("DeviceUniqueId"));
-            postData.Add("anid", UserExtendedProperties.GetValue("ANID2"));
+            byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
+
+            string duid = Convert.ToBase64String(duidAsBytes);
+
+            postData.Add("device_id", duid);
+            postData.Add("user_id", UserExtendedProperties.GetValue("ANID2"));
             postData.Add("username", accountName);
             postData.Add("password", password);
 
-            return await RequestHelper<Dictionary<string, object>>(REGISTRATION, "POST", postData);
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(REGISTRATION, "POST", postData);
+
+            Debug.WriteLine(String.Format("RegisterUser Response: {0}", SerializeData(response)));
+
+            return response;
+        }
+
+        public async Task<Dictionary<string, object>> LoginUser(string accountName, string password)
+        {
+            byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
+
+            string duid = Convert.ToBase64String(duidAsBytes);
+
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+
+            headers.Add("device_id", duid);
+
+            Dictionary<string, object> postData = new Dictionary<string, object>();
+
+            postData.Add("username", accountName);
+            postData.Add("password", password);
+            postData.Add("device_id", duid);
+
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(LOGIN, "POST", postData, headers);
+
+            Debug.WriteLine(String.Format("LoginUser Response: {0}", SerializeData(response)));
+
+            if (response.ContainsKey("token"))
+            {
+                string token = (string)response["token"];
+
+                StoreAuthToken(token);
+            }
+    
+            return response;
+        }
+
+        public void LogoutUser()
+        {
+            throw new NotImplementedException();
         }
 
         public void Query(string query)

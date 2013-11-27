@@ -251,23 +251,39 @@ namespace Please2.ViewModels
                 // save alarm info to DB
                 using (var db = new DatabaseModel(AppResources.DataStore))
                 {
-                    if (db.DatabaseExists().Equals(false))
+                    if (db.DatabaseExists() == false)
                     {
                         db.CreateDatabase();
+
+                        db.Alarms.InsertOnSubmit(
+                            new Please2.Models.Alarm
+                            {
+                                IsEnabled = true,
+                                Names = names,
+                                Time = alarmTime,
+                                Interval = interval,
+                                DaysOfWeek = daysOfWeek
+                            }
+                        );
+
+                        db.SubmitChanges();
+
+                        DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
+                        dbUpdater.DatabaseSchemaVersion = App.APP_VERSION;
+                        dbUpdater.Execute();
                     }
+                    else
+                    {
+                        // check if db needs to be updated
+                        /*
+                         DatabaseSchemaUpdater dbUpdater = readerDB.CreateDatabaseSchemaUpdater();
 
-                    db.Alarms.InsertOnSubmit(
-                        new Please2.Models.Alarm
-                        {
-                            IsEnabled = true,
-                            Names = names,
-                            Time = alarmTime,
-                            Interval = interval,
-                            DaysOfWeek = daysOfWeek
-                        }
-                    );
-
-                    db.SubmitChanges();
+                         if (dbUpdater.DatabaseSchemaVersion < App.APP_VERSION)
+                         {
+                         
+                         }
+                        */
+                    }
                 }
             }
             catch (Exception err)

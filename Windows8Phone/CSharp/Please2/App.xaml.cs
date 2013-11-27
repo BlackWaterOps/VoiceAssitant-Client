@@ -21,6 +21,8 @@ namespace Please2
 {
     public partial class App : Application
     {
+        public static int APP_VERSION = 1;
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -69,6 +71,7 @@ namespace Please2
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            ///Please2.Util.AccountHelper.Default.Launching();
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -125,8 +128,8 @@ namespace Please2
 
             // Create the frame but don't set it as RootVisual yet; this allows the splash
             // screen to remain active until the application is ready to render.
-            //RootFrame = new PhoneApplicationFrame();
-            RootFrame = new TransitionFrame();
+            RootFrame = new PhoneApplicationFrame();
+            //RootFrame = new TransitionFrame();
             RootFrame.Navigated += CompleteInitializePhoneApplication;
 
             // set app background

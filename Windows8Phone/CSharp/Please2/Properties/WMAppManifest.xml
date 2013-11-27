@@ -16,9 +16,10 @@
       <Capability Name="ID_CAP_PROXIMITY" />
       <Capability Name="ID_CAP_IDENTITY_USER" />
       <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
+      <Capability Name="ID_CAP_IDENTITY_DEVICE" />
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="/Views/Single.xaml?test=weather" />
+      <DefaultTask Name="_default" NavigationPage="MainMenu.xaml" />
     </Tasks>
     <Tokens>
       <PrimaryToken TokenID="Please2Token" TaskName="_default">
