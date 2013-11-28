@@ -197,6 +197,9 @@
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\NotificationsViewModel.cs" />
     <Compile Include="ViewModels\WeatherViewModel.cs" />
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\next.png">
+      <Link>Assets\next.png</Link>
+    </Content>
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\sync.png">
       <Link>Assets\sync.png</Link>
     </Content>

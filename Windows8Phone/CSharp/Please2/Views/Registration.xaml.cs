@@ -140,6 +140,8 @@ namespace Please2.Views
                 if (status == "success")
                 {
                     Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
+
+                    Util.AccountHelper.Default.CheckAccounts();
                 }
                 else
                 {
@@ -151,6 +153,8 @@ namespace Please2.Views
                 if (response.ContainsKey("msg"))
                 {
                     Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
+
+                    
                 }
                 else
                 {

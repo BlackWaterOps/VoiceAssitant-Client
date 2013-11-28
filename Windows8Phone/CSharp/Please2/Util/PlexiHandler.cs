@@ -98,7 +98,14 @@ namespace Please2.Util
 
         private void OnProgress(object sender, ProgressEventArgs e)
         {
-            Messenger.Default.Send(new ProgressMessage(e.inProgress));
+            try
+            {
+                Messenger.Default.Send(new ProgressMessage(e.inProgress));
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("OnProgress Error: {0}", err.Message));
+            }
         }
 
         private void OnShow(object sender, ShowEventArgs e)

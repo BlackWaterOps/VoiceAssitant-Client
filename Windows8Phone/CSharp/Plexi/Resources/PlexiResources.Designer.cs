@@ -70,11 +70,29 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/auth.
+        ///   Looks up a localized string similar to Stremor-Auth-Device.
+        /// </summary>
+        internal static string AuthDeviceHeader {
+            get {
+                return ResourceManager.GetString("AuthDeviceHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/auth.
         /// </summary>
         internal static string Authorization {
             get {
                 return ResourceManager.GetString("Authorization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stremor-Auth-Token.
+        /// </summary>
+        internal static string AuthTokenHeader {
+            get {
+                return ResourceManager.GetString("AuthTokenHeader", resourceCulture);
             }
         }
         
@@ -97,11 +115,38 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/login.
+        /// </summary>
+        internal static string Login {
+            get {
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1.
         /// </summary>
         internal static string Pud {
             get {
                 return ResourceManager.GetString("Pud", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/signup.
+        /// </summary>
+        internal static string Registration {
+            get {
+                return ResourceManager.GetString("Registration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AuthToken.
+        /// </summary>
+        internal static string SettingsAuthKey {
+            get {
+                return ResourceManager.GetString("SettingsAuthKey", resourceCulture);
             }
         }
     }

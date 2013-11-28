@@ -72,7 +72,7 @@ namespace Please2.ViewModels
 
             try
             {
-                plexiService.LoginUser("testuser", "thisisatest");
+                //plexiService.LoginUser("testuser3", "thisisatest3");
             }
             catch (Exception err)
             {

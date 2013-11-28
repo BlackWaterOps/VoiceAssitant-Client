@@ -104,6 +104,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PlexiResources.resx</DependentUpon>
     </Compile>
+    <None Include="Util\AccountHelper.cs" />
     <Compile Include="Util\Datetime.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\LocationService.cs" />
@@ -128,6 +129,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

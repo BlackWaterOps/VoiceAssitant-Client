@@ -47,6 +47,8 @@ namespace Plexi
 
         void LogoutUser();
 
+        string GetAuthToken();
+
         Task<Dictionary<string, object>> GetDeviceInfo();
 
         event EventHandler<ShowEventArgs> Show;
@@ -64,17 +66,17 @@ namespace Plexi
 
     public class Core : IPlexiService
     {
-        private const string CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
+        private static string CLASSIFIER = Resources.PlexiResources.Classifier;
 
-        private static string DISAMBIGUATOR = String.Format("{0}/disambiguate", CLASSIFIER);
+        private static string DISAMBIGUATOR = Resources.PlexiResources.Disambiguator;
 
-        private const string RESPONDER = "http://rez.stremor-apier.appspot.com/v1";
+        private static string RESPONDER = Resources.PlexiResources.Auditor;
 
-        private const string PUD = "http://stremor-pud.appspot.com/v1";
+        private static string PUD = Resources.PlexiResources.Pud;
 
-        private static string REGISTRATION = String.Format("{0}/signup", PUD);
+        private static string REGISTRATION = Resources.PlexiResources.Registration;
 
-        private static string LOGIN = String.Format("{0}/login", PUD);
+        private static string LOGIN = Resources.PlexiResources.Login;
 
         // used by auditor
         private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
@@ -139,8 +141,8 @@ namespace Plexi
 
             string duid = Convert.ToBase64String(duidAsBytes);
 
-            postData.Add("device_id", duid);
-            postData.Add("user_id", UserExtendedProperties.GetValue("ANID2"));
+            //postData.Add("device_id", duid);
+            //postData.Add("user_id", UserExtendedProperties.GetValue("ANID2"));
             postData.Add("username", accountName);
             postData.Add("password", password);
 
@@ -159,13 +161,13 @@ namespace Plexi
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
 
-            headers.Add("device_id", duid);
+            headers.Add(Resources.PlexiResources.AuthDeviceHeader, duid);
 
             Dictionary<string, object> postData = new Dictionary<string, object>();
 
             postData.Add("username", accountName);
             postData.Add("password", password);
-            postData.Add("device_id", duid);
+            //postData.Add("device_id", duid);
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(LOGIN, "POST", postData, headers);
 
@@ -658,7 +660,7 @@ namespace Plexi
                     endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
 
                     headers = new Dictionary<string, string>();
-                    headers.Add("stremor-auth", GetAuthToken());
+                    headers.Add(Resources.PlexiResources.AuthTokenHeader, GetAuthToken());
                 }
 
                 ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);
@@ -803,26 +805,18 @@ namespace Plexi
             return response;
         }
 
-        private string GetAuthToken()
+        public string GetAuthToken()
         {
-            try
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            if (!settings.Contains(Resources.PlexiResources.SettingsAuthKey))
             {
-                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-
-                if (!settings.Contains("AuthToken"))
-                {
-                    throw new Exception("no auth token could be found");
-                }
-
-                byte[] tokenBytes = (byte[])settings["AuthToken"];
-
-                return Security.Decrypt(tokenBytes);
+                throw new Exception("no auth token could be found");
             }
-            catch (Exception err)
-            {
-                Debug.WriteLine(String.Format("GetAuthToken Error: {0}", err.Message));
-                return null;
-            }
+
+            byte[] tokenBytes = (byte[])settings[Resources.PlexiResources.SettingsAuthKey];
+
+            return Security.Decrypt(tokenBytes);
         }
 
         private void StoreAuthToken(string token)
@@ -833,7 +827,7 @@ namespace Plexi
 
                 IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
-                settings.Add("AuthToken", byteToken);
+                settings.Add(Resources.PlexiResources.SettingsAuthKey, byteToken);
             }
             catch (Exception err)
             {

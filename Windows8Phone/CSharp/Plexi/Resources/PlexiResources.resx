@@ -120,8 +120,14 @@
   <data name="Auditor" xml:space="preserve">
     <value>http://rez.stremor-apier.appspot.com/v1</value>
   </data>
+  <data name="AuthDeviceHeader" xml:space="preserve">
+    <value>Stremor-Auth-Device</value>
+  </data>
   <data name="Authorization" xml:space="preserve">
-    <value>http://stremor-pud.appspot.com/v1/auth</value>
+    <value>http://stremor-pud.appspot.com/auth</value>
+  </data>
+  <data name="AuthTokenHeader" xml:space="preserve">
+    <value>Stremor-Auth-Token</value>
   </data>
   <data name="Classifier" xml:space="preserve">
     <value>http://casper-cached.stremor-nli.appspot.com/v1</value>
@@ -129,7 +135,16 @@
   <data name="Disambiguator" xml:space="preserve">
     <value>http://casper-cached.stremor-nli.appspot.com/v1/disambiguate</value>
   </data>
+  <data name="Login" xml:space="preserve">
+    <value>http://stremor-pud.appspot.com/v1/login</value>
+  </data>
   <data name="Pud" xml:space="preserve">
     <value>http://stremor-pud.appspot.com/v1</value>
+  </data>
+  <data name="Registration" xml:space="preserve">
+    <value>http://stremor-pud.appspot.com/v1/signup</value>
+  </data>
+  <data name="SettingsAuthKey" xml:space="preserve">
+    <value>AuthToken</value>
   </data>
 </root>
