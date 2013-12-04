@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,20 +14,22 @@ namespace Plexi.Util
 {
     public static class Security
     {
+        private static string key = "HMACKey";
+
         internal static byte[] salt = null;
 
         public static byte[] Encrypt(string data)
         {
             try
             {
-                byte[] bytes = Encoding.Unicode.GetBytes(data);
+                byte[] bytes = Encoding.UTF8.GetBytes(data);
 
                 if (salt == null)
                 {
                     GenerateSalt();
                 }
 
-                return ProtectedData.Protect(bytes, salt);
+                return ProtectedData.Protect(bytes, null);
             }
             catch (Exception err)
             {
@@ -44,9 +47,9 @@ namespace Plexi.Util
                     GenerateSalt();
                 }
 
-                byte[] bytes = ProtectedData.Unprotect(data, salt);
+                byte[] bytes = ProtectedData.Unprotect(data, null);
 
-                return Encoding.Unicode.GetString(bytes, 0, bytes.Length);
+                return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
             }
             catch (Exception err)
             {
@@ -62,23 +65,58 @@ namespace Plexi.Util
                 byte[] duid = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
 
                 HMACSHA256 hmac;
-#if DEBUG
-                hmac = new HMACSHA256();
-#else
-                string anid = UserExtendedProperties.GetValue("ANID2") as string;
 
-                Debug.WriteLine(anid);
+                try
+                {
+                    byte[] key = GetKey();
 
-                byte[] anidAsBytes = Encoding.Unicode.GetBytes(anid);
+                    hmac = new HMACSHA256(key);
+                }
+                catch (KeyNotFoundException)
+                {
+                    hmac = new HMACSHA256();
 
-                hmac = new HMACSHA256(anidAsBytes);
-#endif
+                    StoreKey(hmac.Key);
+                }
+
                 salt = hmac.ComputeHash(duid);
             }
             catch (Exception err)
             {
                 Debug.WriteLine(String.Format("GenerateSalt Error:{0}", err.Message));
             }
+        }
+
+        private static void StoreKey(byte[] key)
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            try
+            {
+                settings[Security.key] = key;
+            }
+            catch (KeyNotFoundException)
+            {
+                settings.Add(Security.key, key);
+            }
+            catch (ArgumentException)
+            {
+                settings.Add(Security.key, key);
+            }
+
+            settings.Save();
+        }
+
+        private static byte[] GetKey()
+        {
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            if (!settings.Contains(Security.key))
+            {
+                throw new KeyNotFoundException();
+            }
+
+            return (byte[])settings[Security.key];
         }
     }
 }

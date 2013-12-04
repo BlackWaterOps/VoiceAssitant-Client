@@ -30,7 +30,8 @@
                              ViewportChanged="viewport_ViewportChanged">
                 <Canvas x:Name="canvas">
                     <Image x:Name="ImageSingle"
-                           RenderTransformOrigin="0,0" CacheMode="BitmapCache" 
+                           RenderTransformOrigin="0,0" 
+                           CacheMode="BitmapCache" 
                            ImageOpened="OnImageOpened">
                         <Image.RenderTransform>
                             <ScaleTransform x:Name="xform"/>

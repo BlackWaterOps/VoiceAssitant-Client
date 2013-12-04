@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using System.IO.IsolatedStorage;
+
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -38,10 +41,36 @@ namespace Please2
             base.OnNavigatedTo(e);
 
             string url = String.Empty;
-            string isOptional;
+            string isOptional = null;
 
             NavigationContext.QueryString.TryGetValue("url", out url);
             NavigationContext.QueryString.TryGetValue("isOptional", out isOptional);
+
+        
+            /*
+            string authToken = "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
+
+            Debug.WriteLine(String.Format("original: {0}", authToken));
+
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            string testKey = "testencrypt";
+
+            //settings.Remove(testKey);
+
+            if (!settings.Contains(testKey))
+            {
+                Debug.WriteLine("create encrypt");
+                settings.Add(testKey, Plexi.Util.Security.Encrypt(authToken));
+                settings.Save();
+            }
+
+            var k = (byte[])settings[testKey];
+
+            string decrypt = Plexi.Util.Security.Decrypt(k);
+
+            Debug.WriteLine(String.Format("Decrypt Value: {0}", decrypt));
+            */
 
             if (url != String.Empty)
             {
@@ -50,13 +79,15 @@ namespace Please2
                 WebBrowser.Navigate(new Uri(url), null, headers);
             }
 
-            if (isOptional == Convert.ToString(true))
+            try
             {
-                ApplicationBar.IsVisible = true;
+                ApplicationBarIconButton skip = ApplicationBar.Buttons[0] as ApplicationBarIconButton;
+
+                skip.IsEnabled = (isOptional == Convert.ToString(true)) ? true : false;
             }
-            else
+            catch (Exception err)
             {
-                ApplicationBar.IsVisible = false;
+                Debug.WriteLine(err.Message);
             }
         }
 
@@ -65,9 +96,28 @@ namespace Please2
             // check uri after navigation. if success, reverse off of backstack
             Debug.WriteLine(e.Uri.OriginalString);
 
-            if (e.Uri.OriginalString == String.Format("{0}/success", resx.GetString("Authorization")))
+            string successEndpoint = String.Format("{0}/success", resx.GetString("Authorization"));
+
+            if (e.Uri.OriginalString.Contains(successEndpoint))
             {
                 Util.AccountHelper.Default.AddAccount();
+                Util.AccountHelper.Default.CheckAccounts();
+            }
+        }
+
+        protected void Reset_Click(object sender, EventArgs e)
+        {
+            Util.AccountHelper.Default.ResetAccounts();
+
+            plexiService.LogoutUser();
+
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+            else
+            {
+                NavigationService.Navigate(ViewModelLocator.RegistrationUri);
             }
         }
 
@@ -83,8 +133,7 @@ namespace Please2
             // Auth Token info
             string tokenHeader = resx.GetString("AuthTokenHeader");
 
-            //string authToken = plexiService.GetAuthToken();
-            string authToken = "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
+            string authToken = plexiService.GetAuthToken();
 
             string deviceHeader = resx.GetString("AuthDeviceHeader");
 

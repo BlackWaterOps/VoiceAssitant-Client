@@ -144,7 +144,7 @@ namespace Please2.ViewModels
                     break;
             
                 case "notes":
-                    //await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
                     return;
                     break;
 

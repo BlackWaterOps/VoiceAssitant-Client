@@ -100,7 +100,7 @@ namespace Please2.Views
                     Point center = e.PinchManipulation.Original.Center;
                     relativeMidpoint = new Point(center.X / ImageSingle.ActualWidth, center.Y / ImageSingle.ActualHeight);
 
-                    //var xform = ImageSingle.TransformToVisual(ImagesFull);
+                    GeneralTransform xform = ImageSingle.TransformToVisual(ImageViewport);
                     screenMidpoint = xform.Transform(center);
                 }
 
@@ -111,6 +111,7 @@ namespace Please2.Views
             }
             else if (pinching)
             {
+                Debug.WriteLine("is pinching");
                 pinching = false;
                 originalScale = scale = coercedScale;
             }
@@ -130,7 +131,6 @@ namespace Please2.Views
         /// </summary>  
         void OnImageOpened(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("on image opened");
             bitmap = (BitmapImage)ImageSingle.Source;
 
             // Set scale to the minimum, and then save it.  

@@ -52,8 +52,12 @@
     </Grid>
     
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar IsVisible="False">
-            <shell:ApplicationBarIconButton x:Name="skip" IconUri="/Assets/next.png" Text="skip" Click="SkipButton_Click" />
+        <shell:ApplicationBar>
+            <shell:ApplicationBarIconButton IsEnabled="False" x:Name="Skip" IconUri="/Assets/next.png" Text="skip" Click="SkipButton_Click" />
+            
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem x:Name="Reset" Click="Reset_Click" Text="Reset"/>
+            </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

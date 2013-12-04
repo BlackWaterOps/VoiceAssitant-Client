@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
@@ -48,6 +49,8 @@ namespace Plexi
         void LogoutUser();
 
         string GetAuthToken();
+
+        void StoreAuthToken(string token);
 
         Task<Dictionary<string, object>> GetDeviceInfo();
 
@@ -185,7 +188,11 @@ namespace Plexi
 
         public void LogoutUser()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
+            settings.Remove(Resources.PlexiResources.SettingsAuthKey);
         }
 
         public void Query(string query)
@@ -807,32 +814,43 @@ namespace Plexi
 
         public string GetAuthToken()
         {
+            string key = Resources.PlexiResources.SettingsAuthKey;
+            
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
             if (!settings.Contains(Resources.PlexiResources.SettingsAuthKey))
             {
-                throw new Exception("no auth token could be found");
+                throw new KeyNotFoundException("no auth token could be found");
             }
 
-            byte[] tokenBytes = (byte[])settings[Resources.PlexiResources.SettingsAuthKey];
+            byte[] tokenBytes = (byte[])settings[key];
 
             return Security.Decrypt(tokenBytes);
         }
 
-        private void StoreAuthToken(string token)
+        // TODO: handle increase quota issue
+        public void StoreAuthToken(string token)
         {
+            byte[] byteToken = Security.Encrypt(token);
+
+            string key = Resources.PlexiResources.SettingsAuthKey;
+
+            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
             try
             {
-                byte[] byteToken = Security.Encrypt(token);
-
-                IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-
-                settings.Add(Resources.PlexiResources.SettingsAuthKey, byteToken);
+                settings[key] = byteToken;
             }
-            catch (Exception err)
+            catch (KeyNotFoundException)
             {
-                Debug.WriteLine(String.Format("StoreAuthToken Error: {0}", err.Message));
+                settings.Add(key, byteToken);  
             }
+            catch (ArgumentException)
+            {
+                settings.Add(key, byteToken);  
+            }
+
+            settings.Save();
         }
 
         private async Task<ClassifierModel> DoClientOperations(ClassifierModel context, Dictionary<string, object> response)

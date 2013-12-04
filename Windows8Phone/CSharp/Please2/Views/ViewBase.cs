@@ -52,7 +52,7 @@ namespace Please2.Views
 
         protected FrameworkElement debugger;
 
-        public ViewBase()
+        public ViewBase(bool showAppBar = true)
         {
             try
             {
@@ -69,7 +69,10 @@ namespace Please2.Views
                     speechService = ViewModelLocator.GetServiceInstance<ISpeechService>();
                 }
 
-                CreateApplicationBar();
+                if (showAppBar == true)
+                {
+                    CreateApplicationBar();
+                }
             }
             catch (Exception err)
             {
@@ -431,7 +434,7 @@ namespace Please2.Views
         #region debug helpers
         private void AddDebugger()
         {
-            if (debugger == null)
+            if (debugger == null && applicationBar != null)
             {
                 var currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
 

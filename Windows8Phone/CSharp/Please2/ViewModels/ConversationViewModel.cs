@@ -61,7 +61,7 @@ namespace Please2.ViewModels
                 DialogList = new ObservableCollection<DialogModel>();
             }
 
-            AddDummyDialog(15);
+            // AddDummyDialog(15);
         }
 
         private void AddDummyDialog(int count)

@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
   
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="12,17,0,28">
+        <StackPanel Grid.Row="0" Margin="0">
             <!--<TextBlock Style="{StaticResource AppTitle}"/>-->
             <Image Style="{StaticResource AppTitleIcon}"/>
             <TextBlock Text="main menu" Style="{StaticResource PageTitle}"/>
