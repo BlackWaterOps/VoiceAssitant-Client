@@ -87,7 +87,7 @@ namespace Please2.ViewModels
             return data;
         }
 
-        private void BuildMap()
+        private async void BuildMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
 
@@ -99,75 +99,38 @@ namespace Please2.ViewModels
 
                 Flight flight = Flights.FirstOrDefault();
 
-                //TODO: avoid nested callbacks
-                MapService.GeoQuery(flight.origin.city, (og) =>
-                {
-                    Debug.WriteLine(String.Format("{0}:{1}", og.GeoCoordinate.Latitude, og.GeoCoordinate.Longitude));
-                
-                    GeoCoordinate origin = new GeoCoordinate(og.GeoCoordinate.Latitude, og.GeoCoordinate.Latitude);
+                // get origin coordinates
+                IList<MapLocation> og = await MapService.GeoQuery(flight.origin.city);
 
-                    MapService.GeoQuery(flight.destination.city, (dg) =>
-                        {
-                            Debug.WriteLine(String.Format("{0}:{1}", dg.GeoCoordinate.Latitude, dg.GeoCoordinate.Longitude));
+                Debug.WriteLine(String.Format("{0}:{1}", og.First().GeoCoordinate.Latitude, og.First().GeoCoordinate.Longitude));
 
-                            GeoCoordinate destination = new GeoCoordinate(dg.GeoCoordinate.Latitude, dg.GeoCoordinate.Longitude);
+                GeoCoordinate origin = new GeoCoordinate(og.First().GeoCoordinate.Latitude, og.First().GeoCoordinate.Latitude);
 
-                            List<GeoCoordinate> geoList = new List<GeoCoordinate>();
+                // get destination coordinates
+                IList<MapLocation> dg = await MapService.GeoQuery(flight.destination.city);
 
-                            geoList.Add(origin);
-                            geoList.Add(destination);
+                Debug.WriteLine(String.Format("{0}:{1}", dg.First().GeoCoordinate.Latitude, dg.First().GeoCoordinate.Longitude));
 
-                            MapPolyline polyline = MapService.CreatePolyline(geoList);
-                            
-                            map.MapElements.Add(polyline);
+                GeoCoordinate destination = new GeoCoordinate(dg.First().GeoCoordinate.Latitude, dg.First().GeoCoordinate.Longitude);
 
-                            MapLayer originLayer = MapService.CreateMapLayer(origin);
-                            MapLayer destinationLayer = MapService.CreateMapLayer(destination);
-
-                            map.Layers.Add(originLayer);
-                            map.Layers.Add(destinationLayer);
-
-                            map.Center = origin;
-                        });
-                });
-            }
-        }
-
-        /*
-         * need scope to map
-        private List<MapLocation> locations = new List<MapLocation>();
-
-        private void GeoQueryResponse(MapLocation location)
-        {
-            locations.Add(location);
-
-            if (locations.Count == 2)
-            {
+                // build list of coordinates to plot a line
                 List<GeoCoordinate> geoList = new List<GeoCoordinate>();
 
-                foreach (MapLocation ml in locations)
-                {
-                    Debug.WriteLine(String.Format("{0}:{1}", ml.GeoCoordinate.Latitude, ml.GeoCoordinate.Longitude));
-
-                    GeoCoordinate coordinate = new GeoCoordinate(ml.GeoCoordinate.Latitude, ml.GeoCoordinate.Longitude);
-                    geoList.Add(coordinate);
-                }
+                geoList.Add(origin);
+                geoList.Add(destination);
 
                 MapPolyline polyline = MapService.CreatePolyline(geoList);
 
                 map.MapElements.Add(polyline);
 
-                //MapLayer originLayer = MapService.CreateMapLayer(origin);
+                MapLayer originLayer = MapService.CreateMapLayer(origin);
                 MapLayer destinationLayer = MapService.CreateMapLayer(destination);
 
-                //map.Layers.Add(originLayer);
+                map.Layers.Add(originLayer);
                 map.Layers.Add(destinationLayer);
 
-                map.Center = new GeoCoordinate(dg.Latitude, dg.Longitude);
-
-                locations = new List<MapLocation>();
+                map.Center = origin;
             }
         }
-        */
     }
 }

@@ -162,6 +162,8 @@ namespace Please2.Views
                 ImageViewport.Bounds = new Rect(0, 0, newWidth, newHeight);
                 if (center)
                 {
+                    //Debug.WriteLine(String.Format("viewport res: {0} x {1}", ImageViewport.ActualWidth, ImageViewport.ActualHeight));
+
                     ImageViewport.SetViewportOrigin(
                         new Point(
                             Math.Round((newWidth - ImageViewport.ActualWidth) / 2),

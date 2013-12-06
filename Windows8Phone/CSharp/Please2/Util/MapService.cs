@@ -62,26 +62,31 @@ namespace Please2.Util
             return polyline;
         }
 
-        public static void GeoQuery(string searchTerm, Action<MapLocation> callback)
+        public static async Task<IList<MapLocation>> GeoQuery(string searchTerm)
         {
-            var query = new GeocodeQuery();
+            Debug.WriteLine(searchTerm);
+
+            GeocodeQuery query = new GeocodeQuery();
             query.GeoCoordinate = new GeoCoordinate(0, 0);
             query.SearchTerm = searchTerm;
             query.MaxResultCount = 5;
 
-            query.QueryCompleted += (s, e) =>
-            {
-                // take first value for now.
-                // possibly return all results and show list
-                if (e.Result.Count > 0)
-                {
-                    MapLocation first = e.Result.FirstOrDefault();
+            return await query.ExecuteAsync();
+        }
 
-                    callback(first);
-                }
-            };
+        public static async Task<IList<MapLocation>> ReverseGeoQuery(double lat, double lon)
+        {
+            GeoCoordinate coordinate = new GeoCoordinate(lat, lon);
 
-            query.QueryAsync();
+            return await ReverseGeoQuery(coordinate);
+        }
+
+        public static async Task<IList<MapLocation>> ReverseGeoQuery(GeoCoordinate coordinate)
+        {
+            ReverseGeocodeQuery query = new ReverseGeocodeQuery();
+            query.GeoCoordinate = coordinate;
+
+            return await query.ExecuteAsync();
         }
 
         public static GeoCoordinate GetCentrePointFromListOfCoordinates(List<GeoCoordinate> coordList)
@@ -117,26 +122,35 @@ namespace Please2.Util
             return new GeoCoordinate(Lat * 180 / Math.PI, Lon * 180 / Math.PI);
         }
 
-        /*
-        public struct GeoCoordinate
+        private static Task<T> ExecuteAsync<T>(this Query<T> query)
         {
-            private readonly double latitude;
-            private readonly double longitude;
+            var taskSource = new TaskCompletionSource<T>();
 
-            public double Latitude { get { return latitude; } }
-            public double Longitude { get { return longitude; } }
+            EventHandler<QueryCompletedEventArgs<T>> handler = null;
 
-            public GeoCoordinate(double latitude, double longitude)
-            {
-                this.latitude = latitude;
-                this.longitude = longitude;
-            }
+            handler = (s, e) =>
+                {
+                    query.QueryCompleted -= handler;
 
-            public override string ToString()
-            {
-                return string.Format("{0},{1}", Latitude, Longitude);
-            }
+                    if (e.Cancelled)
+                    {
+                        taskSource.SetCanceled();
+                    }
+                    else if (e.Error != null)
+                    {
+                        taskSource.SetException(e.Error);
+                    }
+                    else
+                    {
+                        taskSource.SetResult(e.Result);
+                    }
+                };
+
+            query.QueryCompleted += handler;
+
+            query.QueryAsync();
+
+            return taskSource.Task;
         }
-        */
     }
 }

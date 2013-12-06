@@ -47,6 +47,8 @@ namespace Please2
             NavigationService.NavigationFailed += OnNavigationFailed;
            
             var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
+
+            //Windows.System.Launcher.LaunchUriAsync
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

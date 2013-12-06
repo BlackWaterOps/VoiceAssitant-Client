@@ -133,6 +133,7 @@
     <Compile Include="ViewModels\ImageViewModel.cs" />
     <Compile Include="ViewModels\ListViewModel.cs" />
     <Compile Include="ViewModels\NewsViewModel.cs" />
+    <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\PeerFinderViewModel.cs" />
     <Compile Include="ViewModels\RealEstateViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
@@ -161,6 +162,7 @@
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
     <None Include="Assets\Fonts\weather.ttf" />
+    <None Include="Test.one" />
     <None Include="Views\Images.xaml.cs">
       <DependentUpon>Images.xaml</DependentUpon>
     </None>

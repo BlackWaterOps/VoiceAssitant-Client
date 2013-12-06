@@ -345,7 +345,46 @@ namespace Please2.Util
             return null;
         }
     }
-    //TODO: see if this can be replaced with toolkit's nulltovisibility converter
+
+    public class ListStyleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            Please2.Views.Note.ListStyle listStyle = (Please2.Views.Note.ListStyle) value;
+            string prefix = ((string)parameter).ToLower();
+
+            Visibility visibility = Visibility.Collapsed;
+
+            Debug.WriteLine(prefix);
+            Debug.WriteLine(listStyle);
+
+            switch (prefix)
+            {
+                case "ordered":
+                    if (listStyle == Please2.Views.Note.ListStyle.Ordered)
+                    {
+                        visibility = Visibility.Visible;
+                    }
+                    break;
+
+                case "unordered":
+                    if (listStyle == Please2.Views.Note.ListStyle.Unordered)
+                    {
+                        Debug.WriteLine("set unordered to visible");
+                        visibility = Visibility.Visible;
+                    }
+                    break;
+            }
+
+            return visibility;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

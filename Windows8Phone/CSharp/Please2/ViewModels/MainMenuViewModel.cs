@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Scheduler;
 
@@ -70,16 +71,29 @@ namespace Please2.ViewModels
 
             AddDefaultMenuItems();
 
-            try
-            {
-                //plexiService.LoginUser("testuser3", "thisisatest3");
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-            }
+            //GeoQueryTest();
         }
 
+        /* for testing
+        private async void GeoQueryTest()
+        {
+            Debug.WriteLine("get geoquery");
+
+            IList<MapLocation> locations = await MapService.GeoQuery("");
+
+            if (locations.Count > 0)
+            {
+                foreach (MapLocation location in locations)
+                {
+                    Debug.WriteLine(String.Format("location: {0} {1}", location.GeoCoordinate.Latitude, location.GeoCoordinate.Longitude));
+                }
+            }
+            else
+            {
+                Debug.WriteLine("no locations returned");
+            }
+        }
+        */
         private void SetGridSize()
         {
             var curr = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
@@ -144,7 +158,14 @@ namespace Please2.ViewModels
                     break;
             
                 case "notes":
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:"));
+                    try
+                    {
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:///"));
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine(err.Message);
+                    }
                     return;
                     break;
 
