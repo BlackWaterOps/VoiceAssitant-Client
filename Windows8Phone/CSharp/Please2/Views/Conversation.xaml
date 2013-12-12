@@ -54,29 +54,36 @@
         </DataTemplate>
 
         <DataTemplate x:Key="PlexiDialogTemplate">
-            <Grid>
+            <Grid>             
                 <c4f:ChatBubble Style="{StaticResource ChatBubbleStyle}"
-                     Background="#60aa17" 
-                     BorderBrush="#60aa17"        
-                     HorizontalAlignment="Left" 
-                     ChatBubbleDirection="UpperLeft">
-
-                    <StackPanel Orientation="Horizontal">
+                                Background="#60aa17" 
+                                BorderBrush="#60aa17"        
+                                HorizontalAlignment="Left" 
+                                ChatBubbleDirection="UpperLeft">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding message}" Style="{StaticResource MessageStyle}"/>
 
-                        <Glyphs Style="{StaticResource FontAwesomeBase}"
-                                Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}"
-                                UnicodeString="&#xf01b;"
-                                OriginX="0" OriginY="0"
-                                Margin="10,0,0,0"
-                                VerticalAlignment="Center"
-                                Fill="White" FontRenderingEmSize="40"
+                        <Border Grid.Column="1" 
+                                Background="Transparent" 
                                 Tap="Glyphs_Tap">
-                            <Glyphs.RenderTransform>
-                                <RotateTransform Angle="90"/>
-                            </Glyphs.RenderTransform>
-                        </Glyphs>
-                    </StackPanel>
+                            <Glyphs Style="{StaticResource FontAwesomeBase}"
+                                    Visibility="{Binding link, Converter={StaticResource NullToVisibilityConverter}}"
+                                    UnicodeString="&#xf01b;"
+                                    OriginX="0" OriginY="0"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Fill="White" FontRenderingEmSize="40">
+                                <Glyphs.RenderTransform>
+                                    <RotateTransform Angle="90"/>
+                                </Glyphs.RenderTransform>
+                            </Glyphs>
+                        </Border>
+                    </Grid>
+                       
                 </c4f:ChatBubble>
 
                 <toolkit:ContextMenuService.ContextMenu>

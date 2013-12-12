@@ -67,6 +67,8 @@ namespace Please2.ViewModels
 
         public static readonly Uri RegistrationUri = new Uri("/Views/Registration.xaml", UriKind.Relative);
 
+        public static readonly Uri NotesUri = new Uri("/Views/Notes.xaml", UriKind.Relative);
+
         /// <summary>
         /// Initializes a new instance of the ViewModelLocator class.
         /// </summary>
@@ -177,6 +179,10 @@ namespace Please2.ViewModels
             get { return GetServiceInstance<DictionaryViewModel>(); }
         }
 
+        public NotesViewModel NotesViewModel
+        {
+            get { return GetServiceInstance<NotesViewModel>(); }
+        }
         /*
         public TimeViewModel TimeViewModel
         {

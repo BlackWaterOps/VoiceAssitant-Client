@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
 using Microsoft.Phone.Controls;
@@ -21,14 +22,16 @@ namespace Please2.Views
 {
     public partial class Note : PhoneApplicationPage
     {
-        private ListStyle listStyle = ListStyle.None;
-
-        private const string unorderedBullet = "\u2022";
-
         public enum ListStyle
         {
             None = 0, Ordered = 1, Unordered = 2
         }
+
+        private ListStyle listStyle = ListStyle.None;
+
+        private TextBox currentTextBox;
+
+        private const string unorderedBullet = "\u2022";
 
         NotesViewModel vm;
 
@@ -37,296 +40,236 @@ namespace Please2.Views
             InitializeComponent();
 
             this.vm = new Please2.ViewModels.NotesViewModel();
+
+            Loaded += Note_Loaded;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private void Note_Loaded(object sender, RoutedEventArgs e)
         {
-            base.OnNavigatedTo(e);
-
-            DataContext = vm;
-
-            if (NoteBody.Blocks.Count == 0)
-            {
-                Debug.WriteLine("create first textbox");
-                Paragraph paragraph = CreateNewParagraph();
-
-                NoteBody.Blocks.Add(paragraph);
-
-                TextBox box = GetTextBox(paragraph);
-
-                box.Focus();
-            }
+            
         }
 
-        private void RichTextBox_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        private void NoteBody_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            Debug.WriteLine("richtextbox tap. create new element");
-
             // set focus on last element
+            if (NoteBodyStackPanel.Children.Count == 0)
+            {
+                AddTextBox();
+            }
         }
         
         // TODO check sender for list style
         private void TextBox_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            Debug.WriteLine("textbox tap");
+            TextBox box = sender as TextBox;
 
-            e.Handled = true;
-
-            TextBox box = (sender as TextBox);
+            this.currentTextBox = box;
 
             this.listStyle = (ListStyle)box.Tag;
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine("textbox keyup");
-
             TextBox box = sender as TextBox;
 
-            Paragraph paragraph = GetParagraph(box);
-
-            int idx = NoteBody.Blocks.IndexOf(paragraph);
-
-            if (box.Text.Length == 0 && e.Key.Equals(Key.Back))
+            switch (e.Key)
             {
-                if (this.listStyle != ListStyle.None)
-                {
-                    // remove list style for this textbox
-                    TextBlock block = box.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
-
-                    if (block != null)
+                case Key.Enter:
+                    if (this.listStyle != ListStyle.None && box.Text.Length == 0)
                     {
-                        block.Visibility = Visibility.Collapsed;
-                        block.Text = String.Empty;
+                        DisableStyle();
                     }
+                    else
+                    {
+                        AddTextBox();
+                    } 
+                    break;
 
-                }
-                else if (idx > 0)
-                {
-                    Paragraph previous = (Paragraph)NoteBody.Blocks.ElementAt(idx - 1);
+                case Key.Back:
+                    if (box.Text.Length == 0)
+                    {
+                        switch (this.listStyle)
+                        {
+                            case ListStyle.None:
+                                RemoveTextBox();
+                                break;
 
-                    NoteBody.Blocks.Remove(paragraph);
-
-                    TextBox last = GetTextBox(previous);
-
-                    last.Focus();
-                }
-            }
-
-            if (e.Key.Equals(Key.Enter))
-            {
-                e.Handled = true;
-
-                TextBox newBox;
-
-                if (this.listStyle == ListStyle.None)
-                {
-                    Debug.WriteLine("create new paragraph");
-                    Paragraph newParagraph = CreateNewParagraph();
-
-                    NoteBody.Blocks.Insert(idx + 1, newParagraph);
-
-                    newBox = GetTextBox(newParagraph);
-
-                    newBox.Focus();
-                }
-                else
-                {
-                    Debug.WriteLine("create new textbox in same paragraph");
-                    InlineUIContainer container = (InlineUIContainer)paragraph.Inlines.First();
-
-                    StackPanel panel = (StackPanel)container.Child;
-                    
-                    int boxIdx = panel.Children.IndexOf(box);
-
-                    int newIdx = boxIdx + 1;
-
-                    newBox = CreateTextBox();
-
-                    panel.Children.Insert(newIdx, newBox);
-
-                    panel.UpdateLayout();
-
-                    newBox.Focus();
-
-                    ReorderParagraph(panel);
-                }
+                            default:
+                                DisableStyle();                                
+                                break;
+                        }
+                    }
+                    break;
             }
         }
 
-        //TODO check currently selected textbox for style type
         private void UnorderedMenuItem_Click(object sender, EventArgs e)
         {
-            TextBox box = (TextBox)FocusManager.GetFocusedElement();
-
-            TextBlock block = box.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
-
-            if (this.listStyle.Equals(ListStyle.Unordered))
+            switch (this.listStyle)
             {
-                this.listStyle = ListStyle.None;
+                case ListStyle.None:
+                    UpdateStyle(ListStyle.Unordered);
+                    break;
 
-                //UpdateListPrefix(false);
+                case ListStyle.Unordered:
+                    DisableStyle();
+                    break;
 
-                if (block != null)
-                {
-                    block.Visibility = Visibility.Collapsed;
-                    block.Text = String.Empty;
-                }
-            }
-            else
-            {
-                this.listStyle = ListStyle.Unordered;
-
-                ReorderParagraph();
-
-                if (block != null)
-                {
-                    block.Text = unorderedBullet;
-                    block.Visibility = Visibility.Visible;
-                }
-
-                //UpdateListPrefix(true);
+                case ListStyle.Ordered:
+                    UpdateStyle(ListStyle.Unordered);
+                    break;
             }
         }
 
-        //TODO check currently selected textbox for style type
         private void OrderedMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.listStyle.Equals(ListStyle.Ordered))
+            switch (this.listStyle)
             {
-                this.listStyle = ListStyle.None;
-               
-                UpdateListPrefix(false);
-            }
-            else
-            {
-                listStyle = ListStyle.Ordered;
+                case ListStyle.None:
+                    UpdateStyle(ListStyle.Ordered);
+                    break;
 
-                ReorderParagraph();
+                case ListStyle.Unordered:
+                    UpdateStyle(ListStyle.Ordered);
+                    break;
 
-                UpdateListPrefix(true);
+                case ListStyle.Ordered:
+                    DisableStyle();
+                    break;
             }
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            WriteableBitmap bitmap = new WriteableBitmap(this, null);
+
+            WriteableBitmap newBitmap = bitmap.Resize(221, 221, WriteableBitmapExtensions.Interpolation.Bilinear);
+
+            byte[] bitmapAsBytes = newBitmap.ToByteArray();
+
+            var vm = new Please2.ViewModels.NotesViewModel();
+
+            vm.SaveNote(bitmapAsBytes, NoteTitle.Text, NoteBodyStackPanel.Children);
+
         }
 
         #region helpers
-        private TextBox CreateTextBox()
+        private void DisableStyle()
+        {
+            TextBlock block = this.currentTextBox.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
+
+            block.Visibility = Visibility.Collapsed;
+            block.Text = String.Empty;
+
+            this.listStyle = ListStyle.None;
+            this.currentTextBox.Tag = ListStyle.None;
+        }
+
+        private void UpdateStyle(ListStyle style)
+        {
+            if (style.Equals(ListStyle.None))
+            {
+                return;
+            }
+
+            // get start index
+            TextBox startTextBox = this.currentTextBox.ElementsBeforeSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).LastOrDefault();
+
+            int startIdx = (startTextBox == null) ? -1 : NoteBodyStackPanel.Children.IndexOf(startTextBox);
+
+            // get end index
+            TextBox endTextBox = this.currentTextBox.ElementsAfterSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).FirstOrDefault();
+
+            int endIdx = (endTextBox == null) ? NoteBodyStackPanel.Children.Count : NoteBodyStackPanel.Children.IndexOf(endTextBox);
+
+            int listNumber = 1;
+
+            Debug.WriteLine(String.Format("{0}:{1}", startIdx, endIdx));
+
+            for (var i = startIdx; i < endIdx; i++)
+            {
+                /*
+                Debug.WriteLine(String.Format("for loop: {0}", i));
+
+                if (i >= 0)
+                {
+                    TextBox test = (TextBox)NoteBodyStackPanel.Children.ElementAt(i);
+
+                    Debug.WriteLine(String.Format("for loop: {0}", ((ListStyle)test.Tag).ToString()));
+                }
+                */
+                if (i != startIdx)
+                {
+                    TextBox current = (TextBox)NoteBodyStackPanel.Children.ElementAt(i);
+
+                    TextBlock block = current.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
+
+                    switch (style)
+                    {
+                        case ListStyle.Unordered:
+                            block.Text = unorderedBullet;
+                            current.Tag = style;
+                            break;
+
+                        case ListStyle.Ordered:
+                            block.Text = String.Format("{0}.", listNumber);
+                            current.Tag = style;
+                            break;
+                    }
+
+                    block.Visibility = Visibility.Visible;
+
+                    listNumber++;
+                }
+            }
+
+            this.listStyle = style;
+        }
+
+        private TextBox BuildNewTextBox()
         {
             TextBox box = new TextBox();
-            box.Background = new SolidColorBrush() { Color = Color.FromArgb(255, 200, 200, 200) };
+
+            //box.Background = new SolidColorBrush() { Color = Color.FromArgb(255, 200, 200, 200) };
             box.Tap += TextBox_Tap;
             box.KeyDown += TextBox_KeyDown;
             box.TextWrapping = TextWrapping.Wrap;
-            box.Style = Resources["NoteText"] as Style;
             box.Tag = this.listStyle;
-            
+            box.Style = Resources["NoteText"] as Style;
+
             return box;
         }
 
-        private Paragraph CreateNewParagraph()
+        private void AddTextBox()
         {
-            Paragraph paragraph = new Paragraph();
+            TextBox box = BuildNewTextBox();
 
-            InlineUIContainer container = new InlineUIContainer();
+            int idx = (this.currentTextBox == null) ? -1 : NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
 
-            StackPanel panel = new StackPanel();
+            NoteBodyStackPanel.Children.Insert((idx + 1), box);
 
-            TextBox box = CreateTextBox();
+            NoteBodyStackPanel.UpdateLayout();
 
-            panel.Children.Add(box);
-            container.Child = panel;
-            paragraph.Inlines.Add(container);
+            box.Focus();
 
-            return paragraph;
+            this.currentTextBox = box;
+
+            UpdateStyle(this.listStyle);
         }
 
-        private void ReorderParagraph()
+        private void RemoveTextBox()
         {
-            TextBox box = (TextBox)FocusManager.GetFocusedElement();
+            int idx = NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
 
-            StackPanel panel = (StackPanel)box.Parent;
-
-            ReorderParagraph(panel);
-        }
-
-        private void ReorderParagraph(StackPanel panel)
-        {
-            var list = panel.Children.OfType<TextBox>();
-
-            //foreach (TextBox box in list)
-            for (var i = 0; i < list.Count(); i++)
+            if (idx > 0)
             {
-                TextBox box = list.ElementAt(i);
+                NoteBodyStackPanel.Children.Remove(this.currentTextBox);
 
-                TextBlock block = box.Descendants<TextBlock>().Cast<TextBlock>().Where(x => x.Name == "ListPrefix").FirstOrDefault();
+                this.currentTextBox = (TextBox)NoteBodyStackPanel.Children.ElementAt(idx - 1);
 
-                if (block != null)
-                {
-                    switch (this.listStyle)
-                    {
-                        case ListStyle.Ordered:
-                            block.Text = String.Format("{0}.", (i + 1));
-                            break;
+                this.currentTextBox.Focus();
 
-                        case ListStyle.Unordered:
-                            block.Text = unorderedBullet;
-                            break;
-                    }
-
-                    if (block.Visibility.Equals(Visibility.Collapsed))
-                    {
-                        block.Visibility = Visibility.Visible;
-                    }
-                }
-            }
-        }
-
-        private Paragraph GetParagraph(TextBox box)
-        {
-            StackPanel panel = box.Parent as StackPanel;
-
-            InlineUIContainer container = panel.Parent as InlineUIContainer;
-
-            TextPointer pointer = container.ElementStart;
-
-            return pointer.Parent as Paragraph;
-        }
-
-        private TextBox GetTextBox(Paragraph paragraph)
-        {
-            InlineUIContainer container = (InlineUIContainer)paragraph.Inlines.First();
-
-            StackPanel panel = (StackPanel)container.Child;
-
-            return (TextBox)panel.Children.Last();
-        }
-
-        //TODO find out why panel reports two textboxes instead on one
-        private void UpdateListPrefix(bool isVisible)
-        {
-            Debug.WriteLine("update list prefix");
-
-            TextBox box = (TextBox)FocusManager.GetFocusedElement();
-
-            StackPanel panel = (StackPanel)box.Parent;
-
-            IEnumerable<TextBox> boxes = panel.Descendants<TextBox>().Cast<TextBox>();
-
-            Debug.WriteLine(boxes.Count());
-
-            foreach (TextBox item in boxes)
-            {
-                Debug.WriteLine(item.GetType());
-
-                IEnumerable<TextBlock> blocks = item.Descendants<TextBlock>().Cast<TextBlock>();
-
-                Debug.WriteLine(blocks.Count());
-
-                TextBlock block = item.Descendants<TextBlock>().Cast<TextBlock>().Where(x => x.Name == "ListPrefix").FirstOrDefault();
-
-                if (block != null)
-                {
-                    block.Visibility = (isVisible) ? Visibility.Visible : Visibility.Collapsed;
-                }
+                this.listStyle = (ListStyle)this.currentTextBox.Tag;
             }
         }
         #endregion

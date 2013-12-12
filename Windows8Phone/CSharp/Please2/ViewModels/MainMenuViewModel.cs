@@ -158,15 +158,7 @@ namespace Please2.ViewModels
                     break;
             
                 case "notes":
-                    try
-                    {
-                        await Windows.System.Launcher.LaunchUriAsync(new Uri("onenote:///"));
-                    }
-                    catch (Exception err)
-                    {
-                        Debug.WriteLine(err.Message);
-                    }
-                    return;
+                    page = ViewModelLocator.NotesUri;                    
                     break;
 
                 case "settings":

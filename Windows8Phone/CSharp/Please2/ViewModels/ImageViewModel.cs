@@ -2,55 +2,58 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+using Microsoft.Phone.Controls;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Util;
 
+using Plexi;
+
 namespace Please2.ViewModels
 {
     public class ImageViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        private string prevImage;
-        public string PrevImage
+        private ObservableCollection<object> images;
+        public ObservableCollection<object> Images
         {
-            get { return prevImage; }
+            get { return images; }
             set
             {
-                prevImage = value;
-                RaisePropertyChanged("PrevImage");
+                images = value;
+                RaisePropertyChanged("Images");
             }
         }
 
-        private string nextImage;
-        public string NextImage
+        public ImageViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
-            get { return nextImage; }
-            set
-            {
-                nextImage = value;
-                RaisePropertyChanged("NextImage");
-            }
+            LoadImagesFromListViewModel();
         }
 
-        private string currentImage;
-        public string CurrentImage
+        private void LoadImagesFromListViewModel()
         {
-            get { return currentImage; }
-            set
+            try
             {
-                currentImage = value;
-                RaisePropertyChanged("CurrentImage");
-            }
-        }
+                ListViewModel vm = ViewModelLocator.GetServiceInstance<ListViewModel>();
 
-        public double ScreenWidth
-        {
-            get { return App.Current.Host.Content.ActualWidth; }
+                IEnumerable<object> results = vm.ListResults;
+
+                List<IThumbnailedImageAsync> images = new List<IThumbnailedImageAsync>();
+                foreach (string image in results)
+                {
+                    images.Add(new WebThumbnailedImage(image));
+                }
+
+                Images = new ObservableCollection<object>(images);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
         }
     }
 }

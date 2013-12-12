@@ -666,8 +666,20 @@ namespace Plexi
                 {
                     endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
 
+                    string authToken;
+
+                    try
+                    {
+                        authToken = GetAuthToken();
+                    }
+                    catch (KeyNotFoundException keyErr)
+                    {
+                        ErrorMessage(keyErr.Message);
+                        return;
+                    }
+
                     headers = new Dictionary<string, string>();
-                    headers.Add(Resources.PlexiResources.AuthTokenHeader, GetAuthToken());
+                    headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
                 }
 
                 ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);

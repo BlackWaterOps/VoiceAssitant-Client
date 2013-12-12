@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Windows;
+using System.Windows.Controls;
 
 using Microsoft.Phone.Scheduler;
 
@@ -44,42 +45,102 @@ namespace Please2.Models
             }
         }
 
-        private string _text;
+        private byte[] _thumbnail;
 
         [Column]
-        public string Text
+        public byte[] Thumbnail
         {
             get
             {
-                return _text;
+                return _thumbnail;
             }
             set
             {
-                if (_text != value)
+                if (_thumbnail != value)
                 {
-                    NotifyPropertyChanging("Text");
-                    _text = value;
-                    NotifyPropertyChanged("Text");
+                    NotifyPropertyChanging("Thumbnail");
+                    _thumbnail = value;
+                    NotifyPropertyChanged("Thumbnail");
                 }
             }
         }
 
-        private DateTime _time;
+        private string _title;
 
         [Column]
-        public DateTime Time
+        public string Title
         {
             get
             {
-                return _time;
+                return _title;
             }
             set
             {
-                if (_time != value)
+                if (_title != value)
                 {
-                    NotifyPropertyChanging("Time");
-                    _time = value;
-                    NotifyPropertyChanged("Time");
+                    NotifyPropertyChanging("Title");
+                    _title = value;
+                    NotifyPropertyChanged("Title");
+                }
+            }
+        }
+
+        private UIElementCollection _body;
+
+        [Column]
+        public UIElementCollection Body
+        {
+            get
+            {
+                return _body;
+            }
+            set
+            {
+                if (_body != value)
+                {
+                    NotifyPropertyChanging("Body");
+                    _body = value;
+                    NotifyPropertyChanged("Body");
+                }
+            }
+        }
+
+        private DateTime _creationDate;
+
+        [Column]
+        public DateTime CreationDate
+        {
+            get
+            {
+                return _creationDate;
+            }
+            set
+            {
+                if (_creationDate != value)
+                {
+                    NotifyPropertyChanging("CreationDate");
+                    _creationDate = value;
+                    NotifyPropertyChanged("CreationDate");
+                }
+            }
+        }
+
+        private DateTime _updateDate;
+
+        [Column]
+        public DateTime UpdateDate
+        {
+            get
+            {
+                return _updateDate;
+            }
+            set
+            {
+                if (_updateDate != value)
+                {
+                    NotifyPropertyChanging("UpdateDate");
+                    _updateDate = value;
+                    NotifyPropertyChanged("UpdateDate");
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -241,10 +242,16 @@ namespace Please2.ViewModels
 
                 if (templates[this.templateName] == null)
                 {
-                    Debug.WriteLine("template " + this.templateName + " not found in TemplateDictionary");
+                    Debug.WriteLine(String.Format("template {0} not found in TemplateDictionary", this.templateName));
                     GoTo("conversation");
                     return null;
                 }
+
+                Template = templates[this.templateName] as DataTemplate;
+
+                ListResults = CreateTypedList(this.templateName, structured["items"]);
+
+                LayoutMode = LongListSelectorLayoutMode.List;
 
                 // set list to grid view.
                 if (this.templateName == "images")
@@ -252,10 +259,6 @@ namespace Please2.ViewModels
                     LayoutMode = LongListSelectorLayoutMode.Grid;
                     GridCellSize = new Size(145, 145);
                 }
-
-                Template = templates[this.templateName] as DataTemplate;
-
-                ListResults = CreateTypedList(this.templateName, structured["items"]);
             }
             else
             {
@@ -286,50 +289,50 @@ namespace Please2.ViewModels
 
         public IEnumerable<object> CreateTypedList(string name, object items)
         {
-            IEnumerable<object> ret = new List<object>();
+            IEnumerable<object> data = new List<object>();
 
             var arr = items as JArray;
 
             switch (name)
             {
                 case "images":
-                    ret = arr.ToObject<IEnumerable<string>>();
+                    data = arr.ToObject<IEnumerable<string>>();
                     Scheme = "default";
                     break;
 
                 case "fuel":
-                    ret = arr.ToObject<IEnumerable<AltFuelModel>>();
+                    data = arr.ToObject<IEnumerable<AltFuelModel>>();
                     Scheme = "information";
                     break;
 
                 case "product":
                 case "shopping":
-                    ret = arr.ToObject<IEnumerable<ShoppingModel>>();
+                    data = arr.ToObject<IEnumerable<ShoppingModel>>();
                     Scheme = "commerce";
                     break;
 
                 case "events":
-                    ret = arr.ToObject<IEnumerable<EventModel>>();
+                    data = arr.ToObject<IEnumerable<EventModel>>();
                     Scheme = "commerce";
                     break;
 
                 case "movies":
-                    ret = arr.ToObject<IEnumerable<MoviesModel>>();
+                    data = arr.ToObject<IEnumerable<MoviesModel>>();
                     Scheme = "commerce";
                     break;
 
                 case "choice":
-                    ret = arr.ToObject<IEnumerable<ChoiceModel>>();
+                    data = arr.ToObject<IEnumerable<ChoiceModel>>();
                     Scheme = "default";
                     break;
 
                 case "search":
-                    ret = arr.ToObject<IEnumerable<SearchModel>>();
+                    data = arr.ToObject<IEnumerable<SearchModel>>();
                     Scheme = "information";
                     break;
             }
 
-            return ret;
+            return data;
         }
 
         public void RunTest(string templateName)

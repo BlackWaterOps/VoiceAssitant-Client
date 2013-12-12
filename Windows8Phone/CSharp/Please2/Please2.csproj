@@ -162,7 +162,6 @@
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
     <None Include="Assets\Fonts\weather.ttf" />
-    <None Include="Test.one" />
     <None Include="Views\Images.xaml.cs">
       <DependentUpon>Images.xaml</DependentUpon>
     </None>
@@ -171,6 +170,9 @@
     </Compile>
     <Compile Include="Views\Note.xaml.cs">
       <DependentUpon>Note.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Notes.xaml.cs">
+      <DependentUpon>Notes.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Notifications.xaml.cs">
       <DependentUpon>Notifications.xaml</DependentUpon>
@@ -301,6 +303,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Notes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Notifications.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -407,8 +413,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.WP8.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Live, Version=5.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Live.Controls, Version=5.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Controls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Controls.Toolkit, Version=8.0.1.0, Culture=neutral, PublicKeyToken=b772ad94eb9ca604, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -431,11 +435,21 @@
     <Reference Include="WPControls">
       <HintPath>..\packages\WPControls.1.5.2\lib\wp8\WPControls.dll</HintPath>
     </Reference>
+    <Reference Include="WriteableBitmapExWinPhone">
+      <HintPath>..\packages\WriteableBitmapEx.1.0.9.0\lib\WindowsPhone8\WriteableBitmapExWinPhone.dll</HintPath>
+    </Reference>
+    <Reference Include="WriteableBitmapExWinPhoneXnaDependant">
+      <HintPath>..\packages\WriteableBitmapEx.1.0.9.0\lib\WindowsPhone8\WriteableBitmapExWinPhoneXnaDependant.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Samples\MediaViewer\MediaViewer.csproj">
+      <Project>{41D422A7-5968-47DF-8B7B-4DBFA1484B07}</Project>
+      <Name>MediaViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Plexi\Plexi.csproj">
       <Project>{B7493D43-DE39-40B3-ADB8-772385B03B5F}</Project>
       <Name>Plexi</Name>

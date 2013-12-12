@@ -45,15 +45,16 @@ namespace Please2.Views
 
         private string[] cancelMessages = new string[] { "ok then.", "as you wish.", "very well." };
 
-        protected bool disableSpeech = false;
+        private bool showAppBar;
 
-        // allow sub classes to interact/alter the appbar
-        protected ApplicationBar applicationBar;
+        protected bool disableSpeech = false;
 
         protected FrameworkElement debugger;
 
         public ViewBase(bool showAppBar = true)
         {
+            this.showAppBar = showAppBar;
+            
             try
             {
                 // SystemTray.ProgressIndicator = new ProgressIndicator();
@@ -69,10 +70,7 @@ namespace Please2.Views
                     speechService = ViewModelLocator.GetServiceInstance<ISpeechService>();
                 }
 
-                if (showAppBar == true)
-                {
-                    CreateApplicationBar();
-                }
+                CreateApplicationBar();                
             }
             catch (Exception err)
             {
@@ -85,8 +83,6 @@ namespace Please2.Views
             base.OnNavigatedTo(e);
 
             RegisterListeners();
-
-            //CreatePageBackground();
             
             AddDebugger();
 
@@ -129,34 +125,11 @@ namespace Please2.Views
             Messenger.Default.Unregister<ShowMessage>(this, Speak);
         }
 
-        /*
-        protected void CreatePageBackground()
-        {
-            var bg = new ImageBrush();
-
-            bg.ImageSource = new BitmapImage(new Uri("/Assets/plexi-big-black-720.png", UriKind.Relative));
-            bg.Opacity = 0.30;
-            bg.AlignmentX = AlignmentX.Center;
-            bg.AlignmentY = AlignmentY.Bottom;
-            bg.Stretch = Stretch.Uniform;
-
-            var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
-            var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").Single();
-
-            if (layoutRoot != null)
-            {
-                layoutRoot.Background = bg;
-            }
-        }
-        */
-
         protected void CreateApplicationBar()
         {
-            if (applicationBar == null)
+            if (ApplicationBar == null && showAppBar == true)
             {
-                applicationBar = new ApplicationBar();
-
-                Debug.WriteLine("appbar count: " + applicationBar.Buttons.Count);
+                ApplicationBar = new ApplicationBar();
 
                 var micBtn = new ApplicationBarIconButton()
                 {
@@ -167,21 +140,19 @@ namespace Please2.Views
 
                 micBtn.Click += Microphone_Click;
 
-                applicationBar.Buttons.Add(micBtn);
-
-                ApplicationBar = applicationBar;
+                ApplicationBar.Buttons.Add(micBtn);
             }
         }
 
         protected void AddCancelButton()
         {
-            if (applicationBar.Buttons.Count == 1)
+            if (ApplicationBar.Buttons.Count == 1 && showAppBar == true)
             {
                 var cancelBtn = App.Current.Resources["CancelBtn"] as ApplicationBarIconButton;
 
                 cancelBtn.Click += Cancel_Click;
 
-                applicationBar.Buttons.Add(cancelBtn);
+                ApplicationBar.Buttons.Add(cancelBtn);
             }
         }
 
@@ -191,13 +162,13 @@ namespace Please2.Views
 
             cancelBtn.Click -= Cancel_Click;
 
-            applicationBar.Buttons.Remove(cancelBtn);
+            ApplicationBar.Buttons.Remove(cancelBtn);
         }
 
-        protected async void Cancel_Click(object sender, EventArgs e)
+        protected void Cancel_Click(object sender, EventArgs e)
         {
             RemoveCancelButton();
-            await CancelConversation();
+            CancelConversation();
         }
 
         protected async void Microphone_Click(object sender, EventArgs e)
@@ -220,7 +191,7 @@ namespace Please2.Views
             await speechService.Speak(message.Speak);
         }
 
-        private async Task CancelConversation()
+        private void CancelConversation()
         {
             speechService.CancelSpeak();
 
@@ -237,7 +208,7 @@ namespace Please2.Views
             //await speechService.Speak(cancelMessages[ind]);
         }
 
-        private async void ProcessQuery(string query)
+        private void ProcessQuery(string query)
         {
             try
             {
@@ -245,7 +216,7 @@ namespace Please2.Views
 
                 if (Array.IndexOf(cancelCommands, query.Trim().ToLower()) != -1)
                 {
-                    await CancelConversation();
+                    CancelConversation();
                     return;
                 }
 
@@ -265,11 +236,11 @@ namespace Please2.Views
         {
             InProgress(message.InProgress);
 
-            if (applicationBar != null)
+            if (ApplicationBar != null)
             {
                 if (message.InProgress == true)
                 {
-                    foreach (ApplicationBarIconButton button in applicationBar.Buttons)
+                    foreach (ApplicationBarIconButton button in ApplicationBar.Buttons)
                     {
                         button.IsEnabled = false;
                     }
@@ -277,7 +248,7 @@ namespace Please2.Views
 
                 if (message.InProgress == false)
                 {
-                    foreach (ApplicationBarIconButton button in applicationBar.Buttons)
+                    foreach (ApplicationBarIconButton button in ApplicationBar.Buttons)
                     {
                         button.IsEnabled = true;
                     }
@@ -434,56 +405,57 @@ namespace Please2.Views
         #region debug helpers
         private void AddDebugger()
         {
-            if (debugger == null && applicationBar != null)
+            if (debugger == null && ApplicationBar != null)
             {
                 var currentPage = (App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage;
 
                 var root = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").FirstOrDefault();
 
-         
-                var definition = new RowDefinition();
-                definition.Height = GridLength.Auto;
-                root.RowDefinitions.Add(definition);
-                
-
-                // create appbar menu item
-                var input = new ApplicationBarMenuItem()
+                if (root != null)
                 {
-                    Text = "Show Input"
-                };
+                    var definition = new RowDefinition();
+                    definition.Height = GridLength.Auto;
+                    root.RowDefinitions.Add(definition);
 
-                input.Click += MenuItem_Click;
 
-                // attach menu item to appbar
-                applicationBar.MenuItems.Add(input);
+                    // create appbar menu item
+                    var input = new ApplicationBarMenuItem()
+                    {
+                        Text = "Show Input"
+                    };
 
-                // create input scope
-                InputScope scope = new InputScope();
-                InputScopeName name = new InputScopeName();
+                    input.Click += MenuItem_Click;
 
-                name.NameValue = InputScopeNameValue.Text;
-                scope.Names.Add(name);
+                    // attach menu item to appbar
+                    ApplicationBar.MenuItems.Add(input);
 
-                // create textbox
-                var textBox = new TextBox();
-                textBox.Name = "ManualInput";
-                textBox.Width = 480;
-                textBox.Visibility = Visibility.Collapsed;
-                textBox.KeyDown += OnKeyDown;
-                textBox.InputScope = scope;
-                //textBox.Text = "how much does it cost to live here";
+                    // create input scope
+                    InputScope scope = new InputScope();
+                    InputScopeName name = new InputScopeName();
 
-                // create stackpanel
-                debugger = new StackPanel();
-                debugger.SetValue(Grid.RowProperty, (root.RowDefinitions.Count - 1));
-                (debugger as StackPanel).Background = new SolidColorBrush(Colors.DarkGray);
-                (debugger as StackPanel).Orientation = System.Windows.Controls.Orientation.Horizontal;
-                // add textbox to stackpanel
-                (debugger as StackPanel).Children.Add(textBox);
+                    name.NameValue = InputScopeNameValue.Text;
+                    scope.Names.Add(name);
 
-                // add stack panel to page
-                root.Children.Add(debugger);
-               
+                    // create textbox
+                    var textBox = new TextBox();
+                    textBox.Name = "ManualInput";
+                    textBox.Width = 480;
+                    textBox.Visibility = Visibility.Collapsed;
+                    textBox.KeyDown += OnKeyDown;
+                    textBox.InputScope = scope;
+                    //textBox.Text = "how much does it cost to live here";
+
+                    // create stackpanel
+                    debugger = new StackPanel();
+                    debugger.SetValue(Grid.RowProperty, (root.RowDefinitions.Count - 1));
+                    (debugger as StackPanel).Background = new SolidColorBrush(Colors.DarkGray);
+                    (debugger as StackPanel).Orientation = System.Windows.Controls.Orientation.Horizontal;
+                    // add textbox to stackpanel
+                    (debugger as StackPanel).Children.Add(textBox);
+
+                    // add stack panel to page
+                    root.Children.Add(debugger);
+                }
             }
         }
 

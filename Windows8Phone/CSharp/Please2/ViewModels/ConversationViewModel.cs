@@ -61,7 +61,7 @@ namespace Please2.ViewModels
                 DialogList = new ObservableCollection<DialogModel>();
             }
 
-            // AddDummyDialog(15);
+            //AddDummyDialog(15);
         }
 
         private void AddDummyDialog(int count)
@@ -70,7 +70,7 @@ namespace Please2.ViewModels
             {
                 string sender = (i % 2 == 0) ? "user" : "please";
 
-                AddDialog( sender, " dummy message " + i, ((i % 5 == 0) ? "http://www.plexisearch.com" : null) );
+                AddDialog(sender, "Your cells react to bacteria and viruses differently than mine. You don't get sick, I do.", ((i % 5 == 0) ? "http://www.plexisearch.com" : null));
             }
         }
 

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Navigation;
 
@@ -69,7 +70,6 @@ namespace Please2.Views
 
         private void DialogCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Debug.WriteLine("collection changed");
             Debug.WriteLine(e.Action);
             Debug.WriteLine(e.NewStartingIndex);
 
@@ -80,9 +80,9 @@ namespace Please2.Views
             }
         }
 
-        private void Glyphs_Tap(object sender, EventArgs e)
+        private void Glyphs_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            DialogModel dialog = (sender as System.Windows.Documents.Glyphs).DataContext as DialogModel;
+            DialogModel dialog = (sender as FrameworkElement).DataContext as DialogModel;
 
             if (dialog.link == null)
             {

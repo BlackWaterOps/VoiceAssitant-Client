@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
@@ -102,12 +103,10 @@ namespace Please2.ViewModels
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
 
-            var maps = currentPage.Descendants<Map>().Cast<Map>();
+            var map = currentPage.Descendants<Map>().Cast<Map>().FirstOrDefault();
 
-            if (maps.Count() > 0)
+            if (map != null)
             {
-                Map map = maps.FirstOrDefault();
-
                 List<GeoCoordinate> geoList = new List<GeoCoordinate>();
 
                 foreach (RealEstateListing listing in listings)
@@ -123,7 +122,17 @@ namespace Please2.ViewModels
                     map.Layers.Add(mapLayer);
                 }
 
-                map.Center = MapService.GetCentrePointFromListOfCoordinates(geoList);
+                if (geoList.Count > 0)
+                {
+                    LocationRectangle rect = LocationRectangle.CreateBoundingRectangle(geoList);
+                    map.SetView(rect);
+                }
+                else
+                {
+                    PivotItem item = map.Parent as PivotItem;
+                    Pivot pivot = item.Parent as Pivot;
+                    pivot.Items.Remove(item);
+                }
             }
         }
 
@@ -138,7 +147,7 @@ namespace Please2.ViewModels
             Stats = realestateResults.stats;
 
             ret.Add("title", "real estate");
-            ret.Add("scheme", this.scheme);
+            ret.Add("scheme", "commerce");
             //ret.Add("subtitle", ZodiacSign + " for " + date);
 
             return ret;

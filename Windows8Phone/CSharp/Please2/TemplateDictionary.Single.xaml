@@ -634,11 +634,12 @@
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-
+                                    
+                                    
                                     <Border VerticalAlignment="Center" Padding="10" Background="White">
-                                        <Image Source="{Binding images[0].src}" MaxWidth="100" VerticalAlignment="Center"/>
+                                        <Image Source="{Binding images[0].src}" VerticalAlignment="Center"/>
                                     </Border>
-
+                                    
                                     <Border Grid.Column="1" Padding="10" Background="{Binding Path=SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
                                         <StackPanel VerticalAlignment="Center">
                                             <StackPanel Orientation="Horizontal">
@@ -682,8 +683,7 @@
                          VerticalAlignment="Stretch" 
                          VerticalContentAlignment="Stretch" 
                          HorizontalAlignment="Stretch" 
-                         HorizontalContentAlignment="Stretch" 
-                         ZoomLevel="">
+                         HorizontalContentAlignment="Stretch">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Loaded">
                             <command:EventToCommand Command="{Binding MapLoaded}"/>

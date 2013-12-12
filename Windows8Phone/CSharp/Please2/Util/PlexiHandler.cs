@@ -125,76 +125,89 @@ namespace Please2.Util
 
         private void OnAct(object sender, ActorEventArgs e)
         {
-            ActorModel response = e.actor;
-
-            Show(response.show, response.speak);
-
-            Uri view = ViewModelLocator.ConversationPageUri;
-
-            if (response.show.structured != null && response.show.structured.ContainsKey("template"))
+            try
             {
-                Dictionary<string, object> structured = response.show.structured;
+                ActorModel response = e.actor;
 
-                string[] template = (structured["template"] as string).Split(':');
+                Show(response.show, response.speak);
 
-                string type = template[0];
-                string templateName = null;
+                Uri view = ViewModelLocator.ConversationPageUri;
 
-                if (template.Count() > 1)
+                if (response.show.structured != null && response.show.structured.ContainsKey("template"))
                 {
-                    templateName = template[1];
-                }
+                    Dictionary<string, object> structured = response.show.structured;
 
-                if (templateName != null)
-                {
-                    Dictionary<string, object> data;
+                    string[] template = (structured["template"] as string).Split(':');
 
-                    ResourceDictionary templates;
+                    string type = template[0];
+                    string templateName = null;
 
-                    Uri uri;
-
-                    switch (type)
+                    if (template.Count() > 1)
                     {
-                        case "list":
-                            templates = ViewModelLocator.ListTemplates;
+                        templateName = template[1];
+                    }
 
-                            switch (templateName)
-                            {
-                                // override. list items that act like single items
-                                case "news":
-                                    uri = LoadSingleResult(structured);
+                    if (templateName != null)
+                    {
+                        Dictionary<string, object> data;
 
-                                    if (uri != null)
-                                    {
-                                        view = uri;
-                                    }
-                                    break;
+                        ResourceDictionary templates;
 
-                                default:
-                                    data = PopulateViewModel("list", structured);
+                        Uri uri;
 
-                                    if (data != null)
-                                    {
+                        switch (type)
+                        {
+                            case "list":
+                                templates = ViewModelLocator.ListTemplates;
+
+                                switch (templateName)
+                                {
+                                    // override. list items that act like single items
+                                    case "news":
+                                        uri = LoadSingleResult(structured);
+
+                                        if (uri != null)
+                                        {
+                                            view = uri;
+                                        }
+                                        break;
+
+                                    default:
+                                        //TODO: list returns null. need a way to determine that 
+                                        // PopulateViewModel was successful
+                                        data = PopulateViewModel("list", structured);
+
                                         view = ViewModelLocator.ListResultsPageUri;
-                                    }
-                                    break;
-                            }
-                            break;
+                                        /*
+                                        if (data != null)
+                                        {
+                                            Debug.WriteLine("set list view uri");
+                                            view = ViewModelLocator.ListResultsPageUri;
+                                        }
+                                        */
+                                        break;
+                                }
+                                break;
 
-                        case "simple":
-                        case "single":
-                            uri = LoadSingleResult(structured);
+                            case "simple":
+                            case "single":
+                                uri = LoadSingleResult(structured);
 
-                            if (uri != null)
-                            {
-                                view = uri;
-                            }
-                            break;
+                                if (uri != null)
+                                {
+                                    view = uri;
+                                }
+                                break;
+                        }
                     }
                 }
-            }
 
-            navigationService.NavigateTo(view);
+                navigationService.NavigateTo(view);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("OnAct Error: {0}", err.Message));
+            }
         }
 
         private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
@@ -203,11 +216,11 @@ namespace Please2.Util
             {
                 ViewModelLocator locator = App.Current.Resources["Locator"] as ViewModelLocator;
 
-                PropertyInfo viewmodelProperty = locator.GetType().GetProperty(templateName.CamelCase() + "ViewModel");
+                PropertyInfo viewmodelProperty = locator.GetType().GetProperty(String.Format("{0}ViewModel", templateName.CamelCase()));
 
                 if (viewmodelProperty == null)
                 {
-                    Debug.WriteLine("pouplateviewmodel: view model " + templateName + " could not be found");
+                    Debug.WriteLine(String.Format("PouplateViewModel: view model {0} could not be found", templateName));
                     return null;
                 }
 
@@ -217,93 +230,109 @@ namespace Please2.Util
 
                 if (populateMethod == null)
                 {
-                    Debug.WriteLine("populateviewmodel: 'Populate' method not implemented in " + templateName);
+                    Debug.WriteLine(String.Format("PopulateViewModel: 'Populate' method not implemented in {0}", templateName));
                     return null;
                 }
 
                 if (!structured.ContainsKey("item") && !structured.ContainsKey("items"))
                 {
-                    Debug.WriteLine("populateviewmodel: unable to find 'item' or 'items' in response");
+                    Debug.WriteLine("PopulateViewModel: unable to find 'item' or 'items' in response");
                     return null;
                 }
 
                 if (structured.ContainsKey("items") && ((JArray)structured["items"]).Count <= 0)
                 {
-                    Debug.WriteLine("populateviewmodel: items list is emtpy nothing to set");
+                    Debug.WriteLine("PopulateViewModel: items list is emtpy nothing to set");
                     return null;
                 }
 
                 if (structured.ContainsKey("item") && ((JObject)structured["item"]).Count <= 0)
                 {
-                    Debug.WriteLine("populateviewmodel: item object is emtpy nothing to set");
+                    Debug.WriteLine("PopulateViewModel: item object is emtpy nothing to set");
                     return null;
                 }
 
                 object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
-
+                
                 return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                Debug.WriteLine(String.Format("PopulateViewModel Error: {0}", err.Message));
                 return null;
             }
         }
 
         private Uri LoadSingleResult(Dictionary<string, object> structured)
         {
-            ResourceDictionary templates = ViewModelLocator.SingleTemplates;
-
-            Uri view = ViewModelLocator.SingleResultPageUri;
-
-            string[] template = (structured["template"] as string).Split(':');
-
-            string type = template[0];
-            string templateName = template[1];
-
-            if (template.Count() > 2)
+            try
             {
-                templateName += ":" + template[2];
+                ResourceDictionary templates = ViewModelLocator.SingleTemplates;
+
+                Uri view = ViewModelLocator.SingleResultPageUri;
+
+                string[] template = (structured["template"] as string).Split(':');
+
+                string type = template[0];
+                string templateName = template[1];
+
+                Debug.WriteLine(type);
+                Debug.WriteLine(templateName);
+
+                if (template.Count() > 2)
+                {
+                    templateName += ":" + template[2];
+                }
+
+                if (templates[templateName] == null)
+                {
+                    Debug.WriteLine(String.Format("single template not found: {0}", templateName));
+                    return null;
+                }
+               
+                SingleViewModel singleViewModel = ViewModelLocator.GetServiceInstance<SingleViewModel>();
+
+                singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
+
+                Dictionary<string, object> data = PopulateViewModel(template[1], structured);
+
+                if (data == null)
+                {
+                    return null;
+                }
+
+                // allow viewmodel to override default view. Currently not in use! 
+                if (data.ContainsKey("page"))
+                {
+                    view = (Uri)data["page"];
+                }
+
+                singleViewModel.Title = null;
+
+                if (data.ContainsKey("title"))
+                {
+                    singleViewModel.Title = (string)data["title"];
+                }
+
+                singleViewModel.SubTitle = null;
+
+                if (data.ContainsKey("subtitle"))
+                {
+                    singleViewModel.SubTitle = (string)data["subtitle"];
+                }
+
+                if (data.ContainsKey("scheme"))
+                {
+                    singleViewModel.Scheme = (string)data["scheme"];
+                }
+
+                return view;
             }
-
-            if (templates[templateName] == null)
+            catch (Exception err)
             {
-                Debug.WriteLine("single template not found: " + templateName);
+                Debug.WriteLine(String.Format("LoadSingleResult Error: {0}", err.Message));
                 return null;
             }
-
-            SingleViewModel singleViewModel = ViewModelLocator.GetServiceInstance<SingleViewModel>();
-
-            singleViewModel.ContentTemplate = (DataTemplate)templates[templateName];
-
-            Dictionary<string, object> data = PopulateViewModel(template[1], structured);
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            // allow viewmodel to override default view. Currently not in use! 
-            if (data.ContainsKey("page"))
-            {
-                view = (Uri)data["page"];
-            }
-
-            singleViewModel.Title = null;
-
-            if (data.ContainsKey("title"))
-            {
-                singleViewModel.Title = (string)data["title"];
-            }
-
-            singleViewModel.SubTitle = null;
-
-            if (data.ContainsKey("subtitle"))
-            {
-                singleViewModel.SubTitle = (string)data["subtitle"];
-            }
-
-            return view;
         }
 
         /*

@@ -51,7 +51,7 @@ namespace Please2.Views
             pin.Text = "pin to start";
             pin.Click += (s, e) => { vm.PinToStartCommand.Execute(null); };
 
-            base.applicationBar.Buttons.Add(pin);
+            ApplicationBar.Buttons.Add(pin);
         }
     }
 }
