@@ -192,13 +192,21 @@ namespace Microsoft.Phone.Controls
             get { return (int)GetValue(DisplayedItemIndexProperty); }
             private set { SetValue(DisplayedItemIndexProperty, value); }
         }
-
+        /*
         public static readonly DependencyProperty InitiallyDisplayedElementProperty = DependencyProperty.Register(
             "InitiallyDisplayedElement",
             typeof(InitiallyDisplayedElementType),
             typeof(MediaViewer),
             new PropertyMetadata(InitiallyDisplayedElementType.First, OnInitiallyDisplayedElementPropertyChanged));
-
+        */
+        
+        public static readonly DependencyProperty InitiallyDisplayedElementProperty = DependencyProperty.Register(
+            "InitiallyDisplayedElement",
+            typeof(object),
+            typeof(MediaViewer),
+            new PropertyMetadata(InitiallyDisplayedElementType.First, OnInitiallyDisplayedElementPropertyChanged));
+        
+        /*
         /// <summary>
         /// Indicates which element should be displayed initially - the first or last one.
         /// </summary>
@@ -207,7 +215,16 @@ namespace Microsoft.Phone.Controls
             get { return (InitiallyDisplayedElementType)GetValue(InitiallyDisplayedElementProperty); }
             set { SetValue(InitiallyDisplayedElementProperty, value); }
         }
-
+        */
+        /// <summary>
+        /// Indicates which element should be displayed initially.
+        /// </summary>
+        public object InitiallyDisplayedElement
+        {
+            get { return (object)GetValue(InitiallyDisplayedElementProperty); }
+            set { SetValue(InitiallyDisplayedElementProperty, value); }
+        }
+       
         public static readonly DependencyProperty HeaderVisibilityProperty = DependencyProperty.Register(
             "HeaderVisibility", 
             typeof(Visibility), 
@@ -354,7 +371,6 @@ namespace Microsoft.Phone.Controls
 
         public MediaViewer()
         {
-            Debug.WriteLine("media viewer construct");
             System.Diagnostics.Debug.Assert(_virtualizedItemPoolSize % 2 == 1);
 
             DefaultStyleKey = typeof(MediaViewer);
@@ -516,9 +532,17 @@ namespace Microsoft.Phone.Controls
         {
             MediaViewer thisMediaViewer = (MediaViewer)dependencyObject;
 
-            if ((DisplayedElementType)eventArgs.NewValue == DisplayedElementType.None)
+            if (eventArgs.NewValue == null)
             {
-                throw new ArgumentException("InitiallyDisplayedElement cannot be set to DisplayedElementType.None");
+                throw new ArgumentException("InitiallyDisplayedElement cannot be null");
+            }
+
+            if (eventArgs.NewValue is InitiallyDisplayedElementType)
+            {
+                if ((DisplayedElementType)eventArgs.NewValue == DisplayedElementType.None)
+                {
+                    throw new ArgumentException("InitiallyDisplayedElement cannot be set to DisplayedElementType.None");
+                }
             }
         }
 
@@ -640,6 +664,7 @@ namespace Microsoft.Phone.Controls
             }
             else
             {
+                /*
                 if (InitiallyDisplayedElement == InitiallyDisplayedElementType.First)
                 {
                     JumpToFirstElement();
@@ -648,6 +673,9 @@ namespace Microsoft.Phone.Controls
                 {
                     JumpToLastElement();
                 }
+                */
+                int index = Items.IndexOf(InitiallyDisplayedElement);
+                JumpToElement(index);
             }
         }
 
@@ -1066,7 +1094,6 @@ namespace Microsoft.Phone.Controls
 
         private void OnMediaViewerSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Debug.WriteLine("media viewer size changed");
             _size = e.NewSize;
 
             if (_state == MediaViewerState.Uninitialized)

@@ -37,7 +37,7 @@ namespace Please2.ViewModels
 
         public static ResourceDictionary DetailsTemplates = App.Current.Resources["DetailsTemplateDictionary"] as ResourceDictionary;
 
-        public const string FullImageUri = @"/Views/Image.xaml?image={0}";
+        public const string FullImageUri = @"/Views/Image.xaml?imageIndex={0}";
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 

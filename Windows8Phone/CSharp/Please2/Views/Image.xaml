@@ -30,8 +30,7 @@
             <viewer:MediaViewer x:Name="MediaViewer"
                                 Items="{Binding Images}" 
                                 FooterVisibility="Collapsed"
-                                InitiallyDisplayedElement="First"/>
-           
+                                InitiallyDisplayedElement="{Binding InitialImage}"/>
         </Grid>
     </Grid>
 

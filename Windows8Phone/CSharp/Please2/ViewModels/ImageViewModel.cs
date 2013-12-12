@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -18,6 +19,17 @@ namespace Please2.ViewModels
 {
     public class ImageViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        private IThumbnailedImageAsync initialImage;
+        public IThumbnailedImageAsync InitialImage
+        {
+            get { return initialImage; }
+            private set
+            {
+                initialImage = value;
+                RaisePropertyChanged("InitialImage");
+            }
+        }
+
         private ObservableCollection<object> images;
         public ObservableCollection<object> Images
         {
@@ -29,31 +41,39 @@ namespace Please2.ViewModels
             }
         }
 
-        public ImageViewModel(INavigationService navigationService, IPlexiService plexiService)
-        {
-            LoadImagesFromListViewModel();
-        }
-
-        private void LoadImagesFromListViewModel()
+        // called from ListViewModel to populate collection before navigation
+        public void LoadImages(IEnumerable<object> list, string initialImage)
         {
             try
             {
-                ListViewModel vm = ViewModelLocator.GetServiceInstance<ListViewModel>();
-
-                IEnumerable<object> results = vm.ListResults;
-
                 List<IThumbnailedImageAsync> images = new List<IThumbnailedImageAsync>();
-                foreach (string image in results)
+
+                foreach (string image in list)
                 {
-                    images.Add(new WebThumbnailedImage(image));
+                    WebThumbnailedImage thumb = new WebThumbnailedImage(image);
+                    images.Add(thumb);
+
+                    if (image == initialImage)
+                    {
+                        InitialImage = thumb;
+                    }
                 }
 
                 Images = new ObservableCollection<object>(images);
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                Debug.WriteLine(String.Format("LoadImages Error: {0}", err.Message));
             }
+        }
+
+        public Uri GetImageAtIndex(int index)
+        {
+            object currentImage = Images.ElementAt(index);
+
+            Uri uri = ((WebThumbnailedImage)currentImage).ImagePath;
+
+            return uri;
         }
     }
 }

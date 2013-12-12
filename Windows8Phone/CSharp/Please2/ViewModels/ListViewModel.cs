@@ -194,13 +194,14 @@ namespace Please2.ViewModels
 
         public void ImageItemSelected(string imageUrl)
         {
-            var uri = String.Format(ViewModelLocator.FullImageUri, imageUrl);
+            string uri = String.Format(ViewModelLocator.FullImageUri, imageUrl);
 
-            //var vm = ViewModelLocator.GetViewModelInstance<ImageViewModel>();
+            ImageViewModel vm = ViewModelLocator.GetServiceInstance<ImageViewModel>();
 
-            //vm.CurrentImage = imageUrl;
+            vm.LoadImages(ListResults, imageUrl);
 
-            navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            //navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
+            navigationService.NavigateTo(ViewModelLocator.ImagePageUri);
         }
 
         public void FuelItemSelected(AltFuelModel fuel)

@@ -9,8 +9,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 using Please2.ViewModels;
 
@@ -26,6 +28,41 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+        }
+
+        /* while this method could work to pin an image, when a user clicks on it,
+         * the rest of the images would need to be retrieved again which could get complicated.
+         * Especially if search returns different images than before 
+        protected void PinToStartButton_Click(object sender, EventArgs e)
+        {
+            int idx = MediaViewer.DisplayedItemIndex;
+
+            Uri currentImage = (DataContext as ImageViewModel).GetImageAtIndex(idx);
+
+            var tile = new FlipTileData();
+
+            tile.BackgroundImage = currentImage;
+            //tile.BackContent = "";
+            //tile.Title = tile.BackTitle = "";
+            tile.Count = 0;
+
+            Uri uri = new Uri(String.Format(ViewModelLocator.FullImageUri, idx));
+
+            ShellTile.Create(uri, tile);
+        }
+        */
+
+        protected void ShareButton_Click(object sender, EventArgs e)
+        {
+            int idx = MediaViewer.DisplayedItemIndex;
+
+            Uri currentImage = (DataContext as ImageViewModel).GetImageAtIndex(idx);
+
+            ShareMediaTask task = new ShareMediaTask();
+
+            task.FilePath = currentImage.OriginalString;
+            
+            task.Show();
         }
     }
 }
