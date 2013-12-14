@@ -92,9 +92,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Controls\ValidationTextBox.cs" />
-    <Compile Include="ImageDemo.xaml.cs">
-      <DependentUpon>ImageDemo.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
@@ -118,6 +115,7 @@
     <Compile Include="Tests\List.cs" />
     <Compile Include="Tests\Single.cs" />
     <Compile Include="Util\AccountHelper.cs" />
+    <Compile Include="Util\Enumerations.cs" />
     <Compile Include="Util\Interfaces.cs" />
     <Compile Include="Util\MapService.cs" />
     <Compile Include="Util\NavigationService.cs" />
@@ -243,10 +241,6 @@
     <Page Include="Controls\Controls.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ImageDemo.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TemplateDictionary.Details.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
@@ -434,12 +428,6 @@
     </Reference>
     <Reference Include="WPControls">
       <HintPath>..\packages\WPControls.1.5.2\lib\wp8\WPControls.dll</HintPath>
-    </Reference>
-    <Reference Include="WriteableBitmapExWinPhone">
-      <HintPath>..\packages\WriteableBitmapEx.1.0.9.0\lib\WindowsPhone8\WriteableBitmapExWinPhone.dll</HintPath>
-    </Reference>
-    <Reference Include="WriteableBitmapExWinPhoneXnaDependant">
-      <HintPath>..\packages\WriteableBitmapEx.1.0.9.0\lib\WindowsPhone8\WriteableBitmapExWinPhoneXnaDependant.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

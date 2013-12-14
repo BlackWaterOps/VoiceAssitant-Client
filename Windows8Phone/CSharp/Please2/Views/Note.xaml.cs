@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -17,16 +20,13 @@ using Microsoft.Phone.Shell;
 using LinqToVisualTree;
 
 using Please2.ViewModels;
+using Please2.Models;
+using Please2.Util;
 
 namespace Please2.Views
 {
     public partial class Note : PhoneApplicationPage
     {
-        public enum ListStyle
-        {
-            None = 0, Ordered = 1, Unordered = 2
-        }
-
         private ListStyle listStyle = ListStyle.None;
 
         private TextBox currentTextBox;
@@ -44,6 +44,20 @@ namespace Please2.Views
             Loaded += Note_Loaded;
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            string noteid;
+
+            NavigationContext.QueryString.TryGetValue("noteid", out noteid);
+
+            if (noteid != null && noteid != String.Empty)
+            {
+                this.vm.LoadNote(Convert.ToInt32(noteid));
+            }
+        }
+
         private void Note_Loaded(object sender, RoutedEventArgs e)
         {
             
@@ -55,6 +69,11 @@ namespace Please2.Views
             if (NoteBodyStackPanel.Children.Count == 0)
             {
                 AddTextBox();
+            }
+            else
+            {
+                //TODO: should put focus on closest TextBox to touch area
+                (NoteBodyStackPanel.Children.Last() as TextBox).Focus();
             }
         }
         
@@ -140,17 +159,18 @@ namespace Please2.Views
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
-        {
+        {       
             WriteableBitmap bitmap = new WriteableBitmap(this, null);
+ 
+            MemoryStream stream = new MemoryStream();
+            
+            bitmap.SaveJpeg(stream, 221, 221, 0, 90);
 
-            WriteableBitmap newBitmap = bitmap.Resize(221, 221, WriteableBitmapExtensions.Interpolation.Bilinear);
-
-            byte[] bitmapAsBytes = newBitmap.ToByteArray();
-
+            byte[] bitmapAsBytes = stream.ToArray();
+  
             var vm = new Please2.ViewModels.NotesViewModel();
 
             vm.SaveNote(bitmapAsBytes, NoteTitle.Text, NoteBodyStackPanel.Children);
-
         }
 
         #region helpers

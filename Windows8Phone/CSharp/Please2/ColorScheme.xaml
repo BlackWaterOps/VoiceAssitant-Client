@@ -38,7 +38,13 @@
     <SolidColorBrush x:Key="SettingsPageTitle" Color="#182934"/>
     <SolidColorBrush x:Key="SettingsPageSubTitle" Color="#1b2e39"/>
     <SolidColorBrush x:Key="SettingsBackground" Color="#1f343f"/>
-
+    
+    <!-- Notes -->
+    <SolidColorBrush x:Key="NotesAppTitle" Color="#926126"/>
+    <SolidColorBrush x:Key="NotesPageTitle" Color="#a16825"/>
+    <SolidColorBrush x:Key="NotesPageSubTitle" Color="#af6d20"/>
+    <SolidColorBrush x:Key="NotesBackground" Color="#bd731b"/>
+    
     <!--
     <SolidColorBrush x:Key="NotificationAppTitle" Color="#554168"/>
     <SolidColorBrush x:Key="NotificationPageTitle" Color="#5f4a72"/>

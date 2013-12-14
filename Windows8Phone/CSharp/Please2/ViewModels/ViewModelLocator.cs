@@ -43,6 +43,8 @@ namespace Please2.ViewModels
 
         public const string ChildBrowserUri = @"/ChildBrowser.xaml?url={0}&isOptional={1}";
 
+        public const string NoteUri = @"/Views/Note.xaml?noteid={0}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/MainMenu.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);

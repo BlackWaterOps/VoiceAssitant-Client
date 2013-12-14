@@ -16,24 +16,38 @@
     DataContext="{Binding NotesViewModel, Source={StaticResource Locator}}">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=background}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+        <StackPanel Grid.Row="0">
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                <!--<TextBlock Style="{StaticResource AppTitle}"/>-->
+                <Image Style="{StaticResource AppTitleIcon}"/>
+            </Border>
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}">
+                <TextBlock Text="Notes" Style="{StaticResource PageTitle}"/>
+            </Border>
+            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
+                <!--
+                <TextBlock Text="{Binding SubTitle}" 
+                       Visibility="{Binding SubTitle, Converter={StaticResource NullToVisibilityConverter}}"
+                       Style="{StaticResource PageSubTitle}"/>
+                -->
+            </Border>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <phone:LongListSelector ItemsSource="{Binding Notes}" GridCellSize="221.5, 221.5">
+            <phone:LongListSelector ItemsSource="{Binding Notes}" LayoutMode="Grid" GridCellSize="221.5, 221.5">
                 <phone:LongListSelector.ItemTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding Thumbnail}"/>
+                        <Border BorderBrush="Black" BorderThickness="1">
+                            <Image Tag="{Binding ID}" Source="{Binding Thumbnail, Converter={StaticResource ImageConverter}}" Tap="Thumbnail_Tap"/>
+                        </Border>
                     </DataTemplate>
                 </phone:LongListSelector.ItemTemplate>
             </phone:LongListSelector>

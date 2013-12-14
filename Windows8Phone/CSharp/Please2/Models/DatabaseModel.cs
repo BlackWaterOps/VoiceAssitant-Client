@@ -8,6 +8,8 @@ using System.Windows.Controls;
 
 using Microsoft.Phone.Scheduler;
 
+using Please2.Util;
+
 namespace Please2.Models
 {
     class DatabaseModel : DataContext
@@ -16,18 +18,21 @@ namespace Please2.Models
         {
         }
 
-        public Table<Alarm> Alarms;
-        public Table<Note> Notes;
-        public Table<PreferenceItem> Preferences;
+        public Table<NoteItem> Notes;
+        public Table<NoteItemBody> NoteBody;
 
+        public Table<Alarm> Alarms;
+        
+        public Table<PreferenceItem> Preferences;
     }
 
+    #region Notes Table
     [Table]
-    public class Note : ModelBase
+    public class NoteItem : ModelBase
     {
         private int _id;
 
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
         public int ID
         {
             get
@@ -47,7 +52,7 @@ namespace Please2.Models
 
         private byte[] _thumbnail;
 
-        [Column]
+        [Column(DbType="image")]
         public byte[] Thumbnail
         {
             get
@@ -85,26 +90,6 @@ namespace Please2.Models
             }
         }
 
-        private UIElementCollection _body;
-
-        [Column]
-        public UIElementCollection Body
-        {
-            get
-            {
-                return _body;
-            }
-            set
-            {
-                if (_body != value)
-                {
-                    NotifyPropertyChanging("Body");
-                    _body = value;
-                    NotifyPropertyChanged("Body");
-                }
-            }
-        }
-
         private DateTime _creationDate;
 
         [Column]
@@ -125,33 +110,162 @@ namespace Please2.Models
             }
         }
 
-        private DateTime _updateDate;
+        private DateTime _modifiedDate;
 
         [Column]
-        public DateTime UpdateDate
+        public DateTime ModifiedDate
         {
             get
             {
-                return _updateDate;
+                return _modifiedDate;
             }
             set
             {
-                if (_updateDate != value)
+                if (_modifiedDate != value)
                 {
-                    NotifyPropertyChanging("UpdateDate");
-                    _updateDate = value;
-                    NotifyPropertyChanged("UpdateDate");
+                    NotifyPropertyChanging("ModifiedDate");
+                    _modifiedDate = value;
+                    NotifyPropertyChanged("ModifiedDate");
                 }
             }
         }
+
+        // Define the entity set for the collection side of the relationship.
+        private EntitySet<NoteItemBody> _noteBody;
+
+        [Association(Storage = "_noteBody", OtherKey = "_noteID", ThisKey = "ID")]
+        public EntitySet<NoteItemBody> NoteBody
+        {
+            get { return this._noteBody; }
+            set { this._noteBody.Assign(value); }
+        }
+
+        // Assign handlers for the add and remove operations, respectively. 
+        public NoteItem()
+        {
+            _noteBody = new EntitySet<NoteItemBody>(
+                new Action<NoteItemBody>(this.attach_noteBody),
+                new Action<NoteItemBody>(this.detach_noteBody)
+                );
+        }
+
+        // Called during an add operation 
+        private void attach_noteBody(NoteItemBody noteBody)
+        {
+            NotifyPropertyChanging("NoteBody");
+            noteBody.Note = this;
+        }
+
+        // Called during a remove operation
+        private void detach_noteBody(NoteItemBody noteBody)
+        {
+            NotifyPropertyChanging("NoteBody");
+            noteBody.Note = null; 
+        }
     }
 
+    [Table]
+    public class NoteItemBody : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+   
+        private string _text;
+
+        [Column]
+        public string Text
+        {
+            get
+            {
+                return _text;
+            }
+            set
+            {
+                if (_text != value)
+                {
+                    NotifyPropertyChanging("Text");
+                    _text = value;
+                    NotifyPropertyChanged("Text");
+                }
+            }
+        }
+
+        private int _style;
+
+        [Column]
+        public int Style
+        {
+            get
+            {
+                return _style;
+            }
+            set
+            {
+                if (_style != value)
+                {
+                    NotifyPropertyChanging("Style");
+                    _style = value;
+                    NotifyPropertyChanged("Style");
+                }
+            }
+        }
+
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version; 
+
+        // Internal column for the associated ToDoCategory ID value 
+        [Column] 
+        internal int _noteID; 
+ 
+        // Entity reference, to identify the ToDoCategory "storage" table 
+        private EntityRef<NoteItem> _note; 
+ 
+        // Association, to describe the relationship between this key and that "storage" table 
+        [Association(Storage = "_note", ThisKey = "_noteID", OtherKey = "ID", IsForeignKey = true)] 
+        public NoteItem Note 
+        { 
+            get { return _note.Entity; } 
+            set 
+            { 
+                NotifyPropertyChanging("Note"); 
+                _note.Entity = value; 
+ 
+                if (value != null) 
+                { 
+                    _noteID = value.ID; 
+                } 
+ 
+                NotifyPropertyChanging("Note"); 
+            } 
+        } 
+    }
+    #endregion
+
+    #region Alarms Table
     [Table]
     public class Alarm : ModelBase
     {
         private int _id;
 
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
         public int ID
         {
             get
@@ -268,14 +382,20 @@ namespace Please2.Models
                 }
             }
         }
-    }
 
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version; 
+    }
+    #endregion
+
+    #region Preferences Table
     [Table]
     public class PreferenceItem : ModelBase
     {
         private int _id;
 
-        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
         public int ID
         {
             get
@@ -332,5 +452,10 @@ namespace Please2.Models
                 }
             }
         }
+
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version; 
     }
+    #endregion
 }

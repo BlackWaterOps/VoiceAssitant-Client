@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -15,11 +16,22 @@ namespace Please2.Views
 {
     public partial class Notes : ViewBase
     {
+        NotesViewModel vm;
+
         public Notes()
         {
             InitializeComponent();
 
+            vm = DataContext as NotesViewModel;
+
             AddMenu();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            vm.LoadNotes();
         }
 
         private void AddMenu()
@@ -33,7 +45,20 @@ namespace Please2.Views
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/Note.xaml", UriKind.Relative));
+            string path = String.Format(ViewModelLocator.NoteUri, "");
+
+            NavigationService.Navigate(new Uri(path, UriKind.Relative));
+        }
+
+        private void Thumbnail_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            Debug.WriteLine("thumbnail tapped");
+
+            var noteID = (sender as FrameworkElement).Tag;
+
+            string path = String.Format(ViewModelLocator.NoteUri, noteID);
+
+            NavigationService.Navigate(new Uri(path, UriKind.Relative));
         }
     }
 }

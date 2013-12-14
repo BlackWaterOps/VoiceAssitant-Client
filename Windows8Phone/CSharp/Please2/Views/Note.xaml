@@ -152,7 +152,7 @@
                                   BorderBrush="White" 
                                   Margin="-9, -12" 
                                   Hint="Untitled"/>
-  
+            
             <Border x:Name="NoteBody"
                     Grid.Row="2"
                     Background="White"
@@ -160,6 +160,7 @@
                     Tap="NoteBody_Tap">
                 <StackPanel x:Name="NoteBodyStackPanel"/>
             </Border>
+         
         </Grid>
     </Grid>
 
