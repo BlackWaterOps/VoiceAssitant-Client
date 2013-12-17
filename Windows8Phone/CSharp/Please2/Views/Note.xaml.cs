@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 using LinqToVisualTree;
 
@@ -42,16 +43,6 @@ namespace Please2.Views
             InitializeComponent();
 
             this.vm = new Please2.ViewModels.NotesViewModel();
-
-            //Loaded += Note_Loaded;
-        }
-
-        private void Note_Loaded(object sender, EventArgs e)
-        {
-            if (this.currentNote.HasValue)
-            {
-                DeleteButton.IsEnabled = true;
-            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -167,6 +158,16 @@ namespace Please2.Views
             }
         }
 
+        private void ShareMenuItem_Click(object sender, EventArgs e)
+        {
+            EmailComposeTask task = new EmailComposeTask();
+
+            task.Subject = NoteTitle.Text;
+            task.Body = XamlToText();
+
+            task.Show();
+        }
+
         private void SaveButton_Click(object sender, EventArgs e)
         {       
             WriteableBitmap bitmap = new WriteableBitmap(ContentPanel, null);
@@ -191,7 +192,7 @@ namespace Please2.Views
                 {
                     this.currentNote = id;
 
-                    DeleteButton.IsEnabled = true;
+                    EnableDeleteButton(true);
                 }
             }
         }
@@ -332,12 +333,16 @@ namespace Please2.Views
 
         private void AddTextBox(string line = null, ListStyle style = ListStyle.None)
         {
+            if (line != null)
+            {
+                this.listStyle = style;
+            }
+
             TextBox box = BuildNewTextBox();
 
             if (line != null)
             {
                 box.Text = line;
-                this.listStyle = style;
             }
             
             int idx = (this.currentTextBox == null) ? -1 : NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
@@ -358,6 +363,8 @@ namespace Please2.Views
             }
 
             this.currentTextBox = box;
+
+            //Debug.WriteLine(String.Format("addtextbox: {0}", this.listStyle));
 
             UpdateStyle(this.listStyle);
         }
@@ -403,7 +410,54 @@ namespace Please2.Views
                 AddTextBox(line.Text, (ListStyle)line.Style);
             }
 
-            (ApplicationBar.Buttons[1] as ApplicationBarIconButton).IsEnabled = true;
+            EnableDeleteButton(true);
+        }
+
+        private void EnableDeleteButton(bool isEnabled)
+        {
+            (ApplicationBar.Buttons[1] as ApplicationBarIconButton).IsEnabled = isEnabled;
+        }
+
+        private string XamlToText()
+        {
+            string result = String.Empty;
+
+            int orderListCount = 1;
+
+            UIElementCollection children = NoteBodyStackPanel.Children;
+
+            for (int i = 0; i < children.Count; i++)
+            {
+                TextBox child = (children[i] as TextBox);
+
+                string text = child.Text.Trim();
+
+                switch ((ListStyle)child.Tag)
+                {
+                    case ListStyle.Ordered:
+                        text = String.Format("\t{0}. {1}", orderListCount, text);
+                        orderListCount++;
+                        break;
+
+                    case ListStyle.Unordered:
+                        text = String.Format("\t{0} {1}", unorderedBullet, text);
+                        orderListCount = 1;
+                        break;
+
+                    case ListStyle.None:
+                        orderListCount = 1;
+                        break;
+                }
+
+                if (i != children.Count - 1)
+                {
+                    text = String.Format("{0}\r\n", text);
+                }
+
+                result += text;
+            }
+
+            return result;
         }
         #endregion
     }
