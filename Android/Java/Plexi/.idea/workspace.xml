@@ -2,191 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0e4d1fc-26b8-4e98-9b22-82052bcff9b9" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.classpath" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/dictionaries/jeffschifano.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/google_play_services.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi-Plexi.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/apk/Plexi-debug-unaligned.apk" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/layout/activity_main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/menu/main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/values-sw720dp-land/values.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/values-v11/values.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/values-v14/values.xml" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/hamcrest_core_1_3.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/junit_4_11.xml" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/ic_launcher-web.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/layout/activity_main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/menu/main.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values-sw600dp/dimens.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values-sw720dp-land/dimens.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values-v11/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values-v14/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values/dimens.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/README.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/gen/com/google/android/gms/BuildConfig.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/gen/com/google/android/gms/Manifest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/gen/com/google/android/gms/R.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/proguard.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/project.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/color/common_signin_btn_text_dark.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/color/common_signin_btn_text_light.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_icon_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/common_signin_btn_text_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/ic_plusone_medium_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/ic_plusone_small_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/ic_plusone_standard_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-hdpi/ic_plusone_tall_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_icon_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/common_signin_btn_text_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/ic_plusone_medium_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/ic_plusone_small_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/ic_plusone_standard_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-mdpi/ic_plusone_tall_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_icon_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_disabled_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_disabled_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_disabled_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_disabled_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_focus_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_focus_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_normal_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_normal_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_pressed_dark.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/common_signin_btn_text_pressed_light.9.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/ic_plusone_medium_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/ic_plusone_small_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/ic_plusone_standard_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable-xhdpi/ic_plusone_tall_off_client.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable/common_signin_btn_icon_dark.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable/common_signin_btn_icon_light.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable/common_signin_btn_text_dark.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/drawable/common_signin_btn_text_light.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-af/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-am/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ar/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-be/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-bg/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ca/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-cs/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-da/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-de/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-el/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-en-rGB/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-es-rUS/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-es/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-et-rEE/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-et/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-fa/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-fi/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-fr/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-hi/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-hr/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-hu/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-in/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-it/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-iw/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ja/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ko/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-lt/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-lv/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ms-rMY/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ms/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-nb/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-nl/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-pl/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-pt-rBR/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-pt-rPT/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-pt/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ro/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-ru/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-sk/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-sl/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-sr/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-sv/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-sw/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-th/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-tl/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-tr/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-uk/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-vi/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-zh-rCN/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-zh-rTW/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values-zu/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values/colors.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values/maps_attrs.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/src/android/UnusedStub.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-hdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-hdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-mdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-mdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-xhdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-xhdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-xxhdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/build/res/all/debug/drawable-xxhdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/drawable-hdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/src/main/res/drawable-hdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/drawable-mdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/src/main/res/drawable-mdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/drawable-xhdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/src/main/res/drawable-xhdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/drawable-xxhdpi/ic_launcher.png" afterPath="$PROJECT_DIR$/Plexi/src/main/res/drawable-xxhdpi/ic_launcher.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/Plexi/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/source/buildConfig/debug/com/stremor/plexi/BuildConfig.java" afterPath="$PROJECT_DIR$/Plexi/build/source/buildConfig/debug/com/stremor/plexi/BuildConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi.iml" afterPath="$PROJECT_DIR$/Plexi.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" afterPath="$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/source/r/debug/com/stremor/plexi/R.java" afterPath="$PROJECT_DIR$/Plexi/build/source/r/debug/com/stremor/plexi/R.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/android_support_v4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/android_support_v4.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build.gradle" afterPath="$PROJECT_DIR$/Plexi/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gradlew" afterPath="$PROJECT_DIR$/gradlew" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/gson_2_2_4.xml" afterPath="$PROJECT_DIR$/.idea/libraries/gson_2_2_4.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/Plexi/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/res/values/styles.xml" afterPath="$PROJECT_DIR$/Plexi/src/main/res/values/styles.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/build/res/all/debug/values/values.xml" afterPath="$PROJECT_DIR$/Plexi/build/res/all/debug/values/values.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Plexi.iws" />
@@ -245,49 +71,130 @@
     <breakpoint_rules />
     <ui_properties />
   </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="PlexiServiceTestCase.java" pinned="false" current="false" current-in-tab="false">
+              <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="9" column="27" selection-start="227" selection-end="227" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="270">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+            <file leaf-file-name="DatetimeTestCase.java" pinned="false" current="true" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state line="9" column="31" selection-start="175" selection-end="175" vertical-scroll-proportion="0.03508772" vertical-offset="51" max-vertical-offset="735">
+                    <folding />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="Plexi" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="build.gradle" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Plexi/build.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="4" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PlexiService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="37" column="64" selection-start="972" selection-end="972" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10830">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="13" selection-start="427" selection-end="427" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MyTest.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/MyTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="13" selection-start="636" selection-end="636" vertical-scroll-proportion="0.0813323" vertical-offset="0" max-vertical-offset="1291">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="build.gradle" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/build.gradle">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="20" column="4" selection-start="300" selection-end="300" vertical-scroll-proportion="0.0" vertical-offset="300" max-vertical-offset="585">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="PlexiService.java" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="630" column="46" selection-start="19973" selection-end="19973" vertical-scroll-proportion="0.0929512" vertical-offset="8775" max-vertical-offset="10335">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Datetime.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="18" column="13" selection-start="412" selection-end="412" vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="4110">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="RequestTask.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/RequestTask.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="130" column="39" selection-start="3829" selection-end="3829" vertical-scroll-proportion="0.0" vertical-offset="1950" max-vertical-offset="2865">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="StateModel.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/StateModel.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="18" column="0" selection-start="419" selection-end="419" vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="855">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="IPlexiService.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IPlexiService.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="8" column="0" selection-start="166" selection-end="166" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="375">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="IPlexiResponse.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IPlexiResponse.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="12" column="17" selection-start="304" selection-end="304" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="435">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/MainActivity.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="15" column="13" selection-start="427" selection-end="427" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="1050">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="Datetime.java" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="80" column="0" selection-start="2281" selection-end="2281" vertical-scroll-proportion="0.580945" vertical-offset="285" max-vertical-offset="3945">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -649,6 +556,11 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/Plexi/build.gradle" />
+        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/test/PlexiServiceTestCase.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java" />
       </list>
     </option>
   </component>
@@ -736,6 +648,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -871,18 +809,48 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plexi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="instrumentTest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="editor.preferences.completion" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
@@ -892,6 +860,9 @@
     <property name="recentsLimit" value="5" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.stremor.plexi.util" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi" />
     </key>
@@ -925,19 +896,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -963,6 +921,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -1033,6 +1004,8 @@
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <RunnerSettings RunnerId="AndroidDebugRunner" />
+      <ConfigurationWrapper RunnerId="AndroidDebugRunner" />
       <method />
     </configuration>
     <list size="1">
@@ -1073,34 +1046,34 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="2560" height="1414" extended-state="6" />
-    <editor active="false" />
+    <frame x="0" y="22" width="2560" height="1414" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297953" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.146875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297953" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -1115,9 +1088,16 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Plexi/build.gradle">
+    <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="4" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+        <state line="9" column="27" selection-start="227" selection-end="227" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="270">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="100">
           <folding />
         </state>
       </provider>
@@ -1125,20 +1105,6 @@
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="856">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="64" selection-start="972" selection-end="972" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10830">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="427" selection-end="427" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
           <folding />
         </state>
       </provider>
@@ -1152,11 +1118,173 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/MyTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="13" selection-start="636" selection-end="636" vertical-scroll-proportion="0.0813323" vertical-offset="0" max-vertical-offset="1291">
+        <state line="37" column="93" selection-start="1030" selection-end="1030" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/Cellar/android-sdk/22.3/sources/android-17/java/util/ArrayList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="109" column="29" selection-start="3931" selection-end="3931" vertical-scroll-proportion="0.33307514" vertical-offset="890" max-vertical-offset="9675" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IPlexiService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="166" selection-end="166" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/StateModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="0" selection-start="419" selection-end="419" vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="795">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IPlexiResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="17" selection-start="304" selection-end="304" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="360">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/RequestTask.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="39" selection-start="3829" selection-end="3829" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="2490">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="13" selection-start="427" selection-end="427" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="27" selection-start="227" selection-end="227" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="270">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="4" selection-start="300" selection-end="300" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="630" column="46" selection-start="19973" selection-end="19973" vertical-scroll-proportion="0.0929512" vertical-offset="9330" max-vertical-offset="10890">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/Datetime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="13" selection-start="412" selection-end="412" vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="4110">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="31" selection-start="175" selection-end="175" vertical-scroll-proportion="0.03508772" vertical-offset="51" max-vertical-offset="735">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>Android</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>Plexi</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>Android 4.2.2</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>android-support-v4</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
   </component>
 </project>
 
