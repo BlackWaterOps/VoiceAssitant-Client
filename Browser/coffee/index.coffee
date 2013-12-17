@@ -912,7 +912,7 @@ class window.Please
 		
 		daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
-		dt = new Date(dateString)
+		dt = new Date(dateString.replace(/[TZ]/g, " ").trim())
 		
 		mm = dt.getMonth() + 1
 		dd = dt.getDate()

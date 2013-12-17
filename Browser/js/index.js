@@ -965,7 +965,7 @@
       var am, date, day, daysOfTheWeek, dd, dt, hh, min, mm, monthsOfTheYear, yy;
       monthsOfTheYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      dt = new Date(dateString);
+      dt = new Date(dateString.replace(/[TZ]/g, " ").trim());
       mm = dt.getMonth() + 1;
       dd = dt.getDate();
       yy = dt.getFullYear();
