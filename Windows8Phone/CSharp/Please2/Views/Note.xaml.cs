@@ -216,10 +216,11 @@ namespace Please2.Views
         #endregion
 
         #region helpers
-        //TODO: when disabling a line's style, we need to check the list style after the currentTextBox
+        // TODO: when disabling a line's style, we need to check the list style after the currentTextBox
         // if it's an ordered list, reorder them. 
         private void DisableStyle()
         {
+            // remove current style
             TextBlock block = this.currentTextBox.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
 
             block.Visibility = Visibility.Collapsed;
@@ -228,27 +229,32 @@ namespace Please2.Views
             this.listStyle = ListStyle.None;
             this.currentTextBox.Tag = ListStyle.None;
 
+            // check style of next sibling
             int idx = NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
 
-            if (idx < NoteBodyStackPanel.Children.Count)
+            int nextIdx = idx + 1;
+
+            if (nextIdx < NoteBodyStackPanel.Children.Count)
             {
-                TextBox nextBox = (TextBox)NoteBodyStackPanel.Children.ElementAt(idx + 1);
+                TextBox nextBox = (TextBox)NoteBodyStackPanel.Children.ElementAt(nextIdx);
 
                 if ((ListStyle)nextBox.Tag == ListStyle.Ordered)
                 {
-                    //Update(ListStyle.Ordered, nextBox);
+                    UpdateStyle(ListStyle.Ordered, nextBox);
                 }
             }
         }
 
-        private void UpdateStyle(ListStyle style, TextBox currentTextBox = null)
+        private void UpdateStyle(ListStyle style, TextBox textBox = null)
         {
             if (style.Equals(ListStyle.None))
             {
                 return;
             }
 
-            if (currentTextBox == null)
+            TextBox currentTextBox = textBox;
+
+            if (textBox == null)
             {
                 currentTextBox = this.currentTextBox;
             }
@@ -304,7 +310,10 @@ namespace Please2.Views
                 }
             }
 
-            this.listStyle = style;
+            if (textBox == null)
+            {
+                this.listStyle = style;
+            }
         }
 
         private TextBox BuildNewTextBox()
