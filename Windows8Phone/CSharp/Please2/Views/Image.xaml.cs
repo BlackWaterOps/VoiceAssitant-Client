@@ -28,6 +28,29 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            // prevent media viewer from resetting the layout
+            this.ApplicationBar.Opacity = 0.9;
+        }
+
+
+        private void MediaViewer_ItemUnzoomed(object sender, EventArgs e)
+        {
+            if (this.ApplicationBar.IsVisible == false)
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    this.ApplicationBar.IsVisible = true;
+                });
+            }
+        }
+
+        private void MediaViewer_ItemZoomed(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                this.ApplicationBar.IsVisible = false;
+            }); 
         }
 
         /* while this method could work to pin an image, when a user clicks on it,

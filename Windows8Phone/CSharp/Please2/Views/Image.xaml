@@ -29,9 +29,10 @@
         <Grid x:Name="ContentPanel" Grid.Row="1">
             <viewer:MediaViewer x:Name="MediaViewer"
                                 Items="{Binding Images}" 
+                                ItemZoomed="MediaViewer_ItemZoomed"
+                                ItemUnzoomed="MediaViewer_ItemUnzoomed"
                                 FooterVisibility="Collapsed"
                                 InitiallyDisplayedElement="{Binding InitialImage}"/>
         </Grid>
     </Grid>
-
 </local:ViewBase>
