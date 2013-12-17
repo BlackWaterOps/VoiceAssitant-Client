@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Plexi.iml" filepath="$PROJECT_DIR$/Plexi.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Plexi-Plexi.iml" filepath="$PROJECT_DIR$/Plexi-Plexi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" filepath="$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" />
     </modules>
   </component>
 </project>
