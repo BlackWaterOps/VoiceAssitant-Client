@@ -14,7 +14,7 @@
     mc:Ignorable="d"
     shell:SystemTray.IsVisible="True"
     DataContext="{Binding NotesViewModel, Source={StaticResource Locator}}">
-
+    
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=background}">
         <Grid.RowDefinitions>
@@ -41,12 +41,21 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <phone:LongListSelector ItemsSource="{Binding Notes}" LayoutMode="Grid" GridCellSize="221.5, 221.5">
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12">
+            <TextBlock x:Name="NotesEmpty" 
+                       Text="No saved notes" 
+                       Visibility="Collapsed"
+                       Margin="4,0,0,0"
+                       FontSize="{StaticResource PhoneFontSizeLarge}"/>
+            
+            <phone:LongListSelector x:Name="NotesList"  ItemsSource="{Binding Notes}" LayoutMode="Grid" GridCellSize="221.5, 250">
                 <phone:LongListSelector.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="Black" BorderThickness="1">
-                            <Image Tag="{Binding ID}" Source="{Binding Thumbnail, Converter={StaticResource ImageConverter}}" Tap="Thumbnail_Tap"/>
+                        <Border Background="{Binding DataContext.Scheme, ElementName=LayoutRoot, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                            <StackPanel>
+                                <Image Tag="{Binding ID}" Source="{Binding Thumbnail, Converter={StaticResource ImageConverter}}" Tap="Thumbnail_Tap"/>
+                                <TextBlock Text="{Binding ModifiedDate, StringFormat='MM/dd/yyyy'}"/>
+                            </StackPanel>
                         </Border>
                     </DataTemplate>
                 </phone:LongListSelector.ItemTemplate>

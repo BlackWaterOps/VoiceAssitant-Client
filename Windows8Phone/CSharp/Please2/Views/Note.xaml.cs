@@ -33,6 +33,8 @@ namespace Please2.Views
 
         private const string unorderedBullet = "\u2022";
 
+        private int? currentNote;
+
         NotesViewModel vm;
 
         public Note()
@@ -41,7 +43,15 @@ namespace Please2.Views
 
             this.vm = new Please2.ViewModels.NotesViewModel();
 
-            Loaded += Note_Loaded;
+            //Loaded += Note_Loaded;
+        }
+
+        private void Note_Loaded(object sender, EventArgs e)
+        {
+            if (this.currentNote.HasValue)
+            {
+                DeleteButton.IsEnabled = true;
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -54,15 +64,12 @@ namespace Please2.Views
 
             if (noteid != null && noteid != String.Empty)
             {
-                this.vm.LoadNote(Convert.ToInt32(noteid));
+                this.currentNote = Convert.ToInt32(noteid);
+                LoadNote();
             }
         }
 
-        private void Note_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
+        #region event handlers
         private void NoteBody_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             // set focus on last element
@@ -80,6 +87,8 @@ namespace Please2.Views
         // TODO check sender for list style
         private void TextBox_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
+            e.Handled = true;
+
             TextBox box = sender as TextBox;
 
             this.currentTextBox = box;
@@ -160,7 +169,7 @@ namespace Please2.Views
 
         private void SaveButton_Click(object sender, EventArgs e)
         {       
-            WriteableBitmap bitmap = new WriteableBitmap(this, null);
+            WriteableBitmap bitmap = new WriteableBitmap(ContentPanel, null);
  
             MemoryStream stream = new MemoryStream();
             
@@ -170,10 +179,45 @@ namespace Please2.Views
   
             var vm = new Please2.ViewModels.NotesViewModel();
 
-            vm.SaveNote(bitmapAsBytes, NoteTitle.Text, NoteBodyStackPanel.Children);
+            if (this.currentNote.HasValue)
+            {
+                vm.UpdateNote(this.currentNote.Value, bitmapAsBytes, NoteTitle.Text, NoteBodyStackPanel.Children);
+            }
+            else
+            {
+                int id = vm.SaveNote(bitmapAsBytes, NoteTitle.Text, NoteBodyStackPanel.Children);
+
+                if (id > 0)
+                {
+                    this.currentNote = id;
+
+                    DeleteButton.IsEnabled = true;
+                }
+            }
         }
 
+        // TODO: what happens when we delete a note? do we refresh the page or go to the list of notes
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            if (this.currentNote.HasValue)
+            {
+                this.vm.DeleteNote(this.currentNote.Value);
+            }
+
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+            else
+            {
+                NavigationService.Navigate(ViewModelLocator.NotesUri);
+            }
+        }
+        #endregion
+
         #region helpers
+        //TODO: when disabling a line's style, we need to check the list style after the currentTextBox
+        // if it's an ordered list, reorder them. 
         private void DisableStyle()
         {
             TextBlock block = this.currentTextBox.Descendants<TextBlock>().Cast<TextBlock>().FirstOrDefault();
@@ -183,28 +227,45 @@ namespace Please2.Views
 
             this.listStyle = ListStyle.None;
             this.currentTextBox.Tag = ListStyle.None;
+
+            int idx = NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
+
+            if (idx < NoteBodyStackPanel.Children.Count)
+            {
+                TextBox nextBox = (TextBox)NoteBodyStackPanel.Children.ElementAt(idx + 1);
+
+                if ((ListStyle)nextBox.Tag == ListStyle.Ordered)
+                {
+                    //Update(ListStyle.Ordered, nextBox);
+                }
+            }
         }
 
-        private void UpdateStyle(ListStyle style)
+        private void UpdateStyle(ListStyle style, TextBox currentTextBox = null)
         {
             if (style.Equals(ListStyle.None))
             {
                 return;
             }
 
+            if (currentTextBox == null)
+            {
+                currentTextBox = this.currentTextBox;
+            }
+
             // get start index
-            TextBox startTextBox = this.currentTextBox.ElementsBeforeSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).LastOrDefault();
+            TextBox startTextBox = currentTextBox.ElementsBeforeSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).LastOrDefault();
 
             int startIdx = (startTextBox == null) ? -1 : NoteBodyStackPanel.Children.IndexOf(startTextBox);
 
             // get end index
-            TextBox endTextBox = this.currentTextBox.ElementsAfterSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).FirstOrDefault();
+            TextBox endTextBox = currentTextBox.ElementsAfterSelf<TextBox>().Cast<TextBox>().Where(x => (ListStyle)x.Tag != this.listStyle || (ListStyle)x.Tag == ListStyle.None).FirstOrDefault();
 
             int endIdx = (endTextBox == null) ? NoteBodyStackPanel.Children.Count : NoteBodyStackPanel.Children.IndexOf(endTextBox);
 
             int listNumber = 1;
 
-            Debug.WriteLine(String.Format("{0}:{1}", startIdx, endIdx));
+            //Debug.WriteLine(String.Format("{0}:{1}", startIdx, endIdx));
 
             for (var i = startIdx; i < endIdx; i++)
             {
@@ -260,17 +321,32 @@ namespace Please2.Views
             return box;
         }
 
-        private void AddTextBox()
+        private void AddTextBox(string line = null, ListStyle style = ListStyle.None)
         {
             TextBox box = BuildNewTextBox();
 
+            if (line != null)
+            {
+                box.Text = line;
+                this.listStyle = style;
+            }
+            
             int idx = (this.currentTextBox == null) ? -1 : NoteBodyStackPanel.Children.IndexOf(this.currentTextBox);
 
             NoteBodyStackPanel.Children.Insert((idx + 1), box);
 
             NoteBodyStackPanel.UpdateLayout();
 
-            box.Focus();
+            if (line == null)
+            {
+                GeneralTransform transform = box.TransformToVisual(NoteBodyScrollViewer);
+
+                Point pos = transform.Transform(new Point(0, 0));
+
+                NoteBodyScrollViewer.ScrollToVerticalOffset(pos.Y);
+
+                box.Focus();
+            }
 
             this.currentTextBox = box;
 
@@ -287,10 +363,38 @@ namespace Please2.Views
 
                 this.currentTextBox = (TextBox)NoteBodyStackPanel.Children.ElementAt(idx - 1);
 
+                // ensure cursor is at the end of the TextBox
+                this.currentTextBox.Select(this.currentTextBox.Text.Length, 0);
+
                 this.currentTextBox.Focus();
 
                 this.listStyle = (ListStyle)this.currentTextBox.Tag;
+
+                UpdateStyle(this.listStyle);
             }
+        }
+
+        private void LoadNote()
+        {
+            if (!this.currentNote.HasValue)
+            {
+                return;
+            }
+
+            Dictionary<string, object> note = this.vm.GetNote(this.currentNote.Value);
+
+            NoteTitle.Text = (note["note"] as NoteItem).Title;
+
+            List<NoteItemBody> body = note["body"] as List<NoteItemBody>;
+
+            Debug.WriteLine(body.Count);
+
+            foreach (NoteItemBody line in body)
+            {
+                AddTextBox(line.Text, (ListStyle)line.Style);
+            }
+
+            (ApplicationBar.Buttons[1] as ApplicationBarIconButton).IsEnabled = true;
         }
         #endregion
     }

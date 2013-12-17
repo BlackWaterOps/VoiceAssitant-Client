@@ -80,7 +80,7 @@
                            IsHitTestVisible="False"
                            Visibility="Collapsed"
                            Width="60"
-                           Margin="0,16,0,0" 
+                           Margin="0,5,0,0" 
                            TextAlignment="Right"/>
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
@@ -89,7 +89,7 @@
                     </Grid.RowDefinitions>
 
                     <Border x:Name="EnabledBorder"
-                                Margin="{StaticResource PhoneTouchTargetOverhang}"
+                                Margin="{Binding Visibility, ElementName=ListPrefix, Converter={StaticResource VisibilityToMarginConverter}}"
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}">
@@ -133,7 +133,7 @@
     </phone:PhoneApplicationPage.Resources>
     
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="#bd731b">
+    <Grid x:Name="LayoutRoot" Background="Beige">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -158,16 +158,19 @@
                     Background="White"
                     Margin="3,0"
                     Tap="NoteBody_Tap">
-                <StackPanel x:Name="NoteBodyStackPanel"/>
+                <ScrollViewer x:Name="NoteBodyScrollViewer" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="NoteBodyStackPanel"/>
+                </ScrollViewer>
             </Border>
          
         </Grid>
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar Mode="Minimized">
-            <shell:ApplicationBarIconButton x:Name="Save" IconUri="/Assets/save.png" Text="save" Click="SaveButton_Click"/>
-            
+        <shell:ApplicationBar>
+            <shell:ApplicationBarIconButton x:Name="SaveButton" IconUri="/Assets/save.png" Text="save" Click="SaveButton_Click"/>
+            <shell:ApplicationBarIconButton x:Name="DeleteButton" IconUri="/Assets/delete.png" Text="delete" Click="DeleteButton_Click" IsEnabled="False"/>
+
             <shell:ApplicationBar.MenuItems>
                 <shell:ApplicationBarMenuItem Text="Ordered" Click="OrderedMenuItem_Click"/>
                 <shell:ApplicationBarMenuItem Text="Unordered" Click="UnorderedMenuItem_Click"/>

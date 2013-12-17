@@ -126,6 +126,35 @@ namespace Please2.Util
     }
     */
 
+    public class VisibilityToMarginConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value != null && value is Visibility)
+            {
+                try
+                {
+                    Visibility visibility = (Visibility)value;
+
+                    ResourceDictionary resources = Application.Current.Resources;
+
+                    return (visibility == Visibility.Visible) ? resources["PhoneHorizontalMargin"] : resources["PhoneTouchTargetOverhang"];
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            }
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

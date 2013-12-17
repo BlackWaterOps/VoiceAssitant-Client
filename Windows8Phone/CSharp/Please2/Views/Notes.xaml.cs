@@ -32,6 +32,12 @@ namespace Please2.Views
             base.OnNavigatedTo(e);
 
             vm.LoadNotes();
+
+            if (vm.Notes.Count == 0)
+            {
+                NotesEmpty.Visibility = Visibility.Visible;
+                NotesList.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void AddMenu()
@@ -52,8 +58,6 @@ namespace Please2.Views
 
         private void Thumbnail_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            Debug.WriteLine("thumbnail tapped");
-
             var noteID = (sender as FrameworkElement).Tag;
 
             string path = String.Format(ViewModelLocator.NoteUri, noteID);

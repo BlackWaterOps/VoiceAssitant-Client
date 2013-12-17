@@ -52,7 +52,7 @@ namespace Please2.Models
 
         private byte[] _thumbnail;
 
-        [Column(DbType="image")]
+        [Column(DbType="image", UpdateCheck=UpdateCheck.Never)]
         public byte[] Thumbnail
         {
             get
@@ -226,6 +226,28 @@ namespace Please2.Models
                 }
             }
         }
+
+        /* currently not is use. flag to determine if a checkbox should be shown with this entry
+        private bool _hasCheckbox;
+
+        [Column]
+        public bool HasCheckbox
+        {
+            get
+            {
+                return _hasCheckbox;
+            }
+            set
+            {
+                if (_hasCheckbox != value)
+                {
+                    NotifyPropertyChanging("HasCheckbox");
+                    _hasCheckbox = value;
+                    NotifyPropertyChanged("HasCheckbox");
+                }
+            }
+        }
+        */
 
         // Version column aids update performance. 
         [Column(IsVersion = true)]

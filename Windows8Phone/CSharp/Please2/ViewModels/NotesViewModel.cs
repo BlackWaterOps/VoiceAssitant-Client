@@ -32,34 +32,14 @@ namespace Please2.ViewModels
             }
         }
 
-        private NoteItem currentNote;
-        public NoteItem CurrentNote
-        {
-            get { return currentNote; }
-            set
-            {
-                currentNote = value;
-                RaisePropertyChanged("CurrentNote");
-            }
-        }
-
-        private NoteItemBody currentNoteBody;
-        public NoteItemBody CurrentNoteBody
-        {
-            get { return currentNoteBody; }
-            set
-            {
-                currentNoteBody = value;
-                RaisePropertyChanged("CurrentNoteBody");
-            }
-        }
+        private DatabaseModel db = new DatabaseModel(AppResources.DataStore);
 
         public void LoadNotes()
         {
             try
             {
-                using (DatabaseModel db = new DatabaseModel(AppResources.DataStore))
-                {                    
+                if (db.DatabaseExists() == true)
+                {
                     IQueryable<NoteItem> query = from NoteItem notes in db.Notes select notes;
 
                     IOrderedQueryable<NoteItem> orderedQuery = query.OrderBy(note => (DateTime)note.ModifiedDate);
@@ -77,91 +57,134 @@ namespace Please2.ViewModels
             }
         }
 
-        public void SaveNote(byte[] thumbnail, string title, UIElementCollection body)
+        public int SaveNote(byte[] thumbnail, string title, UIElementCollection body)
         {
             try
             {
-                using (DatabaseModel db = new DatabaseModel(AppResources.DataStore))
+                DatabaseSchemaUpdater dbUpdater;
+
+                if (db.DatabaseExists() == false)
                 {
-                    DatabaseSchemaUpdater dbUpdater;
-
-                    var tab = db.GetTable<NoteItem>();
-
-
-
-                    if (db.DatabaseExists() == false)
-                    {
-                        db.CreateDatabase();
-                    }
-                    else
-                    {
-                        // check if db update is needed
-                        dbUpdater = db.CreateDatabaseSchemaUpdater();
-
-                        /*
-                        if (dbUpdater.DatabaseSchemaVersion < App.APP_VERSION)
-                        {
-                            if (dbUpdater.DatabaseSchemaVersion < 2)
-                            {
-                                dbUpdater.AddColumn<Note>("OrderID");
-                            }
-
-                            dbUpdater.DatabaseSchemaVersion = 2;
-
-                            dbUpdater.Execute();
-                        }
-                        */
-                    }
-
-                    NoteItem newNote = new NoteItem
-                    {
-                        Title = title,
-                        Thumbnail = thumbnail,
-                        CreationDate = DateTime.Now,
-                        ModifiedDate = DateTime.Now
-                    };
-
-                    foreach (TextBox box in body)
-                    {
-                        NoteItemBody newNoteBody = new NoteItemBody
-                        {
-                            Text = box.Text,
-                            //Style = (int)box.Tag,
-                            Note = newNote
-                        };
-
-                        db.NoteBody.InsertOnSubmit(newNoteBody);
-                    }
-                    
-                    db.SubmitChanges();
+                    db.CreateDatabase();
 
                     // set the new database version
-                    //dbUpdater = db.CreateDatabaseSchemaUpdater();
-                    //dbUpdater.DatabaseSchemaVersion = App.APP_VERSION;
-                    //dbUpdater.Execute();
+                    dbUpdater = db.CreateDatabaseSchemaUpdater();
+                    dbUpdater.DatabaseSchemaVersion = App.APP_VERSION;
+                    dbUpdater.Execute();
                 }
+                else
+                {
+                    // check if db update is needed
+                    /*
+                    dbUpdater = db.CreateDatabaseSchemaUpdater();
+
+                    if (dbUpdater.DatabaseSchemaVersion < App.APP_VERSION)
+                    {
+                        if (dbUpdater.DatabaseSchemaVersion < 2)
+                        {
+                            dbUpdater.AddColumn<NoteItem>("OrderID");
+                        }
+
+                        dbUpdater.DatabaseSchemaVersion = 2;
+
+                        dbUpdater.Execute();
+                    }
+                    */
+                }
+
+                NoteItem newNote = new NoteItem
+                {
+                    Title = title,
+                    Thumbnail = thumbnail,
+                    CreationDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                foreach (TextBox box in body)
+                {
+                    NoteItemBody newNoteBody = new NoteItemBody
+                    {
+                        Text = box.Text,
+                        Style = (int)box.Tag,
+                        Note = newNote
+                    };
+
+                    db.NoteBody.InsertOnSubmit(newNoteBody);
+                }
+
+                db.SubmitChanges();
+
+                return newNote.ID;
             }
             catch (Exception err)
             {
                 Debug.WriteLine(String.Format("SaveNote Error: {0}", err.Message));
             }
+
+            return default(int);
         }
 
-        //TODO: find a way to query both tables at same time
-        public void LoadNote(int noteID)
+        public void UpdateNote(int noteID, byte[] thumbnail, string title, UIElementCollection body)
         {
             try
             {
-                using (DatabaseModel db = new DatabaseModel(AppResources.DataStore))
+                // update note query
+                NoteItem currentNote = GetNoteItem(noteID);
+
+                currentNote.Title = title;
+                currentNote.Thumbnail = thumbnail;
+                currentNote.ModifiedDate = DateTime.Now;
+
+                // remove current note body and replace with new body
+                //IQueryable<NoteItemBody> noteBodyQuery = from NoteItemBody noteBody in db.NoteBody where noteBody._noteID == noteID select noteBody;
+
+                List<NoteItemBody> currentNoteBody = GetNoteItemBody(noteID);
+
+                foreach (NoteItemBody line in currentNoteBody)
                 {
-                    IQueryable<NoteItem> noteQuery = from NoteItem note in db.Notes where note.ID == noteID select note;
-
-                    NoteItem currentNote = noteQuery.ToArray()[0];
-
-                    IQueryable<NoteItemBody> noteBodyQuery = from NoteItemBody noteBody in db.NoteBody where noteBody._noteID == noteID select noteBody;
-
-                    List<NoteItemBody> currentNoteBody = noteBodyQuery.ToList();
+                    db.NoteBody.DeleteOnSubmit(line);
                 }
+
+                // add new notebody
+                foreach (TextBox box in body)
+                {
+                    NoteItemBody newNoteBody = new NoteItemBody
+                    {
+                        Text = box.Text,
+                        Style = (int)box.Tag,
+                        Note = currentNote
+                    };
+
+                    db.NoteBody.InsertOnSubmit(newNoteBody);
+                }
+
+                db.SubmitChanges();
+
+                Debug.WriteLine(String.Format("updated note id {0}", currentNote.ID));
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("UpdateNote Error: {0}", err.Message));
+            }
+        }
+
+        //TODO: find a way to query both tables at same time
+        public Dictionary<string, object> GetNote(int noteID)
+        {
+            try
+            {
+                NoteItem currentNote = GetNoteItem(noteID);
+
+                List<NoteItemBody> currentNoteBody = GetNoteItemBody(noteID);
+
+                Dictionary<string, object> results = new Dictionary<string, object>();
+
+                results.Add("note", currentNote);
+                results.Add("body", currentNoteBody);
+
+                Debug.WriteLine("return results");
+                
+                return results;
             }
             catch (DbException dbErr)
             {
@@ -172,6 +195,38 @@ namespace Please2.ViewModels
             {
                 Debug.WriteLine(String.Format("LoadNote Error: {0}", err.Message));
             }
+
+            return default(Dictionary<string, object>);
+        }
+
+        public void DeleteNote(int noteID)
+        {
+            NoteItem currentNote = GetNoteItem(noteID);
+ 
+            db.Notes.DeleteOnSubmit(currentNote);
+
+            List<NoteItemBody> currentNoteBody = GetNoteItemBody(noteID);
+
+            foreach (NoteItemBody line in currentNoteBody)
+            {
+                db.NoteBody.DeleteOnSubmit(line);
+            }
+
+            db.SubmitChanges();
+        }
+
+        private NoteItem GetNoteItem(int noteID)
+        {
+            IQueryable<NoteItem> noteQuery = from NoteItem note in db.Notes where note.ID == noteID select note;
+
+            return noteQuery.First();
+        }
+
+        private List<NoteItemBody> GetNoteItemBody(int noteID)
+        {
+            IQueryable<NoteItemBody> noteBodyQuery = from NoteItemBody noteBody in db.NoteBody where noteBody._noteID == noteID select noteBody;
+
+            return noteBodyQuery.ToList();
         }
     }
 }

@@ -305,6 +305,7 @@
         <util:NotificationDateConverter x:Key="NotificationDateConverter" />
         <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
         <util:ImageConverter x:Key="ImageConverter"/>
+        <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
         <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
         <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
