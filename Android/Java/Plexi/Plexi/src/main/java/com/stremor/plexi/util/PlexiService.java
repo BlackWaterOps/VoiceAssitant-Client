@@ -90,59 +90,34 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     @Override
     public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName() == "State") {
+        if (e.getPropertyName().equals("State")) {
             String state = (String) e.getNewValue();
 
             Object response = this.currentState.getResponse();
 
-            switch (state) {
-                case "init":
-                    classify((String) response);
-                    break;
-
-                case "audit":
-                    auditor((ClassifierModel) response);
-                    break;
-
-                case "disambiguate":
-                    disambiguatePassive((ResponderModel) response);
-                    break;
-
-                case "disambiguate:personal":
-                    //actorInterceptor(mainContext.model);
-
-                    disambiguatePersonal((ResponderModel) response);
-                    break;
-
-                case "disambiguate:active":
-                    disambiguateActive((String) response);
-                    break;
-
-                case "disambiguate:candidate":
-                    disambiguateCandidate((String) response);
-                    break;
-
-                case "inprogress":
-                case "error":
-                    show((ResponderModel) response);
-                    break;
-
-                case "choice":
-                    choiceList((ResponderModel) response);
-                    break;
-
-                case "restart":
-                    restart((ResponderModel) response);
-                    break;
-
-                case "completed":
-                    actor((ResponderModel) response);
-                    break;
-
-                case "exception":
-                    errorMessage((String) response);
-                    break;
-            }
+            if ( state.equals("init") )
+                classify((String) response);
+            else if ( state.equals("audit") )
+                auditor((ClassifierModel) response);
+            else if ( state.equals("disambiguate") )
+                disambiguatePassive((ResponderModel) response);
+            else if ( state.equals("disambiguate:personal") )
+                //actorInterceptor(mainContext.model);
+                disambiguatePersonal((ResponderModel) response);
+            else if ( state.equals("disambiguate:active") )
+                disambiguateActive((String) response);
+            else if ( state.equals("disambiguate:candidate") )
+                disambiguateCandidate((String) response);
+            else if ( state.equals("inprogress") || state.equals("error") )
+                show((ResponderModel) response);
+            else if ( state.equals("choice") )
+                choiceList((ResponderModel) response);
+            else if ( state.equals("restart") )
+                restart((ResponderModel) response);
+            else if ( state.equals("completed") )
+                actor((ResponderModel) response);
+            else if ( state.equals("exception") )
+                errorMessage((String) response);
         }
     }
 
