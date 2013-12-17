@@ -12,9 +12,15 @@ import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import com.stremor.plexi.interfaces.*;
-import com.stremor.plexi.models.*;
+import com.stremor.plexi.interfaces.IPlexiResponse;
+import com.stremor.plexi.interfaces.IPlexiService;
+import com.stremor.plexi.models.ActorModel;
+import com.stremor.plexi.models.ChoiceModel;
+import com.stremor.plexi.models.ClassifierModel;
+import com.stremor.plexi.models.DisambiguatorModel;
+import com.stremor.plexi.models.ResponderModel;
+import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.StateModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,14 +28,11 @@ import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -128,20 +131,12 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         String newState;
 
-        switch (currState) {
-            case "inprogress":
-            case "error":
-                newState = "disambiguate:active";
-                break;
-
-            case "choice":
-                newState = "disambiguate:candidate";
-                break;
-
-            default:
-                newState = "init";
-                break;
-        }
+        if ( currState.equals("inprogress") || currState.equals("error") )
+            newState = "disambiguate:active";
+        else if ( currState.equals("choice") )
+            newState = "disambiguate:candidate";
+        else
+            newState = "init";
 
         this.currentState.set(newState, query);
     }
@@ -546,7 +541,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     private ClassifierModel replace(ClassifierModel context, String field, Object type) {
         List<String> fields = Arrays.asList(field.split("."));
 
-        String last = fields.remove(fields.size() - 1);
+        final String last = fields.remove(fields.size() - 1);
 
         // convert to generic object
         Object obj = deepCopy(Object.class, context);
