@@ -6,16 +6,22 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 /**
  * Created by jeffschifano on 10/28/13.
  */
 public class Datetime {
 
-    private static String dateRegex = "/\\d{2,4}[-]\\d{2}[-]\\d{2}/i";
-    private static String timeRegex = "/\\d{1,2}[:]\\d{2}[:]\\d{2}/i";
+    private static Pattern dateRegex = Pattern.compile("\\d{2,4}-\\d{2}-\\d{2}",
+            Pattern.CASE_INSENSITIVE);
+    private static Pattern timeRegex = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2}",
+            Pattern.CASE_INSENSITIVE);
 
     public static Calendar ConvertFromUnixTimestamp(int timestamp)
     {
@@ -50,7 +56,7 @@ public class Datetime {
 
         if (date != null)
         {
-            if (date instanceof String && Pattern.matches(dateRegex, (String)date)) {
+            if (date instanceof String && dateRegex.matcher((String) date).matches() ) {
                 cal = Datetime.BuildDatetimeHelper((String)date, null);
             }
 
@@ -61,7 +67,7 @@ public class Datetime {
 
         if (time != null)
         {
-            if (time instanceof String && Pattern.matches(timeRegex, (String)time)) {
+            if (time instanceof String && timeRegex.matcher((String) time).matches() ) {
                 cal = Datetime.BuildDatetimeHelper((String)time, cal);
             }
 
@@ -152,7 +158,7 @@ public class Datetime {
                 d = (dateortime.contains("now")) ? new Date() : formatter.parse(dateortime);
                 cal.setTime(d);
             } else {
-                if (Pattern.matches(timeRegex, dateortime)) {
+                if ( timeRegex.matcher(dateortime).matches() ) {
                     d = formatter.parse(dateortime);
                     cal = Calendar.getInstance();
                     cal.setTime(d);
