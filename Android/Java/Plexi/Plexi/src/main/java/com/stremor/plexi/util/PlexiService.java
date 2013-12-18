@@ -632,14 +632,15 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                         }
 
                         if (data.get(first) != null || data.get(second) != null) {
-                            HashMap<String, String> build = Datetime.BuildDatetimeFromJson(data.get(first), data.get(second));
+                            Pair<String, String> build = Datetime.BuildDatetimeFromJson(data.get(first),
+                                    data.get(second));
 
                             if (data.get(first) != null) {
-                                data.put(first, build.get("date"));
+                                data.put(first, build.first);
                             }
 
                             if (data.get(second) != null) {
-                                data.put(second, build.get("time"));
+                                data.put(second, build.second);
                             }
                         }
 

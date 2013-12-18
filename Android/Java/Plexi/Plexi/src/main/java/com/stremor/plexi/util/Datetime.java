@@ -1,5 +1,7 @@
 package com.stremor.plexi.util;
 
+import android.util.Pair;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +10,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -33,18 +34,19 @@ public class Datetime {
         return timestamp;
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson() throws ParseException {
+    public static Pair<String, String> BuildDatetimeFromJson() throws ParseException {
         return BuildDatetimeFromJson(null, null, new Date());
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO)
+    public static Pair<String, String> BuildDatetimeFromJson(Object dateO, Object timeO)
         throws ParseException {
         return BuildDatetimeFromJson(dateO, timeO, new Date());
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO,
+    public static Pair<String, String> BuildDatetimeFromJson(Object dateO, Object timeO,
                                                                 Date now) throws ParseException {
-        HashMap<String, String> ret = new HashMap<String, String>();
+        String dateRet = null;
+        String timeRet = null;
 
         Date date = null;
         if (dateO instanceof String) {
@@ -54,7 +56,7 @@ public class Datetime {
                 date = dateFormat.parse((String) dateO);
             }
 
-            ret.put("date", dateFormat.format(date));
+            dateRet = dateFormat.format(date);
 
 //            if (date instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject) date, null);
@@ -63,9 +65,9 @@ public class Datetime {
 
         if (timeO instanceof String) {
             if (timeO.equals("now")) {
-                ret.put("time", timeFormat.format(now));
+                timeRet = timeFormat.format(now);
             } else if ( timeRegex.matcher((String) timeO).matches() ) {
-                ret.put("time", (String) timeO);
+                timeRet = (String) timeO;
             }
 
 //            if (time instanceof JSONObject) {
@@ -75,7 +77,7 @@ public class Datetime {
 //            }
         }
 
-        return ret;
+        return new Pair<String, String>(dateRet, timeRet);
     }
 
     private static Object GetPreference(String Name) {
