@@ -538,7 +538,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         return context;
     }
 
-    private ClassifierModel replace(ClassifierModel context, String field, Object type) {
+    private ClassifierModel replace(ClassifierModel context, String field, final Object type) {
         List<String> fields = Arrays.asList(field.split("."));
 
         final String last = fields.remove(fields.size() - 1);
