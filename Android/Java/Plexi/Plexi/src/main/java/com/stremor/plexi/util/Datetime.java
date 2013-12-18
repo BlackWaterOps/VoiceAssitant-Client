@@ -20,11 +20,10 @@ public class Datetime {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
-
-    private static Pattern dateRegex = Pattern.compile("\\d{2,4}-\\d{2}-\\d{2}",
+    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private static Pattern dateRegex = Pattern.compile("\\d{4}-\\d{2}-\\d{2}",
             Pattern.CASE_INSENSITIVE);
-    private static Pattern timeRegex = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2}",
+    private static Pattern timeRegex = Pattern.compile("\\d{2}:\\d{2}:\\d{2}",
             Pattern.CASE_INSENSITIVE);
 
     public static int ConvertToUnixTimestamp(Calendar cal) {
@@ -34,35 +33,45 @@ public class Datetime {
         return timestamp;
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson() {
-        return BuildDatetimeFromJson(null, null);
+    public static HashMap<String, String> BuildDatetimeFromJson() throws ParseException {
+        return BuildDatetimeFromJson(null, null, new Date());
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO) {
+    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO)
+        throws ParseException {
+        return BuildDatetimeFromJson(dateO, timeO, new Date());
+    }
+
+    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO,
+                                                                Date now) throws ParseException {
         HashMap<String, String> ret = new HashMap<String, String>();
 
         Date date = null;
-        if (dateO != null) {
-            if (dateO instanceof String && dateRegex.matcher((String) dateO).matches()) {
-                date = parseDateObject((String) dateO);
-                ret.put("date", dateFormat.format(date));
+        if (dateO instanceof String) {
+            if (dateO.equals("now")) {
+                date = now;
+            } else if (dateRegex.matcher((String) dateO).matches()) {
+                date = dateFormat.parse((String) dateO);
             }
+
+            ret.put("date", dateFormat.format(date));
 
 //            if (date instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject) date, null);
 //            }
         }
 
-        if (timeO != null)
-        {
-            if (timeO instanceof String && timeRegex.matcher((String) timeO).matches() ) {
-                Date time = parseTimeObject((String) timeO, date);
-                ret.put("date", dateFormat.format(time));
-                ret.put("time", timeFormat.format(time));
+        if (timeO instanceof String) {
+            if (timeO.equals("now")) {
+                ret.put("time", timeFormat.format(now));
+            } else if ( timeRegex.matcher((String) timeO).matches() ) {
+                ret.put("time", (String) timeO);
             }
 
 //            if (time instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject)time, cal);
+
+                  // TODO: put both date and time
 //            }
         }
 
@@ -124,29 +133,29 @@ public class Datetime {
     }
 
     private static Date parseDateObject(String dateString) {
-        if ( dateString.equals("now") )
+        if (dateString.equals("now"))
             return new Date();
 
         try {
             Date d = dateFormat.parse(dateString);
             return d;
-        } catch ( ParseException e ) {
+        } catch (ParseException e) {
             return null;
         }
     }
 
     private static Date parseTimeObject(String timeString, Date basis) {
-        if ( timeString.equals("now") )
+        if (timeString.equals("now"))
             return new Date();
 
-        if ( basis != null ) {
+        if (basis != null) {
             timeString = dateFormat.format(basis) + "T" + timeString;
         }
 
         try {
             Date d = dateTimeFormat.parse(timeString);
             return d;
-        } catch ( ParseException e ) {
+        } catch (ParseException e) {
             return null;
         }
     }
@@ -169,18 +178,20 @@ public class Datetime {
                 d = dateFormatter.parse(dateortime);
                 newDate.setTime(d);
                 return newDate;
-            } catch ( ParseException e ) { /* pass */ }
+            } catch (ParseException e) { /* pass */ }
 
             try {
                 d = timeFormatter.parse(dateortime);
                 newDate.setTime(d);
                 return newDate;
-            } catch ( ParseException e ) { /* pass */ }
+            } catch (ParseException e) { /* pass */ }
         } else {
             if (timeRegex.matcher(dateortime).matches()) {
                 try {
                     d = timeFormatter.parse(dateortime);
-                } catch ( ParseException e ) { return null; }
+                } catch (ParseException e) {
+                    return null;
+                }
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(d);
