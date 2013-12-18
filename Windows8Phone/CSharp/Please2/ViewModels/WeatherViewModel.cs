@@ -24,7 +24,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("SingleForecast");
             }
         }
-
+        
         private List<WeatherDay> multiForecast;
         public List<WeatherDay> MultiForecast
         {
@@ -35,7 +35,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("MultiForecast");
             }
         }
-
+        
         private WeatherDayDetails currentCondition;
         public WeatherDayDetails CurrentCondition
         {
@@ -75,8 +75,8 @@ namespace Please2.ViewModels
                 };
             }
 
-            multiForecast = weatherResults.week;
-            currentCondition = weatherResults.now;
+            MultiForecast = weatherResults.week;
+            CurrentCondition = weatherResults.now;
 
             var data = new Dictionary<string, object>();
 
