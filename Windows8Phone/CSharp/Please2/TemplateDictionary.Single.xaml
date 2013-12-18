@@ -285,9 +285,9 @@
 
     <DataTemplate x:Key="SelectingTemplate">
         <util:WeatherTemplateSelector Content="{Binding}" 
-                                          WeatherFull="{StaticResource WeatherFull}" 
-                                          WeatherShort="{StaticResource WeatherShort}"
-                                          HorizontalContentAlignment="Stretch"/>
+                                      WeatherFull="{StaticResource WeatherFull}" 
+                                      WeatherShort="{StaticResource WeatherShort}"
+                                      HorizontalContentAlignment="Stretch"/>
     </DataTemplate>
 
     <DataTemplate x:Key="weather">
@@ -634,8 +634,7 @@
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    
-                                    
+                                                                       
                                     <Border VerticalAlignment="Center" Padding="10" Background="White">
                                         <Image Source="{Binding images[0].src}" VerticalAlignment="Center"/>
                                     </Border>
@@ -678,6 +677,7 @@
                 </phone:LongListSelector>
             </phone:PivotItem>
             
+            <!--
             <phone:PivotItem Header="Map">
                 <map:Map x:Name="RealEstateMap" 
                          VerticalAlignment="Stretch" 
@@ -691,6 +691,7 @@
                     </i:Interaction.Triggers>
                 </map:Map>
             </phone:PivotItem>
+            -->
         </phone:Pivot>
     </DataTemplate>
     

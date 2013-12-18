@@ -62,6 +62,8 @@ namespace Plexi
 
         event EventHandler<ErrorEventArgs> Error;
 
+        event EventHandler<RegisterEventArgs> Register;
+
         event EventHandler<ProgressEventArgs> InProgress;
 
         event EventHandler<NotificationEventArgs> PushNotificationReceived;
@@ -107,6 +109,8 @@ namespace Plexi
         public event EventHandler<ActorEventArgs> Act;
 
         public event EventHandler<ErrorEventArgs> Error;
+
+        public event EventHandler<RegisterEventArgs> Register;
 
         public event EventHandler<ChoiceEventArgs> Choose;
 
@@ -372,7 +376,17 @@ namespace Plexi
             }
         }
 
-        private void ErrorMessage(string message)
+        private void RegisterMessage(string classificationModel)
+        {
+            EventHandler<RegisterEventArgs> handler = Register;
+
+            if (handler != null)
+            {
+                handler(this, new RegisterEventArgs(classificationModel));
+            }
+        }
+
+        private void ErrorMessage(string message, bool isConfirm = false)
         {
             EventHandler<ErrorEventArgs> handler = Error;
 
@@ -674,7 +688,8 @@ namespace Plexi
                     }
                     catch (KeyNotFoundException keyErr)
                     {
-                        ErrorMessage(keyErr.Message);
+                        // prompt user to signup for a stremor account
+                        RegisterMessage(data.data.model);
                         return;
                     }
 

@@ -43,6 +43,7 @@ namespace Please2.Util
 
             plexiService.Choose += OnChoose;
             plexiService.Error += OnError;
+            plexiService.Register += OnRegister;
             plexiService.InProgress += OnProgress;
             plexiService.Show += OnShow;
             plexiService.Act += OnAct;
@@ -93,6 +94,43 @@ namespace Please2.Util
             if (response == MessageBoxResult.OK)
             {
                 plexiService.ClearContext();
+            }
+        }
+
+        //TODO: switch messaging 
+        private void OnRegister(object sender, RegisterEventArgs e)
+        {
+            string model = e.model.Split('_')[0];
+
+            string message = String.Empty;
+
+            switch (model)
+            {
+                case "email":
+                case "sms":
+                case "call":
+                    message = "Would you like to setup a Stremor account so all your information can be stored in the cloud?";
+                    break;
+
+                case "fitness":
+                case "food":
+                case "facebook":
+                    message = "Please create a Stremor account to continue";
+                    break;
+            }
+
+            MessageBoxResult response = MessageBox.Show(message, "Account Registration", MessageBoxButton.OKCancel);
+
+            if (response.Equals(MessageBoxResult.OK))
+            {
+                // navigate to registration page
+            }
+            else if (response.Equals(MessageBoxResult.Cancel))
+            {
+                // 1. set flag in plexi service so this event isn't raised every time personal user data is needed.
+                // 2. the user will have to go into the settings views afterwards to setup a stremor account which 
+                //    will unlock the ability to auth accounts like google, facebook, fitbit
+                // 3. search local 
             }
         }
 
@@ -173,18 +211,12 @@ namespace Please2.Util
                                         break;
 
                                     default:
-                                        //TODO: list returns null. need a way to determine that 
-                                        // PopulateViewModel was successful
                                         data = PopulateViewModel("list", structured);
-
-                                        view = ViewModelLocator.ListResultsPageUri;
-                                        /*
+                             
                                         if (data != null)
                                         {
-                                            Debug.WriteLine("set list view uri");
                                             view = ViewModelLocator.ListResultsPageUri;
                                         }
-                                        */
                                         break;
                                 }
                                 break;
