@@ -2,6 +2,11 @@ package com.stremor.plexi.util;
 
 import android.util.Pair;
 
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,9 +24,13 @@ import java.util.regex.Pattern;
  */
 public class Datetime {
 
+    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
+    private static DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
+
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     private static Pattern dateRegex = Pattern.compile("\\d{4}-\\d{2}-\\d{2}",
             Pattern.CASE_INSENSITIVE);
     private static Pattern timeRegex = Pattern.compile("\\d{2}:\\d{2}:\\d{2}",
@@ -34,29 +43,26 @@ public class Datetime {
         return timestamp;
     }
 
-    public static Pair<String, String> BuildDatetimeFromJson() throws ParseException {
-        return BuildDatetimeFromJson(null, null, new Date());
+    public static Pair<String, String> datetimeFromJson() throws ParseException {
+        return datetimeFromJson(null, null, LocalDateTime.now());
     }
 
-    public static Pair<String, String> BuildDatetimeFromJson(Object dateO, Object timeO)
-        throws ParseException {
-        return BuildDatetimeFromJson(dateO, timeO, new Date());
+    public static Pair<String, String> datetimeFromJson(Object dateO, Object timeO)
+            throws ParseException {
+        return datetimeFromJson(dateO, timeO, LocalDateTime.now());
     }
 
-    public static Pair<String, String> BuildDatetimeFromJson(Object dateO, Object timeO,
-                                                                Date now) throws ParseException {
-        String dateRet = null;
-        String timeRet = null;
+    public static Pair<String, String> datetimeFromJson(Object dateO, Object timeO,
+                                                        LocalDateTime now) throws ParseException {
+        LocalDate date = null;
+        LocalTime time = null;
 
-        Date date = null;
         if (dateO instanceof String) {
             if (dateO.equals("now")) {
-                date = now;
+                date = now.toLocalDate();
             } else if (dateRegex.matcher((String) dateO).matches()) {
-                date = dateFormat.parse((String) dateO);
+                date = DATE_FORMATTER.parseLocalDate((String) dateO);
             }
-
-            dateRet = dateFormat.format(date);
 
 //            if (date instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject) date, null);
@@ -65,19 +71,22 @@ public class Datetime {
 
         if (timeO instanceof String) {
             if (timeO.equals("now")) {
-                timeRet = timeFormat.format(now);
-            } else if ( timeRegex.matcher((String) timeO).matches() ) {
-                timeRet = (String) timeO;
+                time = now.toLocalTime();
+            } else if (timeRegex.matcher((String) timeO).matches()) {
+                time = TIME_FORMATTER.parseLocalTime((String) timeO);
             }
 
 //            if (time instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject)time, cal);
 
-                  // TODO: put both date and time
+            // TODO: put both date and time
 //            }
         }
 
-        return new Pair<String, String>(dateRet, timeRet);
+        String dateString = date == null ? null : DATE_FORMATTER.print(date);
+        String timeString = time == null ? null : TIME_FORMATTER.print(time);
+
+        return new Pair<String, String>(dateString, timeString);
     }
 
     private static Object GetPreference(String Name) {

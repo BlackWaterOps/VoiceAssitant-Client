@@ -632,7 +632,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                         }
 
                         if (data.get(first) != null || data.get(second) != null) {
-                            Pair<String, String> build = Datetime.BuildDatetimeFromJson(data.get(first),
+                            Pair<String, String> build = Datetime.datetimeFromJson(data.get(first),
                                     data.get(second));
 
                             if (data.get(first) != null) {
