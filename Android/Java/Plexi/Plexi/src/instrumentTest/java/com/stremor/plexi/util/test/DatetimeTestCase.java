@@ -54,23 +54,23 @@ public class DatetimeTestCase extends TestCase {
 
     public void testDateNow() throws ParseException {
         LocalDateTime date = LocalDateTime.now();
-        Pair ret = Datetime.datetimeFromJson("now", null, date);
+        Pair ret = Datetime.datetimeFromJson("#date_now", null, date);
         assertEquals(date.toLocalDate().toString(), ret.first);
         assertNull(ret.second);
     }
 
     public void testTimeNow() throws ParseException {
         LocalDateTime date = LocalDateTime.now();
-        Pair ret = Datetime.datetimeFromJson(null, "now", date);
+        Pair ret = Datetime.datetimeFromJson(null, "#time_now", date);
         assertNull(ret.first);
         assertEquals(PROTOCOL_TIME_FORMATTER.print(date), ret.second);
     }
 
     public void testDatetimeNow() throws ParseException {
         LocalDateTime date = LocalDateTime.now();
-        Pair ret = Datetime.datetimeFromJson("now", "now", date);
-        assertEquals(date.toLocalDate().toString(), ret.first);
-        assertEquals(date.toLocalTime().toString(), ret.second);
+        Pair ret = Datetime.datetimeFromJson("#date_now", "#time_now", date);
+        assertEquals(PROTOCOL_DATE_FORMATTER.print(date), ret.first);
+        assertEquals(PROTOCOL_TIME_FORMATTER.print(date), ret.second);
     }
 
     public void testWeekdaySameDay() throws ParseException, JSONException {

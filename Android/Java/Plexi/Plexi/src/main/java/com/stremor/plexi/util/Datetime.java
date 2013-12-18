@@ -58,19 +58,20 @@ public class Datetime {
         LocalTime time = null;
 
         if (dateO instanceof String) {
-            if (dateO.equals("now")) {
+            if (dateO.equals("#date_now"))
                 date = now.toLocalDate();
-            } else if (dateRegex.matcher((String) dateO).matches()) {
+            else if (dateRegex.matcher((String) dateO).matches())
                 date = DATE_FORMATTER.parseLocalDate((String) dateO);
-            }
 
 //            if (date instanceof JSONObject) {
 //                cal = Datetime.BuildDatetimeHelper((JSONObject) date, null);
 //            }
+        } else if (dateO instanceof JSONObject) {
+            date = parseDateObject((JSONObject) dateO);
         }
 
         if (timeO instanceof String) {
-            if (timeO.equals("now")) {
+            if (timeO.equals("#time_now")) {
                 time = now.toLocalTime();
             } else if (timeRegex.matcher((String) timeO).matches()) {
                 time = TIME_FORMATTER.parseLocalTime((String) timeO);
@@ -143,77 +144,16 @@ public class Datetime {
         }
     }
 
-    private static Date parseDateObject(String dateString) {
-        if (dateString.equals("now"))
-            return new Date();
+    private static LocalDate parseDateObject(JSONObject dateO) {
+        if ( dateO.has("#date_weekday") ) {
 
-        try {
-            Date d = dateFormat.parse(dateString);
-            return d;
-        } catch (ParseException e) {
-            return null;
-        }
-    }
+        } else if ( dateO.has("#date_fuzzy") ) {
 
-    private static Date parseTimeObject(String timeString, Date basis) {
-        if (timeString.equals("now"))
-            return new Date();
+        } else if ( dateO.has("#date_add") ) {
 
-        if (basis != null) {
-            timeString = dateFormat.format(basis) + "T" + timeString;
         }
 
-        try {
-            Date d = dateTimeFormat.parse(timeString);
-            return d;
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-
-    private static Calendar BuildDatetimeHelper(String dateortime, Calendar newDate) {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
-
-        Date d;
-
-        if (newDate == null) {
-            newDate = Calendar.getInstance();
-
-            if (dateortime.equals("now")) {
-                newDate.setTime(new Date());
-                return newDate;
-            }
-
-            try {
-                d = dateFormatter.parse(dateortime);
-                newDate.setTime(d);
-                return newDate;
-            } catch (ParseException e) { /* pass */ }
-
-            try {
-                d = timeFormatter.parse(dateortime);
-                newDate.setTime(d);
-                return newDate;
-            } catch (ParseException e) { /* pass */ }
-        } else {
-            if (timeRegex.matcher(dateortime).matches()) {
-                try {
-                    d = timeFormatter.parse(dateortime);
-                } catch (ParseException e) {
-                    return null;
-                }
-
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(d);
-
-                if (newDate.after(cal)) {
-                    newDate.add(Calendar.DATE, 1);
-                }
-            }
-        }
-
-        return newDate;
+        return null;
     }
 
     private static Calendar BuildDatetimeHelper(JSONObject dateortime, Calendar newDate) {
