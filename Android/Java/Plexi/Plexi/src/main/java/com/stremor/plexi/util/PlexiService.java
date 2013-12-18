@@ -10,8 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.stremor.plexi.interfaces.IPlexiResponse;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.models.ActorModel;
@@ -22,34 +20,23 @@ import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
 
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by jeffschifano on 10/28/13.
  */
 public final class PlexiService extends Service implements IPlexiService, IPlexiResponse, PropertyChangeListener {
-    private final IBinder mBinder = new LocalBinder();
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    public class LocalBinder extends Binder {
-        public PlexiService getService() { return PlexiService.this; }
-    }
-
     // endpoints
     private static final String CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
@@ -59,29 +46,20 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     // tag for logging
     private static final String TAG = "PlexiService";
 
+    private final IBinder mBinder = new LocalBinder();
     private ArrayList<String> auditorStates = new ArrayList<String>() {{ add("disambiguate"); add("inprogress"); add("choice"); }};
-
     // gets completed with all the necessary fields in order to fulfill an action
     private ClassifierModel mainContext = null;
-
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
-
     private StateModel currentState = new StateModel();
-
     private CountDownTimer contextTimer;
-
     private String originalQuery;
-
-    public String getOriginalQuery() { return this.originalQuery; }
-
     private Context context;
-
     private LocationTracker locationTracker;
 
     public PlexiService(Context context) {
         this.context = context;
-
         this.currentState.addChangeListener(this);
 
         createTimer();
@@ -92,11 +70,22 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    public String getOriginalQuery() { return originalQuery; }
+
+    /**
+     * Handles any and all changes in state within the Plexi service. Simply dispatches to other
+     * handlers based on state.
+     */
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("State")) {
             String state = (String) e.getNewValue();
 
-            Object response = this.currentState.getResponse();
+            Object response = currentState.getResponse();
 
             if ( state.equals("init") )
                 classify((String) response);
@@ -124,11 +113,13 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         }
     }
 
+    /**
+     * Handle arbitrary input provided by the user.
+     */
     public void query(String query) {
-        this.originalQuery = query;
+        originalQuery = query;
 
-        String currState = this.currentState.getState();
-
+        String currState = currentState.getState();
         String newState;
 
         if ( currState.equals("inprogress") || currState.equals("error") )
@@ -138,25 +129,25 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         else
             newState = "init";
 
-        this.currentState.set(newState, query);
+        currentState.set(newState, query);
     }
 
     public void clearContext()
     {
-        this.mainContext = null;
-        this.tempContext = null;
-        this.currentState.reset();
+        mainContext = null;
+        tempContext = null;
+        currentState.reset();
 
         resetTimer();
     }
 
     public void resetTimer()
     {
-        this.contextTimer.cancel();
+        contextTimer.cancel();
     }
 
     private void createTimer() {
-        this.contextTimer = new CountDownTimer(2000, 0) {
+        contextTimer = new CountDownTimer(2000, 0) {
             @Override
             public void onTick(long l) {
                 return;
@@ -252,6 +243,10 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
     }
 
+    /**
+     * Classification methods
+     */
+
     private void classify(String query) {
         requestHelper(ClassifierModel.class, CLASSIFIER + "query=" + query, "GET", null, false);
     }
@@ -260,13 +255,16 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     @Override
     public void onQueryResponse(ClassifierModel response) throws JSONException {
         if (response.error != null) {
-            this.currentState.set("exception", response.error.message);
+            currentState.set("exception", response.error.message);
         } else {
             ClassifierModel context = doClientOperations(response, response.payload);
-
-            this.currentState.set("audit", context);
+            currentState.set("audit", context);
         }
     }
+
+    /**
+     * Disambiguation methods
+     */
 
     private void disambiguateActive(String data) {
         // String field = tempContext.field;
@@ -414,6 +412,10 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         currentState.set("audit", context);
     }
 
+    /**
+     * Auditor methods
+     */
+
     private void auditor(ClassifierModel context) {
         if (!context.equals(mainContext)) {
             this.mainContext = context;
@@ -434,8 +436,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
             String crossCheck = state.split(":")[0];
 
-            if (this.auditorStates.contains(crossCheck)) {
-                this.tempContext = response;
+            if (auditorStates.contains(crossCheck)) {
+                tempContext = response;
                 contextTimer.start();
             }
 
@@ -450,6 +452,10 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         currentState.set("audit", data.data);
     }
+
+    /**
+     * Actor methods
+     */
 
     private void actor(ResponderModel data) {
         String actor = data.actor;
@@ -484,7 +490,6 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
             LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
         }
     }
-
 
     // helpers
     private void requestHelper(Class<?> type, String endpoint, String method, Object data, Boolean includeNulls) {
@@ -605,57 +610,39 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     private HashMap<String, Object> buildDateTime(HashMap<String, Object> data) {
-        try {
-            if (data != null) {
-                ArrayList<Pair<String, String>> datetimes = new ArrayList<Pair<String, String>>();
+        if (data != null) {
+            ArrayList<Pair<String, String>> datetimes = new ArrayList<Pair<String, String>>();
 
-                datetimes.add(new Pair<String, String>("date", "time"));
-                datetimes.add(new Pair<String, String>("start_date", "start_time"));
-                datetimes.add(new Pair<String, String>("end_date", "end_time"));
+            datetimes.add(new Pair<String, String>("date", "time"));
+            datetimes.add(new Pair<String, String>("start_date", "start_time"));
+            datetimes.add(new Pair<String, String>("end_date", "end_time"));
 
-                for(Pair<String, String> datetime : datetimes) {
-                    String first = datetime.first;
-                    String second = datetime.second;
+            for (Pair<String, String> datetime : datetimes) {
+                String first = datetime.first;
+                String second = datetime.second;
 
-                    if (data.containsKey(first) || data.containsKey(second)) {
-                        Boolean removeDate = null;
-                        Boolean removeTime = null;
+                if (data.containsKey(first) || data.containsKey(second)) {
+                    boolean includeDate = true, includeTime = true;
 
-                        if (!data.containsKey(first)) {
-                            data.put(first, null);
-                            removeDate = true;
-                        }
+                    if (!data.containsKey(first))
+                        includeDate = false;
 
-                        if (!data.containsKey(second)) {
-                            data.put(second, null);
-                            removeTime = true;
-                        }
+                    if (!data.containsKey(second))
+                        includeTime = false;
 
-                        if (data.get(first) != null || data.get(second) != null) {
-                            Pair<String, String> build = Datetime.datetimeFromJson(data.get(first),
-                                    data.get(second));
-
-                            if (data.get(first) != null) {
-                                data.put(first, build.first);
-                            }
-
-                            if (data.get(second) != null) {
-                                data.put(second, build.second);
-                            }
-                        }
-
-                        if (removeDate == true) {
-                            data.remove(first);
-                        }
-
-                        if (removeTime == true) {
-                            data.remove(second);
-                        }
+                    Pair<String, String> result;
+                    try {
+                        result = Datetime.datetimeFromJson(data.get(first), data.get(second));
+                    } catch ( ParseException e ) {
+                        return data;
                     }
+
+                    if (includeDate)
+                        data.put(first, result.first);
+                    if (includeTime)
+                        data.put(second, result.second);
                 }
             }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
         }
 
         return data;
@@ -664,16 +651,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     private HashMap<String, Object> getDeviceInfo() {
         HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
 
-        Calendar cal = Calendar.getInstance();
+        long time = System.currentTimeMillis();
+        int offset = DateTimeZone.getDefault().getOffset(time) / 1000;
 
-        int raw = cal.getTimeZone().getRawOffset();
-
-        long hours = TimeUnit.MILLISECONDS.toHours(raw);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(raw) - TimeUnit.HOURS.toMinutes(hours);
-
+        int hours = offset / 3600;
+        int minutes = (offset % 3600) / 60;
         String timeOffset = String.format("%d:%02d", hours, minutes);
 
-        deviceInfo.put("timestamp", Datetime.ConvertToUnixTimestamp(cal));
+        deviceInfo.put("timestamp", System.currentTimeMillis() / 1000L);
         deviceInfo.put("timeoffset", timeOffset);
 
         HashMap<String, Object> geolocation = this.locationTracker.getCurrentPosition();
@@ -717,5 +702,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     @Override
     public void onQueryResponse(Object response) throws JSONException {
         Log.e(TAG, "unhandled query response");
+    }
+
+    public class LocalBinder extends Binder {
+        public PlexiService getService() { return PlexiService.this; }
     }
 }
