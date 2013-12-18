@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -24,9 +23,7 @@ public class Datetime {
 
     private static DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     private static Pattern dateRegex = Pattern.compile("\\d{4}-\\d{2}-\\d{2}",
             Pattern.CASE_INSENSITIVE);
     private static Pattern timeRegex = Pattern.compile("\\d{2}:\\d{2}:\\d{2}",
@@ -37,10 +34,6 @@ public class Datetime {
         int timestamp = (int) (cal.getTimeInMillis() / 1000);
 
         return timestamp;
-    }
-
-    public static Pair<String, String> datetimeFromJson() throws ParseException {
-        return datetimeFromJson(null, null, LocalDateTime.now());
     }
 
     public static Pair<String, String> datetimeFromJson(Object dateO, Object timeO)
@@ -65,17 +58,24 @@ public class Datetime {
         }
 
         if (timeO instanceof String) {
-            if (timeO.equals("#time_now")) {
+            if (timeO.equals("#time_now"))
                 time = now.toLocalTime();
-            } else if (timeRegex.matcher((String) timeO).matches()) {
+            else if (timeRegex.matcher((String) timeO).matches())
                 time = TIME_FORMATTER.parseLocalTime((String) timeO);
+        } else if (timeO instanceof JSONObject) {
+            boolean hasDate = date != null;
+            LocalDate baseDate = hasDate ? date : now.toLocalDate();
+
+            LocalDateTime ret = null;
+            try {
+                ret = parseTimeObject((JSONObject) timeO, baseDate, now.toLocalTime());
+            } catch (JSONException e) { /* pass */ }
+
+            if ( ret != null ) {
+                time = ret.toLocalTime();
+                if ( hasDate )
+                    date = ret.toLocalDate();
             }
-
-//            if (time instanceof JSONObject) {
-//                cal = Datetime.BuildDatetimeHelper((JSONObject)time, cal);
-
-            // TODO: put both date and time
-//            }
         }
 
         String dateString = date == null ? null : DATE_FORMATTER.print(date);
@@ -84,76 +84,85 @@ public class Datetime {
         return new Pair<String, String>(dateString, timeString);
     }
 
-//    private static Object GetPreference(String Name) {
-//        return null;
-//    }
-//
-//    private static Calendar FuzzyHelper(JSONObject datetime, boolean isDate) {
-//        try {
-//            String label = null;
-//            String def = null;
-//
-//            Iterator<String> keys = datetime.keys();
-//
-//            while (keys.hasNext()) {
-//                String key = keys.next();
-//
-//                if (key == "label") {
-//                    label = datetime.getString(key);
-//                }
-//
-//                if (key == "default") {
-//                    def = datetime.getString(key);
-//                }
-//            }
-//
-//            Object preference = GetPreference(label);
-//
-//            String pref = (preference == null) ? def : "";
-//
-//            SimpleDateFormat formatter = new SimpleDateFormat();
-//
-//            Date d = formatter.parse(pref);
-//
-//            Calendar cal = Calendar.getInstance();
-//
-//            cal.setTime(d);
-//
-//            return cal;
-//        } catch (JSONException jsonError) {
-//            System.out.print(jsonError.getMessage());
-//            return null;
-//        } catch (ParseException parseError) {
-//            System.out.print(parseError.getMessage());
-//            return null;
-//        }
-//    }
-
     private static LocalDate parseDateObject(JSONObject dateO, LocalDate now) throws JSONException {
         // There shouldn't be more than one property in this object
         if (dateO.length() != 1)
             return null;
 
-        if (dateO.has("#date_weekday")) {
-            // Joda Time uses ISO 8601 standard
-            int dayNum = dateO.getInt("#date_weekday");
-            dayNum = dayNum == 0 ? 7 : dayNum;
-            return now.withDayOfWeek(dayNum);
-        } else if (dateO.has("#date_add")) {
-            JSONArray operands = dateO.getJSONArray("#date_add");
+        if (dateO.has("#date_weekday"))
+            return parseDateWeekdayObject(dateO, now);
+        else if (dateO.has("#date_add"))
+            return parseDateAddObject(dateO, now);
 
-            Object base = operands.get(0);
-            LocalDate baseDate;
-            if (base instanceof String && base.equals("#date_now"))
-                baseDate = now;
-            else if (base instanceof JSONObject && ((JSONObject) base).has("#date_weekday"))
-                baseDate = parseDateObject((JSONObject) base, now);
-            else
-                return null;
+        return null;
+    }
 
-            return baseDate.plusDays(operands.getInt(1));
-        }
+    private static LocalDate parseDateWeekdayObject(JSONObject object, LocalDate now) throws JSONException {
+        // Joda Time uses ISO 8601 standard
+        int dayNum = object.getInt("#date_weekday");
+        dayNum = dayNum == 0 ? 7 : dayNum;
+        return now.withDayOfWeek(dayNum);
+    }
 
+    private static LocalDate parseDateAddObject(JSONObject object, LocalDate now) throws JSONException {
+        JSONArray operands = object.getJSONArray("#date_add");
+
+        Object base = operands.get(0);
+        LocalDate baseDate;
+        if (base instanceof String && base.equals("#date_now"))
+            baseDate = now;
+        else if (base instanceof JSONObject && ((JSONObject) base).has("#date_weekday"))
+            baseDate = parseDateObject((JSONObject) base, now);
+        else
+            return null;
+
+        return baseDate.plusDays(operands.getInt(1));
+    }
+
+    private static LocalDateTime parseTimeObject(JSONObject timeO, LocalDate baseDate,
+                                                 LocalTime now) throws JSONException {
+        // There shouldn't be more than one property in this object
+        if (timeO.length() != 1)
+            return null;
+
+        if (timeO.has("#time_add"))
+            return parseTimeAddObject(timeO, baseDate, now);
+        else if (timeO.has("#fuzzy_time"))
+            return parseTimeFuzzyObject(timeO, baseDate, now);
+        else
+            return null;
+    }
+
+    private static LocalDateTime parseTimeAddObject(JSONObject object, LocalDate baseDate,
+                                                    LocalTime now) throws JSONException {
+        JSONArray operands = object.getJSONArray("#time_add");
+
+        // Base for addition
+        Object base = operands.get(0);
+        LocalDateTime baseDateTime;
+
+        if (base instanceof String && base.equals("#time_now"))
+            baseDateTime = baseDate.toLocalDateTime(now);
+        else if (base instanceof JSONObject && ((JSONObject) base).has("#fuzzy_time"))
+            baseDateTime = parseTimeObject((JSONObject) base, baseDate, now);
+        else
+            return null;
+
+        return baseDateTime.plusSeconds(operands.getInt(1));
+    }
+
+    private static LocalDateTime parseTimeFuzzyObject(JSONObject object, LocalDate baseDate,
+                                                      LocalTime now) throws JSONException {
+        String label = object.getString("label");
+        LocalTime defaultTime = TIME_FORMATTER.parseLocalTime(object.getString("default"));
+
+        LocalTime time = getFuzzyTimeValue(label);
+        time = time == null ? defaultTime : time;
+        return baseDate.toLocalDateTime(time);
+    }
+
+    private static LocalTime getFuzzyTimeValue(String label) {
+        // TODO
         return null;
     }
 }

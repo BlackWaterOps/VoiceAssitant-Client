@@ -15,15 +15,14 @@ import org.json.JSONObject;
 import java.text.ParseException;
 
 /**
+ * Functional tests for date / time processing
+ *
  * Created by jon on 17.12.2013.
  */
 public class DatetimeTestCase extends TestCase {
     private static DateTimeFormatter PROTOCOL_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
     private static DateTimeFormatter PROTOCOL_TIME_FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
 
-    /**
-     * Functional tests
-     */
     public void testSimplePassthrough1() throws ParseException {
         Pair dt = new Pair("2013-01-01", "12:34:56");
         Pair ret = Datetime.datetimeFromJson(dt.first, dt.second);
@@ -151,5 +150,47 @@ public class DatetimeTestCase extends TestCase {
         Pair ret = Datetime.datetimeFromJson(input, null, now);
         assertEquals("2013-01-09", ret.first);
         assertNull(ret.second);
+    }
+
+    public void testTimeAdd() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
+        JSONObject input = new JSONObject("{\"#time_add\": [\"#time_now\", 0]}");
+        Pair ret = Datetime.datetimeFromJson(null, input, now);
+        assertNull(ret.first);
+        assertEquals("12:00:00", ret.second);
+    }
+
+    public void testTimeAdd2() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
+        JSONObject input = new JSONObject("{\"#time_add\": [\"#time_now\", 60]}");
+        Pair ret = Datetime.datetimeFromJson(null, input, now);
+        assertNull(ret.first);
+        assertEquals("12:01:00", ret.second);
+    }
+
+    public void testTimeAdd3() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
+        JSONObject input = new JSONObject("{\"#time_add\": [\"#time_now\", -90]}");
+        Pair ret = Datetime.datetimeFromJson(null, input, now);
+        assertNull(ret.first);
+        assertEquals("11:58:30", ret.second);
+    }
+
+    // Add time which changes date
+    public void testTimeAdd4() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 23, 59);
+        JSONObject input = new JSONObject("{\"#time_add\": [\"#time_now\", 120]}");
+        Pair ret = Datetime.datetimeFromJson(PROTOCOL_DATE_FORMATTER.print(now), input, now);
+        assertEquals("2013-01-08", ret.first);
+        assertEquals("00:01:00", ret.second);
+    }
+
+    // Add time which changes date
+    public void testTimeAdd5() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 1);
+        JSONObject input = new JSONObject("{\"#time_add\": [\"#time_now\", -120]}");
+        Pair ret = Datetime.datetimeFromJson(PROTOCOL_DATE_FORMATTER.print(now), input, now);
+        assertEquals("2013-01-06", ret.first);
+        assertEquals("23:59:00", ret.second);
     }
 }
