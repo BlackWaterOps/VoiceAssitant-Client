@@ -29,7 +29,8 @@ namespace Please2.ViewModels
     public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         private string templateName;
-
+        
+        #region properties
         private string scheme;
         public string Scheme
         {
@@ -106,6 +107,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("ListResults");
             }
         }
+        #endregion
 
         INavigationService navigationService;
         IPlexiService plexiService;
@@ -229,8 +231,6 @@ namespace Please2.ViewModels
         #region helpers
         public Dictionary<string, object> Populate(Dictionary<string, object> structured)
         {
-            var ret = new Dictionary<string, object>();
-
             var templates = ViewModelLocator.ListTemplates;
 
             string[] template = (structured["template"] as string).Split(':');
@@ -243,8 +243,7 @@ namespace Please2.ViewModels
 
                 if (templates[this.templateName] == null)
                 {
-                    Debug.WriteLine(String.Format("template {0} not found in TemplateDictionary", this.templateName));
-                    GoTo("conversation");
+                    Debug.WriteLine(String.Format("ListViewModel: template {0} not found in TemplateDictionary", this.templateName));
                     return null;
                 }
 
@@ -264,11 +263,11 @@ namespace Please2.ViewModels
             else
             {
                 Debug.WriteLine("could not find \"items\" key in structured response");
-                GoTo("conversation");
+                return null;
             }
 
             // nothing really to send back. everything is set on this page
-            return null;
+            return new Dictionary<string, object>();
         }
 
         public bool SetDetails(string template, object model)
