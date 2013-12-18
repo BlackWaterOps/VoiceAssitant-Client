@@ -18,84 +18,62 @@ import java.util.regex.Pattern;
  */
 public class Datetime {
 
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss");
+
     private static Pattern dateRegex = Pattern.compile("\\d{2,4}-\\d{2}-\\d{2}",
             Pattern.CASE_INSENSITIVE);
     private static Pattern timeRegex = Pattern.compile("\\d{1,2}:\\d{2}:\\d{2}",
             Pattern.CASE_INSENSITIVE);
 
-    public static Calendar ConvertFromUnixTimestamp(int timestamp)
-    {
-        long l = timestamp * 1000;
-
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-
-        c.setTimeInMillis(l);
-
-        c.setTimeZone(TimeZone.getDefault());
-
-        return c;
-    }
-
-    public static int ConvertToUnixTimestamp(Calendar cal)
-    {
+    public static int ConvertToUnixTimestamp(Calendar cal) {
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        int timestamp = (int)(cal.getTimeInMillis() / 1000);
+        int timestamp = (int) (cal.getTimeInMillis() / 1000);
 
         return timestamp;
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson()
-    {
+    public static HashMap<String, String> BuildDatetimeFromJson() {
         return BuildDatetimeFromJson(null, null);
     }
 
-    public static HashMap<String, String> BuildDatetimeFromJson(Object date, Object time)
-    {
-        Calendar cal = null;
+    public static HashMap<String, String> BuildDatetimeFromJson(Object dateO, Object timeO) {
+        HashMap<String, String> ret = new HashMap<String, String>();
 
-        if (date != null)
-        {
-            if (date instanceof String && dateRegex.matcher((String) date).matches() ) {
-                cal = Datetime.BuildDatetimeHelper((String)date, null);
+        Date date = null;
+        if (dateO != null) {
+            if (dateO instanceof String && dateRegex.matcher((String) dateO).matches()) {
+                date = parseDateObject((String) dateO);
+                ret.put("date", dateFormat.format(date));
             }
 
-            if (date instanceof JSONObject) {
-                cal = Datetime.BuildDatetimeHelper((JSONObject)date, null);
-            }
+//            if (date instanceof JSONObject) {
+//                cal = Datetime.BuildDatetimeHelper((JSONObject) date, null);
+//            }
         }
 
-        if (time != null)
+        if (timeO != null)
         {
-            if (time instanceof String && timeRegex.matcher((String) time).matches() ) {
-                cal = Datetime.BuildDatetimeHelper((String)time, cal);
+            if (timeO instanceof String && timeRegex.matcher((String) timeO).matches() ) {
+                Date time = parseTimeObject((String) timeO, date);
+                ret.put("date", dateFormat.format(time));
+                ret.put("time", timeFormat.format(time));
             }
 
-            if (time instanceof JSONObject) {
-                cal = Datetime.BuildDatetimeHelper((JSONObject)time, cal);
-            }
+//            if (time instanceof JSONObject) {
+//                cal = Datetime.BuildDatetimeHelper((JSONObject)time, cal);
+//            }
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("H:mm:ss");
-
-        Date d = cal.getTime();
-
-        HashMap<String, String> newDate = new HashMap<String, String>();
-
-        newDate.put("date", dateFormat.format(d));
-        newDate.put("time", timeFormat.format(d));
-
-        return newDate;
+        return ret;
     }
 
-    private static Object GetPreference(String Name)
-    {
+    private static Object GetPreference(String Name) {
         return null;
     }
 
-    private static Calendar WeekdayHelper(int dayOfWeek)
-    {
+    private static Calendar WeekdayHelper(int dayOfWeek) {
         Calendar cal = Calendar.getInstance();
 
         // dayOfWeek value is 0 indexed so add 1
@@ -104,15 +82,14 @@ public class Datetime {
         return cal;
     }
 
-    private static Calendar FuzzyHelper(JSONObject datetime, boolean isDate)
-    {
+    private static Calendar FuzzyHelper(JSONObject datetime, boolean isDate) {
         try {
             String label = null;
             String def = null;
 
             Iterator<String> keys = datetime.keys();
 
-            while(keys.hasNext()) {
+            while (keys.hasNext()) {
                 String key = keys.next();
 
                 if (key == "label") {
@@ -146,45 +123,85 @@ public class Datetime {
         }
     }
 
-    private static Calendar BuildDatetimeHelper(String dateortime, Calendar newDate)
-    {
+    private static Date parseDateObject(String dateString) {
+        if ( dateString.equals("now") )
+            return new Date();
+
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat();
-            Date d;
-            Calendar cal;
-
-            if (newDate == null) {
-                cal = Calendar.getInstance();
-                d = (dateortime.contains("now")) ? new Date() : formatter.parse(dateortime);
-                cal.setTime(d);
-            } else {
-                if ( timeRegex.matcher(dateortime).matches() ) {
-                    d = formatter.parse(dateortime);
-                    cal = Calendar.getInstance();
-                    cal.setTime(d);
-
-                    if (newDate.after(cal)) {
-                        newDate.add(Calendar.DATE, 1);
-                    }
-                }
-            }
-
-            return newDate;
-        } catch (ParseException parseError) {
-            System.out.print(parseError.getMessage());
+            Date d = dateFormat.parse(dateString);
+            return d;
+        } catch ( ParseException e ) {
             return null;
         }
     }
 
-    private static Calendar BuildDatetimeHelper(JSONObject dateortime, Calendar newDate)
-    {
+    private static Date parseTimeObject(String timeString, Date basis) {
+        if ( timeString.equals("now") )
+            return new Date();
+
+        if ( basis != null ) {
+            timeString = dateFormat.format(basis) + "T" + timeString;
+        }
+
+        try {
+            Date d = dateTimeFormat.parse(timeString);
+            return d;
+        } catch ( ParseException e ) {
+            return null;
+        }
+    }
+
+    private static Calendar BuildDatetimeHelper(String dateortime, Calendar newDate) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+
+        Date d;
+
+        if (newDate == null) {
+            newDate = Calendar.getInstance();
+
+            if (dateortime.equals("now")) {
+                newDate.setTime(new Date());
+                return newDate;
+            }
+
+            try {
+                d = dateFormatter.parse(dateortime);
+                newDate.setTime(d);
+                return newDate;
+            } catch ( ParseException e ) { /* pass */ }
+
+            try {
+                d = timeFormatter.parse(dateortime);
+                newDate.setTime(d);
+                return newDate;
+            } catch ( ParseException e ) { /* pass */ }
+        } else {
+            if (timeRegex.matcher(dateortime).matches()) {
+                try {
+                    d = timeFormatter.parse(dateortime);
+                } catch ( ParseException e ) { return null; }
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(d);
+
+                if (newDate.after(cal)) {
+                    newDate.add(Calendar.DATE, 1);
+                }
+            }
+        }
+
+        return newDate;
+    }
+
+    private static Calendar BuildDatetimeHelper(JSONObject dateortime, Calendar newDate) {
         try {
             SimpleDateFormat formatter = new SimpleDateFormat();
             Date d;
 
             Iterator<String> keys = dateortime.keys();
 
-            while(keys.hasNext()) {
+            while (keys.hasNext()) {
                 String key = keys.next();
 
                 if (key.contains("weekday")) {
@@ -195,7 +212,7 @@ public class Datetime {
                     if (dateortime.get(key) instanceof JSONArray) {
                         System.out.print("step 1");
 
-                        JSONArray val = (JSONArray)dateortime.get(key);
+                        JSONArray val = (JSONArray) dateortime.get(key);
 
                         for (int i = 0; i < val.length(); i++) {
                             System.out.print("step 2");

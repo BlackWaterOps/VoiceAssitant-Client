@@ -42,6 +42,6 @@ public class DatetimeTestCase extends TestCase {
         String time = null;
         HashMap<String, String> ret = Datetime.BuildDatetimeFromJson(date, time);
         assertEquals(date, ret.get("date"));
-        assertEquals(time, ret.get("time"));
+        assertEquals("00:00:00", ret.get("time"));
     }
 }
