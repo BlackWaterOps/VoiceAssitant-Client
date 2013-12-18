@@ -578,6 +578,87 @@ namespace Please2.Util
 
                 bool isNight = false;
                 string currCondition;
+
+                if (weatherDay.daytime != null && weatherDay.daytime.sky != null)
+                {
+                    currCondition = weatherDay.daytime.sky;
+                }
+                else
+                {
+                    isNight = true;
+                    currCondition = weatherDay.night.sky;
+                }
+
+                currCondition = currCondition.ToLower();
+
+                string icon = null;
+
+                var conditions = new Dictionary<List<string>, List<string>>()
+                {
+                    { new List<string> { "3" }, new List<string> { "overcast", "cloudy" } },
+                    { new List<string> { "1", "6" }, new List<string> { "clear", "sunny" } },
+                    { new List<string> { "", "" }, new List<string> { "rain", "shower", "drizzle", "pour", "sprinkle", "sleet" } },
+                    { new List<string> { "", "" }, new List<string> { "snow", "blizzard", "flurries" } },
+                    { new List<string> { "", "" }, new List<string> { "windy", "gust", "blustery", "breeze" } },
+                    { new List<string> { "", "" }, new List<string> { "thunder", "stormy" } },
+                    { new List<string> { "", "" }, new List<string> { "hurricane", "tornado", "typhoon", "cyclone", "monsoon", "tropical" } }
+                };
+
+                foreach (var conditionList in conditions)
+                {
+                    foreach (var condition in conditionList.Value)
+                    {
+                        //TODO: check for condition in currCondition. NOT equal to
+                        if (currCondition == condition)
+                        {
+                            // set icon to appropriate glyph char
+                            var t = conditionList.Key;
+
+                            if (isNight == true && conditionList.Key.Count > 1)
+                            {
+                                icon = conditionList.Key[1];
+                            }
+                            else
+                            {
+                                icon = conditionList.Key[0];
+                            }
+                        }
+                    }
+                }
+
+                if (icon == null)
+                {
+                    Debug.WriteLine("could not find a suitable icon for " + currCondition);
+                }
+
+                return icon;
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("converter exception");
+                Debug.WriteLine(err.Message);
+                return value;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    /*
+    public class WeatherConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            try
+            {
+                // need to pass in the whole weatherday model so we have access to daytime and night fields  
+                var weatherDay = value as WeatherDay;
+
+                bool isNight = false;
+                string currCondition;
                 
                 if (weatherDay.daytime != null && weatherDay.daytime.sky != null)
                 {
@@ -608,20 +689,20 @@ namespace Please2.Util
                 { new List<string> { "b" }, new List<string> { "mostly cloudy and breezy" } },
                 { new List<string> { "Z", "!" }, new List<string> { "overcast and breezy", "patchy fog", "area fog" } },
                 { new List<string> { "d" }, new List<string> { "mostly cloudy and windy" } },
-                /*
-                { "f", new List<string> { "" } },
-                { "j", new List<string> { "" } },
-                { "t", new List<string> { "" } },
-                { "n", new List<string> { "" } },
-                { "x", new List<string> { "" } },
-                { "p", new List<string> { "" } },
-                { "h", new List<string> { "" } },
-                { "l", new List<string> { "" } },
-                { "v", new List<string> { "" } },
-                { "r", new List<string> { "" } },
+                
+                //{ "f", new List<string> { "" } },
+                //{ "j", new List<string> { "" } },
+                //{ "t", new List<string> { "" } },
+                //{ "n", new List<string> { "" } },
+                //{ "x", new List<string> { "" } },
+                //{ "p", new List<string> { "" } },
+                //{ "h", new List<string> { "" } },
+                //{ "l", new List<string> { "" } },
+                //{ "v", new List<string> { "" } },
+                //{ "r", new List<string> { "" } },
 
-                { "B", new List<string> {  } },
-                */
+                //{ "B", new List<string> {  } },
+
                 { new List<string> { "z", "!" }, new List<string> { "a few clouds and breezy", "partly cloudy and breezy", "breezy" } },
                 { new List<string> { "D", "e" }, new List<string> { "windy", "fair and windy", "a few clouds and windy", "partly cloudy and windy" } },
                 { new List<string> { "F", "g" }, new List<string> { "freezing rain in vicinity", "freezing drizzle in vicinity" } },
@@ -635,10 +716,10 @@ namespace Please2.Util
                     "showers in vicinity fog",
                     "showers in vicinity haze"
                 } },
-                /*
-                { "T", new List<string> { "" } },
-                { "N", new List<string> { "" } },
-                */
+                
+                //{ "T", new List<string> { "" } },
+                //{ "N", new List<string> { "" } },
+                
                 { new List<string> { "X", "y" }, new List<string> { 
                     "thunderstorm in vicinity fog/mist", 
                     "thunderstorm in vicinity haze", 
@@ -656,10 +737,10 @@ namespace Please2.Util
                     "snow showers in vicinity fog",
                     "blowing snow in vicinity"
                 } },
-                /*
-                { "L", new List<string> { "" } },
-                { "V", new List<string> { "" } },\
-                */
+               
+                //{ "L", new List<string> { "" } },
+                //{ "V", new List<string> { "" } },\
+               
                 { new List<string> { "R", "s" }, new List<string> { 
                     "thunderstorm showers in vicinity hail", 
                     "thunderstorm in vicinity hail", 
@@ -928,4 +1009,5 @@ namespace Please2.Util
             return null;
         }
     }
+    */
 }
