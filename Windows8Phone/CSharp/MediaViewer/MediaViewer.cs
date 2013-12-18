@@ -987,7 +987,6 @@ namespace Microsoft.Phone.Controls
                 _mediaStrip.Height = _size.Value.Height;
 
                 int elementCount = GetElementCount();
-                Debug.WriteLine(String.Format("element count: {0}", elementCount));
                 _mediaStrip.Width = (_size.Value.Width * elementCount) + (_itemGutter * (elementCount - 1));
 
                 _dragState.MinDraggingBoundary = _maxDraggingSquishDistance;
