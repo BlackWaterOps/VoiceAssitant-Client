@@ -88,4 +88,68 @@ public class DatetimeTestCase extends TestCase {
         assertEquals("2013-01-02", ret.first);
         assertNull(ret.second);
     }
+
+    public void testDateAdd() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [\"#date_now\", 0]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-07", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAdd2() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [\"#date_now\", 1]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-08", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAdd3() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [\"#date_now\", 35]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-02-11", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAddNegative() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [\"#date_now\", -1]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-06", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAddNegative2() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [\"#date_now\", -7]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2012-12-31", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAddWeekday() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [{\"#date_weekday\": 4}, 0]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-10", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAddWeekday2() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [{\"#date_weekday\": 4}, 1]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-11", ret.first);
+        assertNull(ret.second);
+    }
+
+    public void testDateAddWeekday3() throws JSONException, ParseException {
+        LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
+        JSONObject input = new JSONObject("{\"#date_add\": [{\"#date_weekday\": 4}, -1]}");
+        Pair ret = Datetime.datetimeFromJson(input, null, now);
+        assertEquals("2013-01-09", ret.first);
+        assertNull(ret.second);
+    }
 }
