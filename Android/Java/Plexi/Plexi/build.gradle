@@ -24,11 +24,11 @@ android {
 }
 
 dependencies {
+    compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.android.support:support-v4:18.0.+'
-    compile group: 'joda-time', name: 'joda-time', version: '2.+'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.2.4'
+    compile 'joda-time:joda-time:2.+'
 
-    instrumentTestCompile(group: 'junit', name: 'junit', version: '4.+') {
-	exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    instrumentTestCompile('junit:junit:4.+') {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
 }

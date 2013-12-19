@@ -10,6 +10,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.stremor.plexi.interfaces.IPlexiResponse;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.models.ActorModel;
