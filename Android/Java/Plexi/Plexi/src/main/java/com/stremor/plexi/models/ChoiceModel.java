@@ -1,6 +1,6 @@
 package com.stremor.plexi.models;
 
-import java.util.HashMap;
+import com.google.gson.JsonObject;
 
 /**
  * Created by jeffschifano on 10/28/13.
@@ -8,5 +8,5 @@ import java.util.HashMap;
 public class ChoiceModel {
     public String text;
 
-    public HashMap<String, Object> data;
+    public JsonObject data;
 }

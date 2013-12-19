@@ -3,29 +3,24 @@ package com.stremor.plexi.util;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.http.Header;
+import com.stremor.plexi.interfaces.IPlexiResponse;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import com.google.gson.Gson;
-
-import com.stremor.plexi.interfaces.IPlexiResponse;
 
 /**
  * Created by jeffschifano on 10/29/13.
@@ -175,11 +170,7 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
         // send progress message
 
         if ( listener != null ) {
-            try {
-                listener.onQueryResponse(queryResponse);
-            } catch (JSONException e) {
-                Log.w(TAG, "Query response listener failed", e);
-            }
+            listener.onQueryResponse(queryResponse);
         }
     }
 }

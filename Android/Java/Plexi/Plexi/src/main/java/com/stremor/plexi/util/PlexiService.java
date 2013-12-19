@@ -12,6 +12,7 @@ import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.stremor.plexi.interfaces.IPlexiResponse;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.models.ActorModel;
@@ -24,16 +25,12 @@ import com.stremor.plexi.models.StateModel;
 
 import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by jeffschifano on 10/28/13.
@@ -255,7 +252,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     // classifier response handler
     @Override
-    public void onQueryResponse(ClassifierModel response) throws JSONException {
+    public void onQueryResponse(ClassifierModel response) {
         if (response.error != null) {
             currentState.set("exception", response.error.message);
         } else {
@@ -269,18 +266,12 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
      */
 
     private void disambiguateActive(String data) {
-        // String field = tempContext.field;
-
-        String type = tempContext.type;
-
-        String payload = data;
-
         DisambiguatorModel postData = new DisambiguatorModel();
 
-        postData.payload = payload;
-        postData.type = type;
+        postData.payload = data;
+        postData.type = tempContext.type;
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/active", "POST", postData, true);
+        requestHelper(HashMap.class, DISAMBIGUATOR + "/active", "POST", postData, true);
     }
 
     private void disambiguateCandidate(String data) {
@@ -288,33 +279,21 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         // String field = tempContext.field;
 
-        String type = tempContext.type;
-
         JSONArray list = (simple.containsKey("list")) ? (JSONArray) simple.get("list") : new JSONArray();
 
-        String payload = data;
-
         DisambiguatorModel postData = new DisambiguatorModel();
-
-        postData.payload = payload;
-        postData.type = type;
+        postData.payload = data;
+        postData.type = tempContext.type;
         postData.candidates = list;
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate", "POST", postData, true);
+        requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate", "POST", postData, true);
     }
 
     private void disambiguatePassive(ResponderModel data) {
         String field = data.field;
-
         String type = data.type;
 
-        Object payload;
-
-        if (field.contains(".")) {
-            payload = find(field);
-        } else {
-            payload = this.mainContext.payload.get(field);
-        }
+        Object payload = JsonObjectUtil.find(mainContext.payload, field);
 
         HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
 
@@ -331,16 +310,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     private void disambiguatePersonal(ResponderModel data) {
         String field = data.field;
-
         String type = data.type;
 
-        Object payload;
-
-        if (field.contains(".")) {
-            payload = find(field);
-        } else {
-            payload = this.mainContext.payload.get(field);
-        }
+        Object payload = JsonObjectUtil.find(mainContext.payload, field);
 
         DisambiguatorModel postData = new DisambiguatorModel();
 
@@ -352,9 +324,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     // disambiguator response handler
     @Override
-    public void onQueryResponse(HashMap<String, Object> response) throws JSONException {
+    public void onQueryResponse(JsonObject response) {
         if (response != null) {
-            if (response.containsKey("error")) {
+            if (response.has("error")) {
                 // currentState.set("exception", error.message);
             } else {
                 // make copy of mainContext
@@ -368,19 +340,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                 }
 
                 // do client operations
-                context = doClientOperations(context, response);
+                doClientOperations(context, response);
 
                 String field = this.tempContext.field;
-
                 String type = this.tempContext.type;
 
                 // replace fields
-                if (response.containsKey(type)) {
-                    if (field.contains(".")) {
-                        context = replace(context, field, response.get(type));
-                    } else {
-                        context.payload.put(field, response.get(type));
-                    }
+                if (response.has(type)) {
+                    JsonObjectUtil.replace(context.payload, field, response.get(type));
                 } else {
                     Log.e(TAG, "disambiguation response is missing type");
                 }
@@ -394,24 +361,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         // send message to update conversation with choice.text
 
         String field = tempContext.field;
-
-        ClassifierModel context;
-
-        try {
-            context = this.mainContext.clone();
-
-        } catch (CloneNotSupportedException e) {
-            Log.e(TAG, "Auditor choice cloning failed");
-            return;
-        }
-
-        if (field.contains(".")) {
-            context = replace(this.mainContext, field, choice.data);
-        } else {
-            context.payload.put(field, choice.data);
-        }
-
-        currentState.set("audit", context);
+        JsonObjectUtil.replace(mainContext.payload, field, choice.data);
+        currentState.set("audit", mainContext);
     }
 
     /**
@@ -430,7 +381,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     // auditor response handler
     @Override
-    public void onQueryResponse(ResponderModel response) throws JSONException {
+    public void onQueryResponse(ResponderModel response) {
         if (response.error != null) {
             currentState.set("exception", response.error.message);
         } else {
@@ -476,7 +427,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     @Override
-    public void onQueryResponse(ActorModel response) throws JSONException {
+    public void onQueryResponse(ActorModel response) {
         this.clearContext();
 
         if (response.error != null) {
@@ -494,7 +445,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     // helpers
-    private void requestHelper(Class<?> type, String endpoint, String method, Object data, Boolean includeNulls) {
+    private void requestHelper(Class<?> type, String endpoint, String method, Object data,
+                               boolean includeNulls) {
         RequestTask req = new RequestTask(type.getClass(), this);
 
         req.Method = method;
@@ -508,121 +460,76 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         }
     }
 
-    private ClassifierModel doClientOperations(ClassifierModel context, HashMap<String, Object> response) {
+    private ClassifierModel doClientOperations(ClassifierModel context, JsonObject response) {
         response = replaceLocation(response);
         response = buildDateTime(response);
-        context = prependTo(context, response);
+        prependTo(context, response);
 
         return context;
     }
 
-    private ClassifierModel prependTo(ClassifierModel context, HashMap<String, Object> data) {
-        try {
-            if (!data.containsKey("unused_tokens")) {
-                return context;
-            }
+    private void prependTo(ClassifierModel context, JsonObject data) {
+        if (!data.has("unused_tokens") || data.getAsJsonArray("unused_tokens").size() == 0)
+            return;
 
-            if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
-                return context;
-            }
-
-            String prepend = "";
-            //String prepend (String) ((JSONArray) data.get("unused_tokens")).
-
-            String field = (String) data.get("prepend_to");
-
-            String payloadField = "";
-
-            if (context.payload.containsKey("field") && context.payload.get(field) != null) {
-                payloadField = " " + (String) context.payload.get(field);
-            }
-
-            context.payload.put(field, (prepend + payloadField));
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        return context;
+        // TODO
+//        if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
+//            return context;
+//        }
+//
+//        String prepend = "";
+//        //String prepend (String) ((JSONArray) data.get("unused_tokens")).
+//
+//        String field = (String) data.get("prepend_to");
+//
+//        String payloadField = "";
+//
+//        if (context.payload.containsKey("field") && context.payload.get(field) != null) {
+//            payloadField = " " + (String) context.payload.get(field);
+//        }
+//
+//        context.payload.put(field, (prepend + payloadField));
     }
 
-    private ClassifierModel replace(ClassifierModel context, String field, final Object type) {
-        List<String> fields = Arrays.asList(field.split("."));
-
-        final String last = fields.remove(fields.size() - 1);
-
-        // convert to generic object
-        Object obj = deepCopy(Object.class, context);
-
-        Object t = new Reduce<String, Object>() {
-            public Object function(Object a, String b) {
-              try {
-                    if (b == last) {
-                        return ((JSONObject) a).put(b, type);
-                    } else {
-                        return ((JSONObject) a).get(b);
-                    }
-              } catch (JSONException e) {
-                  Log.e(TAG, "replace reduce error");
-                  Log.e(TAG, e.getMessage());
-                  return null;
-              }
-            }
-        }.apply(fields, context);
-
-        return deepCopy(ClassifierModel.class, obj);
-    }
-
-    private Object find(String field) {
-        List<String> fields = Arrays.asList(field.split("."));
-
-        // convert to generic object
-        Object context = deepCopy(Object.class, this.mainContext);
-
-        return new Reduce<String, Object>() {
-            public Object function(Object a, String b) {
-                try {
-                    return ((JSONObject) a).get(b);
-                } catch (JSONException e) {
-                    Log.e(TAG, "find reduce error");
-                    Log.e(TAG, e.getMessage());
-                    return null;
-                }
-            }
-        }.apply(fields, context);
-    }
-
-    private HashMap<String, Object> replaceLocation(HashMap<String, Object> payload) {
-        if (payload.get("location") instanceof String) {
-            String location = (String) payload.get("location");
-
-            if (location.contains("current_location")) {
-                // TODO get device info
-                // payload.put("location", deviceInfo);
-            }
-        }
+    private JsonObject replaceLocation(JsonObject payload) {
+        // TODO
+//        if (payload.get("location") instanceof String) {
+//            String location = (String) payload.get("location");
+//
+//            if (location.contains("current_location")) {
+//                // TODO get device info
+//                // payload.put("location", deviceInfo);
+//            }
+//        }
 
         return payload;
     }
 
-    private HashMap<String, Object> buildDateTime(HashMap<String, Object> data) {
+    private static Pair[] DATETIME_KEY_NAMES = new Pair[] {
+            new Pair("date", "time"),
+            new Pair("start_date", "start_time"),
+            new Pair("end_date", "end_time")
+    };
+
+    /**
+     * Process any date/time values stored in model data.
+     *
+     * @param data
+     * @return
+     */
+    private JsonObject buildDateTime(JsonObject data) {
         if (data != null) {
-            ArrayList<Pair<String, String>> datetimes = new ArrayList<Pair<String, String>>();
-
-            datetimes.add(new Pair<String, String>("date", "time"));
-            datetimes.add(new Pair<String, String>("start_date", "start_time"));
-            datetimes.add(new Pair<String, String>("end_date", "end_time"));
-
-            for (Pair<String, String> datetime : datetimes) {
+            for (Pair<String, String> datetime : DATETIME_KEY_NAMES) {
                 String first = datetime.first;
                 String second = datetime.second;
 
-                if (data.containsKey(first) || data.containsKey(second)) {
+                if (data.has(first) || data.has(second)) {
                     boolean includeDate = true, includeTime = true;
 
-                    if (!data.containsKey(first))
+                    if (!data.has(first))
                         includeDate = false;
 
-                    if (!data.containsKey(second))
+                    if (!data.has(second))
                         includeTime = false;
 
                     Pair<String, String> result;
@@ -633,9 +540,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                     }
 
                     if (includeDate)
-                        data.put(first, result.first);
+                        data.addProperty(first, result.first);
                     if (includeTime)
-                        data.put(second, result.second);
+                        data.addProperty(second, result.second);
                 }
             }
         }
@@ -672,15 +579,6 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         return deviceInfo;
     }
 
-    // hacky clone method !!
-    private <T> T deepCopy(Class<T> type, Object obj) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-
-        String json = gson.toJson(obj);
-
-        return (T) gson.fromJson(json, type.getClass());
-    }
-
     private String serializeData(Object data, boolean includeNulls) {
         Gson gson;
 
@@ -695,7 +593,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     @Override
-    public void onQueryResponse(Object response) throws JSONException {
+    public void onQueryResponse(Object response) {
         Log.e(TAG, "unhandled query response");
     }
 
