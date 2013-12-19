@@ -32,7 +32,8 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
 
     private Class<T> type;
     private IPlexiResponse listener;
-    public HttpMethod method;
+    private HttpMethod method;
+    private String contentType;
 
     public RequestTask(Class<T> classType, IPlexiResponse responseListener) {
         this(classType, responseListener, HttpMethod.POST);
@@ -138,5 +139,21 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
     protected void onPostExecute(T queryResponse) {
         if ( listener != null )
             listener.onQueryResponse(queryResponse);
+    }
+
+    public HttpMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

@@ -46,15 +46,19 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     private static final String TAG = "PlexiService";
 
     private final IBinder mBinder = new LocalBinder();
+    private Context context;
+
     private ArrayList<String> auditorStates = new ArrayList<String>() {{ add("disambiguate"); add("inprogress"); add("choice"); }};
+
     // gets completed with all the necessary fields in order to fulfill an action
     private ClassifierModel mainContext = null;
+
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
+
     private StateModel currentState = new StateModel();
     private CountDownTimer contextTimer;
     private String originalQuery;
-    private Context context;
     private LocationTracker locationTracker;
 
     public PlexiService(Context context) {
@@ -247,7 +251,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
      */
 
     private void classify(String query) {
-        requestHelper(ClassifierModel.class, CLASSIFIER + "query=" + query, "GET", null, false);
+        requestHelper(ClassifierModel.class, CLASSIFIER + "query=" + query,
+                RequestTask.HttpMethod.GET, null, false);
     }
 
     // classifier response handler
@@ -271,7 +276,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.payload = data;
         postData.type = tempContext.type;
 
-        requestHelper(HashMap.class, DISAMBIGUATOR + "/active", "POST", postData, true);
+        requestHelper(HashMap.class, DISAMBIGUATOR + "/active",
+                RequestTask.HttpMethod.POST, postData, true);
     }
 
     private void disambiguateCandidate(String data) {
@@ -286,7 +292,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.type = tempContext.type;
         postData.candidates = list;
 
-        requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate", "POST", postData, true);
+        requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate",
+                RequestTask.HttpMethod.POST, postData, true);
     }
 
     private void disambiguatePassive(ResponderModel data) {
@@ -295,17 +302,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         Object payload = JsonObjectUtil.find(mainContext.payload, field);
 
-        HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
-
-        deviceInfo = this.getDeviceInfo();
-
         DisambiguatorModel postData = new DisambiguatorModel();
 
         postData.payload = payload;
         postData.type = type;
-        postData.device_info = deviceInfo;
+        postData.device_info = getDeviceInfo();
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/passive", "POST", postData, true);
+        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/passive",
+                RequestTask.HttpMethod.POST, postData, true);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
@@ -319,7 +323,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.payload = payload;
         postData.type = type;
 
-        this.requestHelper(HashMap.class, PUD + "disambiguate", "POST", postData, true);
+        this.requestHelper(HashMap.class, PUD + "disambiguate",
+                RequestTask.HttpMethod.POST, postData, true);
     }
 
     // disambiguator response handler
@@ -327,6 +332,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     public void onQueryResponse(JsonObject response) {
         if (response != null) {
             if (response.has("error")) {
+                // TODO
                 // currentState.set("exception", error.message);
             } else {
                 // make copy of mainContext
@@ -373,7 +379,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         if (!context.equals(mainContext)) {
             this.mainContext = context;
 
-            this.requestHelper(ResponderModel.class, RESPONDER + "audit", "POST", context, false);
+            this.requestHelper(ResponderModel.class, RESPONDER + "audit",
+                    RequestTask.HttpMethod.POST, context, false);
         } else {
             Log.e(TAG, "potential request loop detected");
         }
@@ -420,7 +427,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                 endpoint = PUD + "actor/" + actor.replace("private:", "");
             }
 
-            requestHelper(ActorModel.class, endpoint, "POST", this.mainContext, false);
+            requestHelper(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
+                    this.mainContext, false);
         } else {
             show(data);
         }
@@ -445,17 +453,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     // helpers
-    private void requestHelper(Class<?> type, String endpoint, String method, Object data,
-                               boolean includeNulls) {
-        RequestTask req = new RequestTask(type.getClass(), this);
+    private void requestHelper(Class<?> type, String endpoint, RequestTask.HttpMethod method,
+                               Object data, boolean includeNulls) {
+        RequestTask req = new RequestTask(type.getClass(), this, method);
 
-        req.Method = method;
-
-        if (method.equalsIgnoreCase("get")) {
+        if (method == RequestTask.HttpMethod.GET) {
             req.execute(endpoint, null);
         } else {
-            req.ContentType = "application/json";
-
+            req.setContentType("application.json");
             req.execute(endpoint, serializeData(data, includeNulls));
         }
     }
