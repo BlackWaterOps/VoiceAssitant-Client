@@ -100,8 +100,9 @@ namespace Please2
 
             if (e.Uri.OriginalString.Contains(successEndpoint))
             {
-                Util.AccountHelper.Default.AddAccount();
-                Util.AccountHelper.Default.CheckAccounts();
+                Debug.WriteLine("authorization success");
+                //Util.AccountHelper.Default.AddAccount();
+                //Util.AccountHelper.Default.CheckAccounts();
             }
         }
 

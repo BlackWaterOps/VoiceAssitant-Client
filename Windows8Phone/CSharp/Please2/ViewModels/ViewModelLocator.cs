@@ -185,6 +185,11 @@ namespace Please2.ViewModels
         {
             get { return GetServiceInstance<NotesViewModel>(); }
         }
+
+        public SettingsViewModel SettingsViewModel
+        {
+            get { return GetServiceInstance<SettingsViewModel>(); }
+        }
         /*
         public TimeViewModel TimeViewModel
         {

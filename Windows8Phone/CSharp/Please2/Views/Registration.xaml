@@ -6,6 +6,7 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:local="clr-namespace:Please2.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -34,7 +35,7 @@
         <SolidColorBrush x:Key="ErrorBackgroundBrush" Color="Tomato"/>
         
         <Style x:Key="RegistrationLabel" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}"/>
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeMedium}"/>
             <Setter Property="Foreground" Value="LightGray"/>
             <Setter Property="Margin" Value="12,0"/>
             <Setter Property="Padding" Value="0"/>
@@ -99,40 +100,6 @@
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
-                                    <VisualState x:Name="Error">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ErrorBackgroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="BorderBrush">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ErrorBorderBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="validationContent" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Valid">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{TemplateBinding Background}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="BorderBrush">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{TemplateBinding BorderBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="validationContent" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Collapsed</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
                                 </VisualStateGroup>
                                 <VisualStateGroup x:Name="FocusStates">
                                     <VisualState x:Name="Focused" />
@@ -175,16 +142,6 @@
                                      TextAlignment="{TemplateBinding TextAlignment}"
                                      TextWrapping="{TemplateBinding TextWrapping}" />
                             </Border>
-                            <TextBlock
-                                Grid.Row="1"
-                                Visibility="Collapsed" 
-                                Foreground="Red" 
-                                HorizontalAlignment="Left" 
-                                x:Name="validationContent"
-                                Text=""
-                                TextWrapping="Wrap"
-                                Margin="12,0"
-                                Padding="0"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -215,23 +172,6 @@
                                                 </DiscreteObjectKeyFrame>
                                             </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Error">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ErrorBackgroundBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="BorderBrush">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource ErrorBorderBrush}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="validationContent" Storyboard.TargetProperty="Visibility">
                                                 <DiscreteObjectKeyFrame KeyTime="0">
                                                     <DiscreteObjectKeyFrame.Value>
                                                         <Visibility>Visible</Visibility>
@@ -273,16 +213,6 @@
                                              Background="Transparent"
         				                     PasswordChar="{TemplateBinding PasswordChar}"/>
                             </Border>
-                            <TextBlock
-                                Grid.Row="1"
-                                Visibility="Collapsed" 
-                                Foreground="Red" 
-                                HorizontalAlignment="Left" 
-                                x:Name="validationContent"
-                                Text=""
-                                TextWrapping="Wrap"
-                                Margin="12,0"
-                                Padding="0"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -303,59 +233,42 @@
                 <Image Style="{StaticResource AppTitleIcon}"/>
             </Border>
             <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}">
-                <TextBlock Text="registration" Style="{StaticResource PageTitle}"/>
-            </Border>
-            <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
-                <TextBlock Text="create new Plexi account" Style="{StaticResource PageSubTitle}"/>
+                <TextBlock Text="sign up" Style="{StaticResource PageTitle}"/>
             </Border>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1">
-            <Grid Margin="12">
-                <!--
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                -->
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <StackPanel>
+                <TextBlock Text="account name" Style="{StaticResource RegistrationLabel}"/>
+                <TextBox x:Name="AccountName" 
+                             Style="{StaticResource RegistrationText}" 
+                             Padding="5" 
+                             MaxLength="32" 
+                             KeyUp="Control_KeyUp"/>
 
-                <Grid Grid.ColumnSpan="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-   
-                    <TextBlock Text="account name" Style="{StaticResource RegistrationLabel}"/>
-
-                    <TextBox x:Name="AccountName" Grid.Row="1" Style="{StaticResource RegistrationText}" MaxLength="32" KeyUp="Control_KeyUp" LostFocus="AccountName_LostFocus"/>
-                    
-                    <TextBlock Text="password" Grid.Row="2" Style="{StaticResource RegistrationLabel}"/>
-
-                    <PasswordBox x:Name="Password" Grid.Row="3" Style="{StaticResource RegistrationPassword}" MaxLength="32" KeyUp="Control_KeyUp" LostFocus="Password_LostFocus"/>
-
-                    <TextBlock Text="confirm password" Grid.Row="4" Style="{StaticResource RegistrationLabel}"/>
-
-                    <PasswordBox x:Name="ConfirmPassword" Grid.Row="5" Style="{StaticResource RegistrationPassword}" MaxLength="32" KeyUp="Control_KeyUp" LostFocus="ConfirmPassword_LostFocus"/>
-                </Grid>
-
-                <!--
-                <TextBlock Text="We'll send you a confirmation email to the address above. Your account will not be active until you click the confirmation link in the email." Style="{StaticResource RegistrationLabel}"/>
-                -->
-
-                <Button x:Name="CreateButton" Grid.Row="2" Content="create" Tap="CreateButton_Tap" IsEnabled="False"/>
-            </Grid>
+                <TextBlock Text="password" Style="{StaticResource RegistrationLabel}"/>
+                <PasswordBox x:Name="AccountPassword" 
+                                 Style="{StaticResource RegistrationPassword}" 
+                                 Padding="5" 
+                                 MaxLength="32" 
+                                 KeyUp="Control_KeyUp"/>
+                
+                <TextBlock Text="Welcome to Plexi for Windows Phone" Style="{StaticResource RegistrationLabel}"/>
+            </StackPanel>
+            
+            <HyperlinkButton Grid.Row="1" Content="Term of use" NavigateUri="http://stremor.com" HorizontalAlignment="Left"/>
         </Grid>
     </Grid>
-
+    
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar>
+            <shell:ApplicationBarIconButton x:Name="CreateButton" Text="create" IconUri="/Assets/check.png" Click="CreateButton_Tap" IsEnabled="False"/>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
 </local:ViewBase>

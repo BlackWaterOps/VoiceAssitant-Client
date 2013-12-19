@@ -103,7 +103,7 @@ namespace Please2.Util
             string model = e.model.Split('_')[0];
 
             string message = String.Empty;
-
+             
             switch (model)
             {
                 case "email":

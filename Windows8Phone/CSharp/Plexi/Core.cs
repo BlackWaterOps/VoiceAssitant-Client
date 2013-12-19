@@ -530,6 +530,23 @@ namespace Plexi
 
         private async void DisambiguatePersonal(ResponderModel data)
         {
+            string authToken;
+
+            try
+            {
+                authToken = GetAuthToken();
+            }
+            catch (KeyNotFoundException)
+            {
+                // prompt user to auth an account with contact such as google or exchange.
+                // if they don't want to, lookup against the phone's contacts
+                RegisterMessage(data.data.model);
+                return;
+            }
+
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
+
             string field = data.field;
 
             string type = data.type;
@@ -552,7 +569,7 @@ namespace Plexi
 
             String endpoint = String.Format("{0}/disambiguate", PUD);
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData);
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, headers);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -686,7 +703,7 @@ namespace Plexi
                     {
                         authToken = GetAuthToken();
                     }
-                    catch (KeyNotFoundException keyErr)
+                    catch (KeyNotFoundException)
                     {
                         // prompt user to signup for a stremor account
                         RegisterMessage(data.data.model);

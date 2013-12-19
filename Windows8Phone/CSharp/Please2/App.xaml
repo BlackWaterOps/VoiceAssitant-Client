@@ -80,7 +80,7 @@
         <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
             <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeExtraLarge}" />
             <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="16,0" />
+            <Setter Property="Margin" Value="16,0,0,10" />
             <Setter Property="FontWeight" Value="Light"/>
         </Style>
         

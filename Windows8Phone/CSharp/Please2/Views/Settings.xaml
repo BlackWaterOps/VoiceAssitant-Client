@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -11,14 +12,39 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True"
+    DataContext="{Binding SettingsViewModel, Source={StaticResource Locator}}">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
-        <phone:Pivot Title="{Binding CurrentEvent.title}" x:Name="EventDetailsPivotView">
+    <Grid x:Name="LayoutRoot" Background="#9e9e9e">
+        <phone:Pivot Title="Settings" x:Name="SettingsPivotView">
             <!--Pivot item one-->
-            <phone:PivotItem Header="Preferences" x:Name="PreferencesPivotPanel">
+            <phone:PivotItem Header="General" x:Name="PreferencesPivotPanel">
+                <StackPanel x:Name="AccountsStackPanel">
+                    <TextBlock Text="Accounts" FontSize="{StaticResource PhoneFontSizeLarge}" FontWeight="Bold"/>
 
+                    <ListBox ItemsSource="{Binding Providers}" ItemContainerStyle="{StaticResource ListBoxItem}" toolkit:TiltEffect.IsTiltEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" 
+                                        HorizontalAlignment="Stretch"
+                                        Padding="10,20"
+                                        Margin="0,10,0,0"
+                                        Tap="Provider_Tap">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{Binding name}" Foreground="DarkGray" Grid.Column="0" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding status}" Foreground="LightGray" Grid.Column="1" TextAlignment="Right"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
             </phone:PivotItem>
 
             <!--Pivot item two-->

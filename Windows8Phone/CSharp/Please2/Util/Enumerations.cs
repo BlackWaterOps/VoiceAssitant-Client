@@ -11,4 +11,9 @@ namespace Please2.Util
     {
         None = 0, Ordered = 1, Unordered = 2
     }
+
+    public enum AccountStatus
+    {
+        NotConnected = 0, Connected = 1
+    }
 }

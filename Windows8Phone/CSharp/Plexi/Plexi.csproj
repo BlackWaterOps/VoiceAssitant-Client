@@ -86,6 +86,7 @@
     <Compile Include="Core.cs" />
     <Compile Include="Events\ActorEventArgs.cs" />
     <Compile Include="Events\ChoiceEventArgs.cs" />
+    <Compile Include="Events\RegisterEventArgs.cs" />
     <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\ProgressEventArgs.cs" />
     <Compile Include="Events\ShowEventArgs.cs" />
