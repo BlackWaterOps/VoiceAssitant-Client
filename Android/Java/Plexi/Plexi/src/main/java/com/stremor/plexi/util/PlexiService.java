@@ -592,20 +592,13 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     private HashMap<String, Object> replaceLocation(HashMap<String, Object> payload) {
-        try {
-            if (payload.containsKey("location") && payload.get("location") != null) {
-                if (payload.get("location").getClass() == String.class) {
-                    String location = (String) payload.get("location");
+        if (payload.get("location") instanceof String) {
+            String location = (String) payload.get("location");
 
-                    if (location.contains("current_location")) {
-                        // get device info
-
-                        // payload.put("location", deviceInfo);
-                    }
-                }
+            if (location.contains("current_location")) {
+                // TODO get device info
+                // payload.put("location", deviceInfo);
             }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
         }
 
         return payload;
@@ -688,10 +681,10 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         return (T) gson.fromJson(json, type.getClass());
     }
 
-    private String serializeData(Object data, Boolean includeNulls) {
+    private String serializeData(Object data, boolean includeNulls) {
         Gson gson;
 
-        if (includeNulls == true) {
+        if (includeNulls) {
             gson = new GsonBuilder().serializeNulls().create();
         } else {
             gson = new Gson();
