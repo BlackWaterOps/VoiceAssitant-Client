@@ -26,31 +26,22 @@ import java.net.URISyntaxException;
  * Created by jeffschifano on 10/29/13.
  */
 public class RequestTask<T> extends AsyncTask<Object, Void, T> {
+    public enum HttpMethod { GET, POST };
+
     private static final String TAG = "QueryTask";
-    private IPlexiResponse listener;
+
     private Class<T> type;
-
-    private StopWatch stopWatch;
-
-    public String ContentType = null;
-    public String AcceptType = null;
-    public String Method = "GET";
-
+    private IPlexiResponse listener;
+    public HttpMethod method;
 
     public RequestTask(Class<T> classType, IPlexiResponse responseListener) {
-        this.type = classType;
-        this.listener = responseListener;
-
-        if (stopWatch == null) {
-            stopWatch = new StopWatch();
-        }
+        this(classType, responseListener, HttpMethod.POST);
     }
 
-    @Override
-    protected void onPreExecute() {
-        stopWatch.start();
-
-        // send progress message
+    public RequestTask(Class<T> classType, IPlexiResponse responseListener, HttpMethod method) {
+        this.type = classType;
+        this.listener = responseListener;
+        this.method = method;
     }
 
     /**
@@ -80,34 +71,17 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
         HttpResponse response = null;
 
         try {
-            if (this.Method.equalsIgnoreCase("get")) {
+            if (method == HttpMethod.GET) {
                 HttpGet get = new HttpGet();
 
                 get.setURI(uri);
 
                 response = client.execute(get);
-            }
-
-            if (this.Method.equalsIgnoreCase("post")) {
+            } else if (method == HttpMethod.POST) {
                 HttpPost post = new HttpPost();
                 post.setURI(uri);
 
-                if (this.ContentType != null) {
-                    post.setHeader("ContentType", this.ContentType);
-                }
-
-                if (this.AcceptType != null) {
-                    post.setHeader("Accept", this.AcceptType);
-                }
-
                 if (postData != null) {
-                    /*
-                    JSONObject request = new JSONObject();
-                    request.put("query", query);
-                    request.put("context", context);
-
-                    HttpEntity entity = new StringEntity(request.toString(), HTTP.UTF_8);
-                    */
                     HttpEntity entity = new StringEntity(postData, HTTP.UTF_8);
                     post.setEntity(entity);
                 }
@@ -136,7 +110,6 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
         }
 
         Gson gson = new GsonBuilder().serializeNulls().create();
-
         return gson.fromJson(responseBody, this.type);
 
         /*
@@ -163,14 +136,7 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
 
     @Override
     protected void onPostExecute(T queryResponse) {
-        stopWatch.stop();
-
-        Log.d(TAG, String.valueOf(stopWatch.getElapsedTime()));
-
-        // send progress message
-
-        if ( listener != null ) {
+        if ( listener != null )
             listener.onQueryResponse(queryResponse);
-        }
     }
 }
