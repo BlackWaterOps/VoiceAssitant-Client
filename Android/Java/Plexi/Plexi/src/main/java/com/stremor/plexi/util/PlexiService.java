@@ -78,6 +78,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     public String getOriginalQuery() { return originalQuery; }
+    public StateModel getCurrentState() { return currentState; }
 
     /**
      * Handles any and all changes in state within the Plexi service. Simply dispatches to other
@@ -453,9 +454,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     // helpers
-    private void requestHelper(Class<?> type, String endpoint, RequestTask.HttpMethod method,
+    private <T> void requestHelper(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                                Object data, boolean includeNulls) {
-        RequestTask req = new RequestTask(type.getClass(), this, method);
+        RequestTask req = new RequestTask<T>(type, this, method);
 
         if (method == RequestTask.HttpMethod.GET) {
             req.execute(endpoint, null);
