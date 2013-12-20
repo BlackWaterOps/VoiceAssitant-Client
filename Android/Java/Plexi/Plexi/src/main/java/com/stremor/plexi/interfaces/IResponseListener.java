@@ -8,7 +8,7 @@ import com.stremor.plexi.models.ResponderModel;
 /**
  * Created by jeffschifano on 10/29/13.
  */
-public interface IPlexiResponse {
+public interface IResponseListener {
     public void onQueryResponse(Object queryResponse);
 
     public void onQueryResponse(ClassifierModel queryResponse);

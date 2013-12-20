@@ -10,11 +10,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.stremor.plexi.interfaces.IPlexiResponse;
 import com.stremor.plexi.interfaces.IPlexiService;
+import com.stremor.plexi.interfaces.IRequestHelper;
+import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.ChoiceModel;
 import com.stremor.plexi.models.ClassifierModel;
@@ -35,7 +34,7 @@ import java.util.HashMap;
 /**
  * Created by jeffschifano on 10/28/13.
  */
-public final class PlexiService extends Service implements IPlexiService, IPlexiResponse, PropertyChangeListener {
+public final class PlexiService extends Service implements IPlexiService, IResponseListener {
     // endpoints
     private static final String CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
@@ -56,14 +55,45 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
 
-    private StateModel currentState = new StateModel();
     private CountDownTimer contextTimer;
     private String originalQuery;
     private LocationTracker locationTracker;
 
+    private IRequestHelper requestHelper;
+
+    /**
+     * State data
+     */
+    public enum State {
+        UNINITIALIZED, INIT, AUDIT, DISAMBIGUATE, DISAMBIGUATE_PERSONAL, DISAMBIGUATE_ACTIVE,
+        DISAMBIGUATE_CANDIDATE, IN_PROGRESS, ERROR, CHOICE, RESTART, COMPLETED, EXCEPTION
+    }
+
+    private static HashMap<String, State> STATE_MAP = new HashMap<String, State>() {{
+        put(null, State.UNINITIALIZED);
+        put("init", State.INIT);
+        put("audit", State.AUDIT);
+        put("disambiguate", State.DISAMBIGUATE);
+        put("disambiguate:personal", State.DISAMBIGUATE_PERSONAL);
+        put("disambiguate:active", State.DISAMBIGUATE_ACTIVE);
+        put("disambiguate:candidate", State.DISAMBIGUATE_CANDIDATE);
+        put("inprogress", State.IN_PROGRESS);
+        put("error", State.ERROR);
+        put("choice", State.CHOICE);
+        put("restart", State.RESTART);
+        put("completed", State.COMPLETED);
+        put("exception", State.EXCEPTION);
+    }};
+
+    private StateModel<State> currentState = new StateModel<State>(State.UNINITIALIZED, null);
+
     public PlexiService(Context context) {
+        this(context, new RequestHelper());
+    }
+
+    public PlexiService(Context context, IRequestHelper requestHelper) {
         this.context = context;
-        this.currentState.addChangeListener(this);
+        this.requestHelper = requestHelper;
 
         createTimer();
 
@@ -84,36 +114,43 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
      * Handles any and all changes in state within the Plexi service. Simply dispatches to other
      * handlers based on state.
      */
-    @Override
-    public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("State")) {
-            String state = (String) e.getNewValue();
+    public void changeState(State state, Object data) {
+        currentState.set(state, data);
 
-            Object response = currentState.getResponse();
-
-            if ( state.equals("init") )
-                classify((String) response);
-            else if ( state.equals("audit") )
-                auditor((ClassifierModel) response);
-            else if ( state.equals("disambiguate") )
-                disambiguatePassive((ResponderModel) response);
-            else if ( state.equals("disambiguate:personal") )
-                //actorInterceptor(mainContext.model);
-                disambiguatePersonal((ResponderModel) response);
-            else if ( state.equals("disambiguate:active") )
-                disambiguateActive((String) response);
-            else if ( state.equals("disambiguate:candidate") )
-                disambiguateCandidate((String) response);
-            else if ( state.equals("inprogress") || state.equals("error") )
-                show((ResponderModel) response);
-            else if ( state.equals("choice") )
-                choiceList((ResponderModel) response);
-            else if ( state.equals("restart") )
-                restart((ResponderModel) response);
-            else if ( state.equals("completed") )
-                actor((ResponderModel) response);
-            else if ( state.equals("exception") )
-                errorMessage((String) response);
+        switch (state) {
+            case INIT:
+                classify((String) data);
+                break;
+            case AUDIT:
+                auditor((ClassifierModel) data);
+                break;
+            case DISAMBIGUATE:
+                disambiguatePassive((ResponderModel) data);
+                break;
+            case DISAMBIGUATE_PERSONAL:
+                disambiguatePersonal((ResponderModel) data);
+                break;
+            case DISAMBIGUATE_ACTIVE:
+                disambiguateActive((String) data);
+                break;
+            case DISAMBIGUATE_CANDIDATE:
+                disambiguateCandidate((String) data);
+                break;
+            case IN_PROGRESS:
+            case ERROR:
+                show((ResponderModel) data);
+                break;
+            case CHOICE:
+                choiceList((ResponderModel) data);
+                break;
+            case RESTART:
+                restart((ResponderModel) data);
+                break;
+            case COMPLETED:
+                actor((ResponderModel) data);
+                break;
+            case EXCEPTION:
+                errorMessage((String) data);
         }
     }
 
@@ -123,19 +160,26 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     public void query(String query) {
         originalQuery = query;
 
-        String currState = currentState.getState();
-        String newState;
+        State currState = currentState.getState();
+        State newState;
 
-        if ( currState == null )
-            newState = "init";
-        if ( currState.equals("inprogress") || currState.equals("error") )
-            newState = "disambiguate:active";
-        else if ( currState.equals("choice") )
-            newState = "disambiguate:candidate";
-        else
-            newState = "init";
+        switch (currState) {
+            case UNINITIALIZED:
+                newState = State.INIT;
+                break;
+            case IN_PROGRESS:
+            case ERROR:
+                newState = State.DISAMBIGUATE_ACTIVE;
+                break;
+            case CHOICE:
+                newState = State.DISAMBIGUATE_CANDIDATE;
+                break;
+            default:
+                newState = State.INIT;
+                break;
+        }
 
-        currentState.set(newState, query);
+        changeState(newState, query);
     }
 
     public void clearContext()
@@ -254,18 +298,18 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
      */
 
     private void classify(String query) {
-        requestHelper(ClassifierModel.class, CLASSIFIER + "query=" + query,
-                RequestTask.HttpMethod.GET, null, false);
+        requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "query=" + query,
+                RequestTask.HttpMethod.GET, this);
     }
 
     // classifier response handler
     @Override
     public void onQueryResponse(ClassifierModel response) {
         if (response.error != null) {
-            currentState.set("exception", response.error.message);
+            changeState(State.EXCEPTION, response.error.message);
         } else {
             ClassifierModel context = doClientOperations(response, response.payload);
-            currentState.set("audit", context);
+            changeState(State.AUDIT, context);
         }
     }
 
@@ -279,8 +323,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.payload = data;
         postData.type = tempContext.type;
 
-        requestHelper(HashMap.class, DISAMBIGUATOR + "/active",
-                RequestTask.HttpMethod.POST, postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/active",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
@@ -295,8 +339,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.type = tempContext.type;
         postData.candidates = list;
 
-        requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate",
-                RequestTask.HttpMethod.POST, postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/candidate",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePassive(ResponderModel data) {
@@ -311,8 +355,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.type = type;
         postData.device_info = getDeviceInfo();
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/passive",
-                RequestTask.HttpMethod.POST, postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/passive",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
@@ -326,8 +370,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         postData.payload = payload;
         postData.type = type;
 
-        this.requestHelper(HashMap.class, PUD + "disambiguate",
-                RequestTask.HttpMethod.POST, postData, true);
+        requestHelper.doRequest(HashMap.class, PUD + "disambiguate",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     // disambiguator response handler
@@ -371,7 +415,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         String field = tempContext.field;
         JsonObjectUtil.replace(mainContext.payload, field, choice.data);
-        currentState.set("audit", mainContext);
+        changeState(State.AUDIT, mainContext);
     }
 
     /**
@@ -382,8 +426,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         if (!context.equals(mainContext)) {
             this.mainContext = context;
 
-            this.requestHelper(ResponderModel.class, RESPONDER + "audit",
-                    RequestTask.HttpMethod.POST, context, false);
+            requestHelper.doRequest(ResponderModel.class, RESPONDER + "audit",
+                    RequestTask.HttpMethod.POST, context, false, this);
         } else {
             Log.e(TAG, "potential request loop detected");
         }
@@ -393,18 +437,17 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     @Override
     public void onQueryResponse(ResponderModel response) {
         if (response.error != null) {
-            currentState.set("exception", response.error.message);
+            changeState(State.EXCEPTION, response.error.message);
         } else {
-            String state = response.status.replace(" ", "");
-
-            String crossCheck = state.split(":")[0];
+            String stateString = response.status.replace(" ", "");
+            String crossCheck = stateString.split(":")[0];
 
             if (auditorStates.contains(crossCheck)) {
                 tempContext = response;
                 contextTimer.start();
             }
 
-            currentState.set(state, response);
+            changeState(STATE_MAP.get(stateString), response);
         }
     }
 
@@ -413,7 +456,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
             Log.e(TAG, "missing new replacement context");
         }
 
-        currentState.set("audit", data.data);
+        changeState(State.AUDIT, data.data);
     }
 
     /**
@@ -430,8 +473,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                 endpoint = PUD + "actor/" + actor.replace("private:", "");
             }
 
-            requestHelper(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
-                    this.mainContext, false);
+            requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
+                    this.mainContext, false, this);
         } else {
             show(data);
         }
@@ -442,7 +485,7 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         this.clearContext();
 
         if (response.error != null) {
-            this.currentState.set("exception", response.error.msg);
+            changeState(State.EXCEPTION, response.error.msg);
         } else {
             // show(response.show, response.speak);
             // actorResponseHandler(response);
@@ -456,18 +499,6 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     // helpers
-    private <T> void requestHelper(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                               Object data, boolean includeNulls) {
-        RequestTask req = new RequestTask<T>(type, this, method);
-
-        if (method == RequestTask.HttpMethod.GET) {
-            req.execute(endpoint, null);
-        } else {
-            req.setContentType("application.json");
-            req.execute(endpoint, serializeData(data, includeNulls));
-        }
-    }
-
     private ClassifierModel doClientOperations(ClassifierModel context, JsonObject response) {
         response = replaceLocation(response);
         response = buildDateTime(response);
@@ -585,19 +616,6 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         }
 
         return deviceInfo;
-    }
-
-    private String serializeData(Object data, boolean includeNulls) {
-        Gson gson;
-
-        if (includeNulls) {
-            gson = new GsonBuilder().serializeNulls().create();
-        } else {
-            gson = new Gson();
-
-        }
-
-        return gson.toJson(data);
     }
 
     @Override

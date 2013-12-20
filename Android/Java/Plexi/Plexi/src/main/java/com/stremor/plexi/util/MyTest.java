@@ -6,7 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.google.gson.JsonObject;
-import com.stremor.plexi.interfaces.IPlexiResponse;
+import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.ChoiceModel;
@@ -33,7 +33,7 @@ public class MyTest extends Service {
         }
     }
 
-    public class PlexiCore implements IPlexiService, IPlexiResponse, PropertyChangeListener {
+    public class PlexiCore implements IPlexiService, IResponseListener, PropertyChangeListener {
 
         @Override
         public String getOriginalQuery() {

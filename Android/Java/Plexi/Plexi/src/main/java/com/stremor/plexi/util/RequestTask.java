@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.stremor.plexi.interfaces.IPlexiResponse;
+import com.stremor.plexi.interfaces.IResponseListener;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,15 +31,15 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
     private static final String TAG = "QueryTask";
 
     private Class<T> type;
-    private IPlexiResponse listener;
+    private IResponseListener listener;
     private HttpMethod method;
     private String contentType;
 
-    public RequestTask(Class<T> classType, IPlexiResponse responseListener) {
+    public RequestTask(Class<T> classType, IResponseListener responseListener) {
         this(classType, responseListener, HttpMethod.POST);
     }
 
-    public RequestTask(Class<T> classType, IPlexiResponse responseListener, HttpMethod method) {
+    public RequestTask(Class<T> classType, IResponseListener responseListener, HttpMethod method) {
         this.type = classType;
         this.listener = responseListener;
         this.method = method;
