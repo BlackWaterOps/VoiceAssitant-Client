@@ -126,6 +126,8 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         String currState = currentState.getState();
         String newState;
 
+        if ( currState == null )
+            newState = "init";
         if ( currState.equals("inprogress") || currState.equals("error") )
             newState = "disambiguate:active";
         else if ( currState.equals("choice") )
