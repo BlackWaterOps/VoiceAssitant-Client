@@ -34,6 +34,8 @@ namespace Plexi
     {
         string OriginalQuery { get; }
 
+        string State { get; }
+
         void ClearContext();
 
         void ResetTimer();
@@ -42,9 +44,9 @@ namespace Plexi
 
         void Choice(ChoiceModel choice);
 
-        Task<Dictionary<string, object>> RegisterUser(string accountName, string password);
+        Task<RegisterModel> RegisterUser(string accountName, string password);
 
-        Task<Dictionary<string, object>> LoginUser(string accountName, string password);
+        Task<LoginModel> LoginUser(string accountName, string password);
 
         void LogoutUser();
 
@@ -62,7 +64,7 @@ namespace Plexi
 
         event EventHandler<ErrorEventArgs> Error;
 
-        event EventHandler<RegisterEventArgs> Register;
+        event EventHandler<AuthorizationEventArgs> Authorize;
 
         event EventHandler<ProgressEventArgs> InProgress;
 
@@ -104,13 +106,15 @@ namespace Plexi
 
         public string OriginalQuery { get; private set; }
 
+        public string State { get { return currentState.State; } }
+
         public event EventHandler<ShowEventArgs> Show;
 
         public event EventHandler<ActorEventArgs> Act;
 
         public event EventHandler<ErrorEventArgs> Error;
 
-        public event EventHandler<RegisterEventArgs> Register;
+        public event EventHandler<AuthorizationEventArgs> Authorize;
 
         public event EventHandler<ChoiceEventArgs> Choose;
 
@@ -140,7 +144,7 @@ namespace Plexi
             }
         }
 
-        public async Task<Dictionary<string, object>> RegisterUser(string accountName, string password)
+        public async Task<RegisterModel> RegisterUser(string accountName, string password)
         {
             Dictionary<string, object> postData = new Dictionary<string, object>();
 
@@ -153,14 +157,14 @@ namespace Plexi
             postData.Add("username", accountName);
             postData.Add("password", password);
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(REGISTRATION, "POST", postData);
+            RegisterModel response = await RequestHelper<RegisterModel>(REGISTRATION, "POST", postData);
 
             Debug.WriteLine(String.Format("RegisterUser Response: {0}", SerializeData(response)));
 
             return response;
         }
 
-        public async Task<Dictionary<string, object>> LoginUser(string accountName, string password)
+        public async Task<LoginModel> LoginUser(string accountName, string password)
         {
             byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
 
@@ -176,15 +180,17 @@ namespace Plexi
             postData.Add("password", password);
             //postData.Add("device_id", duid);
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(LOGIN, "POST", postData, headers);
+            LoginModel response = await RequestHelper<LoginModel>(LOGIN, "POST", postData, headers);
 
             Debug.WriteLine(String.Format("LoginUser Response: {0}", SerializeData(response)));
 
-            if (response.ContainsKey("token"))
+            if (response.error != null)
             {
-                string token = (string)response["token"];
-
-                StoreAuthToken(token);
+                // houston we have a problem
+            }
+            else
+            {
+                StoreAuthToken(response.token);
             }
     
             return response;
@@ -337,7 +343,6 @@ namespace Plexi
             }
         }
 
-        // NOTE: called from inprogress status
         private void ShowDialog(ResponderModel response)
         {
             try
@@ -346,11 +351,10 @@ namespace Plexi
             }
             catch (Exception err)
             {
-                Debug.WriteLine("Show:inprogress - " + err.Message);
+                Debug.WriteLine(String.Format("ShowDialog Error:{0}", err.Message));
             }
         }
 
-        // NOTE: called from Actor method
         private void ShowDialog(ShowModel showModel, string speak = "")
         {
             if (showModel.simple.ContainsKey("text"))
@@ -362,11 +366,11 @@ namespace Plexi
                 if (showModel.simple.ContainsKey("link"))
                     link = (string)showModel.simple["link"];
 
-                ShowDialog("please", speak, show, link);
+                ShowDialog(speak, show, link);
             }
         }
 
-        private void ShowDialog(string type, string speak = "", string show = null, string link = null)
+        private void ShowDialog(string speak = "", string show = null, string link = null)
         {
             EventHandler<ShowEventArgs> handler = Show;
 
@@ -376,13 +380,13 @@ namespace Plexi
             }
         }
 
-        private void RegisterMessage(string classificationModel)
+        private void AuthorizationMessage(string classificationModel)
         {
-            EventHandler<RegisterEventArgs> handler = Register;
+            EventHandler<AuthorizationEventArgs> handler = Authorize;
 
             if (handler != null)
             {
-                handler(this, new RegisterEventArgs(classificationModel));
+                handler(this, new AuthorizationEventArgs(classificationModel));
             }
         }
 
@@ -536,11 +540,9 @@ namespace Plexi
             {
                 authToken = GetAuthToken();
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException keyErr)
             {
-                // prompt user to auth an account with contact such as google or exchange.
-                // if they don't want to, lookup against the phone's contacts
-                RegisterMessage(data.data.model);
+                Debug.WriteLine(String.Format("DisambiguatePersonal:{0}", keyErr.Message));
                 return;
             }
 
@@ -703,10 +705,9 @@ namespace Plexi
                     {
                         authToken = GetAuthToken();
                     }
-                    catch (KeyNotFoundException)
+                    catch (KeyNotFoundException keyErr)
                     {
-                        // prompt user to signup for a stremor account
-                        RegisterMessage(data.data.model);
+                        Debug.WriteLine(String.Format("Actor: {0}", keyErr.Message));
                         return;
                     }
 
@@ -720,7 +721,15 @@ namespace Plexi
 
                 if (response.error != null)
                 {
-                    this.currentState.Set("exception", response.error.msg);
+                    switch (response.error.code)
+                    {
+                        case 401:
+                            AuthorizationMessage(data.data.model);
+                            break;
+                        default:
+                            this.currentState.Set("exception", response.error.msg);
+                            break;
+                    }
                 }
                 else
                 {
@@ -1065,7 +1074,7 @@ namespace Plexi
             }
             catch (Exception err)
             {
-                Debug.WriteLine("BuildDateTime Error - " + err.Message);
+                Debug.WriteLine(String.Format("BuildDateTime Error: {0}", err.Message));
             }
 
             Debug.WriteLine("after build datetime");
