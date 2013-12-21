@@ -91,7 +91,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Controls\ValidationTextBox.cs" />
+    <Compile Include="Controls\ValidationTextBox.xaml.cs">
+      <DependentUpon>ValidationTextBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
@@ -158,6 +160,9 @@
       <DependentUpon>Details.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\DialogModel.cs" />
+    <Compile Include="Views\ForgotPassword.xaml.cs">
+      <DependentUpon>ForgotPassword.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Image.xaml.cs">
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
@@ -246,9 +251,9 @@
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\Controls.xaml">
-      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    <Page Include="Controls\ValidationTextBox.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TemplateDictionary.Details.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
@@ -287,6 +292,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Details.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ForgotPassword.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

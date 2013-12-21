@@ -86,7 +86,7 @@
     <Compile Include="Core.cs" />
     <Compile Include="Events\ActorEventArgs.cs" />
     <Compile Include="Events\ChoiceEventArgs.cs" />
-    <Compile Include="Events\RegisterEventArgs.cs" />
+    <Compile Include="Events\AuthorizationEventArgs.cs" />
     <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\ProgressEventArgs.cs" />
     <Compile Include="Events\ShowEventArgs.cs" />
@@ -95,7 +95,9 @@
     <Compile Include="Models\ClassifierModel.cs" />
     <Compile Include="Models\DisambiguatorModel.cs" />
     <Compile Include="Models\ErrorModel.cs" />
+    <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
+    <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Models\ResponderModel.cs" />
     <Compile Include="Models\ShowModel.cs" />
     <Compile Include="Models\StateModel.cs" />
@@ -105,9 +107,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PlexiResources.resx</DependentUpon>
     </Compile>
-    <None Include="Util\AccountHelper.cs" />
     <Compile Include="Util\Datetime.cs" />
+    <Compile Include="Util\Enumerations.cs" />
     <Compile Include="Util\Extensions.cs" />
+    <Compile Include="Util\Helpers.cs" />
     <Compile Include="Util\LocationService.cs" />
     <Compile Include="Util\PushService.cs" />
     <Compile Include="Util\Request.cs" />
@@ -131,9 +134,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
