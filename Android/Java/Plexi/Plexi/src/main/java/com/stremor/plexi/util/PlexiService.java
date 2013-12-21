@@ -10,43 +10,31 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.stremor.plexi.interfaces.IPlexiService;
+import com.stremor.plexi.interfaces.IRequestHelper;
+import com.stremor.plexi.interfaces.IResponseListener;
+import com.stremor.plexi.models.ActorModel;
+import com.stremor.plexi.models.ChoiceModel;
+import com.stremor.plexi.models.ClassifierModel;
+import com.stremor.plexi.models.DisambiguatorModel;
+import com.stremor.plexi.models.ResponderModel;
+import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.StateModel;
 
-import com.stremor.plexi.interfaces.*;
-import com.stremor.plexi.models.*;
-
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by jeffschifano on 10/28/13.
  */
-public final class PlexiService extends Service implements IPlexiService, IPlexiResponse, PropertyChangeListener {
-    private final IBinder mBinder = new LocalBinder();
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    public class LocalBinder extends Binder {
-        public PlexiService getService() { return PlexiService.this; }
-    }
-
+public final class PlexiService extends Service implements IPlexiService, IResponseListener {
     // endpoints
     private static final String CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
@@ -56,6 +44,9 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     // tag for logging
     private static final String TAG = "PlexiService";
 
+    private final IBinder mBinder = new LocalBinder();
+    private Context context;
+
     private ArrayList<String> auditorStates = new ArrayList<String>() {{ add("disambiguate"); add("inprogress"); add("choice"); }};
 
     // gets completed with all the necessary fields in order to fulfill an action
@@ -64,22 +55,45 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
 
-    private StateModel currentState = new StateModel();
-
     private CountDownTimer contextTimer;
-
     private String originalQuery;
-
-    public String getOriginalQuery() { return this.originalQuery; }
-
-    private Context context;
-
     private LocationTracker locationTracker;
 
-    public PlexiService(Context context) {
-        this.context = context;
+    private IRequestHelper requestHelper;
 
-        this.currentState.addChangeListener(this);
+    /**
+     * State data
+     */
+    public enum State {
+        UNINITIALIZED, INIT, AUDIT, DISAMBIGUATE, DISAMBIGUATE_PERSONAL, DISAMBIGUATE_ACTIVE,
+        DISAMBIGUATE_CANDIDATE, IN_PROGRESS, ERROR, CHOICE, RESTART, COMPLETED, EXCEPTION
+    }
+
+    private static HashMap<String, State> STATE_MAP = new HashMap<String, State>() {{
+        put(null, State.UNINITIALIZED);
+        put("init", State.INIT);
+        put("audit", State.AUDIT);
+        put("disambiguate", State.DISAMBIGUATE);
+        put("disambiguate:personal", State.DISAMBIGUATE_PERSONAL);
+        put("disambiguate:active", State.DISAMBIGUATE_ACTIVE);
+        put("disambiguate:candidate", State.DISAMBIGUATE_CANDIDATE);
+        put("inprogress", State.IN_PROGRESS);
+        put("error", State.ERROR);
+        put("choice", State.CHOICE);
+        put("restart", State.RESTART);
+        put("completed", State.COMPLETED);
+        put("exception", State.EXCEPTION);
+    }};
+
+    private StateModel<State> currentState = new StateModel<State>(State.UNINITIALIZED, null);
+
+    public PlexiService(Context context) {
+        this(context, new RequestHelper());
+    }
+
+    public PlexiService(Context context, IRequestHelper requestHelper) {
+        this.context = context;
+        this.requestHelper = requestHelper;
 
         createTimer();
 
@@ -89,104 +103,101 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName() == "State") {
-            String state = (String) e.getNewValue();
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
 
-            Object response = this.currentState.getResponse();
+    public String getOriginalQuery() { return originalQuery; }
+    public StateModel getCurrentState() { return currentState; }
 
-            switch (state) {
-                case "init":
-                    classify((String) response);
-                    break;
+    /**
+     * Handles any and all changes in state within the Plexi service. Simply dispatches to other
+     * handlers based on state.
+     */
+    public void changeState(State state, Object data) {
+        currentState.set(state, data);
 
-                case "audit":
-                    auditor((ClassifierModel) response);
-                    break;
-
-                case "disambiguate":
-                    disambiguatePassive((ResponderModel) response);
-                    break;
-
-                case "disambiguate:personal":
-                    //actorInterceptor(mainContext.model);
-
-                    disambiguatePersonal((ResponderModel) response);
-                    break;
-
-                case "disambiguate:active":
-                    disambiguateActive((String) response);
-                    break;
-
-                case "disambiguate:candidate":
-                    disambiguateCandidate((String) response);
-                    break;
-
-                case "inprogress":
-                case "error":
-                    show((ResponderModel) response);
-                    break;
-
-                case "choice":
-                    choiceList((ResponderModel) response);
-                    break;
-
-                case "restart":
-                    restart((ResponderModel) response);
-                    break;
-
-                case "completed":
-                    actor((ResponderModel) response);
-                    break;
-
-                case "exception":
-                    errorMessage((String) response);
-                    break;
-            }
+        switch (state) {
+            case INIT:
+                classify((String) data);
+                break;
+            case AUDIT:
+                auditor((ClassifierModel) data);
+                break;
+            case DISAMBIGUATE:
+                disambiguatePassive((ResponderModel) data);
+                break;
+            case DISAMBIGUATE_PERSONAL:
+                disambiguatePersonal((ResponderModel) data);
+                break;
+            case DISAMBIGUATE_ACTIVE:
+                disambiguateActive((String) data);
+                break;
+            case DISAMBIGUATE_CANDIDATE:
+                disambiguateCandidate((String) data);
+                break;
+            case IN_PROGRESS:
+            case ERROR:
+                show((ResponderModel) data);
+                break;
+            case CHOICE:
+                choiceList((ResponderModel) data);
+                break;
+            case RESTART:
+                restart((ResponderModel) data);
+                break;
+            case COMPLETED:
+                actor((ResponderModel) data);
+                break;
+            case EXCEPTION:
+                errorMessage((String) data);
         }
     }
 
+    /**
+     * Handle arbitrary input provided by the user.
+     */
     public void query(String query) {
-        this.originalQuery = query;
+        originalQuery = query;
 
-        String currState = this.currentState.getState();
-
-        String newState;
+        State currState = currentState.getState();
+        State newState;
 
         switch (currState) {
-            case "inprogress":
-            case "error":
-                newState = "disambiguate:active";
+            case UNINITIALIZED:
+                newState = State.INIT;
                 break;
-
-            case "choice":
-                newState = "disambiguate:candidate";
+            case IN_PROGRESS:
+            case ERROR:
+                newState = State.DISAMBIGUATE_ACTIVE;
                 break;
-
+            case CHOICE:
+                newState = State.DISAMBIGUATE_CANDIDATE;
+                break;
             default:
-                newState = "init";
+                newState = State.INIT;
                 break;
         }
 
-        this.currentState.set(newState, query);
+        changeState(newState, query);
     }
 
     public void clearContext()
     {
-        this.mainContext = null;
-        this.tempContext = null;
-        this.currentState.reset();
+        mainContext = null;
+        tempContext = null;
+        currentState.reset();
 
         resetTimer();
     }
 
     public void resetTimer()
     {
-        this.contextTimer.cancel();
+        contextTimer.cancel();
     }
 
     private void createTimer() {
-        this.contextTimer = new CountDownTimer(2000, 0) {
+        contextTimer = new CountDownTimer(2000, 0) {
             @Override
             public void onTick(long l) {
                 return;
@@ -282,35 +293,38 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
     }
 
+    /**
+     * Classification methods
+     */
+
     private void classify(String query) {
-        requestHelper(ClassifierModel.class, CLASSIFIER + "query=" + query, "GET", null, false);
+        requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "query=" + query,
+                RequestTask.HttpMethod.GET, this);
     }
 
     // classifier response handler
     @Override
-    public void onQueryResponse(ClassifierModel response) throws JSONException {
+    public void onQueryResponse(ClassifierModel response) {
         if (response.error != null) {
-            this.currentState.set("exception", response.error.message);
+            changeState(State.EXCEPTION, response.error.message);
         } else {
             ClassifierModel context = doClientOperations(response, response.payload);
-
-            this.currentState.set("audit", context);
+            changeState(State.AUDIT, context);
         }
     }
 
+    /**
+     * Disambiguation methods
+     */
+
     private void disambiguateActive(String data) {
-        // String field = tempContext.field;
-
-        String type = tempContext.type;
-
-        String payload = data;
-
         DisambiguatorModel postData = new DisambiguatorModel();
 
-        postData.payload = payload;
-        postData.type = type;
+        postData.payload = data;
+        postData.type = tempContext.type;
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/active", "POST", postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/active",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
@@ -318,73 +332,54 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
         // String field = tempContext.field;
 
-        String type = tempContext.type;
-
         JSONArray list = (simple.containsKey("list")) ? (JSONArray) simple.get("list") : new JSONArray();
 
-        String payload = data;
-
         DisambiguatorModel postData = new DisambiguatorModel();
-
-        postData.payload = payload;
-        postData.type = type;
+        postData.payload = data;
+        postData.type = tempContext.type;
         postData.candidates = list;
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/candidate", "POST", postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/candidate",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePassive(ResponderModel data) {
         String field = data.field;
-
         String type = data.type;
 
-        Object payload;
-
-        if (field.contains(".")) {
-            payload = find(field);
-        } else {
-            payload = this.mainContext.payload.get(field);
-        }
-
-        HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
-
-        deviceInfo = this.getDeviceInfo();
+        Object payload = JsonObjectUtil.find(mainContext.payload, field);
 
         DisambiguatorModel postData = new DisambiguatorModel();
 
         postData.payload = payload;
         postData.type = type;
-        postData.device_info = deviceInfo;
+        postData.device_info = getDeviceInfo();
 
-        this.requestHelper(HashMap.class, DISAMBIGUATOR + "/passive", "POST", postData, true);
+        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/passive",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
         String field = data.field;
-
         String type = data.type;
 
-        Object payload;
-
-        if (field.contains(".")) {
-            payload = find(field);
-        } else {
-            payload = this.mainContext.payload.get(field);
-        }
+        Object payload = JsonObjectUtil.find(mainContext.payload, field);
 
         DisambiguatorModel postData = new DisambiguatorModel();
 
         postData.payload = payload;
         postData.type = type;
 
-        this.requestHelper(HashMap.class, PUD + "disambiguate", "POST", postData, true);
+        requestHelper.doRequest(HashMap.class, PUD + "disambiguate",
+                RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     // disambiguator response handler
     @Override
-    public void onQueryResponse(HashMap<String, Object> response) throws JSONException {
+    public void onQueryResponse(JsonObject response) {
         if (response != null) {
-            if (response.containsKey("error")) {
+            if (response.has("error")) {
+                // TODO
                 // currentState.set("exception", error.message);
             } else {
                 // make copy of mainContext
@@ -398,19 +393,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                 }
 
                 // do client operations
-                context = doClientOperations(context, response);
+                doClientOperations(context, response);
 
                 String field = this.tempContext.field;
-
                 String type = this.tempContext.type;
 
                 // replace fields
-                if (response.containsKey(type)) {
-                    if (field.contains(".")) {
-                        context = replace(context, field, response.get(type));
-                    } else {
-                        context.payload.put(field, response.get(type));
-                    }
+                if (response.has(type)) {
+                    JsonObjectUtil.replace(context.payload, field, response.get(type));
                 } else {
                     Log.e(TAG, "disambiguation response is missing type");
                 }
@@ -424,31 +414,20 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         // send message to update conversation with choice.text
 
         String field = tempContext.field;
-
-        ClassifierModel context;
-
-        try {
-            context = this.mainContext.clone();
-
-        } catch (CloneNotSupportedException e) {
-            Log.e(TAG, "Auditor choice cloning failed");
-            return;
-        }
-
-        if (field.contains(".")) {
-            context = replace(this.mainContext, field, choice.data);
-        } else {
-            context.payload.put(field, choice.data);
-        }
-
-        currentState.set("audit", context);
+        JsonObjectUtil.replace(mainContext.payload, field, choice.data);
+        changeState(State.AUDIT, mainContext);
     }
+
+    /**
+     * Auditor methods
+     */
 
     private void auditor(ClassifierModel context) {
         if (!context.equals(mainContext)) {
             this.mainContext = context;
 
-            this.requestHelper(ResponderModel.class, RESPONDER + "audit", "POST", context, false);
+            requestHelper.doRequest(ResponderModel.class, RESPONDER + "audit",
+                    RequestTask.HttpMethod.POST, context, false, this);
         } else {
             Log.e(TAG, "potential request loop detected");
         }
@@ -456,20 +435,19 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
 
     // auditor response handler
     @Override
-    public void onQueryResponse(ResponderModel response) throws JSONException {
+    public void onQueryResponse(ResponderModel response) {
         if (response.error != null) {
-            currentState.set("exception", response.error.message);
+            changeState(State.EXCEPTION, response.error.message);
         } else {
-            String state = response.status.replace(" ", "");
+            String stateString = response.status.replace(" ", "");
+            String crossCheck = stateString.split(":")[0];
 
-            String crossCheck = state.split(":")[0];
-
-            if (this.auditorStates.contains(crossCheck)) {
-                this.tempContext = response;
+            if (auditorStates.contains(crossCheck)) {
+                tempContext = response;
                 contextTimer.start();
             }
 
-            currentState.set(state, response);
+            changeState(STATE_MAP.get(stateString), response);
         }
     }
 
@@ -478,8 +456,12 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
             Log.e(TAG, "missing new replacement context");
         }
 
-        currentState.set("audit", data.data);
+        changeState(State.AUDIT, data.data);
     }
+
+    /**
+     * Actor methods
+     */
 
     private void actor(ResponderModel data) {
         String actor = data.actor;
@@ -491,18 +473,19 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
                 endpoint = PUD + "actor/" + actor.replace("private:", "");
             }
 
-            requestHelper(ActorModel.class, endpoint, "POST", this.mainContext, false);
+            requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
+                    this.mainContext, false, this);
         } else {
             show(data);
         }
     }
 
     @Override
-    public void onQueryResponse(ActorModel response) throws JSONException {
+    public void onQueryResponse(ActorModel response) {
         this.clearContext();
 
         if (response.error != null) {
-            this.currentState.set("exception", response.error.msg);
+            changeState(State.EXCEPTION, response.error.msg);
         } else {
             // show(response.show, response.speak);
             // actorResponseHandler(response);
@@ -515,176 +498,92 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         }
     }
 
-
     // helpers
-    private void requestHelper(Class<?> type, String endpoint, String method, Object data, Boolean includeNulls) {
-        RequestTask req = new RequestTask(type.getClass(), this);
-
-        req.Method = method;
-
-        if (method.equalsIgnoreCase("get")) {
-            req.execute(endpoint, null);
-        } else {
-            req.ContentType = "application/json";
-
-            req.execute(endpoint, serializeData(data, includeNulls));
-        }
-    }
-
-    private ClassifierModel doClientOperations(ClassifierModel context, HashMap<String, Object> response) {
+    private ClassifierModel doClientOperations(ClassifierModel context, JsonObject response) {
         response = replaceLocation(response);
         response = buildDateTime(response);
-        context = prependTo(context, response);
+        prependTo(context, response);
 
         return context;
     }
 
-    private ClassifierModel prependTo(ClassifierModel context, HashMap<String, Object> data) {
-        try {
-            if (!data.containsKey("unused_tokens")) {
-                return context;
-            }
+    private void prependTo(ClassifierModel context, JsonObject data) {
+        if (!data.has("unused_tokens") || data.getAsJsonArray("unused_tokens").size() == 0)
+            return;
 
-            if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
-                return context;
-            }
-
-            String prepend = "";
-            //String prepend (String) ((JSONArray) data.get("unused_tokens")).
-
-            String field = (String) data.get("prepend_to");
-
-            String payloadField = "";
-
-            if (context.payload.containsKey("field") && context.payload.get(field) != null) {
-                payloadField = " " + (String) context.payload.get(field);
-            }
-
-            context.payload.put(field, (prepend + payloadField));
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        return context;
+        // TODO
+//        if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
+//            return context;
+//        }
+//
+//        String prepend = "";
+//        //String prepend (String) ((JSONArray) data.get("unused_tokens")).
+//
+//        String field = (String) data.get("prepend_to");
+//
+//        String payloadField = "";
+//
+//        if (context.payload.containsKey("field") && context.payload.get(field) != null) {
+//            payloadField = " " + (String) context.payload.get(field);
+//        }
+//
+//        context.payload.put(field, (prepend + payloadField));
     }
 
-    private ClassifierModel replace(ClassifierModel context, String field, Object type) {
-        List<String> fields = Arrays.asList(field.split("."));
-
-        String last = fields.remove(fields.size() - 1);
-
-        // convert to generic object
-        Object obj = deepCopy(Object.class, context);
-
-        Object t = new Reduce<String, Object>() {
-            public Object function(Object a, String b) {
-              try {
-                    if (b == last) {
-                        return ((JSONObject) a).put(b, type);
-                    } else {
-                        return ((JSONObject) a).get(b);
-                    }
-              } catch (JSONException e) {
-                  Log.e(TAG, "replace reduce error");
-                  Log.e(TAG, e.getMessage());
-                  return null;
-              }
-            }
-        }.apply(fields, context);
-
-        return deepCopy(ClassifierModel.class, obj);
-    }
-
-    private Object find(String field) {
-        List<String> fields = Arrays.asList(field.split("."));
-
-        // convert to generic object
-        Object context = deepCopy(Object.class, this.mainContext);
-
-        return new Reduce<String, Object>() {
-            public Object function(Object a, String b) {
-                try {
-                    return ((JSONObject) a).get(b);
-                } catch (JSONException e) {
-                    Log.e(TAG, "find reduce error");
-                    Log.e(TAG, e.getMessage());
-                    return null;
-                }
-            }
-        }.apply(fields, context);
-    }
-
-    private HashMap<String, Object> replaceLocation(HashMap<String, Object> payload) {
-        try {
-            if (payload.containsKey("location") && payload.get("location") != null) {
-                if (payload.get("location").getClass() == String.class) {
-                    String location = (String) payload.get("location");
-
-                    if (location.contains("current_location")) {
-                        // get device info
-
-                        // payload.put("location", deviceInfo);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
+    private JsonObject replaceLocation(JsonObject payload) {
+        // TODO
+//        if (payload.get("location") instanceof String) {
+//            String location = (String) payload.get("location");
+//
+//            if (location.contains("current_location")) {
+//                // TODO get device info
+//                // payload.put("location", deviceInfo);
+//            }
+//        }
 
         return payload;
     }
 
-    private HashMap<String, Object> buildDateTime(HashMap<String, Object> data) {
-        try {
-            if (data != null) {
-                ArrayList<Pair<String, String>> datetimes = new ArrayList<Pair<String, String>>();
+    private static Pair[] DATETIME_KEY_NAMES = new Pair[] {
+            new Pair("date", "time"),
+            new Pair("start_date", "start_time"),
+            new Pair("end_date", "end_time")
+    };
 
-                datetimes.add(new Pair<String, String>("date", "time"));
-                datetimes.add(new Pair<String, String>("start_date", "start_time"));
-                datetimes.add(new Pair<String, String>("end_date", "end_time"));
+    /**
+     * Process any date/time values stored in model data.
+     *
+     * @param data
+     * @return
+     */
+    private JsonObject buildDateTime(JsonObject data) {
+        if (data != null) {
+            for (Pair<String, String> datetime : DATETIME_KEY_NAMES) {
+                String first = datetime.first;
+                String second = datetime.second;
 
-                for(Pair<String, String> datetime : datetimes) {
-                    String first = datetime.first;
-                    String second = datetime.second;
+                if (data.has(first) || data.has(second)) {
+                    boolean includeDate = true, includeTime = true;
 
-                    if (data.containsKey(first) || data.containsKey(second)) {
-                        Boolean removeDate = null;
-                        Boolean removeTime = null;
+                    if (!data.has(first))
+                        includeDate = false;
 
-                        if (!data.containsKey(first)) {
-                            data.put(first, null);
-                            removeDate = true;
-                        }
+                    if (!data.has(second))
+                        includeTime = false;
 
-                        if (!data.containsKey(second)) {
-                            data.put(second, null);
-                            removeTime = true;
-                        }
-
-                        if (data.get(first) != null || data.get(second) != null) {
-                            HashMap<String, String> build = Datetime.BuildDatetimeFromJson(data.get(first), data.get(second));
-
-                            if (data.get(first) != null) {
-                                data.put(first, build.get("date"));
-                            }
-
-                            if (data.get(second) != null) {
-                                data.put(second, build.get("time"));
-                            }
-                        }
-
-                        if (removeDate == true) {
-                            data.remove(first);
-                        }
-
-                        if (removeTime == true) {
-                            data.remove(second);
-                        }
+                    Pair<String, String> result;
+                    try {
+                        result = Datetime.datetimeFromJson(data.get(first), data.get(second));
+                    } catch ( ParseException e ) {
+                        return data;
                     }
+
+                    if (includeDate)
+                        data.addProperty(first, result.first);
+                    if (includeTime)
+                        data.addProperty(second, result.second);
                 }
             }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
         }
 
         return data;
@@ -693,16 +592,14 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
     private HashMap<String, Object> getDeviceInfo() {
         HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
 
-        Calendar cal = Calendar.getInstance();
+        long time = System.currentTimeMillis();
+        int offset = DateTimeZone.getDefault().getOffset(time) / 1000;
 
-        int raw = cal.getTimeZone().getRawOffset();
-
-        long hours = TimeUnit.MILLISECONDS.toHours(raw);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(raw) - TimeUnit.HOURS.toMinutes(hours);
-
+        int hours = offset / 3600;
+        int minutes = (offset % 3600) / 60;
         String timeOffset = String.format("%d:%02d", hours, minutes);
 
-        deviceInfo.put("timestamp", Datetime.ConvertToUnixTimestamp(cal));
+        deviceInfo.put("timestamp", System.currentTimeMillis() / 1000L);
         deviceInfo.put("timeoffset", timeOffset);
 
         HashMap<String, Object> geolocation = this.locationTracker.getCurrentPosition();
@@ -721,30 +618,12 @@ public final class PlexiService extends Service implements IPlexiService, IPlexi
         return deviceInfo;
     }
 
-    // hacky clone method !!
-    private <T> T deepCopy(Class<T> type, Object obj) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-
-        String json = gson.toJson(obj);
-
-        return (T) gson.fromJson(json, type.getClass());
-    }
-
-    private String serializeData(Object data, Boolean includeNulls) {
-        Gson gson;
-
-        if (includeNulls == true) {
-            gson = new GsonBuilder().serializeNulls().create();
-        } else {
-            gson = new Gson();
-
-        }
-
-        return gson.toJson(data);
-    }
-
     @Override
-    public void onQueryResponse(Object response) throws JSONException {
+    public void onQueryResponse(Object response) {
         Log.e(TAG, "unhandled query response");
+    }
+
+    public class LocalBinder extends Binder {
+        public PlexiService getService() { return PlexiService.this; }
     }
 }

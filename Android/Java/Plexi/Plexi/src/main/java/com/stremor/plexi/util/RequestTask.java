@@ -3,59 +3,46 @@ package com.stremor.plexi.util;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.http.Header;
+import com.stremor.plexi.interfaces.IResponseListener;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.google.gson.Gson;
-
-import com.stremor.plexi.interfaces.IPlexiResponse;
-
 /**
  * Created by jeffschifano on 10/29/13.
  */
 public class RequestTask<T> extends AsyncTask<Object, Void, T> {
+    public enum HttpMethod { GET, POST };
+
     private static final String TAG = "QueryTask";
-    private IPlexiResponse listener;
+
     private Class<T> type;
+    private IResponseListener listener;
+    private HttpMethod method;
+    private String contentType;
 
-    private StopWatch stopWatch;
-
-    public String ContentType = null;
-    public String AcceptType = null;
-    public String Method = "GET";
-
-
-    public RequestTask(Class<T> classType, IPlexiResponse responseListener) {
-        this.type = classType;
-        this.listener = responseListener;
-
-        if (stopWatch == null) {
-            stopWatch = new StopWatch();
-        }
+    public RequestTask(Class<T> classType, IResponseListener responseListener) {
+        this(classType, responseListener, HttpMethod.POST);
     }
 
-    @Override
-    protected void onPreExecute() {
-        stopWatch.start();
-
-        // send progress message
+    public RequestTask(Class<T> classType, IResponseListener responseListener, HttpMethod method) {
+        this.type = classType;
+        this.listener = responseListener;
+        this.method = method;
     }
 
     /**
@@ -85,34 +72,17 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
         HttpResponse response = null;
 
         try {
-            if (this.Method.equalsIgnoreCase("get")) {
+            if (method == HttpMethod.GET) {
                 HttpGet get = new HttpGet();
 
                 get.setURI(uri);
 
                 response = client.execute(get);
-            }
-
-            if (this.Method.equalsIgnoreCase("post")) {
+            } else if (method == HttpMethod.POST) {
                 HttpPost post = new HttpPost();
                 post.setURI(uri);
 
-                if (this.ContentType != null) {
-                    post.setHeader("ContentType", this.ContentType);
-                }
-
-                if (this.AcceptType != null) {
-                    post.setHeader("Accept", this.AcceptType);
-                }
-
                 if (postData != null) {
-                    /*
-                    JSONObject request = new JSONObject();
-                    request.put("query", query);
-                    request.put("context", context);
-
-                    HttpEntity entity = new StringEntity(request.toString(), HTTP.UTF_8);
-                    */
                     HttpEntity entity = new StringEntity(postData, HTTP.UTF_8);
                     post.setEntity(entity);
                 }
@@ -141,7 +111,6 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
         }
 
         Gson gson = new GsonBuilder().serializeNulls().create();
-
         return gson.fromJson(responseBody, this.type);
 
         /*
@@ -168,18 +137,23 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
 
     @Override
     protected void onPostExecute(T queryResponse) {
-        stopWatch.stop();
+        if ( listener != null )
+            listener.onQueryResponse(queryResponse);
+    }
 
-        Log.d(TAG, String.valueOf(stopWatch.getElapsedTime()));
+    public HttpMethod getMethod() {
+        return method;
+    }
 
-        // send progress message
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
 
-        if ( listener != null ) {
-            try {
-                listener.onQueryResponse(queryResponse);
-            } catch (JSONException e) {
-                Log.w(TAG, "Query response listener failed", e);
-            }
-        }
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

@@ -5,18 +5,16 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.stremor.plexi.interfaces.IPlexiResponse;
+import com.google.gson.JsonObject;
+import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.ChoiceModel;
 import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.models.ResponderModel;
 
-import org.json.JSONException;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 
 /**
  * Created by jeffschifano on 11/1/13.
@@ -35,7 +33,7 @@ public class MyTest extends Service {
         }
     }
 
-    public class PlexiCore implements IPlexiService, IPlexiResponse, PropertyChangeListener {
+    public class PlexiCore implements IPlexiService, IResponseListener, PropertyChangeListener {
 
         @Override
         public String getOriginalQuery() {
@@ -68,27 +66,27 @@ public class MyTest extends Service {
         }
 
         @Override
-        public void onQueryResponse(Object queryResponse) throws JSONException {
+        public void onQueryResponse(Object queryResponse) {
 
         }
 
         @Override
-        public void onQueryResponse(ClassifierModel queryResponse) throws JSONException {
+        public void onQueryResponse(ClassifierModel queryResponse) {
 
         }
 
         @Override
-        public void onQueryResponse(HashMap<String, Object> queryResponse) throws JSONException {
+        public void onQueryResponse(JsonObject queryResponse) {
 
         }
 
         @Override
-        public void onQueryResponse(ResponderModel queryResponse) throws JSONException {
+        public void onQueryResponse(ResponderModel queryResponse) {
 
         }
 
         @Override
-        public void onQueryResponse(ActorModel queryResponse) throws JSONException {
+        public void onQueryResponse(ActorModel queryResponse) {
 
         }
     }

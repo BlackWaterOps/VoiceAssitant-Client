@@ -1,6 +1,7 @@
 package com.stremor.plexi.models;
 
-import java.util.HashMap;
+import com.google.gson.JsonObject;
+
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class ClassifierModel implements Cloneable {
 
     public String action;
 
-    public HashMap<String, Object> payload;
+    public JsonObject payload;
 
     public List<String> project;
 
