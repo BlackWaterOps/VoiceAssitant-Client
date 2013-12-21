@@ -68,9 +68,7 @@ namespace Please2.Views
                 if (speechService == null)
                 {
                     speechService = ViewModelLocator.GetServiceInstance<ISpeechService>();
-                }
-
-                CreateApplicationBar();                
+                }               
             }
             catch (Exception err)
             {
@@ -83,7 +81,9 @@ namespace Please2.Views
             base.OnNavigatedTo(e);
 
             RegisterListeners();
-            
+
+            CreateApplicationBar(); 
+
             AddDebugger();
 
             //AddVerifyPrompt();
@@ -141,6 +141,20 @@ namespace Please2.Views
                 micBtn.Click += Microphone_Click;
 
                 ApplicationBar.Buttons.Add(micBtn);
+
+                // add home appbar link
+                if (NavigationService.Source.OriginalString != ViewModelLocator.MainMenuPageUri.OriginalString)
+                {
+                    var homeMenuItem = new ApplicationBarMenuItem();
+
+                    homeMenuItem.Text = "Home";
+                    homeMenuItem.Click += (s, e) =>
+                        {
+                            NavigationService.Navigate(ViewModelLocator.MainMenuPageUri);
+                        };
+
+                    ApplicationBar.MenuItems.Add(homeMenuItem);
+                }
             }
         }
 
