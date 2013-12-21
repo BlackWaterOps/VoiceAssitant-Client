@@ -7,6 +7,7 @@ using System.IO.IsolatedStorage;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,17 +22,20 @@ using LinqToVisualTree;
 
 using Please2.ViewModels;
 
+using Plexi.Models;
 using Plexi.Util;
 
 namespace Please2.Views
 {
     public partial class Registration : ViewBase
     {
+        private static string emailPattern = @"^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$";
+
         private static string accountNamePattern = @"[a-zA-Z0-9_.-]{4,32}";
 
         private static string passwordPattern = @"(.+){4,32}";
 
-        private bool hasUnsavedChanges = false;
+        private Plexi.IPlexiService plexiService;
 
         public string Scheme { get { return "Settings"; } }
 
@@ -40,6 +44,8 @@ namespace Please2.Views
             InitializeComponent();
 
             DataContext = this;
+
+            plexiService = ViewModelLocator.GetServiceInstance<Plexi.IPlexiService>();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -50,55 +56,87 @@ namespace Please2.Views
             SystemTray.ProgressIndicator.IsIndeterminate = true;
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        private void Pivot_LoadedPivotItem(object sender, PivotItemEventArgs e)
         {
-            AccountName.Text = String.Empty;
-            AccountPassword.Password = String.Empty;
+            Pivot pivot = sender as Pivot;
 
-            base.OnNavigatedFrom(e);
-        }
+            int idx = pivot.Items.IndexOf(e.Item);
 
-        protected override void OnBackKeyPress(CancelEventArgs e)
-        {
-            base.OnBackKeyPress(e);
-
-            if (!hasUnsavedChanges)
+            switch (idx)
             {
-                return;
-            }
-
-            var result = MessageBox.Show("You are about to discard your registration. Continue?", "Warning", MessageBoxButton.OKCancel);
-        }
-
-        private void Control_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Enter:
-                    if ((ApplicationBar.Buttons[0] as ApplicationBarIconButton).IsEnabled == true)
-                    {
-                        CreateButton_Tap(ApplicationBar.Buttons[0], EventArgs.Empty);
-                    }
+                case 0:
+                    AddSignInButton();
                     break;
 
-                default:
-                    if (AccountName.Text != String.Empty && AccountPassword.Password != String.Empty)
-                    {
-                        (ApplicationBar.Buttons[0] as ApplicationBarIconButton).IsEnabled = true;
-                    }
+                case 1:
+                    AddRegisterButton();
                     break;
+                   
             }
         }
 
-        private async void CreateButton_Tap(object sender, EventArgs e)
+        #region Register
+        private bool isRegisterValid()
         {
+            if (!Regex.IsMatch(RegisterEmail.Text, emailPattern))
+            {
+                return false;
+            }
+
+            if (!Regex.IsMatch(RegisterAccountName.Text, accountNamePattern))
+            {
+                return false;
+            }
+
+            if (!Regex.IsMatch(RegisterAccountPassword.Password, passwordPattern))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void AddRegisterButton()
+        {
+            ApplicationBarIconButton button = new ApplicationBarIconButton();
+
+            button.Text = "register";
+            button.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            button.Click += RegisterButton_Click;
+            button.IsEnabled = isRegisterValid();
+
+            if (ApplicationBar.Buttons.Count > 0)
+            {
+                ApplicationBar.Buttons.RemoveAt(0);
+            }
+            ApplicationBar.Buttons.Add(button);
+        }
+
+        private void RegisterControl_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (RegisterAccountName.Text != String.Empty && RegisterAccountPassword.Password != String.Empty)
+            {
+                (ApplicationBar.Buttons[0] as ApplicationBarIconButton).IsEnabled = true;
+            }
+        }
+
+        private async void RegisterButton_Click(object sender, EventArgs e)
+        {
+            await RegisterUser(RegisterAccountName.Text, RegisterAccountPassword.Password);
+        }
+
+        private async Task RegisterUser(string accountName, string password)
+        {
+            Debug.WriteLine("register user");
+            return;
+
             string errorMessage = String.Empty;
 
-            if (!Regex.IsMatch(AccountName.Text, accountNamePattern))
+            if (!Regex.IsMatch(accountName, accountNamePattern))
             {
                 errorMessage = "account name must be alphanumeric, at least 4 characters, and a maximum of 32 characters";
             }
-            else if (!Regex.IsMatch(AccountPassword.Password, passwordPattern))
+            else if (!Regex.IsMatch(password, passwordPattern))
             {
                 errorMessage = "password must be between 4 and 32 characters";
             }
@@ -109,45 +147,70 @@ namespace Please2.Views
                 return;
             }
 
-            Debug.WriteLine("register me");
+            RegisterModel response = await plexiService.RegisterUser(accountName, password);
 
+            if (response.error != null)
+            {
+                MessageBox.Show(response.error.msg, "Sign up failed", MessageBoxButton.OK);
+                return;
+            }
+
+            await LoginUser(accountName, password);
+        }
+        #endregion
+
+        #region SignIn
+        private bool isSignInValid()
+        {
+            if (!Regex.IsMatch(SignInAccountName.Text, accountNamePattern))
+            {
+                return false;
+            }
+
+            if (!Regex.IsMatch(SignInAccountPassword.Password, passwordPattern))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void AddSignInButton()
+        {
+            ApplicationBarIconButton button = new ApplicationBarIconButton();
+
+            button.Text = "sign in";
+            button.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            button.Click += SignInButton_Click;
+            button.IsEnabled = isSignInValid();
+
+            if (ApplicationBar.Buttons.Count > 0)
+            {
+                ApplicationBar.Buttons.RemoveAt(0);
+            }
+            ApplicationBar.Buttons.Add(button);
+        }
+
+        private async void SignInButton_Click(object sender, EventArgs e)
+        {
+            await LoginUser(SignInAccountName.Text, SignInAccountPassword.Password);
+        }
+
+        private async Task LoginUser(string accountName, string password)
+        {
+            Debug.WriteLine("login user");
             return;
 
-            string accountName = AccountName.Text;
-            string password = AccountPassword.Password;
+            LoginModel response = await plexiService.LoginUser(accountName, password);
 
-            Plexi.IPlexiService plexiService = ViewModelLocator.GetServiceInstance<Plexi.IPlexiService>();
-
-            Dictionary<string, object> response = await plexiService.RegisterUser(accountName, password);
-
-            if (response.ContainsKey("status"))
+            if (response.error != null)
             {
-                string status = (string)response["status"];
-
-                if (status == "success")
-                {
-                    Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
-
-                    Util.AccountHelper.Default.CheckAccounts();
-                }
-                else
-                {
-                    MessageBox.Show((string)response["error"]);
-                }
+                MessageBox.Show(response.error.msg, "Login failed", MessageBoxButton.OK);
+                return;
             }
-            else
-            {
-                if (response.ContainsKey("msg"))
-                {
-                    Dictionary<string, object> login = await plexiService.LoginUser(accountName, password);
 
-                    Util.AccountHelper.Default.CheckAccounts();
-                }
-                else
-                {
-                    MessageBox.Show((string)response["error"]);
-                }
-            }
+            NavigationService.Navigate(ViewModelLocator.MainMenuPageUri);
         }
+        #endregion
     }
 }
