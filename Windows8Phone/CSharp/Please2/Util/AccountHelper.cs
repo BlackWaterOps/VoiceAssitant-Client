@@ -29,9 +29,9 @@ namespace Please2.Util
 
         private Uri originalUri;
 
-        private Tuple<string, string, bool> currentAccount;
+        //private Tuple<string, string, bool> currentAccount;
 
-        private List<Tuple<string, string, bool>> accounts;
+        //private List<Tuple<string, string, bool>> accounts;
 
         public static readonly AccountHelper Default = new AccountHelper();
 
@@ -49,7 +49,7 @@ namespace Please2.Util
 
             resx = new ResourceManager("Plexi.Resources.PlexiResources", Assembly.Load("Plexi"));
 
-            BuildAccounts();
+            //BuildAccounts();
         }
 
         public void Launching()
@@ -67,9 +67,10 @@ namespace Please2.Util
                 return;
             }
            
-            CheckAccounts();
+            //CheckAccounts();
         }
 
+        /*
         public void CheckAccounts()
         {
             string endpoint = resx.GetString("Authorization");
@@ -138,6 +139,7 @@ namespace Please2.Util
 
             Navigate(uri);
         }
+        */
 
         private void Navigate(Uri uri)
         {
@@ -176,6 +178,7 @@ namespace Please2.Util
             }
         }
 
+        /*
         private void BuildAccounts()
         {
             this.accounts = new List<Tuple<string, string, bool>>();
@@ -250,7 +253,7 @@ namespace Please2.Util
                     layoutRoot.Children.Add(verifyPrompt);
                 }
             }
-
         }
+        */
     }
 }
