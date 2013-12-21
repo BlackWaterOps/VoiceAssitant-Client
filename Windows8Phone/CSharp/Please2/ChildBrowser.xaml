@@ -51,6 +51,7 @@
         </Grid>
     </Grid>
     
+    <!--
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar>
             <shell:ApplicationBarIconButton IsEnabled="False" x:Name="Skip" IconUri="/Assets/next.png" Text="skip" Click="SkipButton_Click" />
@@ -60,4 +61,5 @@
             </shell:ApplicationBar.MenuItems>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
+    -->
 </phone:PhoneApplicationPage>

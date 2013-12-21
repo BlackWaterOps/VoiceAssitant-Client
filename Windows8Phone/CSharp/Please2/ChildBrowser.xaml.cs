@@ -46,32 +46,6 @@ namespace Please2
             NavigationContext.QueryString.TryGetValue("url", out url);
             NavigationContext.QueryString.TryGetValue("isOptional", out isOptional);
 
-        
-            /*
-            string authToken = "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
-
-            Debug.WriteLine(String.Format("original: {0}", authToken));
-
-            IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-
-            string testKey = "testencrypt";
-
-            //settings.Remove(testKey);
-
-            if (!settings.Contains(testKey))
-            {
-                Debug.WriteLine("create encrypt");
-                settings.Add(testKey, Plexi.Util.Security.Encrypt(authToken));
-                settings.Save();
-            }
-
-            var k = (byte[])settings[testKey];
-
-            string decrypt = Plexi.Util.Security.Decrypt(k);
-
-            Debug.WriteLine(String.Format("Decrypt Value: {0}", decrypt));
-            */
-
             if (url != String.Empty)
             {
                 string headers = BuildHeaders();
@@ -100,12 +74,18 @@ namespace Please2
 
             if (e.Uri.OriginalString.Contains(successEndpoint))
             {
-                Debug.WriteLine("authorization success");
+                Debug.WriteLine(String.Format("authorization success: {0}", plexiService.State));
+                return;
+
+                //if (plexiService.State)
+                // need to check plexi and retrieve the current state
+
                 //Util.AccountHelper.Default.AddAccount();
                 //Util.AccountHelper.Default.CheckAccounts();
             }
         }
 
+        /*
         protected void Reset_Click(object sender, EventArgs e)
         {
             Util.AccountHelper.Default.ResetAccounts();
@@ -126,6 +106,7 @@ namespace Please2
         {
             Util.AccountHelper.Default.CheckAccounts();
         }
+        */
 
         private string BuildHeaders()
         {
