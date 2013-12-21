@@ -43,7 +43,7 @@ namespace Please2.Util
 
             plexiService.Choose += OnChoose;
             plexiService.Error += OnError;
-            plexiService.Register += OnRegister;
+            plexiService.Authorize += OnAuthorize;
             plexiService.InProgress += OnProgress;
             plexiService.Show += OnShow;
             plexiService.Act += OnAct;
@@ -97,33 +97,19 @@ namespace Please2.Util
             }
         }
 
-        //TODO: switch messaging 
-        private void OnRegister(object sender, RegisterEventArgs e)
+        private void OnAuthorize(object sender, AuthorizationEventArgs e)
         {
             string model = e.model.Split('_')[0];
+                     
+            string message = String.Format("Oops, it looks like we don't have an account synced for {0}. Please sync an account to continue.", model);
 
-            string message = String.Empty;
-             
-            switch (model)
-            {
-                case "email":
-                case "sms":
-                case "call":
-                    message = "Would you like to setup a Stremor account so all your information can be stored in the cloud?";
-                    break;
-
-                case "fitness":
-                case "food":
-                case "facebook":
-                    message = "Please create a Stremor account to continue";
-                    break;
-            }
-
-            MessageBoxResult response = MessageBox.Show(message, "Account Registration", MessageBoxButton.OKCancel);
+            MessageBoxResult response = MessageBox.Show(message, "Account Authorization", MessageBoxButton.OKCancel);
 
             if (response.Equals(MessageBoxResult.OK))
             {
-                // navigate to registration page
+                // navigate to settings page to sync various accounts
+                navigationService.NavigateTo(ViewModelLocator.SettingsPageUri);
+
             }
             else if (response.Equals(MessageBoxResult.Cancel))
             {
