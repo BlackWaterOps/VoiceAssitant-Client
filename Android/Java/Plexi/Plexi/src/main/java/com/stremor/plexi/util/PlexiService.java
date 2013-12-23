@@ -24,7 +24,6 @@ import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
 
 import org.joda.time.DateTimeZone;
-import org.json.JSONArray;
 
 import java.text.ParseException;
 import java.util.ArrayList;

@@ -5,16 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0e4d1fc-26b8-4e98-9b22-82052bcff9b9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub2.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub.java" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub1.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/DisambiguatorModel.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/DisambiguatorModel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ErrorModel.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ErrorModel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ShowModel.java" afterPath="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ShowModel.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Plexi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -83,20 +75,30 @@
           <file leaf-file-name="PlexiService.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="187" column="52" selection-start="6160" selection-end="6160" vertical-scroll-proportion="-49.64" vertical-offset="1564" max-vertical-offset="9540">
+                <state line="24" column="0" selection-start="872" selection-end="872" vertical-scroll-proportion="-3.8" vertical-offset="265" max-vertical-offset="9525">
                   <folding>
-                    <element signature="imports" expanded="true" />
-                    <element signature="e#3233#3240#0" expanded="true" />
+                    <element signature="e#3206#3213#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="RequestHelperStub3.java" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="RequestHelperStub3.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="74" column="0" selection-start="3085" selection-end="3085" vertical-scroll-proportion="2.3880596" vertical-offset="0" max-vertical-offset="1260">
+                <state line="74" column="0" selection-start="3085" selection-end="3085" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
                   <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="DatetimeTestCase.java" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="30" column="42" selection-start="1005" selection-end="1005" vertical-scroll-proportion="1.1936339" vertical-offset="0" max-vertical-offset="3045">
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -479,7 +481,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IRequestTask.java" />
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/RequestTask.java" />
         <option value="$PROJECT_DIR$/Plexi/build.gradle" />
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IRequestHelper.java" />
@@ -493,8 +494,9 @@
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ErrorModel.java" />
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java" />
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
-        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" />
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java" />
+        <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java" />
       </list>
     </option>
   </component>
@@ -1064,7 +1066,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.146875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.146875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297953" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -1086,13 +1088,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/local/Cellar/android-sdk/22.3/sources/android-17/android/test/AndroidTestCase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="0" selection-start="1235" selection-end="1235" vertical-scroll-proportion="0.33174226" vertical-offset="191" max-vertical-offset="2295">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/artifacts-26/filestore/com.google.dexmaker/dexmaker/1.0/jar/410a1e6a925e4bfe02a4bbb762c0b9e6260e12b1/dexmaker-1.0.jar!/com/google/dexmaker/stock/ProxyBuilder.class">
       <provider selected="true" editor-type-id="text-editor">
         <state line="59" column="35" selection-start="3904" selection-end="3904" vertical-scroll-proportion="-5.56" vertical-offset="731" max-vertical-offset="1530">
@@ -1181,16 +1176,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="187" column="52" selection-start="6160" selection-end="6160" vertical-scroll-proportion="-49.64" vertical-offset="1564" max-vertical-offset="9540">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3233#3240#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="36" column="5" selection-start="1205" selection-end="1205" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
@@ -1200,8 +1185,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="3085" selection-end="3085" vertical-scroll-proportion="2.3880596" vertical-offset="0" max-vertical-offset="1260">
+        <state line="74" column="0" selection-start="3085" selection-end="3085" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/PlexiService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="872" selection-end="872" vertical-scroll-proportion="-3.8" vertical-offset="265" max-vertical-offset="9525">
+          <folding>
+            <element signature="e#3206#3213#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/DatetimeTestCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="42" selection-start="1005" selection-end="1005" vertical-scroll-proportion="1.1936339" vertical-offset="0" max-vertical-offset="3045">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
