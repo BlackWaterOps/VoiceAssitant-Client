@@ -19,11 +19,8 @@ public class RequestHelperStub2 implements IRequestHelper {
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               IResponseListener listener) {
         if (type == ClassifierModel.class) {
-            ClassifierModel response = new ClassifierModel();
-            response.model = "calendar";
-            response.action = "create";
-            response.payload = parser.parse("{\"name\":\"Party\"}").getAsJsonObject();
-
+            ClassifierModel response = new ClassifierModel("calendar", "create",
+                    parser.parse("{\"name\":\"Party\"}").getAsJsonObject());
             listener.onQueryResponse(response);
         }
     }
@@ -31,15 +28,10 @@ public class RequestHelperStub2 implements IRequestHelper {
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               Object data, boolean includeNulls, IResponseListener listener) {
         if (endpoint.contains("audit")) {
-            ClassifierModel classifierData = new ClassifierModel();
-            classifierData.model = "calendar";
-            classifierData.action = "create";
-            classifierData.payload = parser.parse("{\"name\":\"Party\"}").getAsJsonObject();
-
-            ResponderModel response = new ResponderModel();
-            response.status = "completed";
-            response.actor = "foobar";
-            response.data = classifierData;
+            ClassifierModel classifierData = new ClassifierModel("calendar", "create",
+                    parser.parse("{\"name\":\"Party\"}").getAsJsonObject());
+            ResponderModel response = new ResponderModel("completed", "foobar", null,
+                    classifierData);
 
             listener.onQueryResponse(response);
         }

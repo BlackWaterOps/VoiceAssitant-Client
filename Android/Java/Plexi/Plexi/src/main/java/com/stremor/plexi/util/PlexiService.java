@@ -214,7 +214,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     private void choiceList(ResponderModel response) {
         try {
-            JsonObject simple = response.show.simple;
+            JsonObject simple = response.getShow().getSimple();
 
             if (simple.has("list")) {
                 // TODO send response to listener
@@ -255,16 +255,17 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
             Debug.WriteLine("Show:inprogress - " + err.Message);
         }
         */
-        show(response.show, response.speak);
+        show(response.getShow(), response.getSpeak());
     }
 
     // called from actor
     private void show(ShowModel model, String speak) {
-        if (model.simple.has("text")) {
-            String show = model.simple.get("text").getAsString();
+        JsonObject simple = model.getSimple();
+        if (simple.has("text")) {
+            String show = simple.get("text").getAsString();
 
-            String link = model.simple.has("link")
-                    ? link = model.simple.get("link").getAsString()
+            String link = simple.has("link")
+                    ? link = simple.get("link").getAsString()
                     : null;
 
             show(speak, show, link);
@@ -301,10 +302,10 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // classifier response handler
     @Override
     public void onQueryResponse(ClassifierModel response) {
-        if (response.error != null) {
-            changeState(State.EXCEPTION, response.error.message);
+        if (response.getError() != null) {
+            changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
-            doClientOperations(response.payload);
+            doClientOperations(response.getPayload());
             changeState(State.AUDIT, response);
         }
     }
@@ -314,17 +315,13 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
      */
 
     private void disambiguateActive(String data) {
-        DisambiguatorModel postData = new DisambiguatorModel();
-
-        postData.payload = data;
-        postData.type = tempContext.type;
-
+        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType());
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/active",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
-        JsonObject simple = tempContext.show.simple;
+        JsonObject simple = tempContext.getShow().getSimple();
 
         // String field = tempContext.field;
 
@@ -332,42 +329,29 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
                 ? (JsonArray) simple.getAsJsonArray("list")
                 : new JsonArray();
 
-        DisambiguatorModel postData = new DisambiguatorModel();
-        postData.payload = data;
-        postData.type = tempContext.type;
-        postData.candidates = list;
-
+        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(), list);
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePassive(ResponderModel data) {
-        String field = data.field;
-        String type = data.type;
+        String field = data.getField();
+        String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.payload, field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
 
-        DisambiguatorModel postData = new DisambiguatorModel();
-
-        postData.payload = payload;
-        postData.type = type;
-        postData.device_info = getDeviceInfo();
-
+        DisambiguatorModel postData = new DisambiguatorModel(payload, type, getDeviceInfo());
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
-        String field = data.field;
-        String type = data.type;
+        String field = data.getField();
+        String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.payload, field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
 
-        DisambiguatorModel postData = new DisambiguatorModel();
-
-        postData.payload = payload;
-        postData.type = type;
-
+        DisambiguatorModel postData = new DisambiguatorModel(payload, type);
         requestHelper.doRequest(JsonObject.class, PUD + "disambiguate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
@@ -383,8 +367,8 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
                 // do client operations
                 doClientOperations(response);
 
-                String field = this.tempContext.field;
-                String type = this.tempContext.type;
+                String field = this.tempContext.getField();
+                String type = this.tempContext.getType();
 
                 // Replace fields in a clone of the current context
                 ClassifierModel clone = null;
@@ -395,7 +379,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
                 }
 
                 if (response.has(type)) {
-                    JsonObjectUtil.replace(clone.payload, field, response.get(type));
+                    JsonObjectUtil.replace(clone.getPayload(), field, response.get(type));
                 } else {
                     Log.e(TAG, "disambiguation response is missing type");
                 }
@@ -408,8 +392,8 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     public void choice(ChoiceModel choice) {
         // send message to update conversation with choice.text
 
-        String field = tempContext.field;
-        JsonObjectUtil.replace(mainContext.payload, field, choice.data);
+        String field = tempContext.getField();
+        JsonObjectUtil.replace(mainContext.getPayload(), field, choice.data);
         changeState(State.AUDIT, mainContext);
     }
 
@@ -432,10 +416,10 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // auditor response handler
     @Override
     public void onQueryResponse(ResponderModel response) {
-        if (response.error != null) {
-            changeState(State.EXCEPTION, response.error.message);
+        if (response.getError() != null) {
+            changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
-            String stateString = response.status.replace(" ", "");
+            String stateString = response.getStatus().replace(" ", "");
             String crossCheck = stateString.split(":")[0];
 
             if (auditorStates.contains(crossCheck)) {
@@ -448,11 +432,11 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     private void restart(ResponderModel data) {
-        if (data.data == null) {
+        if (data.getData() == null) {
             Log.e(TAG, "missing new replacement context");
         }
 
-        changeState(State.AUDIT, data.data);
+        changeState(State.AUDIT, data.getData());
     }
 
     /**
@@ -460,7 +444,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
      */
 
     private void actor(ResponderModel data) {
-        String actor = data.actor;
+        String actor = data.getActor();
 
         if (actor != null) {
             String endpoint = RESPONDER + "actor/" + actor;
@@ -481,7 +465,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         this.clearContext();
 
         if (response.error != null) {
-            changeState(State.EXCEPTION, response.error.msg);
+            changeState(State.EXCEPTION, response.error.getMessage());
         } else {
             // show(response.show, response.speak);
             // actorResponseHandler(response);

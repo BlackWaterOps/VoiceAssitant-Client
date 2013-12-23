@@ -10,6 +10,57 @@ import java.util.List;
  * Created by jeffschifano on 10/28/13.
  */
 public class ClassifierModel implements Cloneable {
+    public ClassifierModel(String model, String action, JsonObject payload) {
+        this.model = model;
+        this.action = action;
+        this.payload = payload;
+    }
+
+    public ClassifierModel(String model, String action, JsonObject payload, List<String> project,
+                           ErrorModel error) {
+        this.model = model;
+        this.action = action;
+        this.payload = payload;
+        this.project = project;
+        this.error = error;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public JsonObject getPayload() {
+        return payload;
+    }
+
+    public void setPayload(JsonObject payload) {
+        this.payload = payload;
+    }
+
+    public List<String> getProject() {
+        return project;
+    }
+
+    public void setProject(List<String> project) {
+        this.project = project;
+    }
+
+    public ErrorModel getError() {
+        return error;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,13 +96,9 @@ public class ClassifierModel implements Cloneable {
         return result;
     }
 
-    public String model;
-
-    public String action;
-
-    public JsonObject payload;
-
-    public List<String> project;
-
-    public ErrorModel error;
+    private String model;
+    private String action;
+    private JsonObject payload;
+    private List<String> project;
+    private ErrorModel error;
 }

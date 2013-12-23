@@ -121,10 +121,8 @@ public class PlexiServiceTestCase extends AndroidTestCase {
         assertEquals(PlexiService.State.UNINITIALIZED, plexi.getCurrentState().getState());
 
         // We expect the client to have called the actor with this model
-        ClassifierModel expected = new ClassifierModel();
-        expected.model = "calendar";
-        expected.action = "create";
-        expected.payload = parser.parse("{\"name\": \"Party\"}").getAsJsonObject();
+        ClassifierModel expected = new ClassifierModel("calendar", "create",
+                parser.parse("{\"name\": \"Party\"}").getAsJsonObject());
         verifyActorCall(spy, expected, false);
     }
 
@@ -158,9 +156,7 @@ public class PlexiServiceTestCase extends AndroidTestCase {
 
     private void verifyDisambiguateActiveCall(IRequestHelper spy, String expectedType,
                                               String expectedPayload) {
-        DisambiguatorModel expected = new DisambiguatorModel();
-        expected.payload = expectedPayload;
-        expected.type = expectedType;
+        DisambiguatorModel expected = new DisambiguatorModel(expectedPayload, expectedType);
 
         verify(spy).doRequest(eq(JsonObject.class), contains("disambiguate/active"),
                 eq(RequestTask.HttpMethod.POST), eq(expected), eq(true),

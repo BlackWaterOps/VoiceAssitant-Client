@@ -28,10 +28,8 @@ public class RequestHelperStub3 implements IRequestHelper {
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               IResponseListener listener) {
         if (type == ClassifierModel.class) {
-            ClassifierModel response = new ClassifierModel();
-            response.model = "calendar";
-            response.action = "create";
-            response.payload = parser.parse("{\"name\":null}").getAsJsonObject();
+            ClassifierModel response = new ClassifierModel("calendar", "create",
+                    parser.parse("{\"name\":null}").getAsJsonObject());
 
             listener.onQueryResponse(response);
         }
@@ -42,7 +40,7 @@ public class RequestHelperStub3 implements IRequestHelper {
         if (type == JsonObject.class && endpoint.contains("disambiguate")) {
             // This is a disambiguation call.
             assert data instanceof DisambiguatorModel;
-            assert ((DisambiguatorModel) data).type.equals("string");
+            assert ((DisambiguatorModel) data).getType().equals("string");
 
             JsonObject response = parser.parse("{\"string\": \"Party\"}").getAsJsonObject();
             listener.onQueryResponse(response);
@@ -50,24 +48,21 @@ public class RequestHelperStub3 implements IRequestHelper {
             // This is an auditor call.
             ClassifierModel pkg = (ClassifierModel) data;
 
-            JsonElement name = pkg.payload.get("name");
-            ResponderModel response = new ResponderModel();
+            JsonElement name = pkg.getPayload().get("name");
+            ResponderModel response = null;
 
             if (name.isJsonNull()) {
                 // Needs disambiguation!
-                response.status = "in progress";
-                response.field = "name";
-                response.type = "string";
+                response = new ResponderModel("in progress", "string", "name");
 
-                ShowModel show = new ShowModel();
-                show.simple = parser.parse("{\"text\":\"What is the name of the event?\"}")
-                        .getAsJsonObject();
-                response.show = show;
-                response.speak = "What is the name of the event?";
+                ShowModel show = new ShowModel(
+                        parser.parse("{\"text\":\"What is the name of the event?\"}")
+                                .getAsJsonObject(),
+                        null);
+                response.setShow(show);
+                response.setSpeak("What is the name of the event?");
             } else if (name.isJsonPrimitive() && name.getAsJsonPrimitive().isString()) {
-                response.status = "completed";
-                response.actor = "foobar";
-                response.data = pkg;
+                response = new ResponderModel("completed", "foobar", null, pkg);
             } else {
                 assert false;
             }
@@ -78,8 +73,8 @@ public class RequestHelperStub3 implements IRequestHelper {
             ActorModel response = new ActorModel();
             response.speak = "Hello world";
 
-            ShowModel show = new ShowModel();
-            show.simple = parser.parse("{\"text\":\"Hello world\"}").getAsJsonObject();
+            ShowModel show = new ShowModel(parser.parse("{\"text\":\"Hello world\"}")
+                    .getAsJsonObject(), null);
             response.show = show;
 
             listener.onQueryResponse(response);

@@ -18,11 +18,8 @@ public class RequestHelperStub1 implements IRequestHelper {
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               IResponseListener listener) {
         if (type == ClassifierModel.class) {
-            ClassifierModel response = new ClassifierModel();
-            response.model = "calendar";
-            response.action = "create";
-            response.payload = parser.parse("{\"name\":\"Party\"}").getAsJsonObject();
-
+            ClassifierModel response = new ClassifierModel("calendar", "create",
+                    parser.parse("{\"name\":\"Party\"}").getAsJsonObject());
             listener.onQueryResponse(response);
         }
     }
