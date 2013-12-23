@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
@@ -25,8 +26,6 @@ import com.stremor.plexi.models.StateModel;
 import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -186,7 +185,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     {
         mainContext = null;
         tempContext = null;
-        currentState.reset();
+        currentState.set(State.UNINITIALIZED, null);
 
         resetTimer();
     }
@@ -216,10 +215,10 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     private void choiceList(ResponderModel response) {
         try {
-            HashMap<String, Object> simple = response.show.simple;
+            JsonObject simple = response.show.simple;
 
-            if (simple.containsKey("list")) {
-                // send response to listener
+            if (simple.has("list")) {
+                // TODO send response to listener
             } else {
                 Log.d(TAG, "no list could be found");
             }
@@ -262,14 +261,12 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     // called from actor
     private void show(ShowModel model, String speak) {
-        if (model.simple.containsKey("text")) {
-            String show = (String) model.simple.get("text");
+        if (model.simple.has("text")) {
+            String show = model.simple.get("text").getAsString();
 
-            String link = null;
-
-            if (model.simple.containsKey("link")) {
-                link = (String) model.simple.get("link");
-            }
+            String link = model.simple.has("link")
+                    ? link = model.simple.get("link").getAsString()
+                    : null;
 
             show(speak, show, link);
         }
@@ -308,8 +305,8 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         if (response.error != null) {
             changeState(State.EXCEPTION, response.error.message);
         } else {
-            ClassifierModel context = doClientOperations(response, response.payload);
-            changeState(State.AUDIT, context);
+            doClientOperations(response.payload);
+            changeState(State.AUDIT, response);
         }
     }
 
@@ -323,23 +320,25 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         postData.payload = data;
         postData.type = tempContext.type;
 
-        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/active",
+        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/active",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
-        HashMap simple = tempContext.show.simple;
+        JsonObject simple = tempContext.show.simple;
 
         // String field = tempContext.field;
 
-        JSONArray list = (simple.containsKey("list")) ? (JSONArray) simple.get("list") : new JSONArray();
+        JsonArray list = simple.has("list")
+                ? (JsonArray) simple.getAsJsonArray("list")
+                : new JsonArray();
 
         DisambiguatorModel postData = new DisambiguatorModel();
         postData.payload = data;
         postData.type = tempContext.type;
         postData.candidates = list;
 
-        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/candidate",
+        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
@@ -355,7 +354,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         postData.type = type;
         postData.device_info = getDeviceInfo();
 
-        requestHelper.doRequest(HashMap.class, DISAMBIGUATOR + "/passive",
+        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
@@ -370,7 +369,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         postData.payload = payload;
         postData.type = type;
 
-        requestHelper.doRequest(HashMap.class, PUD + "disambiguate",
+        requestHelper.doRequest(JsonObject.class, PUD + "disambiguate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
 
@@ -382,30 +381,27 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
                 // TODO
                 // currentState.set("exception", error.message);
             } else {
-                // make copy of mainContext
-                ClassifierModel context;
-
-                try {
-                    context = this.mainContext.clone();
-                } catch (CloneNotSupportedException e) {
-                    Log.e(TAG, "disambiguator response context clone failed");
-                    return;
-                }
-
                 // do client operations
-                doClientOperations(context, response);
+                doClientOperations(response);
 
                 String field = this.tempContext.field;
                 String type = this.tempContext.type;
 
-                // replace fields
+                // Replace fields in a clone of the current context
+                ClassifierModel clone = null;
+                try {
+                    clone = mainContext.clone();
+                } catch (CloneNotSupportedException e) {
+                    /* pass */
+                }
+
                 if (response.has(type)) {
-                    JsonObjectUtil.replace(context.payload, field, response.get(type));
+                    JsonObjectUtil.replace(clone.payload, field, response.get(type));
                 } else {
                     Log.e(TAG, "disambiguation response is missing type");
                 }
 
-                // currentState.set("audit", context);
+                changeState(State.AUDIT, clone);
             }
         }
     }
@@ -429,7 +425,8 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
             requestHelper.doRequest(ResponderModel.class, RESPONDER + "audit",
                     RequestTask.HttpMethod.POST, context, false, this);
         } else {
-            Log.e(TAG, "potential request loop detected");
+            throw new RuntimeException("potential request loop detected");
+//            Log.e(TAG, "potential request loop detected");
         }
     }
 
@@ -499,12 +496,16 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     // helpers
-    private ClassifierModel doClientOperations(ClassifierModel context, JsonObject response) {
+
+    /**
+     * Perform client-side operations in-place on a server response.
+     *
+     * @param response
+     */
+    private void doClientOperations(JsonObject response) {
         response = replaceLocation(response);
         response = buildDateTime(response);
-        prependTo(context, response);
-
-        return context;
+//        prependTo(context, response);
     }
 
     private void prependTo(ClassifierModel context, JsonObject data) {

@@ -7,9 +7,12 @@ import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.util.RequestTask;
 
 /**
+ * An IRequestHelper stub implementation which returns a fake classification but answers no other
+ * requests.
+ *
  * Created by jon on 20.12.2013.
  */
-public class RequestHelperStub implements IRequestHelper {
+public class RequestHelperStub1 implements IRequestHelper {
     private static JsonParser parser = new JsonParser();
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
