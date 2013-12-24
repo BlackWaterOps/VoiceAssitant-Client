@@ -30,11 +30,29 @@ using Plexi.Util;
 
 namespace Plexi
 {
+    public enum State 
+    { 
+        Uninitialized, 
+        Init,
+        Audit, 
+        Disambiguate, 
+        DisambiguatePersonal, 
+        DisambiguateActive, 
+        DisambiguateCandidate,
+        InProgress,
+        Error,
+        Choice,
+        Restart,
+        Completed,
+        NoAccount,
+        Exception
+    };
+
     public interface IPlexiService
     {
         string OriginalQuery { get; }
 
-        string State { get; }
+        State State { get; }
 
         void ClearContext();
 
@@ -85,6 +103,24 @@ namespace Plexi
 
         private static string LOGIN = Resources.PlexiResources.Login;
 
+        private static Dictionary<string, State> StateMap = new Dictionary<string, State>()
+        {
+            { null, State.Uninitialized },
+            {"init", State.Init },
+            {"audit", State.Audit },
+            {"disambiguate", State.Disambiguate },
+            {"disambiguate:personal", State.DisambiguatePersonal },
+            {"disambiguate:active", State.DisambiguateActive },
+            {"disambiguate:candidate", State.DisambiguateCandidate },
+            {"inprogress", State.InProgress },
+            {"error", State.Error },
+            {"choice", State.Choice },
+            {"restart", State.Restart },
+            {"completed", State.Completed },
+            {"noaccount", State.NoAccount },
+            {"exception", State.Exception },
+        };
+
         // used by auditor
         private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
 
@@ -100,13 +136,13 @@ namespace Plexi
         // indicates fields that need to be completed in the main context
         private ResponderModel tempContext = null;
 
-        private StateModel currentState = new StateModel();
+        private StateModel currentState = new StateModel(State.Uninitialized, null);
 
         private DispatcherTimer contextTimer;
 
         public string OriginalQuery { get; private set; }
 
-        public string State { get { return currentState.State; } }
+        public State State { get { return currentState.State; } }
 
         public event EventHandler<ShowEventArgs> Show;
 
@@ -124,17 +160,12 @@ namespace Plexi
 
         public Core()
         {
-            Debug.WriteLine("plexi core initialized");
-
             /*
             IPushService pushService = new PushService();
 
             // listen for push notifications
             pushService.NotificationReceived += PushNotificationReceived;
             */
-
-            // listen for Plexi state changes 
-            this.currentState.PropertyChanged += OnStateChanged;
 
             CreateTimer();
 
@@ -203,21 +234,22 @@ namespace Plexi
         {
             this.OriginalQuery = query;
 
-            string newState;
+            Plexi.State currState = currentState.State;
+            Plexi.State newState;
 
-            switch (currentState.State)
+            switch (currState)
             {
-                case "inprogress":
-                case "error":
-                    newState = "disambiguate:active"; 
+                case Plexi.State.InProgress:
+                case Plexi.State.Error:
+                    newState = Plexi.State.DisambiguateActive; 
                     break;
 
-                case "choice":
-                    newState = "disambiguate:candidate";
+                case Plexi.State.Choice:
+                    newState = Plexi.State.DisambiguateCandidate;
                     break;
 
                 default:
-                    newState = "init";
+                    newState = Plexi.State.Init;
                     break;
             }
 
@@ -239,63 +271,63 @@ namespace Plexi
             ResetTimer();
         }
 
-        private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        //private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void ChangeState(State state, object data)
         {
-            if (e.PropertyName == "State")
+            currentState.Set(state, data);
+
+            switch (state)
             {
-                switch (currentState.State)
-                {
-                    case "init":
-                        await Classify((string)currentState.Response);
-                        break;
+                case State.Init:
+                    await Classify((string)currentState.Response);
+                    break;
 
-                    case "audit":
-                        await Auditor((ClassifierModel)currentState.Response);
-                        break;
+                case State.Audit:
+                    await Auditor((ClassifierModel)currentState.Response);
+                    break;
 
-                    case "disambiguate":
-                        DisambiguatePassive((ResponderModel)currentState.Response);
-                        break;
+                case State.Disambiguate:
+                    DisambiguatePassive((ResponderModel)currentState.Response);
+                    break;
 
-                    case "disambiguate:personal":
-                        //ActorInterceptor(mainContext.model);
+                case State.DisambiguatePersonal:
+                    //ActorInterceptor(mainContext.model);
 
-                        DisambiguatePersonal((ResponderModel)currentState.Response);
-                        break;
+                    DisambiguatePersonal((ResponderModel)currentState.Response);
+                    break;
 
-                    case "disambiguate:active":
-                        DisambiguateActive((string)currentState.Response);
-                        break;
+                case State.DisambiguateActive:
+                    DisambiguateActive((string)currentState.Response);
+                    break;
 
-                    case "disambiguate:candidate":
-                        DisambiguateCandidate((string)currentState.Response);
-                        break;
+                case State.DisambiguateCandidate:
+                    DisambiguateCandidate((string)currentState.Response);
+                    break;
 
-                    case "inprogress":
-                    case "error":
-                        ShowDialog((ResponderModel)currentState.Response);
-                        break;
+                case State.InProgress:
+                case State.Error:
+                    ShowDialog((ResponderModel)currentState.Response);
+                    break;
 
-                    case "choice":
-                        ChoiceList((ResponderModel)currentState.Response);
-                        break;
+                case State.Choice:
+                    ChoiceList((ResponderModel)currentState.Response);
+                    break;
 
-                    case "restart":
-                        Restart((ResponderModel)currentState.Response);
-                        break;
+                case State.Restart:
+                    Restart((ResponderModel)currentState.Response);
+                    break;
 
-                    case "completed":
-                        Actor((ResponderModel)currentState.Response);
-                        break;
+                case State.Completed:
+                    Actor((ResponderModel)currentState.Response);
+                    break;
 
-                    case "exception":
-                        ErrorMessage((string)currentState.Response);
-                        break;
-                    
-                    case "noaccount":
-                        NoAccount((ResponderModel)currentState.Response);
-                        break;
-                }
+                case State.Exception:
+                    ErrorMessage((string)currentState.Response);
+                    break;
+
+                case State.NoAccount:
+                    NoAccount((ResponderModel)currentState.Response);
+                    break;
             }
         }
 
@@ -404,13 +436,13 @@ namespace Plexi
 
                 if (classifierResults.error != null)
                 {
-                    currentState.Set("exception", classifierResults.error.message);
+                    ChangeState(State.Exception, classifierResults.error.message);
                 }
                 else
                 {
                     ClassifierModel context = await DoClientOperations(classifierResults, classifierResults.payload);
 
-                    currentState.Set("audit", context);
+                    ChangeState(State.Audit, context);
                 }
             }
             catch (Exception err)
@@ -515,9 +547,6 @@ namespace Plexi
             postData.type = type;
             postData.device_info = deviceInfo;
 
-            Debug.WriteLine("disambig passive");
-            Debug.WriteLine(SerializeData(postData, true));
-
             String endpoint = String.Format("{0}/passive", DISAMBIGUATOR);
 
             Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
@@ -580,7 +609,7 @@ namespace Plexi
                 {
                     ErrorModel er = (ErrorModel)response["error"];
 
-                    currentState.Set("exception", er.message);
+                    ChangeState(State.Exception, er.message);
                 }
                 else
                 {
@@ -604,7 +633,7 @@ namespace Plexi
                         Debug.WriteLine("Disambiguation response is missing type");
                     }
 
-                    this.currentState.Set("audit", context);
+                    ChangeState(State.Audit, context);
                 }
             }
             else
@@ -625,7 +654,7 @@ namespace Plexi
 
                 if (response.error != null)
                 {
-                    this.currentState.Set("exception", response.error.msg);
+                    ChangeState(State.Exception, response.error.msg);
                 }
                 else
                 {
@@ -640,7 +669,7 @@ namespace Plexi
                     }
 
                     // create event and trigger based on status
-                    this.currentState.Set(state, response);
+                    ChangeState(StateMap[state], response);
                 }
             }
             else
@@ -666,7 +695,7 @@ namespace Plexi
                 context.payload[field] = choice.data;
             }
 
-            this.currentState.Set("audit", context);
+            ChangeState(State.Audit, context);
         }
 
         private void Restart(ResponderModel data)
@@ -677,7 +706,7 @@ namespace Plexi
                 return;
             }
 
-            this.currentState.Set("audit", data.data);
+            ChangeState(State.Audit, data.data);
         }
 
         private void NoAccount(ResponderModel response)
@@ -733,7 +762,7 @@ namespace Plexi
                             AuthorizationMessage(data.data.model);
                             break;
                         default:
-                            this.currentState.Set("exception", response.error.msg);
+                            ChangeState(State.Exception, response.error.msg);
                             break;
                     }
                 }

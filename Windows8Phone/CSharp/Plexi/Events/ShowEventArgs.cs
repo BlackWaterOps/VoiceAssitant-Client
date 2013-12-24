@@ -7,9 +7,9 @@ namespace Plexi.Events
         public string speak;
         public string show;
         public string link;
-        public string status;
+        public State status;
 
-        public ShowEventArgs(string speak, string show, string link, string status)
+        public ShowEventArgs(string speak, string show, string link, State status)
         {
             this.speak = speak;
             this.show = show;

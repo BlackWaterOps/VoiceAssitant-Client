@@ -108,7 +108,6 @@
       <DependentUpon>PlexiResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Util\Datetime.cs" />
-    <Compile Include="Util\Enumerations.cs" />
     <Compile Include="Util\Extensions.cs" />
     <Compile Include="Util\Helpers.cs" />
     <Compile Include="Util\LocationService.cs" />

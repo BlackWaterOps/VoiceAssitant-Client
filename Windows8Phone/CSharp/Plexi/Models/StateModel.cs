@@ -6,36 +6,18 @@ using System.Threading.Tasks;
 
 namespace Plexi.Models
 {
-    public class StateModel : ModelBase
+    public class StateModel
     {
-        private string state;
-        public string State
-        {
-            get
-            {
-                return state;
-            }
-
-            set
-            {
-                state = value;
-                NotifyPropertyChanged("State");
-            }
-        }
-
+        public State State { get; set; }
+   
         public object Response { get; set; }
 
-        public StateModel()
-        {
-
-        }
-
-        public StateModel(string state, object response)
+        public StateModel(State state, object response)
         {
             Set(state, response);
         }
 
-        public void Set(string state, object response)
+        public void Set(State state, object response)
         {
             this.Response = response;
             this.State = state;
@@ -44,7 +26,7 @@ namespace Plexi.Models
         public void Reset()
         {
             this.Response = null;
-            this.state = null;
+            this.State = State.Uninitialized;
         }
     }
 }
