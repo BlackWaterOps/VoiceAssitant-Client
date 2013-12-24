@@ -11,7 +11,6 @@ import junit.framework.TestCase;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONException;
 
 import java.text.ParseException;
 
@@ -83,7 +82,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testWeekdayNextDay() throws ParseException, JSONException {
+    public void testWeekdayNextDay() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 1, 0, 0); // Tuesday Jan 1 2013 00:00
         JsonObject input = parser.parse("{\"#date_weekday\": 3}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -91,7 +90,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAdd() throws JSONException, ParseException {
+    public void testDateAdd() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [\"#date_now\", 0]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -99,7 +98,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAdd2() throws JSONException, ParseException {
+    public void testDateAdd2() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [\"#date_now\", 1]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -107,7 +106,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAdd3() throws JSONException, ParseException {
+    public void testDateAdd3() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [\"#date_now\", 35]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -115,7 +114,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAddNegative() throws JSONException, ParseException {
+    public void testDateAddNegative() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [\"#date_now\", -1]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -123,7 +122,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAddNegative2() throws JSONException, ParseException {
+    public void testDateAddNegative2() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [\"#date_now\", -7]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -131,7 +130,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAddWeekday() throws JSONException, ParseException {
+    public void testDateAddWeekday() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [{\"#date_weekday\": 4}, 0]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -139,7 +138,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAddWeekday2() throws JSONException, ParseException {
+    public void testDateAddWeekday2() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [{\"#date_weekday\": 4}, 1]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -147,7 +146,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testDateAddWeekday3() throws JSONException, ParseException {
+    public void testDateAddWeekday3() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 0); // Monday Jan 7 2013 00:00
         JsonObject input = parser.parse("{\"#date_add\": [{\"#date_weekday\": 4}, -1]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(input, null, now);
@@ -155,7 +154,7 @@ public class DatetimeTestCase extends TestCase {
         assertNull(ret.second);
     }
 
-    public void testTimeAdd() throws JSONException, ParseException {
+    public void testTimeAdd() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
         JsonObject input = parser.parse("{\"#time_add\": [\"#time_now\", 0]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(null, input, now);
@@ -163,7 +162,7 @@ public class DatetimeTestCase extends TestCase {
         assertEquals("12:00:00", ret.second);
     }
 
-    public void testTimeAdd2() throws JSONException, ParseException {
+    public void testTimeAdd2() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
         JsonObject input = parser.parse("{\"#time_add\": [\"#time_now\", 60]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(null, input, now);
@@ -171,7 +170,7 @@ public class DatetimeTestCase extends TestCase {
         assertEquals("12:01:00", ret.second);
     }
 
-    public void testTimeAdd3() throws JSONException, ParseException {
+    public void testTimeAdd3() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 12, 0);
         JsonObject input = parser.parse("{\"#time_add\": [\"#time_now\", -90]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(null, input, now);
@@ -180,7 +179,7 @@ public class DatetimeTestCase extends TestCase {
     }
 
     // Add time which changes date
-    public void testTimeAdd4() throws JSONException, ParseException {
+    public void testTimeAdd4() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 23, 59);
         JsonObject input = parser.parse("{\"#time_add\": [\"#time_now\", 120]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(PROTOCOL_DATE_FORMATTER.print(now), input, now);
@@ -189,7 +188,7 @@ public class DatetimeTestCase extends TestCase {
     }
 
     // Add time which changes date
-    public void testTimeAdd5() throws JSONException, ParseException {
+    public void testTimeAdd5() throws ParseException {
         LocalDateTime now = new LocalDateTime(2013, 1, 7, 0, 1);
         JsonObject input = parser.parse("{\"#time_add\": [\"#time_now\", -120]}").getAsJsonObject();
         Pair ret = Datetime.datetimeFromJson(PROTOCOL_DATE_FORMATTER.print(now), input, now);
