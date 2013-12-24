@@ -30,7 +30,7 @@ namespace Plexi.Util
         {
             try
             {
-                Debug.WriteLine(String.Format("post data: {0}", req.RequestUri.AbsolutePath));
+                Debug.WriteLine(String.Format("post data: {0}{1}", req.RequestUri.Host, req.RequestUri.AbsolutePath));
 
                 // if we have post/put data, write it to the request stream
                 if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)

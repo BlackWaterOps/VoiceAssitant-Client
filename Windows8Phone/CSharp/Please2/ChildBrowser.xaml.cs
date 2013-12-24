@@ -50,9 +50,10 @@ namespace Please2
             {
                 string headers = BuildHeaders();
 
-                WebBrowser.Navigate(new Uri(url), null, headers);
-            }
+                Debug.WriteLine(headers);
 
+                WebBrowser.Navigate(new Uri(url, UriKind.Absolute), null, headers);
+            }
             try
             {
                 ApplicationBarIconButton skip = ApplicationBar.Buttons[0] as ApplicationBarIconButton;
@@ -127,7 +128,7 @@ namespace Please2
             Dictionary<string, string> headers = new Dictionary<string, string>();
 
             headers.Add(tokenHeader, authToken);
-            headers.Add(deviceHeader, duid);
+            headers.Add(deviceHeader, "cRljODI+F0i6w8l72x9Kc9Ez6V8=");
 
             string headerString = String.Empty;
 

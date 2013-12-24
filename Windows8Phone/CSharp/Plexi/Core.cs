@@ -148,11 +148,7 @@ namespace Plexi
         {
             Dictionary<string, object> postData = new Dictionary<string, object>();
 
-            byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
-
-            string duid = Convert.ToBase64String(duidAsBytes);
-
-            //postData.Add("device_id", duid);
+            //postData.Add("device_id", getDuid());
             //postData.Add("user_id", UserExtendedProperties.GetValue("ANID2"));
             postData.Add("username", accountName);
             postData.Add("password", password);
@@ -166,9 +162,7 @@ namespace Plexi
 
         public async Task<LoginModel> LoginUser(string accountName, string password)
         {
-            byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
-
-            string duid = Convert.ToBase64String(duidAsBytes);
+            string duid = GetDuid();
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
 
@@ -299,7 +293,7 @@ namespace Plexi
                         break;
                     
                     case "noaccount":
-
+                        NoAccount((ResponderModel)currentState.Response);
                         break;
                 }
             }
@@ -548,6 +542,7 @@ namespace Plexi
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
+            headers.Add(Resources.PlexiResources.AuthDeviceHeader, "cRljODI+F0i6w8l72x9Kc9Ez6V8=");
 
             string field = data.field;
 
@@ -685,6 +680,16 @@ namespace Plexi
             this.currentState.Set("audit", data.data);
         }
 
+        private void NoAccount(ResponderModel response)
+        {
+            EventHandler<AuthorizationEventArgs> handler = Authorize;
+
+            if (handler != null)
+            {
+                handler(this, new AuthorizationEventArgs());
+            }
+        }
+
         private async void Actor(ResponderModel data)
         {
             string actor = data.actor;
@@ -703,10 +708,11 @@ namespace Plexi
 
                     try
                     {
-                        authToken = GetAuthToken();
+                        authToken = GetAuthToken(); //check and make sure they're logged in.
                     }
                     catch (KeyNotFoundException keyErr)
                     {
+                        // user is not logged in. redirect to login screen.
                         Debug.WriteLine(String.Format("Actor: {0}", keyErr.Message));
                         return;
                     }
@@ -865,8 +871,18 @@ namespace Plexi
             return response;
         }
 
+        public string GetDuid()
+        {
+            byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
+
+            return Convert.ToBase64String(duidAsBytes);
+        }
+
         public string GetAuthToken()
         {
+            return "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
+
+            /*
             string key = Resources.PlexiResources.SettingsAuthKey;
             
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
@@ -879,6 +895,7 @@ namespace Plexi
             byte[] tokenBytes = (byte[])settings[key];
 
             return Security.Decrypt(tokenBytes);
+            */
         }
 
         // TODO: handle increase quota issue

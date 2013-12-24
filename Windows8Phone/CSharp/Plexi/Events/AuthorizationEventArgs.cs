@@ -14,5 +14,10 @@ namespace Plexi.Events
         {
             this.model = model;
         }
+
+        public AuthorizationEventArgs()
+        {
+
+        }
     }
 }

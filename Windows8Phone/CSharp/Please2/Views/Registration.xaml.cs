@@ -29,12 +29,6 @@ namespace Please2.Views
 {
     public partial class Registration : ViewBase
     {
-        private static string emailPattern = @"^[a-zA-Z][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$";
-
-        private static string accountNamePattern = @"[a-zA-Z0-9_.-]{4,32}";
-
-        private static string passwordPattern = @"(.+){4,32}";
-
         private Plexi.IPlexiService plexiService;
 
         public string Scheme { get { return "Settings"; } }
@@ -71,29 +65,18 @@ namespace Please2.Views
                 case 1:
                     AddRegisterButton();
                     break;
-                   
             }
         }
 
         #region Register
-        private bool isRegisterValid()
+        private bool IsRegisterValid()
         {
-            if (!Regex.IsMatch(RegisterEmail.Text, emailPattern))
+            if (RegisterEmail.IsValid && RegisterAccountName.IsValid && RegisterAccountPassword.IsValid)
             {
-                return false;
+                return true;
             }
-
-            if (!Regex.IsMatch(RegisterAccountName.Text, accountNamePattern))
-            {
-                return false;
-            }
-
-            if (!Regex.IsMatch(RegisterAccountPassword.Password, passwordPattern))
-            {
-                return false;
-            }
-
-            return true;
+            
+            return false;
         }
 
         private void AddRegisterButton()
@@ -103,7 +86,7 @@ namespace Please2.Views
             button.Text = "register";
             button.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
             button.Click += RegisterButton_Click;
-            button.IsEnabled = isRegisterValid();
+            button.IsEnabled = IsRegisterValid();
 
             if (ApplicationBar.Buttons.Count > 0)
             {
@@ -114,38 +97,31 @@ namespace Please2.Views
 
         private void RegisterControl_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (RegisterAccountName.Text != String.Empty && RegisterAccountPassword.Password != String.Empty)
+            ApplicationBarIconButton button = (ApplicationBar.Buttons[0] as ApplicationBarIconButton);
+
+            if (IsRegisterValid())
             {
-                (ApplicationBar.Buttons[0] as ApplicationBarIconButton).IsEnabled = true;
+                button.IsEnabled = true;
+            }
+            else
+            {
+                button.IsEnabled = false;
             }
         }
 
         private async void RegisterButton_Click(object sender, EventArgs e)
         {
-            await RegisterUser(RegisterAccountName.Text, RegisterAccountPassword.Password);
+            Debug.WriteLine(RegisterEmail.Text);
+            Debug.WriteLine(RegisterAccountName.Text);
+            Debug.WriteLine(RegisterAccountPassword.Text);
+
+            await RegisterUser(RegisterAccountName.Text, RegisterAccountPassword.Text);
         }
 
         private async Task RegisterUser(string accountName, string password)
         {
             Debug.WriteLine("register user");
             return;
-
-            string errorMessage = String.Empty;
-
-            if (!Regex.IsMatch(accountName, accountNamePattern))
-            {
-                errorMessage = "account name must be alphanumeric, at least 4 characters, and a maximum of 32 characters";
-            }
-            else if (!Regex.IsMatch(password, passwordPattern))
-            {
-                errorMessage = "password must be between 4 and 32 characters";
-            }
-
-            if (errorMessage != String.Empty)
-            {
-                MessageBox.Show(errorMessage, "Sign up failed", MessageBoxButton.OK);
-                return;
-            }
 
             RegisterModel response = await plexiService.RegisterUser(accountName, password);
 
@@ -160,19 +136,14 @@ namespace Please2.Views
         #endregion
 
         #region SignIn
-        private bool isSignInValid()
+        private bool IsSignInValid()
         {
-            if (!Regex.IsMatch(SignInAccountName.Text, accountNamePattern))
+            if (SignInAccountName.Text != String.Empty && SignInAccountPassword.Password != String.Empty)
             {
-                return false;
+                return true;
             }
 
-            if (!Regex.IsMatch(SignInAccountPassword.Password, passwordPattern))
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         private void AddSignInButton()
@@ -182,13 +153,27 @@ namespace Please2.Views
             button.Text = "sign in";
             button.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
             button.Click += SignInButton_Click;
-            button.IsEnabled = isSignInValid();
+            button.IsEnabled = IsSignInValid();
 
             if (ApplicationBar.Buttons.Count > 0)
             {
                 ApplicationBar.Buttons.RemoveAt(0);
             }
             ApplicationBar.Buttons.Add(button);
+        }
+
+        private void SignInControl_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            ApplicationBarIconButton button = (ApplicationBar.Buttons[0] as ApplicationBarIconButton);
+            
+            if (IsSignInValid())
+            {
+                button.IsEnabled = true;
+            }
+            else
+            {
+                button.IsEnabled = false;
+            }
         }
 
         private async void SignInButton_Click(object sender, EventArgs e)

@@ -56,17 +56,17 @@ namespace Please2.ViewModels
         //TODO: need to handle to ability to remove/disable an account
         private void InitializeAccounts()
         {
-            if (!settings.Contains(ProvidersSettingKeyName))
-            {
+            //if (!settings.Contains(ProvidersSettingKeyName))
+            //{
                 Debug.WriteLine("set providers");
                 List<ProviderModel> providers = new List<ProviderModel>();
 
-                providers.Add(new ProviderModel("Google", AccountStatus.NotConnected, "GoogleAccount", true));
-                providers.Add(new ProviderModel("Facebook", AccountStatus.NotConnected, "FacebookAccount", true));
-                providers.Add(new ProviderModel("Fitbit", AccountStatus.NotConnected, "FitBitAccount", true));
+                providers.Add(new ProviderModel("Google", AccountStatus.NotConnected, "google", true));
+                providers.Add(new ProviderModel("Facebook", AccountStatus.NotConnected, "facebook", true));
+                providers.Add(new ProviderModel("Fitbit", AccountStatus.NotConnected, "fitbit", true));
 
                 Providers = providers;
-            }
+            //}
             /*
              * for future use. Handle the ability to add new accounts and merge them with the currently stored accounts
             if (settings.Contains(AccountsSettingKeyName))
