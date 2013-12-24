@@ -14,203 +14,76 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Margin" Value="-12"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Grid Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="MouseOver" />
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Collapsed</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledOrReadonlyBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="ReadOnly">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Collapsed</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledOrReadonlyBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledOrReadonlyBorder" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneTextBoxBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledOrReadonlyBorder" Storyboard.TargetProperty="BorderBrush">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneTextBoxBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledOrReadonlyContent" Storyboard.TargetProperty="Foreground">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneTextBoxReadOnlyBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="FocusStates">
-                                    <VisualState x:Name="Focused" />
-                                    <VisualState x:Name="Unfocused" />
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Border x:Name="EnabledBorder"
-                                Margin="{StaticResource PhoneTouchTargetOverhang}"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                                <ContentControl x:Name="ContentElement"
-                                            Margin="{StaticResource PhoneTextBoxInnerMargin}"
-                                            HorizontalContentAlignment="Stretch"
-                                            VerticalContentAlignment="Stretch"
-                                            BorderThickness="0"
-                                            Padding="{TemplateBinding Padding}" />
-                            </Border>
-                            <Border x:Name="DisabledOrReadonlyBorder"
-                                Margin="{StaticResource PhoneTouchTargetOverhang}"
-                                Background="Transparent"
-                                BorderBrush="{StaticResource PhoneDisabledBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Visibility="Collapsed">
-                                <TextBox x:Name="DisabledOrReadonlyContent"
-                                     Background="Transparent"
-                                     FontFamily="{TemplateBinding FontFamily}"
-                                     FontSize="{TemplateBinding FontSize}"
-                                     FontStyle="{TemplateBinding FontStyle}"
-                                     FontWeight="{TemplateBinding FontWeight}"
-                                     Foreground="{StaticResource PhoneDisabledBrush}"
-                                     IsReadOnly="True"
-                                     SelectionBackground="{TemplateBinding SelectionBackground}"
-                                     SelectionForeground="{TemplateBinding SelectionForeground}"
-                                     Text="{TemplateBinding Text}"
-                                     TextAlignment="{TemplateBinding TextAlignment}"
-                                     TextWrapping="{TemplateBinding TextWrapping}" />
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
 
         <Style x:Key="ValidationPasswordBoxStyle" TargetType="PasswordBox">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Margin" Value="-12"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="PasswordBox">
-                        <Grid Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal"/>
-                                    <VisualState x:Name="MouseOver"/>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="EnabledBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Collapsed</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DisabledBorder" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="FocusStates">
-                                    <VisualState x:Name="Focused"/>
-                                    <VisualState x:Name="Unfocused"/>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <Border x:Name="EnabledBorder" 
-                                    Background="{TemplateBinding Background}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}" 
-                                    BorderBrush="{TemplateBinding BorderBrush}" 
-                                    Margin="{StaticResource PhoneTouchTargetOverhang}" >
-                                <Border x:Name="ContentElement" 
-                                        BorderThickness="0" 
-                                        Padding="{TemplateBinding Padding}" 
-                                        Margin="{StaticResource PhonePasswordBoxInnerMargin}"/>
-                            </Border>
-                            <Border x:Name="DisabledBorder"
-                                    Visibility="Collapsed" 
-                                    Background="Transparent" 
-                                    BorderBrush="{StaticResource PhoneDisabledBrush}" 
-                                    BorderThickness="{TemplateBinding BorderThickness}" 
-                                    Margin="{StaticResource PhoneTouchTargetOverhang}" >
-                                <PasswordBox x:Name="DisabledContent" 
-                                             Password="{TemplateBinding Password}" 
-                                             Foreground="{StaticResource PhoneDisabledBrush}"
-                                             Background="Transparent"
-        				                     PasswordChar="{TemplateBinding PasswordChar}"/>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot">
         <StackPanel>
-            <Border Background="{Binding Background}" 
+            <Border x:Name="ValidationBorder" 
+                    Background="{Binding Background}" 
                     BorderBrush="{Binding BorderBrush}" 
                     BorderThickness="{Binding BorderThickness}" 
                     Margin="12"
-                    Opacity=".7"
+                    Opacity="{Binding Opacity}"
                     GotFocus="Border_GotFocus"
                     LostFocus="Border_LostFocus"
                     KeyUp="Border_KeyUp">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
                     <TextBox x:Name="ValTextBox" 
+                             Grid.Column="0"
                              Style="{StaticResource ValidationTextBoxStyle}"
+                             Template="{Binding Template}"
                              Foreground="{Binding Foreground}"
-                             CaretBrush="{Binding Foreground}"
-                             Padding="{Binding Padding}"/>
+                             CaretBrush="{Binding CaretBrush}"
+                             Padding="{Binding Padding}"
+                             MaxLength="{Binding MaxLength}"
+                             InputScope="{Binding InputScope}"/>
+                    
                     <PasswordBox x:Name="ValPasswordBox" 
+                                 Grid.Column="0"
                                  Style="{StaticResource ValidationPasswordBoxStyle}"
+                                 Template="{Binding Template}"
                                  Foreground="{Binding Foreground}"
-                                 CaretBrush="{Binding Foreground}"
+                                 CaretBrush="{Binding CaretBrush}"
                                  Padding="{Binding Padding}"
+                                 MaxLength="{Binding MaxLength}"
                                  Visibility="Collapsed"/>
+                    
+                    <Glyphs x:Name="ErrorGlyph"
+                            Grid.Column="1"
+                            Style="{StaticResource FontAwesomeBase}"
+                            UnicodeString="&#xf057;"
+                            Fill="Red"
+                            FontRenderingEmSize="30"
+                            OriginX="0"
+                            OriginY="0"
+                            Height="30"
+                            Width="30"
+                            Visibility="Collapsed"/>
+                    
+                    <Glyphs x:Name="SuccessGlyph"
+                            Grid.Column="1"
+                            Style="{StaticResource FontAwesomeBase}"
+                            UnicodeString="&#xf058;"
+                            Fill="Green"
+                            FontRenderingEmSize="30"
+                            Visibility="Collapsed"/>
+                    
                 </Grid> 
             </Border>
 
-            <Grid x:Name="ErrorBubble" Margin="20,-15,0,0">
+            <Grid x:Name="ErrorBubble" Margin="20,-15,0,0" Visibility="Collapsed" Opacity="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -218,11 +91,33 @@
 
                 <Polygon x:Name="Point" Grid.Row="0" Points="10,0 20,10 0,10" Fill="{Binding ErrorBackground}" Margin="20,0,0,0"/>
                 <Border Grid.Row="1" Background="{Binding ErrorBackground}" Padding="{Binding ErrorPadding}" HorizontalAlignment="Left">
-                    <TextBlock Text="{Binding ErrorText}"/>
+                    <TextBlock x:Name="ErrorBubbleTextBlock" Text="{Binding ErrorText}" TextWrapping="{Binding ErrorTextWrapping}"/>
                 </Border>
             </Grid>
-
         </StackPanel>
-    </Grid>
 
+        <Grid.Resources>
+            <Storyboard x:Name="ErrorFadeOut">
+                <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetName="ErrorBubble" Storyboard.TargetProperty="Opacity" />
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ErrorBubble" Storyboard.TargetProperty="Visibility">
+                    <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Collapsed</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+            </Storyboard>
+            
+            <Storyboard x:Name="ErrorFadeIn">
+                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ErrorBubble" Storyboard.TargetProperty="Visibility">
+                    <DiscreteObjectKeyFrame KeyTime="0">
+                        <DiscreteObjectKeyFrame.Value>
+                            <Visibility>Visible</Visibility>
+                        </DiscreteObjectKeyFrame.Value>
+                    </DiscreteObjectKeyFrame>
+                </ObjectAnimationUsingKeyFrames>
+                <DoubleAnimation Duration="0:0:0.5" To="1" Storyboard.TargetName="ErrorBubble" Storyboard.TargetProperty="Opacity" />
+            </Storyboard>
+        </Grid.Resources>
+    </Grid>
 </UserControl>
