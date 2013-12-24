@@ -99,9 +99,18 @@ namespace Please2.Util
 
         private void OnAuthorize(object sender, AuthorizationEventArgs e)
         {
-            string model = e.model.Split('_')[0];
-                     
-            string message = String.Format("Oops, it looks like we don't have an account synced for {0}. Please sync an account to continue.", model);
+            string message;
+
+            if (e.model != null)
+            {
+                string model = e.model.Split('_')[0];
+
+                message = String.Format("Oops, it looks like we don't have an account synced for {0}. Please sync an account to continue.", model);
+            }
+            else
+            {
+                message = "Oops, it looks like we don't have an account synced. Please sync an account to continue.";
+            }
 
             MessageBoxResult response = MessageBox.Show(message, "Account Authorization", MessageBoxButton.OKCancel);
 
