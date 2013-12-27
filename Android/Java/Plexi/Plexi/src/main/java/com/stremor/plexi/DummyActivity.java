@@ -1,19 +1,14 @@
 package com.stremor.plexi;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.app.Activity;
-import android.os.IBinder;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
+public class DummyActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_dummy);
     }
 
     @Override
