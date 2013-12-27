@@ -297,8 +297,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     // classifier response handler
-    @Override
-    public void onQueryResponse(ClassifierModel response) {
+    public void handleClassifierResponse(ClassifierModel response) {
         if (response.getError() != null) {
             changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
@@ -354,8 +353,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     // disambiguator response handler
-    @Override
-    public void onQueryResponse(JsonObject response) {
+    public void handleDisambiguationResponse(JsonObject response) {
         if (response != null) {
             if (response.has("error")) {
                 // TODO
@@ -411,8 +409,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     // auditor response handler
-    @Override
-    public void onQueryResponse(ResponderModel response) {
+    public void handleAuditorResponse(ResponderModel response) {
         if (response.getError() != null) {
             changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
@@ -457,8 +454,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         }
     }
 
-    @Override
-    public void onQueryResponse(ActorModel response) {
+    public void handleActorResponse(ActorModel response) {
         this.clearContext();
 
         if (response.error != null) {
@@ -599,7 +595,18 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     @Override
     public void onQueryResponse(Object response) {
-        Log.e(TAG, "unhandled query response");
+        // Dispatch based on response type
+
+        if (response instanceof ClassifierModel)
+            handleClassifierResponse((ClassifierModel) response);
+        else if (response instanceof ResponderModel)
+            handleAuditorResponse((ResponderModel) response);
+        else if (response instanceof ActorModel)
+            handleActorResponse((ActorModel) response);
+        else if (response instanceof JsonObject)
+            handleDisambiguationResponse((JsonObject) response);
+        else
+            Log.e(TAG, "unhandled query response");
     }
 
     private enum PublicEvent {
