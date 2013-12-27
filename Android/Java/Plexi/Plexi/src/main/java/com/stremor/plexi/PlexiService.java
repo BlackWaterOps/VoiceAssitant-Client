@@ -1,9 +1,7 @@
 package com.stremor.plexi;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.CountDownTimer;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
@@ -265,34 +263,22 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     // called from actor
     private void show(ShowModel model, String speak) {
-        JsonObject simple = model.getSimple();
-        if (simple.has("text")) {
-            String show = simple.get("text").getAsString();
+        notifyListeners(PublicEvent.SHOW, model, speak);
 
-            String link = simple.has("link")
-                    ? link = simple.get("link").getAsString()
-                    : null;
-
-            show(speak, show, link);
-        }
-    }
-
-    private void show(String speak, String show, String link) {
-        Intent intent = new Intent("plexiShow");
-
-        intent.putExtra("speak", speak);
-        intent.putExtra("show", show);
-        intent.putExtra("link", link);
-
-        LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+//        JsonObject simple = model.getSimple();
+//        if (simple.has("text")) {
+//            String show = simple.get("text").getAsString();
+//
+//            String link = simple.has("link")
+//                    ? link = simple.get("link").getAsString()
+//                    : null;
+//
+//            show(speak, show, link);
+//        }
     }
 
     private void errorMessage(String message) {
-        Intent intent = new Intent("plexiError");
-
-        intent.putExtra("message", message);
-
-        LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+        notifyListeners(PublicEvent.ERROR, message);
     }
 
     /**
@@ -472,14 +458,12 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (response.error != null) {
             changeState(State.EXCEPTION, response.error.getMessage());
         } else {
-            // show(response.show, response.speak);
-            // actorResponseHandler(response);
-
-            Intent intent = new Intent("plexiActor");
-
-            intent.putExtra("response", response);
-
-            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+//            TODO will be possible when ShowModel is more strongly typed
+//            Intent intent = new Intent("plexiActor");
+//
+//            intent.putExtra("response", response);
+//
+//            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
         }
     }
 
