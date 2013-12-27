@@ -98,7 +98,7 @@
           <file leaf-file-name="ClassifierModel.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="20" column="27" selection-start="605" selection-end="605" vertical-scroll-proportion="-2.24" vertical-offset="184" max-vertical-offset="1320">
+                <state line="78" column="0" selection-start="1983" selection-end="1983" vertical-scroll-proportion="0.0" vertical-offset="77" max-vertical-offset="1320">
                   <folding />
                 </state>
               </provider>
@@ -108,10 +108,10 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="PlexiServiceTestCase.java" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="PlexiServiceTestCase.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="164" column="0" selection-start="5959" selection-end="5959" vertical-scroll-proportion="0.51449275" vertical-offset="1670" max-vertical-offset="3075">
+                <state line="164" column="0" selection-start="5959" selection-end="5959" vertical-scroll-proportion="0.9079284" vertical-offset="1670" max-vertical-offset="3075">
                   <folding>
                     <element signature="e#5451#5918#0" expanded="true" />
                     <element signature="e#5907#5908#0" expanded="true" />
@@ -492,6 +492,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
+        <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/interfaces/IRequestHelper.java" />
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/util/RequestHelper.java" />
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub.java" />
         <option value="$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/StateModel.java" />
@@ -507,7 +508,6 @@
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java" />
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub4.java" />
         <option value="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
-        <option value="$PROJECT_DIR$/Plexi/src/main/AndroidManifest.xml" />
       </list>
     </option>
   </component>
@@ -639,7 +639,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="plexi" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1090,7 +1094,7 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40902874" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.40902874" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39911634" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1124,6 +1128,16 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="jar://$USER_HOME$/.gradle/caches/artifacts-26/filestore/org.mockito/mockito-all/1.9.5/jar/79a8984096fc6591c1e3690e07d41be506356fa5/mockito-all-1.9.5.jar!/org/mockito/internal/handler/InvocationNotifierHandler.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="28" selection-start="643" selection-end="643" vertical-scroll-proportion="-5.56" vertical-offset="26" max-vertical-offset="450" />
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/artifacts-26/filestore/com.google.dexmaker/dexmaker-mockito/1.0/jar/be7b5f617782d0adb73cfa602183a514d87e7c1c/dexmaker-mockito-1.0.jar!/com/google/dexmaker/mockito/InvocationHandlerAdapter.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="28" selection-start="514" selection-end="514" vertical-scroll-proportion="-5.24" vertical-offset="34" max-vertical-offset="630" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/StateModel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="19" column="25" selection-start="430" selection-end="434" vertical-scroll-proportion="0.0" vertical-offset="33" max-vertical-offset="525">
@@ -1181,6 +1195,13 @@
     <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub3.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="77" column="0" selection-start="3307" selection-end="3307" vertical-scroll-proportion="0.0" vertical-offset="783" max-vertical-offset="1185">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Plexi/src/main/java/com/stremor/plexi/models/ClassifierModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="78" column="0" selection-start="1983" selection-end="1983" vertical-scroll-proportion="0.0" vertical-offset="617" max-vertical-offset="1320">
           <folding />
         </state>
       </provider>
