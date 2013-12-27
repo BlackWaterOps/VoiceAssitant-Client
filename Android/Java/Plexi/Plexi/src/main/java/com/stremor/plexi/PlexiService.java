@@ -26,6 +26,8 @@ import com.stremor.plexi.util.RequestTask;
 
 import org.joda.time.DateTimeZone;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,8 +288,12 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      */
 
     private void classify(String query) {
-        requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "query=" + query,
-                RequestTask.HttpMethod.GET, this);
+        try {
+            requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "?query=" +
+                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, this);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "UnsupportedEncodingException during classification request building", e);
+        }
     }
 
     // classifier response handler
