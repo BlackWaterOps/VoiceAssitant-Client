@@ -51,7 +51,8 @@ public class MainView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mConversationAdapter = new ConversationAdapter(getContext(), android.R.layout.simple_list_item_1, mConversationItems);
+        mConversationAdapter = new ConversationAdapter(getContext(),
+                android.R.layout.simple_list_item_1, mConversationItems);
 
         mConversationView = (ListView) findViewById(R.id.conversationView);
         mConversationView.setAdapter(mConversationAdapter);

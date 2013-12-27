@@ -11,22 +11,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
+import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.client.models.ConversationItem;
 import com.stremor.plexi.client.views.MainView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.stremor.plexi.interfaces.IPlexiListener;
+import com.stremor.plexi.models.ShowModel;
 
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends Activity implements MainView.ViewListener, QueryTask.QueryResponseListener {
+public class MainActivity extends Activity implements MainView.ViewListener, IPlexiListener {
 
     private static final String TAG = "MainActivity";
     private static final int REQ_RECOGNIZE_SPEECH = 41;
     private static final String RECOGNIZER_LANGUAGE_MODEL = RecognizerIntent.LANGUAGE_MODEL_FREE_FORM;
     private static final String RECOGNIZER_LANGUAGE = "en";
     private static final int REQ_CHECK_TTS = 42;
+
     private MainView mView;
     private TextToSpeech mTts;
     private TextToSpeech.OnInitListener ttsInitListener = new TextToSpeech.OnInitListener() {
@@ -38,6 +39,8 @@ public class MainActivity extends Activity implements MainView.ViewListener, Que
         }
     };
 
+    private PlexiService mPlexi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,8 @@ public class MainActivity extends Activity implements MainView.ViewListener, Que
 
         mView = (MainView) findViewById(R.id.mainView);
         mView.setViewListener(this);
+
+        mPlexi = new PlexiService(this);
 
         // Check for TTS support
         Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -93,16 +98,12 @@ public class MainActivity extends Activity implements MainView.ViewListener, Que
     }
 
     /**
-     * Acts on a show intent.
+     * Show a text response.
      *
-     * @param showIntent
+     * @param text
      */
-    private void show(ShowIntent showIntent) throws JSONException {
-        String type = showIntent.getType();
-
-        if (type == "string") {
-            mView.addConversationItem(new ConversationItem(showIntent.getParams().getString("text")));
-        }
+    private void showText(String text) {
+        mView.addConversationItem(new ConversationItem(text));
     }
 
     /**
@@ -114,24 +115,22 @@ public class MainActivity extends Activity implements MainView.ViewListener, Que
      */
     private void handleQuery(String query) {
         mView.addConversationItem(new ConversationItem(query));
-
-        // TODO: Carry over context
-        new QueryTask().execute(query, new JSONObject(), this);
+        mPlexi.query(query);
     }
 
     @Override
-    public void onQueryResponse(QueryResponse queryResponse) throws JSONException {
-        // TODO: Handle error (null query response)
-
-        String speakText = queryResponse.getSpeakText();
+    public void show(ShowModel showModel, String speakText) {
         speak(speakText);
 
-        ShowIntent showIntent = queryResponse.getShowIntent();
-        if (showIntent == null) {
-            show(ShowIntent.stringIntent(speakText));
-        } else {
-            show(showIntent);
+        if (showModel.getSimple().has("text")) {
+            showText(showModel.getSimple().get("text").getAsString());
         }
+    }
+
+    @Override
+    public void error(String message) {
+        // TODO Special error formatting
+        showText(message);
     }
 
     @Override
