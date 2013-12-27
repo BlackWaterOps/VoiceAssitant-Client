@@ -178,15 +178,6 @@ public class PlexiServiceTestCase extends AndroidTestCase {
                 eq(RequestTask.HttpMethod.POST), eq(spy.MODEL_COMPLETE), eq(false),
                 any(IResponseListener.class));
         order.verifyNoMoreInteractions();
-
-        // Verify that requests were made correctly
-//        verifyClassificationCall(spy);
-//        verifyAuditCall(spy);
-//        verifyDisambiguatePassiveCall(spy, "string", "null");
-//        verifyAuditCall(spy, 2);
-
-        // We expect the client to have called the actor with the complete model
-//        verifyActorCall(spy, spy.MODEL_COMPLETE, false);
     }
 
     private void verifyClassificationCall(IRequestHelper spy) {

@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0e4d1fc-26b8-4e98-9b22-82052bcff9b9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/RequestHelperStub4.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" afterPath="$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Plexi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -120,7 +118,7 @@
           <file leaf-file-name="PlexiServiceTestCase.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="171" column="84" selection-start="6522" selection-end="6522" vertical-scroll-proportion="0.56265986" vertical-offset="1910" max-vertical-offset="3210">
+                <state line="164" column="0" selection-start="5959" selection-end="5959" vertical-scroll-proportion="0.9079284" vertical-offset="1670" max-vertical-offset="3075">
                   <folding>
                     <element signature="e#5451#5918#0" expanded="true" />
                     <element signature="e#5907#5908#0" expanded="true" />
@@ -1226,7 +1224,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Plexi/src/instrumentTest/java/com/stremor/plexi/util/test/PlexiServiceTestCase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="171" column="84" selection-start="6522" selection-end="6522" vertical-scroll-proportion="0.56265986" vertical-offset="1910" max-vertical-offset="3210">
+        <state line="164" column="0" selection-start="5959" selection-end="5959" vertical-scroll-proportion="0.9079284" vertical-offset="1670" max-vertical-offset="3075">
           <folding>
             <element signature="e#5451#5918#0" expanded="true" />
             <element signature="e#5907#5908#0" expanded="true" />
