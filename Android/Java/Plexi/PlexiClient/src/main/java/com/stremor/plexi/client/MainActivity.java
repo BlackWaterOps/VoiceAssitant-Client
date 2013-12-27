@@ -1,65 +1,173 @@
 package com.stremor.plexi.client;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 
-public class MainActivity extends ActionBarActivity {
+import com.stremor.plexi.client.models.ConversationItem;
+import com.stremor.plexi.client.views.MainView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+import java.util.Locale;
+
+public class MainActivity extends Activity implements MainView.ViewListener, QueryTask.QueryResponseListener {
+
+    private static final String TAG = "MainActivity";
+    private static final int REQ_RECOGNIZE_SPEECH = 41;
+    private static final String RECOGNIZER_LANGUAGE_MODEL = RecognizerIntent.LANGUAGE_MODEL_FREE_FORM;
+    private static final String RECOGNIZER_LANGUAGE = "en";
+    private static final int REQ_CHECK_TTS = 42;
+    private MainView mView;
+    private TextToSpeech mTts;
+    private TextToSpeech.OnInitListener ttsInitListener = new TextToSpeech.OnInitListener() {
+        @Override
+        public void onInit(int status) {
+            if (status == TextToSpeech.SUCCESS) {
+                mTts.setLanguage(Locale.ENGLISH);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
-    }
+        mView = (MainView) findViewById(R.id.mainView);
+        mView.setViewListener(this);
 
+        // Check for TTS support
+        Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+        startActivityForResult(checkIntent, REQ_CHECK_TTS);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    /**
+     * Checks if this device supports speech recognition.
+     */
+    private boolean isSpeechRecognizerPresent() {
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> activities = pm.queryIntentActivities(new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
+        return activities != null && !activities.isEmpty();
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * Prompt the user to speak.
+     *
+     * @param prompt        Text prompt to show the user when asking them to speak.
+     * @param languageModel Informs the recognizer which speech model to prefer.
+     * @param language      Language of speech to expect.
      */
-    public static class PlaceholderFragment extends Fragment {
+    private void recognizeSpeech(String prompt, String languageModel, String language) {
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, languageModel);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
 
-        public PlaceholderFragment() {
-        }
+        startActivityForResult(i, REQ_RECOGNIZE_SPEECH);
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+    /**
+     * Speaks via TTS.
+     *
+     * @param text
+     */
+    private void speak(String text) {
+        mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    /**
+     * Acts on a show intent.
+     *
+     * @param showIntent
+     */
+    private void show(ShowIntent showIntent) throws JSONException {
+        String type = showIntent.getType();
+
+        if (type == "string") {
+            mView.addConversationItem(new ConversationItem(showIntent.getParams().getString("text")));
         }
     }
 
+    /**
+     * Handles a query spoken by the user.
+     * <p/>
+     * Updates the view and calls subsequent processing routines.
+     *
+     * @param query
+     */
+    private void handleQuery(String query) {
+        mView.addConversationItem(new ConversationItem(query));
+
+        // TODO: Carry over context
+        new QueryTask().execute(query, new JSONObject(), this);
+    }
+
+    @Override
+    public void onQueryResponse(QueryResponse queryResponse) throws JSONException {
+        // TODO: Handle error (null query response)
+
+        String speakText = queryResponse.getSpeakText();
+        speak(speakText);
+
+        ShowIntent showIntent = queryResponse.getShowIntent();
+        if (showIntent == null) {
+            show(ShowIntent.stringIntent(speakText));
+        } else {
+            show(showIntent);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQ_RECOGNIZE_SPEECH) {
+            if (resultCode == RESULT_OK) {
+                List<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                float[] confidences = data.getFloatArrayExtra(RecognizerIntent.EXTRA_CONFIDENCE_SCORES);
+
+                if (matches.isEmpty())
+                    return;
+
+                // TODO: Inspect other matches?
+                handleQuery(matches.get(0));
+
+            } else if (resultCode == RecognizerIntent.RESULT_AUDIO_ERROR) {
+                Log.e(TAG, "Speech recognition: audio error");
+            } else if (resultCode == RecognizerIntent.RESULT_CLIENT_ERROR) {
+                Log.e(TAG, "Speech recognition: client error");
+            } else if (resultCode == RecognizerIntent.RESULT_NETWORK_ERROR) {
+                Log.e(TAG, "Speech recognition: network error");
+            } else if (resultCode == RecognizerIntent.RESULT_SERVER_ERROR) {
+                Log.e(TAG, "Speech recognition: server error");
+            }
+        } else if (requestCode == REQ_CHECK_TTS) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                mTts = new TextToSpeech(this, ttsInitListener);
+            } else {
+                // Install TTS data
+                Intent installIntent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+                startActivity(installIntent);
+            }
+        }
+    }
+
+    public void onPleaseClick(View v) {
+        recognizeSpeech("Please say a command.", RECOGNIZER_LANGUAGE_MODEL, RECOGNIZER_LANGUAGE);
+    }
 }
