@@ -50,6 +50,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         mView.setViewListener(this);
 
         mPlexi = new PlexiService(this);
+        mPlexi.addListener(this);
 
         // Check for TTS support
         Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -121,10 +122,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     @Override
     public void show(ShowModel showModel, String speakText) {
         speak(speakText);
-
-        if (showModel.getSimple().has("text")) {
-            showText(showModel.getSimple().get("text").getAsString());
-        }
+        showText(showModel.getSimple().getText());
     }
 
     @Override

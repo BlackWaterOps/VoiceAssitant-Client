@@ -8,15 +8,16 @@ import com.google.gson.JsonObject;
  * TODO Make more strongly typed (don't throw JSON objects through a public interface!)
  */
 public class ShowModel {
-    private JsonObject simple;
+    private ShowSimpleModel simple;
     private JsonObject structured;
 
     public ShowModel(JsonObject simple, JsonObject structured) {
-        this.simple = simple;
+        this.simple = new ShowSimpleModel(simple.get("text").getAsString(),
+                simple.has("link") ? simple.get("link").getAsString() : null);
         this.structured = structured;
     }
 
-    public JsonObject getSimple() {
+    public ShowSimpleModel getSimple() {
         return simple;
     }
 

@@ -5,7 +5,6 @@ import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IPlexiService;
@@ -14,6 +13,7 @@ import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.ChoiceModel;
 import com.stremor.plexi.models.ClassifierModel;
+import com.stremor.plexi.models.DisambiguationCandidate;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
@@ -219,9 +219,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void choiceList(ResponderModel response) {
         try {
-            JsonObject simple = response.getShow().getSimple();
+            DisambiguationCandidate[] list = response.getShow().getSimple().getList();
 
-            if (simple.has("list")) {
+            if (list != null) {
                 // TODO send response to listener
             } else {
                 Log.d(TAG, "no list could be found");
@@ -317,15 +317,12 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private void disambiguateCandidate(String data) {
-        JsonObject simple = tempContext.getShow().getSimple();
-
+        DisambiguationCandidate[] candidates = tempContext.getShow().getSimple().getList();
         // String field = tempContext.field;
 
-        JsonArray list = simple.has("list")
-                ? (JsonArray) simple.getAsJsonArray("list")
-                : new JsonArray();
-
-        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(), list);
+        candidates = candidates == null ? new DisambiguationCandidate[]{} : candidates;
+        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(),
+                candidates);
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
@@ -460,6 +457,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (response.error != null) {
             changeState(State.EXCEPTION, response.error.getMessage());
         } else {
+            notifyListeners(PublicEvent.SHOW, response.show, response.speak);
+
 //            TODO will be possible when ShowModel is more strongly typed
 //            Intent intent = new Intent("plexiActor");
 //

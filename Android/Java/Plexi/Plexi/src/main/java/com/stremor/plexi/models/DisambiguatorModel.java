@@ -1,7 +1,5 @@
 package com.stremor.plexi.models;
 
-import com.google.gson.JsonArray;
-
 import java.util.HashMap;
 
 /**
@@ -10,7 +8,7 @@ import java.util.HashMap;
 public class DisambiguatorModel {
     private Object payload;
     private String type;
-    private JsonArray candidates;
+    private DisambiguationCandidate[] candidates;
     private HashMap<String, Object> deviceInfo;
 
     public DisambiguatorModel(Object payload, String type) {
@@ -18,7 +16,7 @@ public class DisambiguatorModel {
         this.type = type;
     }
 
-    public DisambiguatorModel(Object payload, String type, JsonArray candidates) {
+    public DisambiguatorModel(Object payload, String type, DisambiguationCandidate[] candidates) {
         this.payload = payload;
         this.type = type;
         this.candidates = candidates;
@@ -34,32 +32,18 @@ public class DisambiguatorModel {
         return payload;
     }
 
-    public void setPayload(Object payload) {
-        this.payload = payload;
-    }
-
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public JsonArray getCandidates() {
+    public DisambiguationCandidate[] getCandidates() {
         return candidates;
     }
 
-    public void setCandidates(JsonArray candidates) {
-        this.candidates = candidates;
-    }
-
     public HashMap<String, Object> getDeviceInfo() {
-        return deviceInfo;
-    }
 
-    public void setDeviceInfo(HashMap<String, Object> device_info) {
-        this.deviceInfo = device_info;
+
+        return deviceInfo;
     }
 
     @Override
