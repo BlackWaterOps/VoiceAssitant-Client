@@ -441,10 +441,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         String actor = data.getActor();
 
         if (actor != null) {
-            String endpoint = RESPONDER + "actor/" + actor;
+            String endpoint = RESPONDER + "actors/" + actor;
 
             if (actor.contains("private:")) {
-                endpoint = PUD + "actor/" + actor.replace("private:", "");
+                endpoint = PUD + "actors/" + actor.replace("private:", "");
             }
 
             requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
