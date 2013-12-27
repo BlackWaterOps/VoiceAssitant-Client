@@ -1,17 +1,15 @@
 package com.stremor.plexi;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.CountDownTimer;
-import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
@@ -32,12 +30,14 @@ import org.joda.time.DateTimeZone;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by jeffschifano on 10/28/13.
  */
-public final class PlexiService extends Service implements IPlexiService, IResponseListener {
+public final class PlexiService implements IPlexiService, IResponseListener {
     // endpoints
     private static final String CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
@@ -47,10 +47,9 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // tag for logging
     private static final String TAG = "PlexiService";
 
-    private final IBinder mBinder = new LocalBinder();
-    private Context context;
-
-    private ArrayList<String> auditorStates = new ArrayList<String>() {{ add("disambiguate"); add("inprogress"); add("choice"); }};
+    // States which indicate Plexi should contact the auditor again after action is taken
+    private static final List<String> auditorStates = Arrays.asList(
+            new String[] {"disambiguate", "inprogress", "choice"});
 
     // gets completed with all the necessary fields in order to fulfill an action
     private ClassifierModel mainContext = null;
@@ -58,10 +57,16 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
 
-    private CountDownTimer contextTimer;
-    private String originalQuery;
-    private LocationTracker locationTracker;
+    // Observers
+    private List<IPlexiListener> listeners = new ArrayList<IPlexiListener>();
 
+    // Android/state-related members
+    private Context context;
+    private CountDownTimer contextTimer;
+    private LocationTracker locationTracker;
+    private String originalQuery;
+
+    // Class dependencies
     private IRequestHelper requestHelper;
 
     /**
@@ -103,11 +108,6 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         if (this.locationTracker == null) {
             this.locationTracker = new LocationTracker(context);
         }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
     }
 
     public String getOriginalQuery() { return originalQuery; }
@@ -612,7 +612,31 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         Log.e(TAG, "unhandled query response");
     }
 
-    public class LocalBinder extends Binder {
-        public PlexiService getService() { return PlexiService.this; }
+    private enum PublicEvent {
+        SHOW, ERROR
+    };
+
+    public void addListener(IPlexiListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(IPlexiListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyListeners(PublicEvent event, Object... data) {
+        switch (event) {
+            case SHOW:
+                for (IPlexiListener listener : listeners)
+                    listener.show((ShowModel) data[0], (String) data[1]);
+                break;
+            case ERROR:
+                for (IPlexiListener listener : listeners)
+                    listener.error((String) data[0]);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "PublicEvent value missing dispatch implementation");
+        }
     }
 }
