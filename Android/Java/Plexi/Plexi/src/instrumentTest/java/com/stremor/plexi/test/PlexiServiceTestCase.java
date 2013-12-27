@@ -1,4 +1,4 @@
-package com.stremor.plexi.util.test;
+package com.stremor.plexi.test;
 
 import android.test.AndroidTestCase;
 
@@ -12,7 +12,7 @@ import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.StateModel;
-import com.stremor.plexi.util.PlexiService;
+import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 

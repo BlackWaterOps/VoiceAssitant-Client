@@ -1,4 +1,4 @@
-package com.stremor.plexi.util;
+package com.stremor.plexi;
 
 import android.app.Service;
 import android.content.Context;
@@ -22,6 +22,11 @@ import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
+import com.stremor.plexi.util.Datetime;
+import com.stremor.plexi.util.JsonObjectUtil;
+import com.stremor.plexi.util.LocationTracker;
+import com.stremor.plexi.util.RequestHelper;
+import com.stremor.plexi.util.RequestTask;
 
 import org.joda.time.DateTimeZone;
 

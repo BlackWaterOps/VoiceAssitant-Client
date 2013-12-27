@@ -1,4 +1,4 @@
-package com.stremor.plexi.util.test;
+package com.stremor.plexi.test;
 
 import com.google.gson.JsonParser;
 import com.stremor.plexi.interfaces.IRequestHelper;
