@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Plexi.iml" filepath="$PROJECT_DIR$/Plexi.iml" />
       <module fileurl="file://$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" filepath="$PROJECT_DIR$/Plexi/Plexi-Plexi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PlexiClient/PlexiClient.iml" filepath="$PROJECT_DIR$/PlexiClient/PlexiClient.iml" />
     </modules>
   </component>
 </project>
