@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Plexi.Models;
 
@@ -96,9 +97,9 @@ namespace Plexi.Util
                     dateObj = Datetime.BuildDatetimeHelper((string)date);
                 }
 
-                if (date.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+                if (date.GetType() == typeof(JObject))
                 {
-                    dateObj = Datetime.BuildDatetimeHelper((Newtonsoft.Json.Linq.JObject)date);
+                    dateObj = Datetime.BuildDatetimeHelper((JObject)date);
                 }
             }
 
@@ -109,9 +110,9 @@ namespace Plexi.Util
                     dateObj = Datetime.BuildDatetimeHelper((string)time, dateObj);
                 }
 
-                if (time.GetType() == typeof(Newtonsoft.Json.Linq.JObject))
+                if (time.GetType() == typeof(JObject))
                 {
-                    dateObj = Datetime.BuildDatetimeHelper((Newtonsoft.Json.Linq.JObject)time, dateObj);
+                    dateObj = Datetime.BuildDatetimeHelper((JObject)time, dateObj);
                 }
             }
 
@@ -159,7 +160,7 @@ namespace Plexi.Util
         }
 
         // {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
-        private static DateTime FuzzyHelper(Newtonsoft.Json.Linq.JObject datetime, bool isDate)
+        private static DateTime FuzzyHelper(JObject datetime, bool isDate)
         {
             string label = null;
             string def = null;
@@ -219,9 +220,9 @@ namespace Plexi.Util
             return newDate;
         }
 
-        private static DateTime? BuildDatetimeHelper(Newtonsoft.Json.Linq.JObject dateortime, DateTime? newDate = null)
+        private static DateTime? BuildDatetimeHelper(JObject dateortime, DateTime? newDate = null)
         {            
-            foreach (KeyValuePair<string, Newtonsoft.Json.Linq.JToken> partial in dateortime)
+            foreach (KeyValuePair<string, JToken> partial in dateortime)
             {
                 if (partial.Key.Contains("weekday"))
                 {
@@ -230,7 +231,7 @@ namespace Plexi.Util
                 else if (partial.Key.Contains("fuzzy"))
                 {
                     bool isDate = (partial.Key.Contains("date")) ? true : false;
-                    return FuzzyHelper((Newtonsoft.Json.Linq.JObject)partial.Value, isDate);
+                    return FuzzyHelper((JObject)partial.Value, isDate);
                 }
                 else
                 {
@@ -238,7 +239,7 @@ namespace Plexi.Util
                     {
                         Debug.WriteLine("step 1");
 
-                        var val = (Newtonsoft.Json.Linq.JArray)partial.Value;
+                        var val = (JArray)partial.Value;
 
                         foreach (var item in val)
                         {
@@ -262,7 +263,7 @@ namespace Plexi.Util
 
                                     case "Object":
                                         Debug.WriteLine("item is an object");
-                                        foreach (KeyValuePair<string, Newtonsoft.Json.Linq.JToken> itemToken in (Newtonsoft.Json.Linq.JObject)item)
+                                        foreach (KeyValuePair<string, JToken> itemToken in (JObject)item)
                                         {
                                             if (newDate.Equals(null))
                                             {
@@ -278,7 +279,7 @@ namespace Plexi.Util
 
                                                     bool isDate = (itemToken.Key.Contains("date")) ? true : false;
 
-                                                    newDate = FuzzyHelper((Newtonsoft.Json.Linq.JObject)itemToken.Value, isDate);
+                                                    newDate = FuzzyHelper((JObject)itemToken.Value, isDate);
                                                 }
                                             }
                                         }
