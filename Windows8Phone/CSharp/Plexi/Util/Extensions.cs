@@ -31,8 +31,8 @@ namespace Plexi.Util
            
             var clone = JsonConvert.DeserializeObject<T>(serial, jsonSettings);
 
-            Debug.WriteLine("Deep Copy");
-            Debug.WriteLine(JsonConvert.SerializeObject(clone, jsonSettings));
+            //Debug.WriteLine("Deep Copy");
+            //Debug.WriteLine(JsonConvert.SerializeObject(clone, jsonSettings));
 
             return clone;
         }
