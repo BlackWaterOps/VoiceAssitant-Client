@@ -1,7 +1,8 @@
-package com.stremor.plexi.util.test;
+package com.stremor.plexi.test;
 
 import android.test.AndroidTestCase;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.stremor.plexi.interfaces.IRequestHelper;
@@ -11,15 +12,22 @@ import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.StateModel;
-import com.stremor.plexi.util.PlexiService;
+import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 
+import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -126,9 +134,55 @@ public class PlexiServiceTestCase extends AndroidTestCase {
         verifyActorCall(spy, expected, false);
     }
 
+    /**
+     * Tests a full flow: query -> passive disambiguation -> completion
+     *
+     * Tightly coupled with RequestHelperStub4.
+     */
+    public void testWithStub4() {
+        RequestHelperStub4 spy = Mockito.spy(new RequestHelperStub4());
+        PlexiService plexi = new PlexiService(getContext(), spy);
+
+        plexi.query("Hello world");
+
+        // Verify final state: context should be cleared
+        assertEquals(PlexiService.State.UNINITIALIZED, plexi.getCurrentState().getState());
+
+        // Custom matcher for disambiguator model that we expect
+        ArgumentMatcher<DisambiguatorModel> isValidDisambig = new ArgumentMatcher<DisambiguatorModel>() {
+            @Override
+            public boolean matches(Object o) {
+                if (!(o instanceof DisambiguatorModel))
+                    return false;
+                DisambiguatorModel d = (DisambiguatorModel) o;
+                return (d.getPayload().equals(JsonNull.INSTANCE)
+                        && d.getType().equals("location")
+                        && d.getDeviceInfo() != null);
+            }
+        };
+
+        InOrder order = inOrder(spy);
+
+        order.verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
+                eq(RequestTask.HttpMethod.GET), isA(IResponseListener.class));
+        order.verify(spy, times(1)).doRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+                isA(IResponseListener.class));
+        order.verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/passive"),
+                eq(RequestTask.HttpMethod.POST), argThat(isValidDisambig), eq(true),
+                isA(IResponseListener.class));
+        order.verify(spy, times(1)).doRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+                isA(IResponseListener.class));
+        order.verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), eq(spy.MODEL_COMPLETE), eq(false),
+                any(IResponseListener.class));
+        order.verifyNoMoreInteractions();
+    }
+
     private void verifyClassificationCall(IRequestHelper spy) {
-        verify(spy).doRequest(eq(ClassifierModel.class), contains("casper"),
-                eq(RequestTask.HttpMethod.GET), any(IResponseListener.class));
+        verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
+                eq(RequestTask.HttpMethod.GET), isA(IResponseListener.class));
     }
 
     private void verifyAuditCall(IRequestHelper spy) {
@@ -137,19 +191,19 @@ public class PlexiServiceTestCase extends AndroidTestCase {
 
     private void verifyAuditCall(IRequestHelper spy, int times) {
         verify(spy, times(times)).doRequest(eq(ResponderModel.class), contains("audit"),
-                eq(RequestTask.HttpMethod.POST), any(Object.class), eq(false),
-                any(IResponseListener.class));
+                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+                isA(IResponseListener.class));
     }
 
     private void verifyActorCall(IRequestHelper spy) {
-        verify(spy).doRequest(eq(ActorModel.class), contains("actor"),
-                eq(RequestTask.HttpMethod.POST), any(ClassifierModel.class), eq(false),
-                any(IResponseListener.class));
+        verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), isA(ClassifierModel.class), eq(false),
+                isA(IResponseListener.class));
     }
 
     private void verifyActorCall(IRequestHelper spy, ClassifierModel expectedData,
                                  boolean includeNulls) {
-        verify(spy).doRequest(eq(ActorModel.class), contains("actor"),
+        verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
                 eq(RequestTask.HttpMethod.POST), eq(expectedData), eq(includeNulls),
                 any(IResponseListener.class));
     }
@@ -158,8 +212,17 @@ public class PlexiServiceTestCase extends AndroidTestCase {
                                               String expectedPayload) {
         DisambiguatorModel expected = new DisambiguatorModel(expectedPayload, expectedType);
 
-        verify(spy).doRequest(eq(JsonObject.class), contains("disambiguate/active"),
+        verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/active"),
                 eq(RequestTask.HttpMethod.POST), eq(expected), eq(true),
-                any(IResponseListener.class));
+                isA(IResponseListener.class));
+    }
+
+    private void verifyDisambiguatePassiveCall(IRequestHelper spy, String expectedType,
+                                               String expectedPayload) {
+        DisambiguatorModel expected = new DisambiguatorModel(expectedPayload, expectedType);
+
+        verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/passive"),
+                eq(RequestTask.HttpMethod.POST), eq(expected), eq(true),
+                isA(IResponseListener.class));
     }
 }

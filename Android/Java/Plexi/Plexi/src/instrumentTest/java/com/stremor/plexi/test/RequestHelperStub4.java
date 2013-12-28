@@ -1,4 +1,4 @@
-package com.stremor.plexi.util.test;
+package com.stremor.plexi.test;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,20 +16,37 @@ import com.stremor.plexi.util.RequestTask;
  * An IRequestHelper stub implementation which simulates the following scenario:
  *
  * - Fake classification immediately returned.
- * - Auditor requests active disambiguation on string field.
- * - Auditor accepts after active disambiguation completed.
+ * - Auditor requests passive disambiguation on string field.
+ * - Auditor accepts after passive disambiguation completed.
  * - Actor is a stub.
  *
  * Created by jon on 20.12.2013.
  */
-public class RequestHelperStub3 implements IRequestHelper {
+public class RequestHelperStub4 implements IRequestHelper {
     private static JsonParser parser = new JsonParser();
+
+    private static JsonObject locationObject = parser.parse("{" +
+            "\"city\":\"san francisco\"," +
+            "\"dst\": true," +
+            "\"latitude\": 37.784827," +
+            "\"longitude\": -122.727802," +
+            "\"state\": \"ca\"," +
+            "\"time_offset\": -8," +
+            "\"zipcode\": 94188}").getAsJsonObject();
+
+    public static ClassifierModel MODEL_START = new ClassifierModel("location", "query",
+            parser.parse("{\"location\":null}").getAsJsonObject());
+
+    public static ClassifierModel MODEL_COMPLETE = new ClassifierModel("location", "query",
+            parser.parse("{\"location\":" + locationObject.toString() + "}").getAsJsonObject());
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               IResponseListener listener) {
         if (type == ClassifierModel.class) {
-            ClassifierModel response = new ClassifierModel("calendar", "create",
-                    parser.parse("{\"name\":null}").getAsJsonObject());
+            ClassifierModel response = null;
+            try {
+                response = MODEL_START.clone();
+            } catch (CloneNotSupportedException e) { /* pass */ }
 
             listener.onQueryResponse(response);
         }
@@ -42,26 +59,24 @@ public class RequestHelperStub3 implements IRequestHelper {
             assert data instanceof DisambiguatorModel;
             assert ((DisambiguatorModel) data).getType().equals("string");
 
-            JsonObject response = parser.parse("{\"string\": \"Party\"}").getAsJsonObject();
+            JsonObject response = parser.parse(
+                    "{\"location\": "
+                        + locationObject.toString()
+                      + "}")
+                    .getAsJsonObject();
+
             listener.onQueryResponse(response);
         } else if (type == ResponderModel.class) {
             // This is an auditor call.
             ClassifierModel pkg = (ClassifierModel) data;
 
-            JsonElement name = pkg.getPayload().get("name");
+            JsonElement location = pkg.getPayload().get("location");
             ResponderModel response = null;
 
-            if (name.isJsonNull()) {
+            if (location.isJsonNull()) {
                 // Needs disambiguation!
-                response = new ResponderModel("in progress", "string", "name");
-
-                ShowModel show = new ShowModel(
-                        parser.parse("{\"text\":\"What is the name of the event?\"}")
-                                .getAsJsonObject(),
-                        null);
-                response.setShow(show);
-                response.setSpeak("What is the name of the event?");
-            } else if (name.isJsonPrimitive() && name.getAsJsonPrimitive().isString()) {
+                response = new ResponderModel("disambiguate", "location", "location");
+            } else if (location.isJsonObject() && location.equals(locationObject)) {
                 response = new ResponderModel("completed", "foobar", null, pkg);
             } else {
                 assert false;

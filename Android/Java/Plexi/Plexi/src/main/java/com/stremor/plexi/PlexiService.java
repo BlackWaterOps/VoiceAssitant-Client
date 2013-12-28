@@ -1,38 +1,43 @@
-package com.stremor.plexi.util;
+package com.stremor.plexi;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Binder;
 import android.os.CountDownTimer;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.Pair;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.ChoiceModel;
 import com.stremor.plexi.models.ClassifierModel;
+import com.stremor.plexi.models.DisambiguationCandidate;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
+import com.stremor.plexi.util.Datetime;
+import com.stremor.plexi.util.JsonObjectUtil;
+import com.stremor.plexi.util.LocationTracker;
+import com.stremor.plexi.util.RequestHelper;
+import com.stremor.plexi.util.RequestTask;
 
 import org.joda.time.DateTimeZone;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by jeffschifano on 10/28/13.
  */
-public final class PlexiService extends Service implements IPlexiService, IResponseListener {
+public final class PlexiService implements IPlexiService, IResponseListener {
     // endpoints
     private static final String CLASSIFIER = "http://casper-cached.stremor-nli.appspot.com/v1";
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
@@ -42,10 +47,9 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // tag for logging
     private static final String TAG = "PlexiService";
 
-    private final IBinder mBinder = new LocalBinder();
-    private Context context;
-
-    private ArrayList<String> auditorStates = new ArrayList<String>() {{ add("disambiguate"); add("inprogress"); add("choice"); }};
+    // States which indicate Plexi should contact the auditor again after action is taken
+    private static final List<String> auditorStates = Arrays.asList(
+            new String[] {"disambiguate", "inprogress", "choice"});
 
     // gets completed with all the necessary fields in order to fulfill an action
     private ClassifierModel mainContext = null;
@@ -53,10 +57,16 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     // indicates fields that need to be completed in the main context
     private ResponderModel tempContext = null;
 
-    private CountDownTimer contextTimer;
-    private String originalQuery;
-    private LocationTracker locationTracker;
+    // Observers
+    private List<IPlexiListener> listeners = new ArrayList<IPlexiListener>();
 
+    // Android/state-related members
+    private Context context;
+    private CountDownTimer contextTimer;
+    private LocationTracker locationTracker;
+    private String originalQuery;
+
+    // Class dependencies
     private IRequestHelper requestHelper;
 
     /**
@@ -98,11 +108,6 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         if (this.locationTracker == null) {
             this.locationTracker = new LocationTracker(context);
         }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
     }
 
     public String getOriginalQuery() { return originalQuery; }
@@ -195,7 +200,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     private void createTimer() {
-        contextTimer = new CountDownTimer(2000, 0) {
+        contextTimer = new CountDownTimer(120000, 120000) {
             @Override
             public void onTick(long l) {
                 return;
@@ -214,9 +219,9 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     private void choiceList(ResponderModel response) {
         try {
-            JsonObject simple = response.getShow().getSimple();
+            DisambiguationCandidate[] list = response.getShow().getSimple().getList();
 
-            if (simple.has("list")) {
+            if (list != null) {
                 // TODO send response to listener
             } else {
                 Log.d(TAG, "no list could be found");
@@ -260,34 +265,22 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     // called from actor
     private void show(ShowModel model, String speak) {
-        JsonObject simple = model.getSimple();
-        if (simple.has("text")) {
-            String show = simple.get("text").getAsString();
+        notifyListeners(PublicEvent.SHOW, model, speak);
 
-            String link = simple.has("link")
-                    ? link = simple.get("link").getAsString()
-                    : null;
-
-            show(speak, show, link);
-        }
-    }
-
-    private void show(String speak, String show, String link) {
-        Intent intent = new Intent("plexiShow");
-
-        intent.putExtra("speak", speak);
-        intent.putExtra("show", show);
-        intent.putExtra("link", link);
-
-        LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+//        JsonObject simple = model.getSimple();
+//        if (simple.has("text")) {
+//            String show = simple.get("text").getAsString();
+//
+//            String link = simple.has("link")
+//                    ? link = simple.get("link").getAsString()
+//                    : null;
+//
+//            show(speak, show, link);
+//        }
     }
 
     private void errorMessage(String message) {
-        Intent intent = new Intent("plexiError");
-
-        intent.putExtra("message", message);
-
-        LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+        notifyListeners(PublicEvent.ERROR, message);
     }
 
     /**
@@ -295,13 +288,16 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
      */
 
     private void classify(String query) {
-        requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "query=" + query,
-                RequestTask.HttpMethod.GET, this);
+        try {
+            requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "?query=" +
+                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, this);
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "UnsupportedEncodingException during classification request building", e);
+        }
     }
 
     // classifier response handler
-    @Override
-    public void onQueryResponse(ClassifierModel response) {
+    public void handleClassifierResponse(ClassifierModel response) {
         if (response.getError() != null) {
             changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
@@ -321,15 +317,12 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     private void disambiguateCandidate(String data) {
-        JsonObject simple = tempContext.getShow().getSimple();
-
+        DisambiguationCandidate[] candidates = tempContext.getShow().getSimple().getList();
         // String field = tempContext.field;
 
-        JsonArray list = simple.has("list")
-                ? (JsonArray) simple.getAsJsonArray("list")
-                : new JsonArray();
-
-        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(), list);
+        candidates = candidates == null ? new DisambiguationCandidate[]{} : candidates;
+        DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(),
+                candidates);
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
                 RequestTask.HttpMethod.POST, postData, true, this);
     }
@@ -357,8 +350,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     // disambiguator response handler
-    @Override
-    public void onQueryResponse(JsonObject response) {
+    public void handleDisambiguationResponse(JsonObject response) {
         if (response != null) {
             if (response.has("error")) {
                 // TODO
@@ -367,7 +359,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
                 // do client operations
                 doClientOperations(response);
 
-                String field = this.tempContext.getField();
+                String field = this.tempContext.getField().replace("payload.", "");
                 String type = this.tempContext.getType();
 
                 // Replace fields in a clone of the current context
@@ -414,8 +406,7 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
     }
 
     // auditor response handler
-    @Override
-    public void onQueryResponse(ResponderModel response) {
+    public void handleAuditorResponse(ResponderModel response) {
         if (response.getError() != null) {
             changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
@@ -447,10 +438,10 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         String actor = data.getActor();
 
         if (actor != null) {
-            String endpoint = RESPONDER + "actor/" + actor;
+            String endpoint = RESPONDER + "actors/" + actor;
 
             if (actor.contains("private:")) {
-                endpoint = PUD + "actor/" + actor.replace("private:", "");
+                endpoint = PUD + "actors/" + actor.replace("private:", "");
             }
 
             requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
@@ -460,21 +451,20 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
         }
     }
 
-    @Override
-    public void onQueryResponse(ActorModel response) {
+    public void handleActorResponse(ActorModel response) {
         this.clearContext();
 
         if (response.error != null) {
             changeState(State.EXCEPTION, response.error.getMessage());
         } else {
-            // show(response.show, response.speak);
-            // actorResponseHandler(response);
+            notifyListeners(PublicEvent.SHOW, response.show, response.speak);
 
-            Intent intent = new Intent("plexiActor");
-
-            intent.putExtra("response", response);
-
-            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+//            TODO will be possible when ShowModel is more strongly typed
+//            Intent intent = new Intent("plexiActor");
+//
+//            intent.putExtra("response", response);
+//
+//            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
         }
     }
 
@@ -604,10 +594,45 @@ public final class PlexiService extends Service implements IPlexiService, IRespo
 
     @Override
     public void onQueryResponse(Object response) {
-        Log.e(TAG, "unhandled query response");
+        // Dispatch based on response type
+
+        if (response instanceof ClassifierModel)
+            handleClassifierResponse((ClassifierModel) response);
+        else if (response instanceof ResponderModel)
+            handleAuditorResponse((ResponderModel) response);
+        else if (response instanceof ActorModel)
+            handleActorResponse((ActorModel) response);
+        else if (response instanceof JsonObject)
+            handleDisambiguationResponse((JsonObject) response);
+        else
+            Log.e(TAG, "unhandled query response");
     }
 
-    public class LocalBinder extends Binder {
-        public PlexiService getService() { return PlexiService.this; }
+    private enum PublicEvent {
+        SHOW, ERROR
+    };
+
+    public void addListener(IPlexiListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(IPlexiListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyListeners(PublicEvent event, Object... data) {
+        switch (event) {
+            case SHOW:
+                for (IPlexiListener listener : listeners)
+                    listener.show((ShowModel) data[0], (String) data[1]);
+                break;
+            case ERROR:
+                for (IPlexiListener listener : listeners)
+                    listener.error((String) data[0]);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "PublicEvent value missing dispatch implementation");
+        }
     }
 }

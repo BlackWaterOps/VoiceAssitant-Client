@@ -3,18 +3,24 @@ package com.stremor.plexi.models;
 import com.google.gson.JsonObject;
 
 /**
- * Created by jeffschifano on 10/29/13.
+ * Describes content to be displayed to the user.
  */
 public class ShowModel {
-    private JsonObject simple;
+    private ShowSimpleModel simple;
     private JsonObject structured;
 
-    public ShowModel(JsonObject simple, JsonObject structured) {
+    public ShowModel(ShowSimpleModel simple, JsonObject structured) {
         this.simple = simple;
         this.structured = structured;
     }
 
-    public JsonObject getSimple() {
+    public ShowModel(JsonObject simple, JsonObject structured) {
+        this.simple = new ShowSimpleModel(simple.get("text").getAsString(),
+                simple.has("link") ? simple.get("link").getAsString() : null);
+        this.structured = structured;
+    }
+
+    public ShowSimpleModel getSimple() {
         return simple;
     }
 
