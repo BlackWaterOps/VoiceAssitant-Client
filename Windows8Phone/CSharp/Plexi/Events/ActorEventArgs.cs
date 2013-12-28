@@ -6,11 +6,13 @@ namespace Plexi.Events
 {
     public class ActorEventArgs : EventArgs
     {
-        public ActorModel actor;
+        public ClassifierModel data;
 
-        public ActorEventArgs(ActorModel actor)
+        public bool handled { get; set; }
+
+        public ActorEventArgs(ClassifierModel data)
         {
-            this.actor = actor;
+            this.data = data;
         }
     }
 }
