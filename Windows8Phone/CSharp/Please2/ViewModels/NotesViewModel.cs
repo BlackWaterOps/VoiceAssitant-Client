@@ -46,6 +46,10 @@ namespace Please2.ViewModels
 
                     Notes = new List<NoteItem>(orderedQuery);
                 }
+                else
+                {
+                    Notes = new List<NoteItem>();
+                }
             }
             catch (DbException)
             {

@@ -23,8 +23,6 @@ namespace Please2.Views
             InitializeComponent();
 
             vm = DataContext as NotesViewModel;
-
-            AddMenu();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -38,6 +36,8 @@ namespace Please2.Views
                 NotesEmpty.Visibility = Visibility.Visible;
                 NotesList.Visibility = Visibility.Collapsed;
             }
+
+            AddMenu();
         }
 
         private void AddMenu()
