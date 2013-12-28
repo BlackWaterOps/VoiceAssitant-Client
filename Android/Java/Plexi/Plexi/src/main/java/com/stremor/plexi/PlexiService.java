@@ -200,7 +200,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private void createTimer() {
-        contextTimer = new CountDownTimer(2000, 0) {
+        contextTimer = new CountDownTimer(120000, 120000) {
             @Override
             public void onTick(long l) {
                 return;
@@ -359,7 +359,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 // do client operations
                 doClientOperations(response);
 
-                String field = this.tempContext.getField();
+                String field = this.tempContext.getField().replace("payload.", "");
                 String type = this.tempContext.getType();
 
                 // Replace fields in a clone of the current context

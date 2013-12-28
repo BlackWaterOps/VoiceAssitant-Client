@@ -52,13 +52,13 @@ public class ResponderModelTypeConverter implements JsonSerializer<ResponderMode
         if (obj.has("type"))
             model.setType(obj.get("type").getAsString());
         if (obj.has("field"))
-            model.setType(obj.get("field").getAsString());
+            model.setField(obj.get("field").getAsString());
         if (obj.has("speak"))
-            model.setType(obj.get("speak").getAsString());
+            model.setSpeak(obj.get("speak").getAsString());
         if (obj.has("followup"))
-            model.setType(obj.get("followup").getAsString());
+            model.setFollowup(obj.get("followup").getAsString());
         if (obj.has("actor"))
-            model.setType(obj.get("actor").getAsString());
+            model.setActor(obj.get("actor").getAsString());
 
         // Structured properties
         if (obj.has("show"))

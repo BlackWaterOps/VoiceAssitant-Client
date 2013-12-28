@@ -37,39 +37,45 @@ public class Datetime {
         return timestamp;
     }
 
-    public static Pair<String, String> datetimeFromJson(Object dateO, Object timeO)
+    public static Pair<String, String> datetimeFromJson(JsonElement dateO, JsonElement timeO)
             throws ParseException {
         return datetimeFromJson(dateO, timeO, LocalDateTime.now());
     }
 
-    public static Pair<String, String> datetimeFromJson(Object dateO, Object timeO,
+    public static Pair<String, String> datetimeFromJson(JsonElement dateO, JsonElement timeO,
                                                         LocalDateTime now) throws ParseException {
         LocalDate date = null;
         LocalTime time = null;
 
-        if (dateO instanceof String) {
-            if (dateO.equals("#date_now"))
+        if (dateO == null) {
+            /* pass */
+        } else if (dateO.isJsonPrimitive() && dateO.getAsJsonPrimitive().isString()) {
+            String dateString = dateO.getAsJsonPrimitive().getAsString();
+            if (dateString.equals("#date_now"))
                 date = now.toLocalDate();
-            else if (dateRegex.matcher((String) dateO).matches())
-                date = DATE_FORMATTER.parseLocalDate((String) dateO);
-        } else if (dateO instanceof JsonObject) {
+            else if (dateRegex.matcher(dateString).matches())
+                date = DATE_FORMATTER.parseLocalDate(dateString);
+        } else if (dateO.isJsonObject()) {
             try {
-                date = parseDateObject((JsonObject) dateO, now.toLocalDate());
+                date = parseDateObject(dateO.getAsJsonObject(), now.toLocalDate());
             } catch (Exception e) { /* pass */ }
         }
 
-        if (timeO instanceof String) {
-            if (timeO.equals("#time_now"))
+        if (timeO == null) {
+            /* pass */
+        } else if (timeO.isJsonPrimitive() && timeO.getAsJsonPrimitive().isString()) {
+            String timeString = timeO.getAsJsonPrimitive().getAsString();
+            if (timeString.equals("#time_now"))
                 time = now.toLocalTime();
-            else if (timeRegex.matcher((String) timeO).matches())
-                time = TIME_FORMATTER.parseLocalTime((String) timeO);
-        } else if (timeO instanceof JsonObject) {
+            else if (timeRegex.matcher(timeString).matches())
+                time = TIME_FORMATTER.parseLocalTime(timeString);
+        } else if (timeO.isJsonObject()) {
             boolean hasDate = date != null;
             LocalDate baseDate = hasDate ? date : now.toLocalDate();
 
             LocalDateTime ret = null;
             try {
-                ret = parseTimeObject((JsonObject) timeO, baseDate, now.toLocalTime());
+                ret = parseTimeObject(timeO.getAsJsonObject(), baseDate, now.toLocalTime());
             } catch (Exception e) { /* pass */ }
 
             if ( ret != null ) {

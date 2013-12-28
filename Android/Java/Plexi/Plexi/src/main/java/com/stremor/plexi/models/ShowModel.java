@@ -4,8 +4,6 @@ import com.google.gson.JsonObject;
 
 /**
  * Describes content to be displayed to the user.
- *
- * TODO Make more strongly typed (don't throw JSON objects through a public interface!)
  */
 public class ShowModel {
     private ShowSimpleModel simple;
