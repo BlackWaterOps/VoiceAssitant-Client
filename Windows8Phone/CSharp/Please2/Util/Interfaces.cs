@@ -48,22 +48,13 @@ namespace Please2.Util
 
         bool isRecording { get; }
     }
-    /*
-    public interface IPleaseService
-    { 
-        string OriginalQuery { get; }
-
-        void ClearContext();
-
-        void ResetTimer();
-
-        void Query(string query);
-
-        void Choice(ChoiceModel choice);
-    }
-    */
+   
     public interface IViewModel
     {
+        /// <summary>
+        /// A Mechanism to load data in the view model before navigation
+        /// </summary>
+        /// <param name="payload"></param>
         Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured);
     }
 
@@ -71,17 +62,55 @@ namespace Please2.Util
     {
         ClassifierModel MainContext { get; set; }
 
+        /// <summary>
+        /// Handle contact returned from Plexi Service
+        /// </summary>
+        /// <param name="payload"></param>
         void ComposeEmail(Dictionary<string, object> payload);
+
+        /// <summary>
+        /// Handle contact from internal lookup
+        /// </summary>
+        /// <param name="contact"></param>
         void ComposeEmail(Contact contact);
+
+        /// <summary>
+        /// Initiate an internal contact lookup 
+        /// </summary>
         void ComposeEmail();
 
-
+        /// <summary>
+        /// Handle contact returned from Plexi Service
+        /// </summary>
+        /// <param name="payload"></param>
         void ComposeSms(Dictionary<string, object> payload);
+
+        /// <summary>
+        /// Handle contact from internal lookup
+        /// </summary>
+        /// <param name="contact"></param>
         void ComposeSms(Contact contact);
+
+        /// <summary>
+        /// Initiate an internal contact lookup 
+        /// </summary>
         void ComposeSms();
 
+        /// <summary>
+        /// Handle contact returned from Plexi Service
+        /// </summary>
+        /// <param name="payload"></param>
         void PhoneCall(Dictionary<string, object> payload);
+
+        /// <summary>
+        /// Handle contact from internal lookup
+        /// </summary>
+        /// <param name="contact"></param>
         void PhoneCall(Contact contact);
+
+        /// <summary>
+        /// Initiate an internal contact lookup 
+        /// </summary>
         void PhoneCall();
 
         void GetDirections();
