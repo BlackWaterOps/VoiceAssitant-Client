@@ -50,42 +50,118 @@ namespace Plexi
 
     public interface IPlexiService
     {
+        /// <summary>
+        /// Get the original query that initiated the request
+        /// </summary>
         string OriginalQuery { get; }
 
+        /// <summary>
+        /// Get the current state of Plexi
+        /// </summary>
         State State { get; }
 
+        /// <summary>
+        /// Clears the current request and any data currently being retained
+        /// </summary>
         void ClearContext();
 
+        /// <summary>
+        /// Resets the idle dialog timer. If no user response is received within 2 minutes, a call to ClearContext will occur
+        /// </summary>
         void ResetTimer();
 
+        /// <summary>
+        /// Either starts a new request or handles additional information depending on the current state 
+        /// </summary>
+        /// <param name="query"></param>
         void Query(string query);
 
+        /// <summary>
+        /// Handles the item selected by the user from a list of items
+        /// </summary>
+        /// <param name="choice"></param>
         void Choice(ChoiceModel choice);
 
+        /// <summary>
+        /// Provides a mechanism for registering a new user.
+        /// <para>Note: this should only be used if you plan to have Plexi manage your users</para>
+        /// </summary>
+        /// <param name="accountName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         Task<RegisterModel> RegisterUser(string accountName, string password);
 
+        /// <summary>
+        /// Provides a mechanism for logging a user in
+        /// <para>Note: this should only be used if you plan to have Plexi manage your users</para>
+        /// </summary>
+        /// <param name="accountName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         Task<LoginModel> LoginUser(string accountName, string password);
 
+        /// <summary>
+        /// Provides a mechanism for logging a user out
+        /// <para>Note: this should only be used if you plan to have Plexi manage your users</para>
+        /// </summary>
         void LogoutUser();
 
+        /// <summary>
+        /// Provides a mechanism for retrieving an decrypted auth token when stored with a call to StoreAuthToken
+        /// </summary>
+        /// <returns></returns>
         string GetAuthToken();
 
+        /// <summary>
+        /// Provides a mechanism to encrypt and store an auth token received from LoginUser
+        /// </summary>
+        /// <param name="token"></param>
         void StoreAuthToken(string token);
 
+        /// <summary>
+        /// Provides a mechanism to retrieve device location information
+        /// </summary>
+        /// <returns></returns>
         Task<Dictionary<string, object>> GetDeviceInfo();
 
+        /// <summary>
+        /// Occurs when dialog is to be shown to the user
+        /// </summary>
         event EventHandler<ShowEventArgs> Show;
 
+        /// <summary>
+        /// Occurs when Plexi is ready to  
+        /// </summary>
         event EventHandler<ActorEventArgs> Act;
 
+        /// <summary>
+        /// Occurs when a decision is needed from the user
+        /// </summary>
         event EventHandler<ChoiceEventArgs> Choose;
 
+        /// <summary>
+        /// Occurs when an error was returned from Plexi
+        /// </summary>
         event EventHandler<ErrorEventArgs> Error;
 
+        /// <summary>
+        /// Occurs when authorization to personal data is required
+        /// </summary>
         event EventHandler<AuthorizationEventArgs> Authorize;
 
+        /// <summary>
+        /// Occurs when more information is need from the user to fulfill the request
+        /// </summary>
         event EventHandler<ProgressEventArgs> InProgress;
 
+        /// <summary>
+        /// Occurs when the display data is returned from Plexi's default Actor
+        /// </summary>
+        event EventHandler<CompleteEventArgs> Complete;
+
+        /// <summary>
+        /// Occurs when a push notification has been received from Plexi
+        /// </summary>
         event EventHandler<NotificationEventArgs> PushNotificationReceived;
     }
 
@@ -105,7 +181,6 @@ namespace Plexi
 
         private static Dictionary<string, State> StateMap = new Dictionary<string, State>()
         {
-            { null, State.Uninitialized },
             {"init", State.Init },
             {"audit", State.Audit },
             {"disambiguate", State.Disambiguate },
@@ -155,6 +230,8 @@ namespace Plexi
         public event EventHandler<ChoiceEventArgs> Choose;
 
         public event EventHandler<ProgressEventArgs> InProgress;
+
+        public event EventHandler<CompleteEventArgs> Complete;
 
         public event EventHandler<NotificationEventArgs> PushNotificationReceived;
 
@@ -253,7 +330,7 @@ namespace Plexi
                     break;
             }
 
-            this.currentState.Set(newState, query);
+            ChangeState(newState, query);
         }
 
         public void ResetTimer()
@@ -271,7 +348,6 @@ namespace Plexi
             ResetTimer();
         }
 
-        //private async void OnStateChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         private async void ChangeState(State state, object data)
         {
             currentState.Set(state, data);
@@ -291,8 +367,6 @@ namespace Plexi
                     break;
 
                 case State.DisambiguatePersonal:
-                    //ActorInterceptor(mainContext.model);
-
                     DisambiguatePersonal((ResponderModel)currentState.Response);
                     break;
 
@@ -447,7 +521,8 @@ namespace Plexi
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                Debug.WriteLine(String.Format("Classifier Error:{0}", err.Message));
+                Debug.WriteLine(err.InnerException.Message);
             }
         }
 
@@ -721,134 +796,85 @@ namespace Plexi
 
         private async void Actor(ResponderModel data)
         {
-            string actor = data.actor;
+            bool handled = false;
 
-            if (actor != null)
+            EventHandler<ActorEventArgs> actHandler = Act;
+
+            if (actHandler != null)
             {
-                string endpoint = String.Format("{0}/actors/{1}", RESPONDER, actor);
+                ActorEventArgs args = new ActorEventArgs(this.mainContext);
 
-                Dictionary<string, string> headers = null;
+                actHandler(this, args);
 
-                if (actor.Contains("private:"))
+                handled = args.handled;
+            }
+
+            if (!handled)
+            {
+                string actor = data.actor;
+
+                if (actor != null)
                 {
-                    endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
+                    string endpoint = String.Format("{0}/actors/{1}", RESPONDER, actor);
 
-                    string authToken;
+                    Dictionary<string, string> headers = null;
 
-                    try
+                    if (actor.Contains("private:"))
                     {
-                        authToken = GetAuthToken(); //check and make sure they're logged in.
+                        endpoint = String.Format("{0}/actors/{1}", PUD, actor.Replace("private:", ""));
+
+                        string authToken;
+
+                        try
+                        {
+                            authToken = GetAuthToken(); //check and make sure they're logged in.
+                        }
+                        catch (KeyNotFoundException keyErr)
+                        {
+                            // user is not logged in. redirect to login screen.
+                            Debug.WriteLine(String.Format("Actor: {0}", keyErr.Message));
+                            return;
+                        }
+
+                        headers = new Dictionary<string, string>();
+                        headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
                     }
-                    catch (KeyNotFoundException keyErr)
+
+                    ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);
+
+                    //ClearContext();
+
+                    if (response.error != null)
                     {
-                        // user is not logged in. redirect to login screen.
-                        Debug.WriteLine(String.Format("Actor: {0}", keyErr.Message));
-                        return;
+                        switch (response.error.code)
+                        {
+                            case 401:
+                                AuthorizationMessage(data.data.model);
+                                break;
+                            default:
+                                ChangeState(State.Exception, response.error.msg);
+                                break;
+                        }
                     }
-
-                    headers = new Dictionary<string, string>();
-                    headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
-                }
-
-                ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);
-
-                ClearContext();
-
-                if (response.error != null)
-                {
-                    switch (response.error.code)
+                    else
                     {
-                        case 401:
-                            AuthorizationMessage(data.data.model);
-                            break;
-                        default:
-                            ChangeState(State.Exception, response.error.msg);
-                            break;
+                        EventHandler<CompleteEventArgs> completeHandler = Complete;
+
+                        if (completeHandler != null)
+                        {
+                            completeHandler(this, new CompleteEventArgs(response));
+                        }
                     }
                 }
                 else
                 {
-                    EventHandler<ActorEventArgs> handler = Act;
-
-                    if (handler != null)
-                    {
-                        handler(this, new ActorEventArgs(response));
-                    }
+                    // we have no actor, so send responder object to show
+                    ShowDialog(data);
                 }
             }
-            else
-            {
-                // we have no actor, so send responder object to show
-                ShowDialog(data);
-            }
-
-            return;
+            
+            ClearContext();
         }
-
-        /*
-        // these are actor's that will be handled locally. no need to run out to web service
-        // all the data needed to fulfill the tasks should be in the mainContext var.
-        private void ActorInterceptor(string actor)
-        {
-            Dictionary<string, object> payload = this.mainContext.payload;
-
-            if (!SimpleIoc.Default.IsRegistered<ITaskService>())
-            {
-                SimpleIoc.Default.Register<ITaskService, TaskService>();
-            }
-
-            ITaskService tasks = SimpleIoc.Default.GetInstance<ITaskService>();
-
-            tasks.MainContext = this.mainContext;
-
-            switch (actor)
-            {
-                case "time":
-                    tasks.ShowClock();
-                    break;
-
-                case "email":
-                case "email_denial":
-                    tasks.ComposeEmail(payload);
-                    break;
-
-                case "sms":
-                case "sms_denial":
-                    tasks.ComposeSms(payload);
-                    break;
-
-                case "directions":
-                case "directions_denial":
-                    tasks.GetDirections();
-                    break;
-
-                case "call":
-                case "call_denial":
-                    tasks.PhoneCall(payload);
-                    break;
-
-                case "calendar":
-                case "calendar_create":
-                case "calendar_create_denial":
-                    tasks.SetAppointment();
-                    break;
-
-                case "information":
-
-                    break;
-
-                case "alarm":
-                    tasks.SetAlarm();
-                    break;
-
-                case "reminder":
-                    tasks.SetReminder();
-                    break;
-            }
-
-            return;
-        }
-        */
 
         #region helpers
         private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, Dictionary<string, string> headers = null, bool includeNulls = false)
@@ -902,9 +928,12 @@ namespace Plexi
 
         public string GetDuid()
         {
+            return "cRljODI+F0i6w8l72x9Kc9Ez6V8=";
+            /*
             byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
 
             return Convert.ToBase64String(duidAsBytes);
+             */
         }
 
         public string GetAuthToken()
