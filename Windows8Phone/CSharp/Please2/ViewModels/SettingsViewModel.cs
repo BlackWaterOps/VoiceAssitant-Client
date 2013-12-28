@@ -23,20 +23,17 @@ namespace Please2.ViewModels
 
         private const List<ProviderModel> ProvidersSettingsDefault = null;
 
+        public string Scheme { get { return "Settings"; } }
+
+        private List<ProviderModel> providers;
+
         public List<ProviderModel> Providers
         {
-            get 
+            get { return providers; }
+            set 
             { 
-                string providers = GetValueOrDefault<string>(ProvidersSettingKeyName, "");
-
-                return (List<ProviderModel>)Deserialize(providers, typeof(List<ProviderModel>));
-            }
-            set
-            {
-                if (AddOrUpdateValue(ProvidersSettingKeyName, Serialize(value)))
-                {
-                    Save();
-                }
+                providers = value;
+                RaisePropertyChanged("Providers");
             }
         }
 
@@ -56,33 +53,65 @@ namespace Please2.ViewModels
         //TODO: need to handle to ability to remove/disable an account
         private void InitializeAccounts()
         {
-            //if (!settings.Contains(ProvidersSettingKeyName))
-            //{
-                Debug.WriteLine("set providers");
-                List<ProviderModel> providers = new List<ProviderModel>();
+            Array provs = Enum.GetValues(typeof(AccountType));
 
-                providers.Add(new ProviderModel("Google", AccountStatus.NotConnected, "google", true));
-                providers.Add(new ProviderModel("Facebook", AccountStatus.NotConnected, "facebook", true));
-                providers.Add(new ProviderModel("Fitbit", AccountStatus.NotConnected, "fitbit", true));
-
-                Providers = providers;
-            //}
-            /*
-             * for future use. Handle the ability to add new accounts and merge them with the currently stored accounts
-            if (settings.Contains(AccountsSettingKeyName))
+            foreach (AccountType prov in provs)
             {
-                //run through list and add any missing accounts
-                List<ProviderModel> savedAccounts = (List<ProviderModel>)Deserialize((string)settings[AccountsSettingKeyName], typeof(List<ProviderModel>));
+                if (prov != AccountType.None)
+                {
+                    string providerString = prov.ToString();
 
-                IEnumerable<ProviderModel> unioned = savedAccounts.Union(accounts, new ProviderComparer());
+                    if (!settings.Contains(providerString))
+                    {
+                        Debug.WriteLine("provider init");
 
-                Accounts = new List<ProviderModel>(unioned);
+                        if (AddOrUpdateValue(providerString, AccountStatus.NotConnected))
+                        {
+                            Save();
+                        }
+                    }
+                }
             }
-            else
+
+            LoadProviders();
+        }
+
+        private void LoadProviders()
+        {
+            Array provs = Enum.GetValues(typeof(AccountType));
+
+            List<ProviderModel> list = new List<ProviderModel>();
+
+            foreach (AccountType prov in provs)
             {
-                Accounts = accounts;
+                if (prov != AccountType.None)
+                {
+                    string providerString = prov.ToString();
+
+                    if (settings.Contains(providerString))
+                    {
+                        AccountStatus status = (AccountStatus)settings[providerString];
+
+                        list.Add(new ProviderModel(prov, status));
+                    }
+                }
             }
-            */
+
+            Providers = list;
+        }
+
+        public void UpdateProvider(AccountType type, AccountStatus status)
+        {
+            // update provider model
+            ProviderModel provider = Providers.Where(x => x.name == type).FirstOrDefault();
+
+            provider.status = status;
+
+            // update settings value
+            if (AddOrUpdateValue(type.ToString(), status))
+            {
+                Save();
+            }
         }
 
         #endregion
@@ -133,70 +162,6 @@ namespace Please2.ViewModels
         {
             settings.Save();
         }
-
-        private string Serialize(object obj)
-        {
-            using (MemoryStream memoryStream = new MemoryStream())
-            using (StreamReader reader = new StreamReader(memoryStream))
-            {
-                DataContractSerializer serializer = new DataContractSerializer(obj.GetType());
-                serializer.WriteObject(memoryStream, obj);
-                memoryStream.Position = 0;
-                return reader.ReadToEnd();
-            }
-        }
-
-        private object Deserialize(string xml, Type toType)
-        {
-            using (Stream stream = new MemoryStream())
-            {
-                byte[] data = System.Text.Encoding.UTF8.GetBytes(xml);
-                stream.Write(data, 0, data.Length);
-                stream.Position = 0;
-                DataContractSerializer deserializer = new DataContractSerializer(toType);
-                return deserializer.ReadObject(stream);
-            }
-        }
         #endregion
-    }
-
-    public class ProviderComparer : IEqualityComparer<ProviderModel>
-    {
-        public bool Equals(ProviderModel x, ProviderModel y)
-        {
-            //Check whether the compared objects reference the same data. 
-            if (Object.ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-            //Check whether any of the compared objects is null. 
-            if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
-            {
-                return false;
-            }
-
-            return x.name == y.name;
-        }
-
-        public int GetHashCode(ProviderModel provider)
-        {
-            //Check whether the object is null 
-            if (Object.ReferenceEquals(provider, null))
-            {
-                return 0;
-            }
-
-            //Get hash code for the Name field if it is not null. 
-            int hashProviderName = (provider.name == null) ? 0 : provider.name.GetHashCode();
-
-            return hashProviderName;
-
-            //Get hash code for the Code field. 
-            //int hashProviderStatus = provider.status.GetHashCode();
-
-            //Calculate the hash code for the product. 
-            //return hashProviderName ^ hashProviderStatus;
-        }
     }
 }
