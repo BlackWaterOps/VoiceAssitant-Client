@@ -1,8 +1,8 @@
 ﻿<local:ViewBase
     x:Class="Please2.MainMenu"
-    xmlns:local="clr-namespace:Please2.Views"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,6 +10,8 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
+    xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:local="clr-namespace:Please2.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -26,13 +28,10 @@
         </Grid.RowDefinitions>
   
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel Grid.Row="0" Margin="0">
-            <!--<TextBlock Style="{StaticResource AppTitle}"/>-->
-            <Image Style="{StaticResource AppTitleIcon}"/>
-            <TextBlock Text="main menu" Style="{StaticResource PageTitle}"/>
-            <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
-        </StackPanel>
-
+        <controls:PageTitle Grid.Row="0"
+                            Title="main menu"
+                            SubTitle="{Binding DataContext.SubTitle, ElementName=LayoutRoot, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
+        
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <phone:LongListSelector LayoutMode="Grid"
