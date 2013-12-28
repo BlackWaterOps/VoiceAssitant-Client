@@ -8,13 +8,19 @@ using Please2.Util;
 
 namespace Please2.Models
 {
-    public class ProviderModel
+    public class ProviderModel : ModelBase
     {
-        public string name { get; set; }
-        
-        public AccountStatus status { get; set; }
+        public AccountType name { get; set; }
 
-        public string endpointName { get; set; }
+        private AccountStatus _status;
+        public AccountStatus status 
+        { 
+            get { return _status; } 
+            set{ 
+                _status = value; 
+                NotifyPropertyChanged("status");
+            } 
+        }
 
         public bool isEnabled { get; set; }
 
@@ -22,11 +28,16 @@ namespace Please2.Models
         {
         }
 
-        public ProviderModel(string name, AccountStatus status, string endpointName, bool isEnabled)
+        public ProviderModel(AccountType name, AccountStatus status)
         {
             this.name = name;
             this.status = status;
-            this.endpointName = endpointName;
+        }
+
+        public ProviderModel(AccountType name, AccountStatus status, bool isEnabled)
+        {
+            this.name = name;
+            this.status = status;
             this.isEnabled = isEnabled;
         }
     }
