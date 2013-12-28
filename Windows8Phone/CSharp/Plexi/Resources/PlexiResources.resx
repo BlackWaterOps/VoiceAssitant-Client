@@ -147,4 +147,7 @@
   <data name="SettingsAuthKey" xml:space="preserve">
     <value>AuthToken</value>
   </data>
+  <data name="Deauthorization" xml:space="preserve">
+    <value>http://stremor-pud.appspot/deauth</value>
+  </data>
 </root>

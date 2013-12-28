@@ -106,6 +106,15 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot/deauth.
+        /// </summary>
+        internal static string Deauthorization {
+            get {
+                return ResourceManager.GetString("Deauthorization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://casper-cached.stremor-nli.appspot.com/v1/disambiguate.
         /// </summary>
         internal static string Disambiguator {
