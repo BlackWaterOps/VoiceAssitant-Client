@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Device.Location;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
@@ -63,6 +65,18 @@ namespace Please2.ViewModels
             }
         }
 
+        private ObservableCollection<object> pivotItems;
+        public ObservableCollection<object> PivotItems
+        {
+            get { return pivotItems; }
+            set
+            {
+                pivotItems = value;
+                RaisePropertyChanged("PivotItems");
+            }
+        }
+
+
         public RelayCommand<object> PinToStartCommand { get; set; }
         public RelayCommand<string> ShowFullMapCommand { get; set; }
 
@@ -86,6 +100,12 @@ namespace Please2.ViewModels
             if (templates[template] != null)
             {
                 ContentTemplate = templates[template] as DataTemplate;
+            }
+
+            string control = String.Format("{0}_control", template);
+            if (templates[control] != null)
+            {
+
             }
         }
 
