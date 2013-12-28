@@ -91,6 +91,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\PageTitle.xaml.cs">
+      <DependentUpon>PageTitle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ValidationTextBox.xaml.cs">
       <DependentUpon>ValidationTextBox.xaml</DependentUpon>
     </Compile>
@@ -250,6 +253,10 @@
     <Page Include="ColorScheme.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PageTitle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ValidationTextBox.xaml">
       <SubType>Designer</SubType>
