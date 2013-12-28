@@ -172,4 +172,12 @@ namespace Please2.Util
             return template;
         }
     }
+
+    public class DetailsTemplateSelector : TemplateSelector
+    {
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            return null;
+        }
+    }
 }
