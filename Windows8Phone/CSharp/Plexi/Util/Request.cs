@@ -28,8 +28,8 @@ namespace Plexi.Util
 
         public async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
-            try
-            {
+            //try
+            //{
                 Debug.WriteLine(String.Format("post data: {0}{1}", req.RequestUri.Host, req.RequestUri.AbsolutePath));
 
                 // if we have post/put data, write it to the request stream
@@ -55,12 +55,12 @@ namespace Plexi.Util
                 var sr = new StreamReader(stream);
 
                 return sr;
-            }
-            catch (WebException webErr)
-            {
-                Debug.WriteLine(String.Format("DoRequestAsync Error: {0}", webErr.Message));
-                return null;
-            }
+            //}
+            //catch (WebException webErr)
+            //{
+            //    Debug.WriteLine(String.Format("DoRequestAsync Error: {0}", webErr.Message));
+            //    return null;
+            //}
         }
 
         public async Task<System.IO.TextReader> DoRequestAsync(String url, String requestData = "")
