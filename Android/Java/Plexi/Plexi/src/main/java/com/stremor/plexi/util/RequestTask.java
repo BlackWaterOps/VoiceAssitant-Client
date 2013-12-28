@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.stremor.plexi.interfaces.IResponseListener;
+import com.stremor.plexi.models.ResponderModel;
+import com.stremor.plexi.models.ShowModel;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,6 +31,14 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
     public enum HttpMethod { GET, POST };
 
     private static final String TAG = "QueryTask";
+
+    private static Gson gson;
+    static {
+        GsonBuilder builder = new GsonBuilder().serializeNulls();
+        builder.registerTypeAdapter(ResponderModel.class, new ResponderModelTypeConverter());
+        builder.registerTypeAdapter(ShowModel.class, new ShowModelTypeConverter());
+        gson = builder.create();
+    }
 
     private Class<T> type;
     private IResponseListener listener;
@@ -110,7 +120,6 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
             return null;
         }
 
-        Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.fromJson(responseBody, this.type);
 
         /*
