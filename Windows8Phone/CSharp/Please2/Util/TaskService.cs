@@ -58,7 +58,27 @@ namespace Please2.Util
 
         public void ComposeEmail(Dictionary<string, object> payload)
         {
+            if (payload.ContainsKey("contact"))
+            {
+                JObject contact = (JObject)payload["contact"];
 
+                JToken emails;
+
+                if (contact.TryGetValue("emails", out emails))
+                {
+                    JObject first = (JObject)emails.First;
+
+                    string message = (string)payload["message"];
+
+                    string email = (string)first.GetValue("value");
+
+                    DoEmailTask(email, message);
+                }
+
+                // no email found message
+            }
+
+            // no contact found message
         }
 
         public void ComposeEmail(Contact contact)
@@ -95,22 +115,30 @@ namespace Please2.Util
         {
             if (payload.ContainsKey("contact"))
             {
-                var contact = payload["contact"] as JObject;
+                JObject contact = (JObject)payload["contact"];
 
-                if (contact.GetValue("phone_numbers") != null)
+                JToken phoneNumbers;
+
+                if (contact.TryGetValue("phone_numbers", out phoneNumbers))
                 {
-                    var numbers = contact["phone_numbers"] as JArray;
+                    JArray numbers = (JArray)phoneNumbers;
 
                     if (numbers.Count > 0)
                     {
-                        var primary = numbers.First();
+                        JObject primary = (JObject)numbers.First();
 
+                        string phoneNumber = (string)primary.GetValue("value");
 
+                        string message = (string)payload["message"];
+
+                        DoSmsTask(phoneNumber, message); 
                     }
-
                 }
+
+                // no phone numbers message
             }
 
+            // no contact found message
             return;
         }
 
@@ -154,7 +182,32 @@ namespace Please2.Util
 
         public void PhoneCall(Dictionary<string, object> payload)
         {
+            if (payload.ContainsKey("contact"))
+            {
+                JObject contact = (JObject)payload["contact"];
 
+                JToken phoneNumbers;
+
+                if (contact.TryGetValue("phone_numbers", out phoneNumbers))
+                {
+                    JArray numbers = (JArray)phoneNumbers;
+
+                    if (numbers.Count > 0)
+                    {
+                        JObject primary = (JObject)numbers.First();
+
+                        string phoneNumber = (string)primary.GetValue("value");
+
+                        string displayName = (string)payload["name"];
+
+                        DoPhoneCallTask(displayName, phoneNumber);
+                    }
+                }
+
+                // no phone numbers message
+            }
+
+            // no contact found message
         }
 
         public void PhoneCall(Contact contact)
@@ -250,9 +303,9 @@ namespace Please2.Util
 
             if (payload.ContainsKey("contact"))
             {
-                var contact = (Newtonsoft.Json.Linq.JObject)payload["contact"];
+                JObject contact = (JObject)payload["contact"];
 
-                candidates = (Newtonsoft.Json.Linq.JArray)contact.GetValue("candidates");
+                candidates = (JArray)contact.GetValue("candidates");
             }
 
             return candidates;
