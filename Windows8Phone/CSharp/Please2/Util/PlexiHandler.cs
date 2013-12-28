@@ -26,15 +26,41 @@ using Plexi.Util;
 // which means handling adding and releasing the event handlers :(
 namespace Please2.Util
 {
+    /// <summary>
+    /// Specifies the actors handled locally
+    /// </summary>
+    public enum Actor
+    {
+        Call,
+        Email,
+        Sms,
+        Directions,
+        Calendar,
+        Alarm,
+        Reminder,
+        Time
+    }
+
     class PlexiHandler
     {
         INavigationService navigationService;
 
         IPlexiService plexiService;
 
+        private static Dictionary<string, Actor> ActorMap = new Dictionary<string, Actor>()
+        {
+            {"alarm", Actor.Alarm},
+            {"calendar", Actor.Calendar},
+            {"call", Actor.Call},
+            {"directions", Actor.Directions},
+            {"email", Actor.Email},
+            {"reminder", Actor.Reminder},
+            {"sms", Actor.Sms},
+            {"time", Actor.Time}
+        };
+
         public PlexiHandler()
         {
-            Debug.WriteLine("plexi handler initialized");
             // attach navigation service
             this.navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
 
@@ -47,6 +73,7 @@ namespace Please2.Util
             plexiService.InProgress += OnProgress;
             plexiService.Show += OnShow;
             plexiService.Act += OnAct;
+            plexiService.Complete += OnComplete;
         }
 
         private void Show(ShowModel model, string speak = "")
@@ -145,7 +172,7 @@ namespace Please2.Util
         {
             Messenger.Default.Send(new ShowMessage(e.show, e.speak, e.link));
 
-            if (e.status == "inprogress")
+            if (e.status == State.InProgress)
             {
                 PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
 
@@ -157,6 +184,57 @@ namespace Please2.Util
         }
 
         private void OnAct(object sender, ActorEventArgs e)
+        {
+            // run local actors
+            if (ActorMap.ContainsKey(e.data.model))
+            {
+                // let Plexi know that we'll handle the actor locally
+                e.handled = true;
+
+                Actor actor = ActorMap[e.data.model];
+
+                Dictionary<string, object> payload = e.data.payload;
+
+                ITaskService tasks = ViewModelLocator.GetServiceInstance<ITaskService, TaskService>();
+
+                switch (actor)
+                {
+                    case Actor.Time:
+                        tasks.ShowClock();
+                        break;
+
+                    case Actor.Email:
+                        tasks.ComposeEmail(payload);
+                        break;
+
+                    case Actor.Sms:
+                        tasks.ComposeSms(payload);
+                        break;
+
+                    case Actor.Directions:
+                        tasks.GetDirections();
+                        break;
+
+                    case Actor.Call:
+                        tasks.PhoneCall(payload);
+                        break;
+
+                    case Actor.Calendar:
+                        tasks.SetAppointment();
+                        break;
+
+                    case Actor.Alarm:
+                        tasks.SetAlarm();
+                        break;
+
+                    case Actor.Reminder:
+                        tasks.SetReminder();
+                        break;
+                }
+            }
+        }
+
+        private void OnComplete(object sender, CompleteEventArgs e)
         {
             try
             {
