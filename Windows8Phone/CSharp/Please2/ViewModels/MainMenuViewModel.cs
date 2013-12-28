@@ -38,7 +38,7 @@ namespace Please2.ViewModels
             get { return margin; }
         }
 
-        public string SubTitle { get { return DateTime.Now.ToString("dddd, MMMM d, yyyy @ h:mm tt"); } }
+        public DateTime SubTitle { get { return DateTime.Now; } }
 
         private ObservableCollection<MainMenuModel> mainMenu;
         public ObservableCollection<MainMenuModel> MainMenu
