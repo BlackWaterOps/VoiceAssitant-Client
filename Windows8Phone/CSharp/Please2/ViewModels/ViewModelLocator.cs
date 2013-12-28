@@ -41,7 +41,7 @@ namespace Please2.ViewModels
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
 
-        public const string ChildBrowserUri = @"/ChildBrowser.xaml?url={0}&isOptional={1}";
+        public const string ChildBrowserUri = @"/ChildBrowser.xaml?url={0}&provider={1}";
 
         public const string NoteUri = @"/Views/Note.xaml?noteid={0}";
 
@@ -199,6 +199,16 @@ namespace Please2.ViewModels
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
+        }
+
+        public static TInterface GetServiceInstance<TInterface, TClass>() where TInterface : class where TClass : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<TInterface>())
+            {
+                SimpleIoc.Default.Register<TInterface, TClass>();
+            }
+
+            return ServiceLocator.Current.GetInstance<TInterface>();
         }
 
         public static T GetServiceInstance<T>() where T : class
