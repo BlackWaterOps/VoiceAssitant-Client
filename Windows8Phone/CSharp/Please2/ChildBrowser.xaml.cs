@@ -18,6 +18,7 @@ using Microsoft.Phone.Info;
 using Microsoft.Phone.Shell;
 
 using Please2.ViewModels;
+using Please2.Util;
 
 using Plexi;
 
@@ -28,6 +29,10 @@ namespace Please2
         private IPlexiService plexiService;
 
         private ResourceManager resx;
+
+        private string url;
+
+        private string provider;
 
         public ChildBrowser()
         {
@@ -40,11 +45,8 @@ namespace Please2
         {
             base.OnNavigatedTo(e);
 
-            string url = String.Empty;
-            string isOptional = null;
-
             NavigationContext.QueryString.TryGetValue("url", out url);
-            NavigationContext.QueryString.TryGetValue("isOptional", out isOptional);
+            NavigationContext.QueryString.TryGetValue("provider", out provider);
 
             if (url != String.Empty)
             {
@@ -54,6 +56,8 @@ namespace Please2
 
                 WebBrowser.Navigate(new Uri(url, UriKind.Absolute), null, headers);
             }
+
+            /*
             try
             {
                 ApplicationBarIconButton skip = ApplicationBar.Buttons[0] as ApplicationBarIconButton;
@@ -64,6 +68,7 @@ namespace Please2
             {
                 Debug.WriteLine(err.Message);
             }
+            */
         }
 
         protected void WebBrowser_Navigated(object sender, NavigationEventArgs e)
@@ -76,7 +81,17 @@ namespace Please2
             if (e.Uri.OriginalString.Contains(successEndpoint))
             {
                 Debug.WriteLine(String.Format("authorization success: {0}", plexiService.State));
-                return;
+
+                AccountType account = (AccountType)Enum.Parse(typeof(AccountType), provider);
+
+                SettingsViewModel settings = ViewModelLocator.GetServiceInstance<SettingsViewModel>();
+
+                settings.UpdateProvider(account, AccountStatus.Connected);
+
+                if (NavigationService.CanGoBack)
+                {
+                    NavigationService.GoBack();
+                }
 
                 //if (plexiService.State)
                 // need to check plexi and retrieve the current state
