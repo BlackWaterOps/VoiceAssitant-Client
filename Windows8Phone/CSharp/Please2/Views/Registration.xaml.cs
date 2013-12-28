@@ -183,9 +183,6 @@ namespace Please2.Views
 
         private async Task LoginUser(string accountName, string password)
         {
-            Debug.WriteLine("login user");
-            return;
-
             LoginModel response = await plexiService.LoginUser(accountName, password);
 
             if (response.error != null)
