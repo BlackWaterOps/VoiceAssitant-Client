@@ -138,9 +138,7 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
             Exception e = result.getException();
             if (e instanceof IOException || e instanceof RuntimeException)
                 listener.onInternalError();
-        } else if (isCancelled()) {
-            // TODO
-        } else if ( listener != null ) {
+        } else if (!isCancelled() && listener != null) {
             listener.onQueryResponse(result.getResult());
         }
     }

@@ -318,7 +318,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         String field = data.getField();
         String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type);
         requestHelper.doRequest(JsonObject.class, PUD + "disambiguate",
