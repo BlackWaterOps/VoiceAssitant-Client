@@ -1,5 +1,6 @@
 package com.stremor.plexi.interfaces;
 
+import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.ShowModel;
 
 /**
@@ -15,6 +16,16 @@ public interface IPlexiListener {
      * @param speak A natural-language string which can be spoken to the user.
      */
     public void show(ShowModel show, String speak);
+
+    /**
+     * Present a choice of values to the user. When the user has completed a selection, the client
+     * should call
+     * {@link com.stremor.plexi.interfaces.IPlexiService#choice(com.stremor.plexi.models.Choice)}
+     * with the chosen string result.
+     *
+     * @param choices
+     */
+    public void requestChoice(Choice[] choices);
 
     /**
      * Handle an error detected by the Plexi backend.

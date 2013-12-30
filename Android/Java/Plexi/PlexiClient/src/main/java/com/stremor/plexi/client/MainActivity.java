@@ -15,6 +15,7 @@ import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.client.models.ConversationItem;
 import com.stremor.plexi.client.views.MainView;
 import com.stremor.plexi.interfaces.IPlexiListener;
+import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.ShowModel;
 
 import java.util.List;
@@ -123,6 +124,11 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     public void show(ShowModel showModel, String speakText) {
         speak(speakText);
         showText(showModel.getSimple().getText());
+    }
+
+    @Override
+    public void requestChoice(Choice[] choices) {
+        // TODO
     }
 
     @Override

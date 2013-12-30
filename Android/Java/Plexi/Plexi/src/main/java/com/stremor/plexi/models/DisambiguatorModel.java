@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class DisambiguatorModel {
     private Object payload;
     private String type;
-    private DisambiguationCandidate[] candidates;
+    private Choice[] candidates;
     private HashMap<String, Object> deviceInfo;
 
     public DisambiguatorModel(Object payload, String type) {
@@ -16,7 +16,7 @@ public class DisambiguatorModel {
         this.type = type;
     }
 
-    public DisambiguatorModel(Object payload, String type, DisambiguationCandidate[] candidates) {
+    public DisambiguatorModel(Object payload, String type, Choice[] candidates) {
         this.payload = payload;
         this.type = type;
         this.candidates = candidates;
@@ -36,9 +36,7 @@ public class DisambiguatorModel {
         return type;
     }
 
-    public DisambiguationCandidate[] getCandidates() {
-        return candidates;
-    }
+    public Choice[] getCandidates() { return candidates; }
 
     public HashMap<String, Object> getDeviceInfo() {
 

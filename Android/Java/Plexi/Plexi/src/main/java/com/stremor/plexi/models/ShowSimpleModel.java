@@ -6,7 +6,7 @@ package com.stremor.plexi.models;
 public class ShowSimpleModel {
     private String text;
     private String link;
-    private DisambiguationCandidate[] list;
+    private Choice[] list;
 
     public ShowSimpleModel(String text) {
         this(text, null, null);
@@ -16,11 +16,11 @@ public class ShowSimpleModel {
         this(text, link, null);
     }
 
-    public ShowSimpleModel(String text, DisambiguationCandidate[] list) {
+    public ShowSimpleModel(String text, Choice[] list) {
         this(text, null, list);
     }
 
-    public ShowSimpleModel(String text, String link, DisambiguationCandidate[] list) {
+    public ShowSimpleModel(String text, String link, Choice[] list) {
         this.text = text;
         this.link = link;
         this.list = list;
@@ -34,7 +34,7 @@ public class ShowSimpleModel {
         return link;
     }
 
-    public DisambiguationCandidate[] getList() {
+    public Choice[] getList() {
         return list;
     }
 }

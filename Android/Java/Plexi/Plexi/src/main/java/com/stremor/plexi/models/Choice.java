@@ -3,13 +3,13 @@ package com.stremor.plexi.models;
 import com.google.gson.JsonElement;
 
 /**
- * Created by jon on 27.12.2013.
+ * Created by jeffschifano on 10/28/13.
  */
-public class DisambiguationCandidate {
+public class Choice {
     private String text;
     private JsonElement data;
 
-    public DisambiguationCandidate(String text, JsonElement data) {
+    public Choice(String text, JsonElement data) {
         this.text = text;
         this.data = data;
     }

@@ -13,9 +13,8 @@ import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
-import com.stremor.plexi.models.ChoiceModel;
+import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.ClassifierModel;
-import com.stremor.plexi.models.DisambiguationCandidate;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
@@ -144,7 +143,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 show((ResponderModel) data);
                 break;
             case CHOICE:
-                choiceList((ResponderModel) data);
+                requestChoice((ResponderModel) data);
                 break;
             case RESTART:
                 restart((ResponderModel) data);
@@ -217,18 +216,35 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         clearContext();
     }
 
-    private void choiceList(ResponderModel response) {
+    /**
+     * From a response model present a choice list to the user.
+     *
+     * @param response
+     */
+    private void requestChoice(ResponderModel response) {
         try {
-            DisambiguationCandidate[] list = response.getShow().getSimple().getList();
+            Choice[] list = response.getShow().getSimple().getList();
 
-            if (list != null) {
-                // TODO send response to listener
-            } else {
-                Log.d(TAG, "no list could be found");
-            }
+            if (list == null)
+                Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
+
+            // TODO notify listener
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+    }
+
+    /**
+     * Called by a client after the user makes a choice from a choice list.
+     *
+     * @param choice
+     */
+    public void choice(Choice choice) {
+        // send message to update conversation with choice.text
+
+        String field = tempContext.getField();
+        JsonObjectUtil.replace(mainContext.getPayload(), field, choice.getData());
+        changeState(State.AUDIT, mainContext);
     }
 
     // called from "inprogress" status
@@ -274,10 +290,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private void disambiguateCandidate(String data) {
-        DisambiguationCandidate[] candidates = tempContext.getShow().getSimple().getList();
+        Choice[] candidates = tempContext.getShow().getSimple().getList();
         // String field = tempContext.field;
 
-        candidates = candidates == null ? new DisambiguationCandidate[]{} : candidates;
+        candidates = candidates == null ? new Choice[]{} : candidates;
         DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(),
                 candidates);
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
@@ -324,7 +340,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 try {
                     clone = mainContext.clone();
                 } catch (CloneNotSupportedException e) {
-                    /* pass */
+                    Log.e(TAG, "Clone of context failed", e);
+                    return;
                 }
 
                 if (response.has(type)) {
@@ -336,14 +353,6 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 changeState(State.AUDIT, clone);
             }
         }
-    }
-
-    public void choice(ChoiceModel choice) {
-        // send message to update conversation with choice.text
-
-        String field = tempContext.getField();
-        JsonObjectUtil.replace(mainContext.getPayload(), field, choice.data);
-        changeState(State.AUDIT, mainContext);
     }
 
     /**
@@ -576,7 +585,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private enum PublicEvent {
-        SHOW, ERROR
+        SHOW, REQUEST_CHOICE, ERROR
     };
 
     public void addListener(IPlexiListener listener) {
@@ -592,6 +601,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             case SHOW:
                 for (IPlexiListener listener : listeners)
                     listener.show((ShowModel) data[0], (String) data[1]);
+                break;
+            case REQUEST_CHOICE:
+                for (IPlexiListener listener : listeners)
+                    listener.requestChoice((Choice[]) data[0]);
                 break;
             case ERROR:
                 for (IPlexiListener listener : listeners)
