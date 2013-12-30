@@ -233,50 +233,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     // called from "inprogress" status
     private void show(ResponderModel response) {
-        /*
-        try
-        {
-            PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
-
-            if (frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
-            {
-                Show(response.show, response.speak);
-            }
-            else
-            {
-                //ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-
-                // this won't have any speak
-                //vm.AddDialog("please", (string)response.show.simple["text"]);
-
-                Show(response.show, response.speak);
-
-                // navigate to conversation.xaml
-                this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
-            }
-        }
-        catch (Exception err)
-        {
-            Debug.WriteLine("Show:inprogress - " + err.Message);
-        }
-        */
-        show(response.getShow(), response.getSpeak());
-    }
-
-    // called from actor
-    private void show(ShowModel model, String speak) {
-        notifyListeners(PublicEvent.SHOW, model, speak);
-
-//        JsonObject simple = model.getSimple();
-//        if (simple.has("text")) {
-//            String show = simple.get("text").getAsString();
-//
-//            String link = simple.has("link")
-//                    ? link = simple.get("link").getAsString()
-//                    : null;
-//
-//            show(speak, show, link);
-//        }
+        notifyListeners(PublicEvent.SHOW, response.getShow(), response.getSpeak());
     }
 
     private void errorMessage(String message) {
@@ -458,13 +415,6 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             changeState(State.EXCEPTION, response.error.getMessage());
         } else {
             notifyListeners(PublicEvent.SHOW, response.show, response.speak);
-
-//            TODO will be possible when ShowModel is more strongly typed
-//            Intent intent = new Intent("plexiActor");
-//
-//            intent.putExtra("response", response);
-//
-//            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
         }
     }
 
