@@ -1,6 +1,8 @@
 package com.stremor.plexi.client;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -127,8 +129,21 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     }
 
     @Override
-    public void requestChoice(Choice[] choices) {
-        // TODO
+    public void requestChoice(final Choice[] choices) {
+        String[] choiceStrings = new String[choices.length];
+        for (int i = 0; i < choices.length; i++)
+            choiceStrings[i] = choices[i].getText();
+
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                mPlexi.choice(choices[which]);
+            }
+        };
+
+        new AlertDialog.Builder(this)
+                .setItems(choiceStrings, listener)
+                .show();
     }
 
     @Override

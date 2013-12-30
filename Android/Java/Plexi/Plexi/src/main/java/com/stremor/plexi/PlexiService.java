@@ -227,7 +227,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (list == null)
             Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
 
-        notifyListeners(PublicEvent.REQUEST_CHOICE, list);
+        notifyListeners(PublicEvent.REQUEST_CHOICE, new Object[] {list});
     }
 
     /**
@@ -236,11 +236,18 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      * @param choice
      */
     public void choice(Choice choice) {
-        // send message to update conversation with choice.text
+        // Replace fields in a clone of the current context
+        ClassifierModel clone = null;
+        try {
+            clone = mainContext.clone();
+        } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "Clone of context failed", e);
+            return;
+        }
 
-        String field = tempContext.getField();
-        JsonObjectUtil.replace(mainContext.getPayload(), field, choice.getData());
-        changeState(State.AUDIT, mainContext);
+        String field = tempContext.getField().replace("payload.", "");
+        JsonObjectUtil.replace(clone.getPayload(), field, choice.getData());
+        changeState(State.AUDIT, clone);
     }
 
     // called from "inprogress" status
