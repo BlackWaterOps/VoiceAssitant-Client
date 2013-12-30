@@ -16,7 +16,7 @@ public class ClassifierModel implements Cloneable {
         this.payload = payload;
     }
 
-    public ClassifierModel(String model, String action, JsonObject payload, List<String> project,
+    public ClassifierModel(String model, String action, JsonObject payload, String[] project,
                            ErrorModel error) {
         this.model = model;
         this.action = action;
@@ -29,32 +29,16 @@ public class ClassifierModel implements Cloneable {
         return model;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public JsonObject getPayload() {
         return payload;
     }
 
-    public void setPayload(JsonObject payload) {
-        this.payload = payload;
-    }
-
-    public List<String> getProject() {
+    public String[] getProject() {
         return project;
-    }
-
-    public void setProject(List<String> project) {
-        this.project = project;
     }
 
     public ErrorModel getError() {
@@ -99,6 +83,6 @@ public class ClassifierModel implements Cloneable {
     private String model;
     private String action;
     private JsonObject payload;
-    private List<String> project;
+    private String[] project;
     private ErrorModel error;
 }
