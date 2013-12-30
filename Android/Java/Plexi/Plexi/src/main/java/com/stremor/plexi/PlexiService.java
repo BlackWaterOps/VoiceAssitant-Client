@@ -222,16 +222,12 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      * @param response
      */
     private void requestChoice(ResponderModel response) {
-        try {
-            Choice[] list = response.getShow().getSimple().getList();
+        Choice[] list = response.getShow().getSimple().getList();
 
-            if (list == null)
-                Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
+        if (list == null)
+            Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
 
-            // TODO notify listener
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
+        notifyListeners(PublicEvent.REQUEST_CHOICE, list);
     }
 
     /**
