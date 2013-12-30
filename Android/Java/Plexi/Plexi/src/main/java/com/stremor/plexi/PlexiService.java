@@ -608,6 +608,11 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             Log.e(TAG, "unhandled query response");
     }
 
+    @Override
+    public void onInternalError() {
+        // TODO handle remote internal Plexi errors
+    }
+
     private enum PublicEvent {
         SHOW, ERROR
     };
