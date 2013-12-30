@@ -1,10 +1,12 @@
 package com.stremor.plexi;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IPlexiService;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jeffschifano on 10/28/13.
@@ -102,12 +105,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     public PlexiService(Context context, IRequestHelper requestHelper) {
         this.context = context;
         this.requestHelper = requestHelper;
+        this.locationTracker = new LocationTracker(context);
 
         createTimer();
-
-        if (this.locationTracker == null) {
-            this.locationTracker = new LocationTracker(context);
-        }
     }
 
     public String getOriginalQuery() { return originalQuery; }
@@ -476,8 +476,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      * @param response
      */
     private void doClientOperations(JsonObject response) {
-        response = replaceLocation(response);
-        response = buildDateTime(response);
+        replaceLocation(response);
+        buildDateTime(response);
 //        prependTo(context, response);
     }
 
@@ -504,18 +504,37 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 //        context.payload.put(field, (prepend + payloadField));
     }
 
-    private JsonObject replaceLocation(JsonObject payload) {
-        // TODO
-//        if (payload.get("location") instanceof String) {
-//            String location = (String) payload.get("location");
-//
-//            if (location.contains("current_location")) {
-//                // TODO get device info
-//                // payload.put("location", deviceInfo);
-//            }
-//        }
+    /**
+     * Replace `#current_location` client operators with latitude / longitude location objects.
+     * @param payload
+     */
+    private void replaceLocation(JsonObject payload) {
+        replaceLocation(payload, null);
+    }
 
-        return payload;
+    /**
+     * Inner recursive function. See {@link #replaceLocation(com.google.gson.JsonObject)}.
+     * @param payload
+     * @param location
+     */
+    private void replaceLocation(JsonObject payload, JsonObject location) {
+        for (Map.Entry<String, JsonElement> entry : payload.entrySet()) {
+            if (entry.getValue().isJsonPrimitive()
+                    && entry.getValue().getAsJsonPrimitive().equals("#current_location")) {
+                if (location == null) {
+                    Location locationObj = locationTracker.getLocation();
+                    if (locationObj != null) {
+                        location = new JsonObject();
+                        location.addProperty("latitude", locationObj.getLatitude());
+                        location.addProperty("longitude", locationObj.getLongitude());
+                    }
+                }
+
+                payload.add(entry.getKey(), location);
+            } else if (entry.getValue().isJsonObject()) {
+                replaceLocation(entry.getValue().getAsJsonObject(), location);
+            }
+        }
     }
 
     private static Pair[] DATETIME_KEY_NAMES = new Pair[] {
@@ -576,17 +595,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         deviceInfo.put("timestamp", System.currentTimeMillis() / 1000L);
         deviceInfo.put("timeoffset", timeOffset);
 
-        HashMap<String, Object> geolocation = this.locationTracker.getCurrentPosition();
-
-        if (geolocation == null) {
-            geolocation = this.locationTracker.getGeolocation();
-        }
-
-        if (!geolocation.containsKey("error") && geolocation.size() > 1) {
-            deviceInfo.put("latitude", geolocation.get("latitude"));
-            deviceInfo.put("longitude", geolocation.get("longitude"));
-        } else if (geolocation.containsKey("error")) {
-            Log.e(TAG, (String) geolocation.get("error"));
+        Location location = locationTracker.getLocation();
+        if (location != null) {
+            deviceInfo.put("latitude", location.getLatitude());
+            deviceInfo.put("longitude", location.getLongitude());
         }
 
         return deviceInfo;
