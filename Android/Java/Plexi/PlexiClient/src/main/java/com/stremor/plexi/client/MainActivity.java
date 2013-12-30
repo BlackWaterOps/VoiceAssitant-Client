@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
 
     /**
      * Handles a query spoken by the user.
-     * <p/>
+     *
      * Updates the view and calls subsequent processing routines.
      *
      * @param query
@@ -150,6 +150,12 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     public void error(String message) {
         // TODO Special error formatting
         showText(message);
+    }
+
+    @Override
+    public void internalError() {
+        // TODO handle? Do we need to pass some kind of error info to be useful to an external
+        // client, or is it better to have Plexi act like a black box?
     }
 
     @Override

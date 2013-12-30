@@ -75,7 +75,7 @@ public class RequestHelperStub4 implements IRequestHelper {
 
             if (location.isJsonNull()) {
                 // Needs disambiguation!
-                response = new ResponderModel("disambiguate", "location", "location");
+                response = new ResponderModel("disambiguate", "location", "payload.location");
             } else if (location.isJsonObject() && location.equals(locationObject)) {
                 response = new ResponderModel("completed", "foobar", null, pkg);
             } else {

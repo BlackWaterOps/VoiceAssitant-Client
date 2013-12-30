@@ -33,4 +33,9 @@ public interface IPlexiListener {
      * @param message A natural-language message describing the error.
      */
     public void error(String message);
+
+    /**
+     * Handle an internal error experienced by the Plexi backend.
+     */
+    public void internalError();
 }

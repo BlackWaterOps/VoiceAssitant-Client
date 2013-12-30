@@ -307,7 +307,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         String field = data.getField();
         String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type, getDeviceInfo());
         requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
@@ -443,11 +443,17 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 //        prependTo(context, response);
     }
 
+    /**
+     * Perform prepend_to operations.
+     *
+     * @param context
+     * @param data
+     */
     private void prependTo(ClassifierModel context, JsonObject data) {
         if (!data.has("unused_tokens") || data.getAsJsonArray("unused_tokens").size() == 0)
             return;
 
-        // TODO
+        // TODO not implemented on backend
 //        if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
 //            return context;
 //        }
@@ -482,7 +488,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private void replaceLocation(JsonObject payload, JsonObject location) {
         for (Map.Entry<String, JsonElement> entry : payload.entrySet()) {
             if (entry.getValue().isJsonPrimitive()
-                    && entry.getValue().getAsJsonPrimitive().equals("#current_location")) {
+                    && entry.getValue().getAsString().equals("#current_location")) {
                 if (location == null) {
                     Location locationObj = locationTracker.getLocation();
                     if (locationObj != null) {
@@ -584,11 +590,11 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     @Override
     public void onInternalError() {
-        // TODO handle remote internal Plexi errors
+        notifyListeners(PublicEvent.INTERNAL_ERROR);
     }
 
     private enum PublicEvent {
-        SHOW, REQUEST_CHOICE, ERROR
+        SHOW, REQUEST_CHOICE, ERROR, INTERNAL_ERROR
     };
 
     public void addListener(IPlexiListener listener) {
@@ -612,6 +618,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             case ERROR:
                 for (IPlexiListener listener : listeners)
                     listener.error((String) data[0]);
+                break;
+            case INTERNAL_ERROR:
+                for (IPlexiListener listener : listeners)
+                    listener.internalError();
                 break;
             default:
                 throw new IllegalArgumentException(
