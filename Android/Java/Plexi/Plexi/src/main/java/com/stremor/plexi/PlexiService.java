@@ -207,13 +207,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
             @Override
             public void onFinish() {
-                reset();
+                clearContext();
             }
         };
-    }
-
-    private void reset() {
-        clearContext();
     }
 
     /**
