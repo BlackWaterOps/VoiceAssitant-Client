@@ -3,8 +3,7 @@ package com.stremor.plexi.models;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by jeffschifano on 10/28/13.
@@ -71,10 +70,17 @@ public class ClassifierModel implements Cloneable {
         return result;
     }
 
+    @Override
+    public String toString() {
+        String payloadString = payload.toString();
+        return "(" + model + ", " + action + ")<project: " + Arrays.toString(project) + "; "
+                + payloadString.substring(Math.min(80, payloadString.length())) + ">";
+    }
+
     public ClassifierModel clone() throws CloneNotSupportedException {
         ClassifierModel result = (ClassifierModel) super.clone();
         result.payload = new JsonParser().parse(payload.toString()).getAsJsonObject();
-        result.project = project == null ? null : new ArrayList<String>(project);
+        result.project = project == null ? null : Arrays.copyOf(project, project.length);
         result.error = error == null ? null : error.clone();
 
         return result;

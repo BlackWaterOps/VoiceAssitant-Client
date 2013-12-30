@@ -70,13 +70,8 @@ public class RequestHelperStub3 implements IRequestHelper {
             listener.onQueryResponse(response);
         } else if (type == ActorModel.class) {
             // This is an actor call.
-            ActorModel response = new ActorModel();
-            response.speak = "Hello world";
-
-            ShowModel show = new ShowModel(parser.parse("{\"text\":\"Hello world\"}")
-                    .getAsJsonObject(), null);
-            response.show = show;
-
+            ActorModel response = new ActorModel(new ShowModel(parser.parse("{\"text\":\"Hello world\"}")
+                    .getAsJsonObject(), null), "Hello world", null);
             listener.onQueryResponse(response);
         }
     }

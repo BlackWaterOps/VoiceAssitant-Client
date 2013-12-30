@@ -423,10 +423,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     public void handleActorResponse(ActorModel response) {
         this.clearContext();
 
-        if (response.error != null) {
-            changeState(State.EXCEPTION, response.error.getMessage());
+        if (response.getError() != null) {
+            changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
-            notifyListeners(PublicEvent.SHOW, response.show, response.speak);
+            notifyListeners(PublicEvent.SHOW, response.getShow(), response.getSpeak());
         }
     }
 

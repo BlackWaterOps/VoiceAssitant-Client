@@ -3,7 +3,7 @@ package com.stremor.plexi.models;
 /**
  * Created by jeffschifano on 10/28/13.
  */
-public class ResponderModel {
+public class ResponderModel implements Cloneable {
     private String status;
     private String type;
     private String field;
@@ -34,12 +34,29 @@ public class ResponderModel {
         this.setSpeak(speak);
     }
 
+    // Choice disambiguation indicator response
+    public ResponderModel(String status, String field, ShowModel show, String speak) {
+        this.setStatus(status);
+        this.setField(field);
+        this.setShow(show);
+        this.setSpeak(speak);
+    }
+
     // Actor response
     public ResponderModel(String status, String actor, String followup, ClassifierModel data) {
         this.setStatus(status);
         this.setActor(actor);
         this.setFollowup(followup);
         this.setData(data);
+    }
+
+    public ResponderModel clone() throws CloneNotSupportedException {
+        ResponderModel clone = (ResponderModel) super.clone();
+        clone.show = show == null ? null : show.clone();
+        clone.data = data == null ? null : data.clone();
+        clone.error = error == null ? null : error.clone();
+
+        return clone;
     }
 
     public String getStatus() {

@@ -176,7 +176,42 @@ public class PlexiServiceTestCase extends AndroidTestCase {
                 isA(IResponseListener.class));
         order.verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
                 eq(RequestTask.HttpMethod.POST), eq(spy.MODEL_COMPLETE), eq(false),
-                any(IResponseListener.class));
+                isA(IResponseListener.class));
+        order.verifyNoMoreInteractions();
+    }
+
+    /**
+     * Tests a full flow: query -> choice disambiguation -> completion
+     *
+     * Tightly coupled with RequestHelperStub5.
+     */
+    public void testWithStub5() {
+        RequestHelperStub5 spy = Mockito.spy(new RequestHelperStub5());
+        PlexiService plexi = new PlexiService(getContext(), spy);
+
+        plexi.query("What is the stock price of apollo");
+
+        // Should be waiting for choice input
+        assertEquals(PlexiService.State.CHOICE, plexi.getCurrentState().getState());
+
+        plexi.choice(RequestHelperStub5.CHOICES[RequestHelperStub5.CHOICE_IDX]);
+
+        // Now we should be finished
+        assertEquals(PlexiService.State.UNINITIALIZED, plexi.getCurrentState().getState());
+
+        // Verify all calls
+        InOrder order = inOrder(spy);
+
+        order.verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
+                eq(RequestTask.HttpMethod.GET), isA(IResponseListener.class));
+        // Request helper stub will make an assertion about the contents of the second of the
+        // following adjusted requests
+        order.verify(spy, times(2)).doRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+                isA(IResponseListener.class));
+        order.verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), /*eq(spy.MODEL_COMPLETE)*/ anyObject(), eq(false),
+                isA(IResponseListener.class));
         order.verifyNoMoreInteractions();
     }
 
