@@ -546,8 +546,20 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         return data;
     }
 
-    private HashMap<String, Object> getDeviceInfo() {
-        HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
+    private JsonObject getLocation() {
+        JsonObject ret = new JsonObject();
+
+        Location location = locationTracker.getLocation();
+        if (location != null) {
+            ret.addProperty("latitude", location.getLatitude());
+            ret.addProperty("longitude", location.getLongitude());
+        }
+
+        return ret;
+    }
+
+    private JsonObject getDeviceInfo() {
+        JsonObject deviceInfo = getLocation();
 
         long time = System.currentTimeMillis();
         int offset = DateTimeZone.getDefault().getOffset(time) / 1000;
@@ -556,14 +568,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         int minutes = (offset % 3600) / 60;
         String timeOffset = String.format("%d:%02d", hours, minutes);
 
-        deviceInfo.put("timestamp", System.currentTimeMillis() / 1000L);
-        deviceInfo.put("timeoffset", timeOffset);
-
-        Location location = locationTracker.getLocation();
-        if (location != null) {
-            deviceInfo.put("latitude", location.getLatitude());
-            deviceInfo.put("longitude", location.getLongitude());
-        }
+        deviceInfo.addProperty("timestamp", System.currentTimeMillis() / 1000L);
+        deviceInfo.addProperty("timeoffset", timeOffset);
 
         return deviceInfo;
     }

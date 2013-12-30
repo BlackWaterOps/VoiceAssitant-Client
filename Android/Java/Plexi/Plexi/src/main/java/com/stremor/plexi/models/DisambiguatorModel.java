@@ -1,6 +1,6 @@
 package com.stremor.plexi.models;
 
-import java.util.HashMap;
+import com.google.gson.JsonObject;
 
 /**
  * Created by jeffschifano on 10/29/13.
@@ -9,7 +9,7 @@ public class DisambiguatorModel {
     private Object payload;
     private String type;
     private Choice[] candidates;
-    private HashMap<String, Object> deviceInfo;
+    private JsonObject deviceInfo;
 
     public DisambiguatorModel(Object payload, String type) {
         this.payload = payload;
@@ -22,7 +22,7 @@ public class DisambiguatorModel {
         this.candidates = candidates;
     }
 
-    public DisambiguatorModel(Object payload, String type, HashMap<String, Object> device_info) {
+    public DisambiguatorModel(Object payload, String type, JsonObject device_info) {
         this.payload = payload;
         this.type = type;
         this.deviceInfo = device_info;
@@ -38,11 +38,7 @@ public class DisambiguatorModel {
 
     public Choice[] getCandidates() { return candidates; }
 
-    public HashMap<String, Object> getDeviceInfo() {
-
-
-        return deviceInfo;
-    }
+    public JsonObject getDeviceInfo() { return deviceInfo; }
 
     @Override
     public boolean equals(Object o) {
