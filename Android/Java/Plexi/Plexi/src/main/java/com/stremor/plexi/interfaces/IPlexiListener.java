@@ -1,6 +1,7 @@
 package com.stremor.plexi.interfaces;
 
 import com.stremor.plexi.models.Choice;
+import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ShowModel;
 
 /**
@@ -26,6 +27,13 @@ public interface IPlexiListener {
      * @param choices
      */
     public void requestChoice(Choice[] choices);
+
+    /**
+     * Handle a login response.
+     *
+     * @param response
+     */
+    public void onLoginResponse(LoginResponse response);
 
     /**
      * Handle an error detected by the Plexi backend.

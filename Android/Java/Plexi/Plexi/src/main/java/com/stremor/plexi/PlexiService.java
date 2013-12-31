@@ -241,7 +241,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (list == null)
             Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
 
-        notifyListeners(PublicEvent.REQUEST_CHOICE, new Object[] {list});
+        notifyListeners(PublicEvent.DO_REQUEST_CHOICE, new Object[] {list});
     }
 
     /**
@@ -266,7 +266,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     // called from "inprogress" status
     private void show(ResponderModel response) {
-        notifyListeners(PublicEvent.SHOW, response.getShow(), response.getSpeak());
+        notifyListeners(PublicEvent.DO_SHOW, response.getShow(), response.getSpeak());
     }
 
     private void errorMessage(String message) {
@@ -440,7 +440,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (response.getError() != null) {
             changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
-            notifyListeners(PublicEvent.SHOW, response.getShow(), response.getSpeak());
+            notifyListeners(PublicEvent.DO_SHOW, response.getShow(), response.getSpeak());
         }
     }
 
@@ -614,7 +614,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private enum PublicEvent {
-        SHOW, REQUEST_CHOICE, ERROR, INTERNAL_ERROR
+        DO_SHOW, DO_REQUEST_CHOICE, LOGIN_RESPONSE, ERROR, INTERNAL_ERROR
     };
 
     public void addListener(IPlexiListener listener) {
@@ -627,13 +627,17 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void notifyListeners(PublicEvent event, Object... data) {
         switch (event) {
-            case SHOW:
+            case DO_SHOW:
                 for (IPlexiListener listener : listeners)
                     listener.show((ShowModel) data[0], (String) data[1]);
                 break;
-            case REQUEST_CHOICE:
+            case DO_REQUEST_CHOICE:
                 for (IPlexiListener listener : listeners)
                     listener.requestChoice((Choice[]) data[0]);
+                break;
+            case LOGIN_RESPONSE:
+                for (IPlexiListener listener : listeners)
+                    listener.onLoginResponse((LoginResponse) data[0]);
                 break;
             case ERROR:
                 for (IPlexiListener listener : listeners)
