@@ -3,6 +3,7 @@ package com.stremor.plexi.interfaces;
 import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.SignupResponse;
 
 /**
  * Classes implementing this interface are expected to be the bridge between the user and the Plexi
@@ -38,6 +39,13 @@ public interface IPlexiListener {
      * @param response
      */
     public void onLoginResponse(LoginResponse response);
+
+    /**
+     * Handle a signup response.
+     *
+     * @param response
+     */
+    public void onSignupResponse(SignupResponse response);
 
     /**
      * Handle an error detected by the Plexi backend.

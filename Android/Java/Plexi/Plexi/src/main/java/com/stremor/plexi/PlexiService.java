@@ -20,6 +20,8 @@ import com.stremor.plexi.models.LoginRequest;
 import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.SignupRequest;
+import com.stremor.plexi.models.SignupResponse;
 import com.stremor.plexi.models.StateModel;
 import com.stremor.plexi.util.Datetime;
 import com.stremor.plexi.util.Installation;
@@ -51,7 +53,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private static final String RESPONDER = "http://rez.stremor-apier.appspot.com/v1/";
     private static final String PUD = "http://stremor-pud.appspot.com/v1/";
     private static final String LOGIN = "http://stremor-pud.appspot.com/v1/login";
-    private static final String REGISTRATION = "http://stremor-pud.appspot.com/v1/signup";
+    private static final String SIGNUP = "http://stremor-pud.appspot.com/v1/signup";
 
     // header names
     private static final String HEADER_STREMOR_AUTH_DEVICE = "Stremor-Auth-Device";
@@ -245,6 +247,22 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void handleLoginResponse(LoginResponse response) {
         notifyListeners(PublicEvent.LOGIN_RESPONSE, response);
+    }
+
+    /**
+     * Sign up for a Stremor account.
+     *
+     * @param username
+     * @param password
+     */
+    public void register(String username, String password) {
+        SignupRequest req = new SignupRequest(username, password);
+        requestHelper.doSerializedRequest(SignupResponse.class, SIGNUP, RequestTask.HttpMethod.POST,
+                null, req, true, this);
+    }
+
+    private void handleSignupResponse(SignupResponse response) {
+        notifyListeners(PublicEvent.SIGNUP_RESPONSE, response);
     }
 
     /**
@@ -621,6 +639,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             handleActorResponse((ActorModel) response);
         else if (response instanceof LoginResponse)
             handleLoginResponse((LoginResponse) response);
+        else if (response instanceof SignupResponse)
+            handleSignupResponse((SignupResponse) response);
         else if (response instanceof JsonObject)
             handleDisambiguationResponse((JsonObject) response);
         else
@@ -633,7 +653,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private enum PublicEvent {
-        DO_SHOW, DO_REQUEST_CHOICE, LOGIN_RESPONSE, ERROR, INTERNAL_ERROR
+        DO_SHOW, DO_REQUEST_CHOICE, LOGIN_RESPONSE, SIGNUP_RESPONSE, ERROR, INTERNAL_ERROR
     };
 
     public void addListener(IPlexiListener listener) {
@@ -657,6 +677,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             case LOGIN_RESPONSE:
                 for (IPlexiListener listener : listeners)
                     listener.onLoginResponse((LoginResponse) data[0]);
+                break;
+            case SIGNUP_RESPONSE:
+                for (IPlexiListener listener : listeners)
+                    listener.onSignupResponse((SignupResponse) data[0]);
                 break;
             case ERROR:
                 for (IPlexiListener listener : listeners)
