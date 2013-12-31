@@ -7,9 +7,11 @@ import com.stremor.plexi.models.ShowModel;
 /**
  * Classes implementing this interface are expected to be the bridge between the user and the Plexi
  * backend. These classes provide implementations for interacting with the user and retrieving user
- * input.
+ * input, and optionally for handling events detected by Plexi.
  */
 public interface IPlexiListener {
+    /// ACTIONS ///
+
     /**
      * Show a response to the user.
      *
@@ -28,6 +30,8 @@ public interface IPlexiListener {
      */
     public void requestChoice(Choice[] choices);
 
+    /// EVENTS ///
+
     /**
      * Handle a login response.
      *
@@ -40,10 +44,10 @@ public interface IPlexiListener {
      *
      * @param message A natural-language message describing the error.
      */
-    public void error(String message);
+    public void onError(String message);
 
     /**
      * Handle an internal error experienced by the Plexi backend.
      */
-    public void internalError();
+    public void onInternalError();
 }

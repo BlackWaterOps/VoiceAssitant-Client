@@ -664,11 +664,11 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 break;
             case ERROR:
                 for (IPlexiListener listener : listeners)
-                    listener.error((String) data[0]);
+                    listener.onError((String) data[0]);
                 break;
             case INTERNAL_ERROR:
                 for (IPlexiListener listener : listeners)
-                    listener.internalError();
+                    listener.onInternalError();
                 break;
             default:
                 throw new IllegalArgumentException(
