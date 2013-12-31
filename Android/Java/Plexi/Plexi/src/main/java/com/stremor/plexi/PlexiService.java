@@ -244,11 +244,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private void handleLoginResponse(LoginResponse response) {
-        if (response.getError() == null) {
-            // TODO
-        } else {
-
-        }
+        notifyListeners(PublicEvent.LOGIN_RESPONSE, response);
     }
 
     /**
