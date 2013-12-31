@@ -16,6 +16,8 @@ import com.stremor.plexi.models.ActorModel;
 import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.models.DisambiguatorModel;
+import com.stremor.plexi.models.LoginRequest;
+import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
@@ -27,8 +29,7 @@ import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 
 import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.message.BasicHeader;
 import org.joda.time.DateTimeZone;
 
 import java.io.UnsupportedEncodingException;
@@ -49,6 +50,11 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
     private static final String RESPONDER = "http://rez.stremor-apier.appspot.com/v1/";
     private static final String PUD = "http://stremor-pud.appspot.com/v1/";
+    private static final String LOGIN = "http://stremor-pud.appspot.com/v1/login";
+    private static final String REGISTRATION = "http://stremor-pud.appspot.com/v1/signup";
+
+    // header names
+    private static final String HEADER_STREMOR_AUTH_DEVICE = "Stremor-Auth-Device";
 
     // tag for logging
     private static final String TAG = "PlexiService";
@@ -218,16 +224,31 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     /**
-     * Log in to a Stremor account.
+     * Log in to a Stremor account. Plexi listeners will be called at
+     * {@link com.stremor.plexi.interfaces.IPlexiListener#onLoginResponse(com.stremor.plexi.models.LoginResponse)}
+     * when the login request completes.
+     *
      * @param username
      * @param password
      */
     public void login(String username, String password) {
         String deviceId = Installation.id(context);
+        Header[] headers = new Header[] {
+                new BasicHeader(HEADER_STREMOR_AUTH_DEVICE, deviceId)
+        };
 
-        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-        parameters.add(new BasicNameValuePair("username", username));
-        parameters.add(new BasicNameValuePair("password", password));
+        LoginRequest req = new LoginRequest(username, password);
+
+        requestHelper.doSerializedRequest(LoginResponse.class, LOGIN, RequestTask.HttpMethod.POST,
+                headers, req, true, this);
+    }
+
+    private void handleLoginResponse(LoginResponse response) {
+        if (response.getError() == null) {
+            // TODO
+        } else {
+
+        }
     }
 
     /**
@@ -602,6 +623,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             handleAuditorResponse((ResponderModel) response);
         else if (response instanceof ActorModel)
             handleActorResponse((ActorModel) response);
+        else if (response instanceof LoginResponse)
+            handleLoginResponse((LoginResponse) response);
         else if (response instanceof JsonObject)
             handleDisambiguationResponse((JsonObject) response);
         else
