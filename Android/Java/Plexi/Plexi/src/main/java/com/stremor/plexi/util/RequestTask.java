@@ -9,11 +9,13 @@ import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
@@ -52,18 +54,20 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
     /**
      * Sends a query to the server.
      *
-     * @param args Three arguments of the form:
+     * @param args 3-4 arguments of the form:
      *             1. HttpMethod method
      *             2. String endpoint
      *             3. String postData
+     *             4. Header[] headers (may be null or omitted)
      */
     @Override
     protected AsyncTaskResult<T> doInBackground(Object... args) {
-        assert args.length == 3;
+        assert args.length >= 3 && args.length <= 4;
 
         String endpoint = (String) args[0];
         String postData = (String) args[1];
         HttpMethod method = (HttpMethod) args[2];
+        Header[] headers = args.length == 4 ? (Header[]) args[3] : null;
 
         URI uri;
 
@@ -76,26 +80,27 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
         }
 
         HttpClient client = new DefaultHttpClient();
-        HttpResponse response = null;
+        HttpResponse response;
 
         try {
+            HttpUriRequest req = null;
             if (method == HttpMethod.GET) {
-                HttpGet get = new HttpGet();
-
-                get.setURI(uri);
-
-                response = client.execute(get);
+                req = new HttpGet();
+                ((HttpGet) req).setURI(uri);
             } else if (method == HttpMethod.POST) {
-                HttpPost post = new HttpPost();
-                post.setURI(uri);
+                req = new HttpPost();
+                ((HttpPost) req).setURI(uri);
 
                 if (postData != null) {
                     HttpEntity entity = new StringEntity(postData, HTTP.UTF_8);
-                    post.setEntity(entity);
+                    ((HttpPost) req).setEntity(entity);
                 }
-
-                response = client.execute(post);
             }
+
+            if (headers != null)
+                req.setHeaders(headers);
+
+            response = client.execute(req);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Failed to encode query JSON", e);
             return new AsyncTaskResult<T>(e);
