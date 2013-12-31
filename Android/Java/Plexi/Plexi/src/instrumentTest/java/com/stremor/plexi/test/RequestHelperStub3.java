@@ -12,6 +12,8 @@ import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
+
 /**
  * An IRequestHelper stub implementation which simulates the following scenario:
  *
@@ -26,7 +28,7 @@ public class RequestHelperStub3 implements IRequestHelper {
     private static JsonParser parser = new JsonParser();
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              IResponseListener listener) {
+                              Header[] headers, IResponseListener listener) {
         if (type == ClassifierModel.class) {
             ClassifierModel response = new ClassifierModel("calendar", "create",
                     parser.parse("{\"name\":null}").getAsJsonObject());
@@ -35,8 +37,8 @@ public class RequestHelperStub3 implements IRequestHelper {
         }
     }
 
-    public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              Object data, boolean includeNulls, IResponseListener listener) {
+    public <T> void doSerializedRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method, Header[] headers,
+                                        Object data, boolean includeNulls, IResponseListener listener) {
         if (type == JsonObject.class && endpoint.contains("disambiguate")) {
             // This is a disambiguation call.
             assert data instanceof DisambiguatorModel;

@@ -12,6 +12,8 @@ import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.ShowSimpleModel;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
+
 /**
  * An IRequestHelper stub implementation which simulates the following scenario:
  *
@@ -53,7 +55,7 @@ public class RequestHelperStub5 implements IRequestHelper {
             "Apollo Investment stock is trading at $21.1, down 0.71%", null);
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              IResponseListener listener) {
+                              Header[] headers, IResponseListener listener) {
         if (type == ClassifierModel.class) {
             ClassifierModel response = null;
             try {
@@ -64,8 +66,8 @@ public class RequestHelperStub5 implements IRequestHelper {
         }
     }
 
-    public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              Object data, boolean includeNulls, IResponseListener listener) {
+    public <T> void doSerializedRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method, Header[] headers,
+                                        Object data, boolean includeNulls, IResponseListener listener) {
         if (type == ResponderModel.class) {
             // This is an auditor call.
             ClassifierModel pkg = (ClassifierModel) data;

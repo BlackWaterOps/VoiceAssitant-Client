@@ -20,11 +20,15 @@ import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.StateModel;
 import com.stremor.plexi.util.Datetime;
+import com.stremor.plexi.util.Installation;
 import com.stremor.plexi.util.JsonObjectUtil;
 import com.stremor.plexi.util.LocationTracker;
 import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.joda.time.DateTimeZone;
 
 import java.io.UnsupportedEncodingException;
@@ -68,8 +72,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private LocationTracker locationTracker;
     private String originalQuery;
 
-    // Class dependencies
+    // HTTP-related members
     private IRequestHelper requestHelper;
+    private Header[] headers;
 
     /**
      * State data
@@ -213,6 +218,19 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     /**
+     * Log in to a Stremor account.
+     * @param username
+     * @param password
+     */
+    public void login(String username, String password) {
+        String deviceId = Installation.id(context);
+
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("username", username));
+        parameters.add(new BasicNameValuePair("password", password));
+    }
+
+    /**
      * From a response model present a choice list to the user.
      *
      * @param response
@@ -262,7 +280,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private void classify(String query) {
         try {
             requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "?query=" +
-                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, this);
+                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, headers, this);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "UnsupportedEncodingException during classification request building", e);
         }
@@ -284,8 +302,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void disambiguateActive(String data) {
         DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType());
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/active",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/active",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
@@ -295,8 +313,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         candidates = candidates == null ? new Choice[]{} : candidates;
         DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(),
                 candidates);
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguatePassive(ResponderModel data) {
@@ -306,8 +324,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type, getDeviceInfo());
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
@@ -317,8 +335,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type);
-        requestHelper.doRequest(JsonObject.class, PUD + "disambiguate",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, PUD + "disambiguate",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     // disambiguator response handler
@@ -362,8 +380,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (!context.equals(mainContext)) {
             this.mainContext = context;
 
-            requestHelper.doRequest(ResponderModel.class, RESPONDER + "audit",
-                    RequestTask.HttpMethod.POST, context, false, this);
+            requestHelper.doSerializedRequest(ResponderModel.class, RESPONDER + "audit",
+                    RequestTask.HttpMethod.POST, headers, context, false, this);
         } else {
             throw new RuntimeException("potential request loop detected");
 //            Log.e(TAG, "potential request loop detected");
@@ -409,8 +427,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 endpoint = PUD + "actors/" + actor.replace("private:", "");
             }
 
-            requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
-                    this.mainContext, false, this);
+            requestHelper.doSerializedRequest(ActorModel.class, endpoint,
+                    RequestTask.HttpMethod.POST, headers, this.mainContext, false, this);
         } else {
             show(data);
         }

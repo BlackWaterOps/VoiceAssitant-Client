@@ -64,9 +64,9 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
     protected AsyncTaskResult<T> doInBackground(Object... args) {
         assert args.length >= 3 && args.length <= 4;
 
-        String endpoint = (String) args[0];
-        String postData = (String) args[1];
-        HttpMethod method = (HttpMethod) args[2];
+        HttpMethod method = (HttpMethod) args[0];
+        String endpoint = (String) args[1];
+        String postData = (String) args[2];
         Header[] headers = args.length == 4 ? (Header[]) args[3] : null;
 
         URI uri;
