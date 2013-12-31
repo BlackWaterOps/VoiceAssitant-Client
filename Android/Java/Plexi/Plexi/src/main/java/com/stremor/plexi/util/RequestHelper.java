@@ -6,9 +6,6 @@ import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
 
 import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-
-import java.util.List;
 
 /**
  * Primary implementation of the {@link com.stremor.plexi.interfaces.IRequestHelper} interface.
@@ -29,26 +26,7 @@ public class RequestHelper implements IRequestHelper {
      */
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               Header[] headers, IResponseListener listener) {
-        doRequest(type, endpoint, method, headers, null, listener);
-    }
-
-    /**
-     * Perform a server request with optional form data.
-     *
-     * @param type The class of `T`
-     * @param endpoint URI endpoint
-     * @param method HTTP method
-     * @param headers Extra HTTP headers to attach (can be null)
-     * @param dataFields Data fields (will be URL-encoded)
-     * @param listener A listener to be notified upon response
-     * @param <T> The type expected as a result. This type will be instantiated using the JSON
-     *            results returned by the server.
-     */
-    public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              Header[] headers, List<NameValuePair> dataFields,
-                              IResponseListener listener) {
-        new RequestTask<T>(type, listener).execute(method, endpoint,
-                new RequestPostData(dataFields), headers);
+        doSerializedRequest(type, endpoint, method, headers, null, false, listener);
     }
 
     /**
@@ -74,7 +52,9 @@ public class RequestHelper implements IRequestHelper {
             req.execute(method, endpoint, null);
         } else {
             req.setContentType("application/json");
-            req.execute(method, endpoint, new RequestPostData(serializeData(data, includeNulls)));
+
+            String postString = data == null ? null : serializeData(data, includeNulls);
+            req.execute(method, endpoint, postString);
         }
     }
 
