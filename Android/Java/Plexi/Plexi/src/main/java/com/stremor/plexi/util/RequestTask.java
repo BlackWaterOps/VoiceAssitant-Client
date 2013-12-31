@@ -42,32 +42,28 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
 
     private Class<T> type;
     private IResponseListener listener;
-    private HttpMethod method;
     private String contentType;
 
     public RequestTask(Class<T> classType, IResponseListener responseListener) {
-        this(classType, responseListener, HttpMethod.POST);
-    }
-
-    public RequestTask(Class<T> classType, IResponseListener responseListener, HttpMethod method) {
         this.type = classType;
         this.listener = responseListener;
-        this.method = method;
     }
 
     /**
      * Sends a query to the server.
      *
      * @param args Three arguments of the form:
-     *             1. String endpoint
-     *             2. String postData
+     *             1. HttpMethod method
+     *             2. String endpoint
+     *             3. String postData
      */
     @Override
     protected AsyncTaskResult<T> doInBackground(Object... args) {
-        assert args.length == 2;
+        assert args.length == 3;
 
         String endpoint = (String) args[0];
         String postData = (String) args[1];
+        HttpMethod method = (HttpMethod) args[2];
 
         URI uri;
 
@@ -141,14 +137,6 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
         } else if (!isCancelled() && listener != null) {
             listener.onQueryResponse(result.getResult());
         }
-    }
-
-    public HttpMethod getMethod() {
-        return method;
-    }
-
-    public void setMethod(HttpMethod method) {
-        this.method = method;
     }
 
     public String getContentType() {

@@ -16,13 +16,13 @@ public class RequestHelper implements IRequestHelper {
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
                               Object data, boolean includeNulls, IResponseListener listener) {
-        RequestTask req = new RequestTask<T>(type, listener, method);
+        RequestTask req = new RequestTask<T>(type, listener);
 
         if (method == RequestTask.HttpMethod.GET) {
-            req.execute(endpoint, null);
+            req.execute(method, endpoint, null);
         } else {
             req.setContentType("application.json");
-            req.execute(endpoint, serializeData(data, includeNulls));
+            req.execute(method, endpoint, serializeData(data, includeNulls));
         }
     }
 
