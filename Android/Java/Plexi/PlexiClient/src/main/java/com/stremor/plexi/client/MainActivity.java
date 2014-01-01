@@ -11,6 +11,7 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.stremor.plexi.PlexiService;
@@ -28,10 +29,12 @@ import java.util.Locale;
 public class MainActivity extends Activity implements MainView.ViewListener, IPlexiListener {
 
     private static final String TAG = "MainActivity";
-    private static final int REQ_RECOGNIZE_SPEECH = 41;
     private static final String RECOGNIZER_LANGUAGE_MODEL = RecognizerIntent.LANGUAGE_MODEL_FREE_FORM;
     private static final String RECOGNIZER_LANGUAGE = "en";
+
+    private static final int REQ_RECOGNIZE_SPEECH = 41;
     private static final int REQ_CHECK_TTS = 42;
+    private static final int REQ_LOGIN = 1;
 
     private MainView mView;
     private TextToSpeech mTts;
@@ -44,7 +47,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         }
     };
 
-    private PlexiService mPlexi;
+    public static PlexiService mPlexi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,18 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.plexi_login:
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivityForResult(intent, REQ_LOGIN);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -200,6 +215,10 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
                 Intent installIntent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
             }
+        } else if (requestCode == REQ_LOGIN) {
+            Log.d("PlexiClient", "Login returned with token: "
+                    + data.getExtras().getString(LoginActivity.EXTRA_FIELD_AUTH_TOKEN));
+            // TODO
         }
     }
 

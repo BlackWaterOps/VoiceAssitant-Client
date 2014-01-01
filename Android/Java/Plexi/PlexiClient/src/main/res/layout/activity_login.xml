@@ -34,13 +34,13 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/username"
                 android:singleLine="true"
                 android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/prompt_email" />
+                android:inputType="text"
+                android:hint="@string/prompt_username" />
 
             <EditText
                 android:id="@+id/password"
