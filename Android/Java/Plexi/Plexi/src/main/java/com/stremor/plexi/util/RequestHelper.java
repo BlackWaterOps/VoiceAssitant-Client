@@ -49,12 +49,12 @@ public class RequestHelper implements IRequestHelper {
         RequestTask<T> req = new RequestTask<T>(type, listener);
 
         if (method == RequestTask.HttpMethod.GET) {
-            req.execute(method, endpoint, null);
+            req.execute(method, endpoint, null, headers);
         } else {
             req.setContentType("application/json");
 
             String postString = data == null ? null : serializeData(data, includeNulls);
-            req.execute(method, endpoint, postString);
+            req.execute(method, endpoint, postString, headers);
         }
     }
 
