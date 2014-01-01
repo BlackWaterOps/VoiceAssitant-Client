@@ -18,7 +18,9 @@ import com.stremor.plexi.client.models.ConversationItem;
 import com.stremor.plexi.client.views.MainView;
 import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.models.Choice;
+import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.SignupResponse;
 
 import java.util.List;
 import java.util.Locale;
@@ -147,13 +149,23 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     }
 
     @Override
-    public void error(String message) {
+    public void onLoginResponse(LoginResponse response) {
+        // TODO
+    }
+
+    @Override
+    public void onSignupResponse(SignupResponse response) {
+        // TODO
+    }
+
+    @Override
+    public void onError(String message) {
         // TODO Special error formatting
         showText(message);
     }
 
     @Override
-    public void internalError() {
+    public void onInternalError() {
         // TODO handle? Do we need to pass some kind of error info to be useful to an external
         // client, or is it better to have Plexi act like a black box?
     }
