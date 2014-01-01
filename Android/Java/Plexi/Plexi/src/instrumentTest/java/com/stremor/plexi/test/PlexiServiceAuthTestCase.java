@@ -7,6 +7,8 @@ import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.LoginRequest;
 import com.stremor.plexi.models.LoginResponse;
+import com.stremor.plexi.models.SignupRequest;
+import com.stremor.plexi.models.SignupResponse;
 import com.stremor.plexi.util.Installation;
 import com.stremor.plexi.util.RequestTask;
 
@@ -86,6 +88,39 @@ public class PlexiServiceAuthTestCase extends AndroidTestCase {
         order.verify(spy, times(1)).doSerializedRequest(eq(LoginResponse.class), contains("login"),
                 eq(RequestTask.HttpMethod.POST), argThat(isProperLoginHeaders),
                 eq(new LoginRequest("a", "a")), anyBoolean(), isA(IResponseListener.class));
+        order.verify(listener, times(1)).onLoginResponse(argThat(isLoginSuccess));
+
+        order.verifyNoMoreInteractions();
+    }
+
+    public void testLoginFailAndSignupFix() {
+        RequestHelperStub6 spy = Mockito.spy(new RequestHelperStub6());
+        IPlexiListener listener = Mockito.mock(IPlexiListener.class);
+
+        PlexiService plexi = new PlexiService(getContext(), spy);
+        plexi.addListener(listener);
+
+        plexi.login("b", "b");
+        plexi.signup("b", "b");
+        plexi.login("b", "b");
+
+        /////////
+
+        InOrder order = inOrder(spy, listener);
+
+        order.verify(spy, times(1)).doSerializedRequest(eq(LoginResponse.class), contains("login"),
+                eq(RequestTask.HttpMethod.POST), argThat(isProperLoginHeaders),
+                eq(new LoginRequest("b", "b")), anyBoolean(), isA(IResponseListener.class));
+        order.verify(listener, times(1)).onLoginResponse(argThat(isLoginFailure));
+
+        order.verify(spy, times(1)).doSerializedRequest(eq(SignupResponse.class), contains("signup"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(),
+                eq(new SignupRequest("b", "b")), anyBoolean(), isA(IResponseListener.class));
+        order.verify(listener, times(1)).onSignupResponse(isA(SignupResponse.class));
+
+        order.verify(spy, times(1)).doSerializedRequest(eq(LoginResponse.class), contains("login"),
+                eq(RequestTask.HttpMethod.POST), argThat(isProperLoginHeaders),
+                eq(new LoginRequest("b", "b")), anyBoolean(), isA(IResponseListener.class));
         order.verify(listener, times(1)).onLoginResponse(argThat(isLoginSuccess));
 
         order.verifyNoMoreInteractions();

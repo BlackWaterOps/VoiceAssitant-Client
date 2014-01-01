@@ -13,6 +13,10 @@ public interface IPlexiService {
 
     void resetTimer();
 
+    void login(String username, String password);
+
+    void signup(String username, String password);
+
     void query(String query);
 
     void choice(Choice choice);

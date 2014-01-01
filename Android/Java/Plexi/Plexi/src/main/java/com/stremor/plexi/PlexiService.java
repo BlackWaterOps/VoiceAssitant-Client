@@ -255,7 +255,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      * @param username
      * @param password
      */
-    public void register(String username, String password) {
+    public void signup(String username, String password) {
         SignupRequest req = new SignupRequest(username, password);
         requestHelper.doSerializedRequest(SignupResponse.class, SIGNUP, RequestTask.HttpMethod.POST,
                 null, req, true, this);
