@@ -56,6 +56,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private static final String SIGNUP = "http://stremor-pud.appspot.com/v1/signup";
 
     // header names
+    private static final String HEADER_STREMOR_AUTH_TOKEN = "Stremor-Auth-Token";
     private static final String HEADER_STREMOR_AUTH_DEVICE = "Stremor-Auth-Device";
 
     // tag for logging
@@ -365,10 +366,20 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     }
 
     private void disambiguatePersonal(ResponderModel data) {
+        if (authToken == null) {
+            Log.e(TAG, "Missing auth token");
+            return;
+        }
+
         String field = data.getField();
         String type = data.getType();
 
         Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
+
+        Header[] headers = new Header[] {
+                new BasicHeader(HEADER_STREMOR_AUTH_DEVICE, Installation.id(context)),
+                new BasicHeader(HEADER_STREMOR_AUTH_TOKEN, authToken)
+        };
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type);
         requestHelper.doSerializedRequest(JsonObject.class, PUD + "disambiguate",
