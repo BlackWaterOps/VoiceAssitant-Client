@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -97,10 +98,18 @@ public class LoginActivity extends Activity implements IPlexiListener {
                 attemptLogin();
             }
         });
+
+        findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptSignup();
+            }
+        });
     }
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         mPlexi.removeListener(this);
     }
 
@@ -142,13 +151,13 @@ public class LoginActivity extends Activity implements IPlexiListener {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Validate the information currently given in the login form. Updates the
+     * login form UI and returns `false` if the information is invalid; returns
+     * false otherwise.
      */
-    public void attemptLogin() {
+    private boolean validate() {
         if (mIsAuthing)
-            return;
+            return false;
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -176,16 +185,44 @@ public class LoginActivity extends Activity implements IPlexiListener {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // Focus the first form field with an error
             focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+        }
+
+        return !cancel;
+    }
+
+    /**
+     * Attempts to log in the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    public void attemptLogin() {
+        if (validate()) {
+            mIsAuthing = true;
+
+            // Show a progress spinner, and begin the login attempt.
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
 
             mPlexi.login(mUsername, mPassword);
+        }
+    }
+
+    /**
+     * Attempts to sign up using the account specified by the login form.
+     * If there are form errors (invalid email, missing fields, etc.), the
+     * errors are presented and no actual signup attempt is made.
+     */
+    public void attemptSignup() {
+        if (validate()) {
+            mIsAuthing = true;
+
+            // Show a progress spinner, and begin the signup attempt.
+            mLoginStatusMessageView.setText(R.string.login_progress_signing_up);
+            showProgress(true);
+
+            mPlexi.signup(mUsername, mPassword);
         }
     }
 
@@ -237,6 +274,7 @@ public class LoginActivity extends Activity implements IPlexiListener {
     @Override
     public void onLoginResponse(LoginResponse response) {
         showProgress(false);
+        mIsAuthing = false;
 
         if (response.getError() == null) {
             Intent result = new Intent();
@@ -255,7 +293,19 @@ public class LoginActivity extends Activity implements IPlexiListener {
      */
     @Override
     public void onSignupResponse(SignupResponse response) {
+        if (response.getError() == null) {
+            // Log the user in
+            mPlexi.login(mUsername, mPassword);
+        } else {
+            showProgress(false);
+            mIsAuthing = false;
 
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.error_signup_title)
+                    .setMessage(R.string.error_signup_message)
+                    .show();
+        }
     }
 
     @Override
