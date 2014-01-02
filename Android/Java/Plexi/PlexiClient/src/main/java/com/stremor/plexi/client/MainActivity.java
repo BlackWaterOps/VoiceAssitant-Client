@@ -65,7 +65,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
 
         mPlexi = new PlexiService(this);
         mPlexi.addListener(this);
-
+        mPlexi.setAuthToken(getAuthToken());
 
         // Check for TTS support
         Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -121,6 +121,8 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         } catch (UnsupportedEncodingException e) {
             /* pass */
         }
+
+        mPlexi.setAuthToken(newAuthToken);
     }
 
     /**

@@ -31,6 +31,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.stremor.plexi.client.MainActivity" />
         </activity>
+        <activity
+            android:name="com.stremor.plexi.client.WebActivity"
+            android:label="@string/title_activity_web"
+            android:parentActivityName="com.stremor.plexi.client.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainActivity" />
+        </activity>
+        <activity
+            android:name="com.stremor.plexi.client.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.stremor.plexi.client.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="MainActivity" />
+        </activity>
     </application>
 
 </manifest>

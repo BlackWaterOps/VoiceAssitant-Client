@@ -80,8 +80,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private LocationTracker locationTracker;
     private String originalQuery;
 
-    // HTTP-related members
+    // Request-related members
     private IRequestHelper requestHelper;
+    private String authToken;
     private Header[] headers;
 
     /**
@@ -694,5 +695,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 throw new IllegalArgumentException(
                         "PublicEvent value missing dispatch implementation");
         }
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }
