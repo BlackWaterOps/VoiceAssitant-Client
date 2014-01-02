@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity" >
 
-    <item android:id="@+id/plexi_login"
-          android:title="Login"
+    <item android:id="@+id/plexi_login_or_signup"
+          android:title="Login or sign up"
           app:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_settings"

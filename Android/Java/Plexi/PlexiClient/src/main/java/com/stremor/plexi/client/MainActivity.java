@@ -75,7 +75,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.plexi_login:
+            case R.id.plexi_login_or_signup:
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivityForResult(intent, REQ_LOGIN);
                 return true;
