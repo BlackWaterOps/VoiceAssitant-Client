@@ -2,6 +2,7 @@ package com.stremor.plexi.client;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +25,7 @@ import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.SignupResponse;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +34,9 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
     private static final String TAG = "MainActivity";
     private static final String RECOGNIZER_LANGUAGE_MODEL = RecognizerIntent.LANGUAGE_MODEL_FREE_FORM;
     private static final String RECOGNIZER_LANGUAGE = "en";
+
+    private static final String PREFS_NAME = "PlexiClientPrefs";
+    private static final String PREF_AUTH_TOKEN = "authToken";
 
     private static final int REQ_RECOGNIZE_SPEECH = 41;
     private static final int REQ_CHECK_TTS = 42;
@@ -60,6 +66,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         mPlexi = new PlexiService(this);
         mPlexi.addListener(this);
 
+
         // Check for TTS support
         Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkIntent, REQ_CHECK_TTS);
@@ -81,6 +88,38 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Attempt to retrieve a saved auth token.
+     *
+     * @return A saved auth token or null if none has been saved.
+     */
+    private String getAuthToken() {
+        try {
+            return new String(Base64.decode(getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .getString(PREF_AUTH_TOKEN, null), Base64.DEFAULT), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            /* pass */
+        }
+
+        return null;
+    }
+
+    /**
+     * Handle the receipt of a new auth token from the login process.
+     *
+     * @param newAuthToken
+     */
+    private void handleAuthToken(String newAuthToken) {
+        try {
+            // Store auth token, overwriting old copy
+            getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+                    .putString(PREF_AUTH_TOKEN,
+                            Base64.encodeToString(newAuthToken.getBytes("UTF-8"), Base64.DEFAULT));
+        } catch (UnsupportedEncodingException e) {
+            /* pass */
         }
     }
 
@@ -215,10 +254,9 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
                 Intent installIntent = new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                 startActivity(installIntent);
             }
-        } else if (requestCode == REQ_LOGIN) {
-            Log.d("PlexiClient", "Login returned with token: "
-                    + data.getExtras().getString(LoginActivity.EXTRA_FIELD_AUTH_TOKEN));
-            // TODO
+        } else if (requestCode == REQ_LOGIN && resultCode == RESULT_OK) {
+            String authToken = data.getExtras().getString(LoginActivity.EXTRA_FIELD_AUTH_TOKEN);
+            handleAuthToken(authToken);
         }
     }
 
