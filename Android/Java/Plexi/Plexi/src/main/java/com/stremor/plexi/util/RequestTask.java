@@ -109,8 +109,8 @@ public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> 
             return new AsyncTaskResult<T>(e);
         }
 
-        if (response.getStatusLine().getStatusCode() != 200) {
-            Exception e = new IOException("Non-200 result code returned from server");
+        if (response.getStatusLine().getStatusCode() == 500) {
+            Exception e = new IOException("Internal Plexi server error");
             Log.e(TAG, "Remote Plexi server error", e);
             return new AsyncTaskResult<T>(e);
         }
