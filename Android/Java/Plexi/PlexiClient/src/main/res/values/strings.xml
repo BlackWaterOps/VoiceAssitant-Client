@@ -3,7 +3,7 @@
 
     <string name="app_name">Plexi Client</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_web">WebActivity</string>
+    <string name="title_activity_web_auth">WebAuthActivity</string>
+    <string name="title_activity_auth_providers">AuthProvidersActivity</string>
 
 </resources>

@@ -66,7 +66,7 @@ public class LoginActivity extends Activity implements IPlexiListener {
         setContentView(R.layout.activity_login);
         setupActionBar();
 
-        mPlexi = MainActivity.mPlexi;
+        mPlexi = MainActivity.sPlexi;
         mPlexi.addListener(this);
 
         // Set up the login form.

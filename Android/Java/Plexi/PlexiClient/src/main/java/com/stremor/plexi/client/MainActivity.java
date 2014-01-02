@@ -24,6 +24,7 @@ import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.models.SignupResponse;
+import com.stremor.plexi.util.Installation;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
 
     private static final String PREFS_NAME = "PlexiClientPrefs";
     private static final String PREF_AUTH_TOKEN = "authToken";
+    static final String PREF_PREFIX_AUTH_PROVIDER = "authProvider_";
 
     private static final int REQ_RECOGNIZE_SPEECH = 41;
     private static final int REQ_CHECK_TTS = 42;
@@ -53,7 +55,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         }
     };
 
-    public static PlexiService mPlexi;
+    public static PlexiService sPlexi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +65,9 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         mView = (MainView) findViewById(R.id.mainView);
         mView.setViewListener(this);
 
-        mPlexi = new PlexiService(this);
-        mPlexi.addListener(this);
-        mPlexi.setAuthToken(getAuthToken());
+        sPlexi = new PlexiService(this);
+        sPlexi.addListener(this);
+        sPlexi.setAuthToken(getAuthToken());
 
         // Check for TTS support
         Intent checkIntent = new Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -81,14 +83,30 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.plexi_login_or_signup:
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivityForResult(intent, REQ_LOGIN);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        Intent intent;
+
+        if (item.getItemId() == R.id.plexi_login_or_signup) {
+            intent = new Intent(this, LoginActivity.class);
+            startActivityForResult(intent, REQ_LOGIN);
+            return true;
+        } else if (item.getItemId() == R.id.action_services) {
+            String authToken = getAuthToken();
+            if (authToken == null) {
+                // Auth token needed before providers can be added
+                new AlertDialog.Builder(this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Cannot add services")
+                        .setMessage("Please log in before adding services.")
+                        .show();
+            } else {
+                intent = new Intent(this, AuthProvidersActivity.class);
+                intent.putExtra(AuthProvidersActivity.EXTRA_AUTH_TOKEN, authToken);
+                intent.putExtra(AuthProvidersActivity.EXTRA_AUTH_DEVICE, Installation.id(this));
+                startActivity(intent);
+            }
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -98,8 +116,12 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
      */
     private String getAuthToken() {
         try {
-            return new String(Base64.decode(getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                    .getString(PREF_AUTH_TOKEN, null), Base64.DEFAULT), "UTF-8");
+            String encoded = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .getString(PREF_AUTH_TOKEN, null);
+
+            return encoded == null
+                    ? null
+                    : new String(Base64.decode(encoded, Base64.DEFAULT), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             /* pass */
         }
@@ -117,12 +139,14 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
             // Store auth token, overwriting old copy
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
                     .putString(PREF_AUTH_TOKEN,
-                            Base64.encodeToString(newAuthToken.getBytes("UTF-8"), Base64.DEFAULT));
+                            Base64.encodeToString(newAuthToken.getBytes("UTF-8"), Base64.DEFAULT))
+                    .commit();
         } catch (UnsupportedEncodingException e) {
+            String here = "5";
             /* pass */
         }
 
-        mPlexi.setAuthToken(newAuthToken);
+        sPlexi.setAuthToken(newAuthToken);
     }
 
     /**
@@ -177,7 +201,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
      */
     private void handleQuery(String query) {
         mView.addConversationItem(new ConversationItem(query));
-        mPlexi.query(query);
+        sPlexi.query(query);
     }
 
     @Override
@@ -195,7 +219,7 @@ public class MainActivity extends Activity implements MainView.ViewListener, IPl
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                mPlexi.choice(choices[which]);
+                sPlexi.choice(choices[which]);
             }
         };
 

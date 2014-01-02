@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="auth_providers">
+        <item>Google</item>
+        <item>Facebook</item>
+        <item>FitBit</item>
+    </string-array>
+
+    <string-array name="auth_provider_ids">
+        <item>google</item>
+        <item>facebook</item>
+        <item>fitbit</item>
+    </string-array>
+</resources>
