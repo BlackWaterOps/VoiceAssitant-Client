@@ -21,6 +21,7 @@ using Microsoft.Phone.UserData;
 using LinqToVisualTree;
 
 using Please2.ViewModels;
+using Please2.Util;
 
 using Plexi.Models;
 using Plexi.Util;
@@ -31,7 +32,9 @@ namespace Please2.Views
     {
         private Plexi.IPlexiService plexiService;
 
-        public string Scheme { get { return "Settings"; } }
+        public ColorScheme Scheme { get { return ColorScheme.Settings; } }
+
+        ApplicationBarIconButton button;
 
         public Registration() : base(false)
         {
@@ -93,40 +96,42 @@ namespace Please2.Views
                 ApplicationBar.Buttons.RemoveAt(0);
             }
             ApplicationBar.Buttons.Add(button);
+
+            this.button = button;
         }
 
         private void RegisterControl_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            ApplicationBarIconButton button = (ApplicationBar.Buttons[0] as ApplicationBarIconButton);
-
+        {        
             if (IsRegisterValid())
             {
-                button.IsEnabled = true;
+                this.button.IsEnabled = true;
             }
             else
             {
-                button.IsEnabled = false;
+                this.button.IsEnabled = false;
             }
+        
         }
 
         private async void RegisterButton_Click(object sender, EventArgs e)
         {
             Debug.WriteLine(RegisterEmail.Text);
             Debug.WriteLine(RegisterAccountName.Text);
-            Debug.WriteLine(RegisterAccountPassword.Text);
+            Debug.WriteLine(RegisterAccountPassword.Password);
 
-            await RegisterUser(RegisterAccountName.Text, RegisterAccountPassword.Text);
+            this.button.IsEnabled = false;
+
+            await RegisterUser(RegisterEmail.Text, RegisterAccountName.Text, RegisterAccountPassword.Password);
         }
 
-        private async Task RegisterUser(string accountName, string password)
+        private async Task RegisterUser(string email, string accountName, string password)
         {
-            Debug.WriteLine("register user");
-            return;
-
-            RegisterModel response = await plexiService.RegisterUser(accountName, password);
+            RegisterModel response = await plexiService.RegisterUser(email, accountName, password);
 
             if (response.error != null)
             {
+                this.button.IsEnabled = true;
+
                 MessageBox.Show(response.error.msg, "Sign up failed", MessageBoxButton.OK);
                 return;
             }
@@ -160,24 +165,26 @@ namespace Please2.Views
                 ApplicationBar.Buttons.RemoveAt(0);
             }
             ApplicationBar.Buttons.Add(button);
+
+            this.button = button;
         }
 
         private void SignInControl_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            ApplicationBarIconButton button = (ApplicationBar.Buttons[0] as ApplicationBarIconButton);
-            
+        {            
             if (IsSignInValid())
             {
-                button.IsEnabled = true;
+                this.button.IsEnabled = true;
             }
             else
             {
-                button.IsEnabled = false;
+                this.button.IsEnabled = false;
             }
         }
 
         private async void SignInButton_Click(object sender, EventArgs e)
         {
+            this.button.IsEnabled = false;
+
             await LoginUser(SignInAccountName.Text, SignInAccountPassword.Password);
         }
 
@@ -187,6 +194,8 @@ namespace Please2.Views
 
             if (response.error != null)
             {
+                this.button.IsEnabled = true;
+
                 MessageBox.Show(response.error.msg, "Login failed", MessageBoxButton.OK);
                 return;
             }
