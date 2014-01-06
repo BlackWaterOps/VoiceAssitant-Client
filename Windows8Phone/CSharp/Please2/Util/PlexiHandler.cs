@@ -59,14 +59,19 @@ namespace Please2.Util
             {"time", Actor.Time}
         };
 
-        public PlexiHandler()
+        public static readonly PlexiHandler Default = new PlexiHandler();
+
+        private PlexiHandler()
         {
             // attach navigation service
             this.navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
 
             // attach plexi service
             this.plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
+        }
 
+        public void Listen()
+        {
             plexiService.Choose += OnChoose;
             plexiService.Error += OnError;
             plexiService.Authorize += OnAuthorize;
@@ -200,7 +205,7 @@ namespace Please2.Util
                 switch (actor)
                 {
                     case Actor.Time:
-                        tasks.ShowClock();
+                        tasks.ShowClock(payload);
                         break;
 
                     case Actor.Email:
@@ -212,7 +217,7 @@ namespace Please2.Util
                         break;
 
                     case Actor.Directions:
-                        tasks.GetDirections();
+                        tasks.GetDirections(payload);
                         break;
 
                     case Actor.Call:
@@ -220,11 +225,11 @@ namespace Please2.Util
                         break;
 
                     case Actor.Calendar:
-                        tasks.SetAppointment();
+                        tasks.SetAppointment(payload);
                         break;
 
                     case Actor.Alarm:
-                        tasks.SetAlarm();
+                        tasks.SetAlarm(payload);
                         break;
 
                     case Actor.Reminder:
@@ -428,7 +433,8 @@ namespace Please2.Util
 
                 if (data.ContainsKey("scheme"))
                 {
-                    singleViewModel.Scheme = (string)data["scheme"];
+                    //Debug.WriteLine(data["scheme"].GetType());
+                    singleViewModel.Scheme = (ColorScheme)data["scheme"];
                 }
 
                 return view;
