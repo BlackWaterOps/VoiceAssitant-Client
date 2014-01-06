@@ -59,6 +59,16 @@ namespace Please2.Util
             // check if we have an auth token.
             // if not redirect to registration view, else check account creation flags (ie google, fitbit, etc) 
 
+            try
+            {
+                string token = plexiService.GetAuthToken();
+            }
+            catch (KeyNotFoundException)
+            {
+                Navigate(ViewModelLocator.RegistrationUri);
+            }
+
+            /*
             string settingsKey = resx.GetString("SettingsAuthKey");
 
             if (!settings.Contains(settingsKey))
@@ -66,7 +76,7 @@ namespace Please2.Util
                 Navigate(ViewModelLocator.RegistrationUri);
                 return;
             }
-           
+           */
             //CheckAccounts();
         }
 
