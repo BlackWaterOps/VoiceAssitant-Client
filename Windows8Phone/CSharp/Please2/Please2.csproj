@@ -94,6 +94,10 @@
     <Compile Include="Controls\PageTitle.xaml.cs">
       <DependentUpon>PageTitle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Pivot.xaml.cs">
+      <DependentUpon>Pivot.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\ValidationTextBox.xaml.cs">
       <DependentUpon>ValidationTextBox.xaml</DependentUpon>
     </Compile>
@@ -128,10 +132,13 @@
     <Compile Include="Util\PlexiHandler.cs" />
     <Compile Include="Util\SpeechService.cs" />
     <Compile Include="Util\TaskService.cs" />
+    <Compile Include="ViewModels\ClockViewModel.cs" />
     <Compile Include="ViewModels\DetailsViewModel.cs" />
     <Compile Include="ViewModels\DictionaryViewModel.cs" />
+    <Compile Include="ViewModels\EventDetailsViewModel.cs" />
     <Compile Include="ViewModels\FitbitViewModel.cs" />
     <Compile Include="ViewModels\FlightsViewModel.cs" />
+    <Compile Include="ViewModels\FuelDetailsViewModel.cs" />
     <Compile Include="ViewModels\GeopoliticsViewModel.cs" />
     <Compile Include="ViewModels\HoroscopeViewModel.cs" />
     <Compile Include="ViewModels\ImageViewModel.cs" />
@@ -139,14 +146,12 @@
     <Compile Include="ViewModels\NewsViewModel.cs" />
     <Compile Include="ViewModels\NotesViewModel.cs" />
     <Compile Include="ViewModels\PeerFinderViewModel.cs" />
+    <Compile Include="ViewModels\RealEstateDetailsViewModel.cs" />
     <Compile Include="ViewModels\RealEstateViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SingleViewModel.cs" />
     <Compile Include="ViewModels\StockViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
-    <Compile Include="Views\AddPreferencePage.xaml.cs">
-      <DependentUpon>AddPreferencePage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -163,6 +168,9 @@
       <DependentUpon>Details.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\DialogModel.cs" />
+    <Compile Include="Views\EventDetails.xaml.cs">
+      <DependentUpon>EventDetails.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ForgotPassword.xaml.cs">
       <DependentUpon>ForgotPassword.xaml</DependentUpon>
     </Compile>
@@ -170,9 +178,6 @@
       <DependentUpon>Image.xaml</DependentUpon>
     </Compile>
     <None Include="Assets\Fonts\weather.ttf" />
-    <None Include="Views\Images.xaml.cs">
-      <DependentUpon>Images.xaml</DependentUpon>
-    </None>
     <Compile Include="Views\List.xaml.cs">
       <DependentUpon>List.xaml</DependentUpon>
     </Compile>
@@ -188,6 +193,9 @@
     </Compile>
     <Compile Include="Views\PeerFinder.xaml.cs">
       <DependentUpon>PeerFinder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RealEstateDetails.xaml.cs">
+      <DependentUpon>RealEstateDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Registration.xaml.cs">
       <DependentUpon>Registration.xaml</DependentUpon>
@@ -234,23 +242,19 @@
     <Content Include="Assets\feature.alarm.png" />
     <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
-    <Compile Include="Views\PreferencesPage.xaml.cs">
-      <DependentUpon>PreferencesPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\AppResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\PreferencesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="ColorScheme.xaml">
+    <Page Include="Templates\ColorScheme.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -258,15 +262,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Pivot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ValidationTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TemplateDictionary.Details.xaml">
+    <Page Include="Templates\Details.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="TemplateDictionary.Single.xaml">
+    <Page Include="Templates\Single.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -274,13 +282,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TemplateDictionary.List.xaml">
+    <Page Include="Templates\List.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\AddPreferencePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ChildBrowser.xaml">
       <SubType>Designer</SubType>
@@ -302,6 +306,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\EventDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ForgotPassword.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -310,9 +318,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <None Include="Views\Images.xaml">
-      <SubType>Designer</SubType>
-    </None>
     <Page Include="Views\List.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -333,14 +338,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\RealEstateDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Registration.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Reminder.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PreferencesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -444,6 +449,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\portable-net45+wp80+win8\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NodaTime">
+      <HintPath>..\packages\NodaTime.1.2.0\lib\portable-win+net40+sl4+wp7\NodaTime.dll</HintPath>
+    </Reference>
     <Reference Include="Sparrow.Chart.WP8.45">
       <HintPath>..\packages\Sparrow.Chart.WP8.13.1.0.113\lib\windowsphone8\Sparrow.Chart.WP8.45.dll</HintPath>
     </Reference>
@@ -461,6 +469,10 @@
     <ProjectReference Include="..\..\..\Samples\MediaViewer\MediaViewer.csproj">
       <Project>{41D422A7-5968-47DF-8B7B-4DBFA1484B07}</Project>
       <Name>MediaViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EnhancedPivot\StremorControls.csproj">
+      <Project>{FF519311-9B18-4D40-A078-44D0230C259A}</Project>
+      <Name>StremorControls</Name>
     </ProjectReference>
     <ProjectReference Include="..\Plexi\Plexi.csproj">
       <Project>{B7493D43-DE39-40B3-ADB8-772385B03B5F}</Project>

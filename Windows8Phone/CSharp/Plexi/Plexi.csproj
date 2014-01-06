@@ -96,6 +96,7 @@
     <Compile Include="Models\ClassifierModel.cs" />
     <Compile Include="Models\DisambiguatorModel.cs" />
     <Compile Include="Models\ErrorModel.cs" />
+    <Compile Include="Models\LocationModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\ModelBase.cs" />
     <Compile Include="Models\RegisterModel.cs" />
