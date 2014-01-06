@@ -26,14 +26,14 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <controls:PageTitle Grid.Row="0"
-                            Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"
-                            Title="{Binding DataContext.Title, ElementName=LayoutRoot}"
-                            SubTitle="{Binding DataContext.SubTitle, ElementName=LayoutRoot}"/>
+                            Scheme="{Binding Scheme}"
+                            Title="{Binding Title}"
+                            SubTitle="{Binding SubTitle}"/>
         
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Background="{StaticResource ContentBackground}">
             <ContentControl x:Name="SingleContentControl" 
-                            Margin="16"
+                            Margin="{Binding Margin}"
                             HorizontalContentAlignment="Stretch" 
                             VerticalContentAlignment="Stretch" 
                             ContentTemplate="{Binding ContentTemplate}"/>

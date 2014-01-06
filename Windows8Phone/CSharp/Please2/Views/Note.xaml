@@ -12,7 +12,8 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True"
+    DataContext="{Binding NotesViewModel, Source={StaticResource Locator}}">
     
     <phone:PhoneApplicationPage.Resources>
         <ControlTemplate x:Key="OrderList" TargetType="TextBox">
@@ -133,7 +134,7 @@
     </phone:PhoneApplicationPage.Resources>
     
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Beige">
+    <Grid x:Name="LayoutRoot" Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=background}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

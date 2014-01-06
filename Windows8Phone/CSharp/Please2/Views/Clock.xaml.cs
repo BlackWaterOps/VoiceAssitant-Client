@@ -1,35 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Device.Location;
 using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Windows.Threading;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+
+using Please2.ViewModels;
 
 namespace Please2.Views
 {
     public partial class Clock : ViewBase
     {
-        public string SubTitle
-        {
-            get { return DateTime.Now.ToString("dddd, MMMM d, yyyy"); }    
-        }
-        
+        private DispatcherTimer timer;
+
+        private ClockViewModel vm;
+
         public Clock()
         {
             InitializeComponent();
 
+            vm = DataContext as ClockViewModel;
+
             Loaded += Page_Loaded;
 
-            //var phoneAppService = PhoneApplicationService.Current;
-            //phoneAppService.UserIdleDetectionMode = IdleDetectionMode.Disabled;
-
-            var timer = new DispatcherTimer();
+            timer = new DispatcherTimer();
             timer.Tick += Timer_Tick;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            string offset;
+
+            if (NavigationContext.QueryString.TryGetValue("offset", out offset))
+            {
+                try
+                {
+                    //TODO: handle dst   
+                    DateTime utc = DateTime.UtcNow;
+
+                    DateTime locale = utc.AddHours(Convert.ToDouble(offset));
+
+                    vm.Time = locale;
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                    vm.Time = DateTime.Now;
+                }
+            }
+            else
+            {
+                vm.Time = DateTime.Now;
+            }
+
             timer.Start();
         }
 
@@ -37,19 +69,17 @@ namespace Please2.Views
         {
             try
             {
-                PageSubTitle.Text = DateTime.Now.ToString("dddd, MMMM d, yyyy");
-
                 SecondHand.Begin();
                 LongHand.Begin();
                 HourHand.Begin();
 
-                int second = DateTime.Now.Second;
+                int second = vm.Time.Second;
                 SecondHand.Seek(new TimeSpan(0, 0, second));
 
-                int minute = DateTime.Now.Minute;
+                int minute = vm.Time.Minute;
                 LongHand.Seek(new TimeSpan(0, minute, second));
 
-                int hour = DateTime.Now.Hour;
+                int hour = vm.Time.Hour;
                 HourHand.Seek(new TimeSpan(hour, minute, second));
             }
             catch (Exception err)
@@ -60,8 +90,6 @@ namespace Please2.Views
 
         protected void Timer_Tick(object sender, EventArgs e)
         {
-            var dt = DateTime.Now;
-
             var timezone = TimeZoneInfo.Local;
 
             var name = timezone.DisplayName.Substring(timezone.DisplayName.IndexOf(")")+1).Trim();
@@ -71,7 +99,7 @@ namespace Please2.Views
                 name += " Time";
             }
 
-            TimeTextBlock.Text = dt.ToString("h:mm tt ") + name;
+            TimeTextBlock.Text = String.Format("{0} {1}", vm.Time.ToString("h:mm tt "), name);
         }
     }
 }

@@ -7,6 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:stremor="clr-namespace:Microsoft.Phone.Controls;assembly=StremorControls"
     mc:Ignorable="d"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -16,9 +18,21 @@
     DataContext="{Binding NotificationsViewModel, Source={StaticResource Locator}}">
         
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=background}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <controls:PageTitle Grid.Row="0"
+                            Scheme="{Binding Scheme}"
+                            Title="Notifications"/>
+        
         <!--Pivot Control-->
-        <phone:Pivot Title="Please">
+        <stremor:StremorPivot Grid.Row="1"
+                              LoadedPivotItem="Pivot_LoadedPivotItem"
+                              Background="{StaticResource ContentBackground}"
+                              HeaderBackground="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
             <!--Pivot item one-->
             <phone:PivotItem Header="Reminders">
                 <Grid>
@@ -45,7 +59,6 @@
                                             <ColumnDefinition Width="85"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-
                                         
                                         <StackPanel Grid.Column="0" Grid.Row="0">
                                             <Image Source="/Assets/feature.alarm.png" 
@@ -121,7 +134,6 @@
                                                      NavigateUri="{Binding url}" 
                                                      TargetName="shopping" 
                                                      Content="{Binding title}"
-                                                     Style="{StaticResource CustomHyperlinkButtonStyle}"
                                                      Foreground="Blue" 
                                                      Margin="-12,0,0,0" 
                                                      HorizontalAlignment="Left"/>
@@ -141,14 +153,11 @@
                     </phone:LongListSelector>
                 </Grid>
             </phone:PivotItem>
-        </phone:Pivot>
+        </stremor:StremorPivot>
     </Grid>
 
     <phone:PhoneApplicationPage.ApplicationBar>
-        <shell:ApplicationBar x:Name="NotificationControl">      
-            <shell:ApplicationBarIconButton x:Name="AlarmButton" IconUri="/Assets/feature.alarm.png" Text="alarm" Click="AlarmButton_Click"/>
-            <shell:ApplicationBarIconButton x:Name="ReminderButton" IconUri="/Assets/close.png" Text="reminder" Click="ReminderButton_Click"/>
-        </shell:ApplicationBar>
+        <shell:ApplicationBar/>
     </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>

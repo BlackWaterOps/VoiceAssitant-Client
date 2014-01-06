@@ -112,9 +112,9 @@
         
         <!--TitlePanel contains the name of the application and page title-->
         <controls:PageTitle Grid.Row="0"
-                            Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"
+                            Scheme="{Binding Scheme}"
                             Title="conversation" 
-                            SubTitle="{Binding DataContext.SubTitle, ElementName=LayoutRoot, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
+                            SubTitle="{Binding SubTitle, StringFormat='dddd, MMMM d, yyyy @ h:mm tt'}"/>
         
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Background="{StaticResource ContentBackground}">

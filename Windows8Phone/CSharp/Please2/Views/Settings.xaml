@@ -7,6 +7,7 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:stremor="clr-namespace:Microsoft.Phone.Controls;assembly=StremorControls"
     xmlns:controls="clr-namespace:Please2.Controls"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -27,11 +28,11 @@
                             Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"
                             Title="settings"/>
 
-        <phone:Pivot x:Name="SettingsPivotView"
-                     Grid.Row="1"
-                     Template="{StaticResource PivotControlTemplate}" 
-                     HeaderTemplate="{StaticResource PivotHeaderTemplate}">
-            
+        <stremor:StremorPivot x:Name="SettingsPivotView"
+                                Grid.Row="1"
+                                Background="{StaticResource ContentBackground}"
+                                HeaderBackground="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
+
             <!--Pivot item one-->
             <phone:PivotItem Header="General" x:Name="PreferencesPivotPanel">
                 <StackPanel x:Name="AccountsStackPanel">
@@ -70,7 +71,7 @@
             <phone:PivotItem Header="Feedback" x:Name="FeedbackPivotPanel">
 
             </phone:PivotItem>
-        </phone:Pivot>
+        </stremor:StremorPivot>
     </Grid>
 
 </phone:PhoneApplicationPage>

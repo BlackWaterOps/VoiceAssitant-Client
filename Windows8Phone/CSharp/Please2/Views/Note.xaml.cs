@@ -42,7 +42,7 @@ namespace Please2.Views
         {
             InitializeComponent();
 
-            this.vm = new Please2.ViewModels.NotesViewModel();
+            this.vm = DataContext as NotesViewModel;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

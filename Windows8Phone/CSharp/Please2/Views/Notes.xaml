@@ -25,7 +25,7 @@
 
         <!--TitlePanel contains the name of the application and page title-->
         <controls:PageTitle Grid.Row="0"
-                            Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"
+                            Scheme="{Binding Scheme}"
                             Title="Notes"/>
         
         <!--ContentPanel - place additional content here-->

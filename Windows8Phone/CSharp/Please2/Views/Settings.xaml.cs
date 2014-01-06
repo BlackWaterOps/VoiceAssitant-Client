@@ -23,7 +23,15 @@ namespace Please2.Views
     {
         public Settings()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+                Debug.WriteLine(err.InnerException.Message);
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

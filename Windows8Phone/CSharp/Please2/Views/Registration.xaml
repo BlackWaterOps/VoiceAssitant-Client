@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:stremor="clr-namespace:Microsoft.Phone.Controls;assembly=StremorControls"
     xmlns:local="clr-namespace:Please2.Views"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -223,11 +224,13 @@
 
         <controls:PageTitle Grid.Row="0"
                             Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"/>
-  
-        <phone:Pivot Grid.Row="1" 
-                     LoadedPivotItem="Pivot_LoadedPivotItem" 
-                     Template="{StaticResource PivotControlTemplate}" 
-                     HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+        
+        <stremor:StremorPivot Grid.Row="1" 
+                              LoadedPivotItem="Pivot_LoadedPivotItem"
+                              Background="{StaticResource ContentBackground}"
+                              HeaderBackground="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}"
+                              HeaderMinWidth="400">
+            
             <phone:PivotItem x:Name="SignInPivotItem" Header="Sign In">
                 <StackPanel>
                     <TextBlock Text="account name" Style="{StaticResource RegistrationLabel}"/>
@@ -283,7 +286,7 @@
                     <TextBlock Text="Welcome to Plexi for Windows Phone" Style="{StaticResource RegistrationLabel}"/>
                 </StackPanel>
             </phone:PivotItem>
-        </phone:Pivot>
+        </stremor:StremorPivot>
     </Grid>
     
     <phone:PhoneApplicationPage.ApplicationBar>

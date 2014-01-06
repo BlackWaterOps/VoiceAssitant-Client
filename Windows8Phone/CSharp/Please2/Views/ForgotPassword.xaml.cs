@@ -5,9 +5,13 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
+using Please2.ViewModels;
+
+using Plexi;
 namespace Please2.Views
 {
     public partial class ForgotPassword : PhoneApplicationPage
@@ -35,21 +39,23 @@ namespace Please2.Views
             }
         }
 
-        private void ResetButton_Click(object sender, EventArgs e)
+        private async void ResetButton_Click(object sender, EventArgs e)
         {
             SystemTray.ProgressIndicator = new ProgressIndicator();
             SystemTray.ProgressIndicator.IsIndeterminate = true;
 
-            SystemTray.ProgressIndicator.Text = "sending email";
+            SystemTray.ProgressIndicator.Text = "sending";
             SystemTray.ProgressIndicator.IsVisible = true;
 
             string inputValue = ResetPasswordTextBox.Text;
 
-            // send off to server to look up and send email
-            // need error handling here if server comes back with no account found.
+            IPlexiService plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
 
-            // success message box w/ system tray progress indicator
-            // an email with the password reset instructions has been sent to your email address
+            Dictionary<string, object> response = await plexiService.ForgotPassword(inputValue);
+
+            SystemTray.ProgressIndicator.IsVisible = false;
+
+            MessageBox.Show("An email with the password reset instructions has been sent to your email address.", "Password Reset", MessageBoxButton.OK);
         }
     }
 }

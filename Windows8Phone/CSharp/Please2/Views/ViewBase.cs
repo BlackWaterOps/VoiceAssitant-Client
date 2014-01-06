@@ -131,6 +131,7 @@ namespace Please2.Views
             {
                 ApplicationBar = new ApplicationBar();
 
+                // mic button
                 var micBtn = new ApplicationBarIconButton()
                 {
                     IconUri = new Uri("/Assets/microphone.png", UriKind.Relative),
@@ -141,6 +142,20 @@ namespace Please2.Views
                 micBtn.Click += Microphone_Click;
 
                 ApplicationBar.Buttons.Add(micBtn);
+
+                // logout menu item
+                var logout = new ApplicationBarMenuItem()
+                {
+                    Text = "Logout"
+                };
+
+                logout.Click += (s, e) =>
+                    {
+                        plexiService.LogoutUser();
+                        NavigationService.Navigate(ViewModelLocator.RegistrationUri);
+                    };
+
+                ApplicationBar.MenuItems.Add(logout);
 
                 // add home appbar link
                 if (NavigationService.Source.OriginalString != ViewModelLocator.MainMenuPageUri.OriginalString)
@@ -277,33 +292,39 @@ namespace Please2.Views
                 var progressName = "PleaseRequestProgress";
 
                 var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
-                var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").Single();
+                var layoutRoot = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "LayoutRoot").FirstOrDefault();
 
                 Canvas canvas;
 
                 if (layoutRoot != null)
                 {
-                    var contentPanel = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "ContentPanel").Single();
+                    var contentPanel = currentPage.Descendants<Grid>().Cast<Grid>().Where(x => x.Name == "ContentPanel").FirstOrDefault();
+
 
                     if (inProgress == false)
                     {
-                        canvas = currentPage.Descendants<Canvas>().Cast<Canvas>().Where(x => x.Name == progressName).Single();
+                        canvas = currentPage.Descendants<Canvas>().Cast<Canvas>().Where(x => x.Name == progressName).FirstOrDefault();
 
-                        layoutRoot.Children.Remove(canvas);
-
-                        if (contentPanel != null)
+                        if (canvas != null)
                         {
-                            contentPanel.IsHitTestVisible = true;
+                            layoutRoot.Children.Remove(canvas);
+
+                            if (contentPanel != null)
+                            {
+                                contentPanel.IsHitTestVisible = true;
+                            }
                         }
                     }
                     else
                     {
+                        Debug.WriteLine("in progress is true");
+
                         var colSpan = layoutRoot.ColumnDefinitions.Count;
                         var rowSpan = layoutRoot.RowDefinitions.Count;
 
-                        var deviceHeight =  App.Current.Host.Content.ActualHeight;
+                        var deviceHeight = App.Current.Host.Content.ActualHeight;
                         var deviceWidth = App.Current.Host.Content.ActualWidth;
-                        
+
                         var background = new SolidColorBrush();
                         background.Color = Colors.Black;
 
@@ -313,7 +334,7 @@ namespace Please2.Views
                         canvas.Width = deviceWidth;
                         canvas.Background = background;
                         canvas.Opacity = .75;
-                        
+
                         if (colSpan > 0)
                         {
                             canvas.SetValue(Grid.ColumnSpanProperty, colSpan);
@@ -323,9 +344,8 @@ namespace Please2.Views
                         {
                             canvas.SetValue(Grid.RowSpanProperty, rowSpan);
                         }
-                       
-                        var stack = new StackPanel();
 
+                        var stack = new StackPanel();
 
                         stack.SetValue(Canvas.TopProperty, (deviceHeight / 2));
 
@@ -354,7 +374,7 @@ namespace Please2.Views
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                Debug.WriteLine(String.Format("InProgress Error: {0}", err.Message));
             }
         }
 

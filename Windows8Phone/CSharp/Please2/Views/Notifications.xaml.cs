@@ -31,7 +31,41 @@ namespace Please2.Views
             base.OnNavigatedTo(e);
         }
 
+        private void Pivot_LoadedPivotItem(object sender, PivotItemEventArgs e)
+        {
+            Pivot pivot = sender as Pivot;
+
+            int idx = pivot.Items.IndexOf(e.Item);
+
+            switch (idx)
+            {
+                case 0:
+                    AddReminderButton();
+                    break;
+
+                case 1:
+                    AddAlarmButton();
+                    break;
+            }
+        }
+
         #region Reminders
+        private void AddReminderButton()
+        {
+            ApplicationBarIconButton button = new ApplicationBarIconButton();
+
+            button.Text = "reminder";
+            button.IconUri = new Uri("/Assets/feature.alarm.png", UriKind.Relative);
+            button.Click += ReminderButton_Click;
+
+            if (ApplicationBar.Buttons.Count > 0)
+            {
+                ApplicationBar.Buttons.RemoveAt(0);
+            }
+
+            ApplicationBar.Buttons.Add(button);
+        }
+
         protected void ReminderButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/Reminder.xaml", UriKind.Relative));
@@ -54,6 +88,22 @@ namespace Please2.Views
         #endregion
 
         #region Alarms
+        private void AddAlarmButton()
+        {
+            ApplicationBarIconButton button = new ApplicationBarIconButton();
+
+            button.Text = "alarm";
+            button.IconUri = new Uri("/Assets/feature.alarm.png", UriKind.Relative);
+            button.Click += AlarmButton_Click;
+
+            if (ApplicationBar.Buttons.Count > 0)
+            {
+                ApplicationBar.Buttons.RemoveAt(0);
+            }
+
+            ApplicationBar.Buttons.Add(button);
+        }
+
         protected void AlarmButton_Click(object sender, EventArgs e)
         {
             NavigationService.Navigate(new Uri("/Views/Alarm.xaml", UriKind.Relative));

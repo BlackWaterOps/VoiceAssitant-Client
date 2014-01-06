@@ -26,19 +26,18 @@
         </Grid.RowDefinitions>
         
         <controls:PageTitle Grid.Row="0"
-                            Scheme="{Binding DataContext.Scheme, ElementName=LayoutRoot}"
-                            Title="{Binding DataContext.Title, ElementName=LayoutRoot}"/>
+                            Scheme="{Binding Scheme}"
+                            Title="{Binding Scheme}"/>
         
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Background="{StaticResource ContentBackground}">
-            <!--
             <ContentControl x:Name="DetailsContentControl"
                             Margin="12,0"
                             HorizontalContentAlignment="Stretch" 
                             VerticalContentAlignment="Stretch" 
                             ContentTemplate="{Binding ContentTemplate}"/>
-            -->
-
+            
+            <!--
             <phone:Pivot x:Name="DetailsPivotView" ItemsSource="{Binding PivotItems}" Template="{StaticResource PivotControlTemplate}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
                 <phone:Pivot.ItemTemplate>
                     <DataTemplate>
@@ -46,6 +45,7 @@
                     </DataTemplate>
                 </phone:Pivot.ItemTemplate>
             </phone:Pivot>
+            -->
         </Grid>
     </Grid>
 
