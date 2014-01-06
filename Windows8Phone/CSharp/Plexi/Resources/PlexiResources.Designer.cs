@@ -133,6 +133,15 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1/assist.
+        /// </summary>
+        internal static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://stremor-pud.appspot.com/v1.
         /// </summary>
         internal static string Pud {
