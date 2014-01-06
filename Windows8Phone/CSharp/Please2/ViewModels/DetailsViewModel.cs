@@ -30,16 +30,27 @@ namespace Please2.ViewModels
 {
     public class DetailsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        private Map currentMap;
+        //xprivate Map currentMap;
 
-        private string scheme;
-        public string Scheme
+        private ColorScheme scheme;
+        public ColorScheme Scheme
         {
             get { return scheme; }
             set 
             {
-                scheme = value.CamelCase();
+                scheme = value;
                 RaisePropertyChanged("Scheme");
+            }
+        }
+
+        private string title;
+        public string Title
+        {
+            get { return title; }
+            set
+            {
+                title = value;
+                RaisePropertyChanged("Title");
             }
         }
 
@@ -77,12 +88,12 @@ namespace Please2.ViewModels
         }
 
 
-        public RelayCommand<object> PinToStartCommand { get; set; }
-        public RelayCommand<string> ShowFullMapCommand { get; set; }
+        public RelayCommand PinToStartCommand { get; set; }
+        public RelayCommand ShowFullMapCommand { get; set; }
 
-        public RelayCommand EventDirectionsLoaded { get; set; }
-        public RelayCommand ListingDirectionsLoaded { get; set; }
-        public RelayCommand FuelDirectionsLoaded { get; set; }
+        //public RelayCommand EventDirectionsLoaded { get; set; }
+        //public RelayCommand ListingDirectionsLoaded { get; set; }
+        //public RelayCommand FuelDirectionsLoaded { get; set; }
 
         IPlexiService plexiService;
 
@@ -90,7 +101,7 @@ namespace Please2.ViewModels
         {
             this.plexiService = plexiService;
 
-            AttachEventHandlers();
+            //AttachEventHandlers();
         }
 
         public void SetDetailsTemplate(string template)
@@ -109,6 +120,7 @@ namespace Please2.ViewModels
             }
         }
 
+        /*
         private void AttachEventHandlers()
         {
             PinToStartCommand = new RelayCommand<object>(PinToStart);
@@ -118,9 +130,26 @@ namespace Please2.ViewModels
             ListingDirectionsLoaded = new RelayCommand(AddListingDirectionsMap);
             FuelDirectionsLoaded = new RelayCommand(AddFuelDirectionsMap);
         }
+        */
 
-        // TODO: use reflection and send CurrentItem to appropriate viewmodel
-        private void PinToStart(object e)
+        protected void PinToStart(Uri uri, string title, string content, string image)
+        {
+            var tile = new FlipTileData();
+
+            if (image != null)
+            {
+                tile.BackgroundImage = new Uri(image, UriKind.Absolute);
+            }
+
+            tile.BackContent = content;
+            tile.Title = tile.BackTitle = title;
+            tile.Count = 0;
+
+            ShellTile.Create(uri, tile);
+        }
+
+        /*
+        protected void PinToStart(object e)
         {
             Type t = currentItem.GetType();
 
@@ -154,22 +183,41 @@ namespace Please2.ViewModels
                 image = ev.image;
                 id = ev.id;
             }
- 
-            var tile = new FlipTileData();
 
-            if (image != null)
+            Uri uri = new Uri(String.Format("/EventDetailsPage.xaml?id={0}", id));
+
+            PinToStart(uri, title, content, image);
+        }
+        */
+
+        protected async Task ShowFullMap(string title, GeoCoordinate geo)
+        {
+            if (geo != null && title != null)
             {
-                tile.BackgroundImage = new Uri(image, UriKind.Absolute);
-            }
-            tile.BackContent = content;
-            tile.Title = tile.BackTitle = title;
-            tile.Count = 0;
+                var fullMap = new MapsDirectionsTask();
 
-            ShellTile.Create(new Uri("/EventDetailsPage.xaml?id=" + id), tile);
+                var currPos = await plexiService.GetDeviceInfo();
+
+                var startGeo = new GeoCoordinate(currPos.geoCoordinate.Latitude, currPos.geoCoordinate.Longitude);
+
+                var startLabeledMap = new LabeledMapLocation("current location", startGeo);
+
+                fullMap.Start = startLabeledMap;
+
+                var endLabeledMap = new LabeledMapLocation(title, geo);
+
+                fullMap.End = endLabeledMap;
+
+                fullMap.Show();
+            }
+            else
+            {
+                Debug.WriteLine("show full map: unfulfilled geo or title");
+            }
         }
 
-        // TODO: use reflection and send CurrentItem to appropriate viewmodel
-        private async void ShowFullMap(string e)
+        /*
+        protected async void ShowFullMap(string e)
         {
             GeoCoordinate geo = null;
 
@@ -196,28 +244,7 @@ namespace Please2.ViewModels
                     break;
             }
 
-            if (geo != null && title != null)
-            {
-                var fullMap = new MapsDirectionsTask();
-
-                var currPos = await plexiService.GetDeviceInfo();
-
-                var startGeo = new GeoCoordinate((double)currPos["latitude"], (double)currPos["longitude"]);
-
-                var startLabeledMap = new LabeledMapLocation("current location", startGeo);
-
-                fullMap.Start = startLabeledMap;
-
-                var endLabeledMap = new LabeledMapLocation(title, geo);
-
-                fullMap.End = endLabeledMap;
-
-                fullMap.Show();
-            }
-            else
-            {
-                Debug.WriteLine("show full map: unfulfilled geo or title");
-            }
+            await ShowFullMap(title, geo);
         }
 
         // Do to the lack of binding support in the maps api, we have to
@@ -279,8 +306,9 @@ namespace Please2.ViewModels
                 map.Center = new GeoCoordinate(item.latitude, item.longitude);
             }
         }
+        */
 
-        private MapLayer CreateMapLayer(double lat, double lon)
+        protected MapLayer CreateMapLayer(double lat, double lon)
         {
             var coord = new GeoCoordinate(lat, lon);
 

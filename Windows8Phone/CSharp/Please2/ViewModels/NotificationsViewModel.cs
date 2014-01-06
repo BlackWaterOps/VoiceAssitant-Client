@@ -12,13 +12,15 @@ using Microsoft.Phone.Scheduler;
 
 using Please2.Models;
 using Please2.Resources;
-
+using Please2.Util;
 
 // TODO: need to add properties so we can bind data returned from please
 namespace Please2.ViewModels
 {
     public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
+        public ColorScheme Scheme { get { return ColorScheme.Notifications; } }
+
         private Visibility? reminderVisibility;
         public Visibility ReminderVisibility
         {

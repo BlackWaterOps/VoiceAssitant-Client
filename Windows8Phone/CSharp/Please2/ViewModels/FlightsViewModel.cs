@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 using Microsoft.Phone.Controls;
@@ -80,9 +81,8 @@ namespace Please2.ViewModels
             var data = new Dictionary<string, object>();
 
             data.Add("title", "flights");
-            data.Add("subtitle", "flight results");
-            //data.Add("subtitle", String.Format("flight results for \"{0}\"", originalQuery));
-            data.Add("scheme", "default");
+            data.Add("scheme", ColorScheme.Default);
+            data.Add("margin", new Thickness(12, 24, 12, 24));
 
             return data;
         }
@@ -100,14 +100,14 @@ namespace Please2.ViewModels
                 Flight flight = Flights.FirstOrDefault();
 
                 // get origin coordinates
-                IList<MapLocation> og = await MapService.GeoQuery(flight.origin.city);
+                IList<MapLocation> og = await MapService.Default.GeoQuery(flight.origin.city);
 
                 Debug.WriteLine(String.Format("{0}:{1}", og.First().GeoCoordinate.Latitude, og.First().GeoCoordinate.Longitude));
 
                 GeoCoordinate origin = new GeoCoordinate(og.First().GeoCoordinate.Latitude, og.First().GeoCoordinate.Latitude);
 
                 // get destination coordinates
-                IList<MapLocation> dg = await MapService.GeoQuery(flight.destination.city);
+                IList<MapLocation> dg = await MapService.Default.GeoQuery(flight.destination.city);
 
                 Debug.WriteLine(String.Format("{0}:{1}", dg.First().GeoCoordinate.Latitude, dg.First().GeoCoordinate.Longitude));
 
@@ -119,12 +119,12 @@ namespace Please2.ViewModels
                 geoList.Add(origin);
                 geoList.Add(destination);
 
-                MapPolyline polyline = MapService.CreatePolyline(geoList);
+                MapPolyline polyline = MapService.Default.CreatePolyline(geoList);
 
                 map.MapElements.Add(polyline);
 
-                MapLayer originLayer = MapService.CreateMapLayer(origin);
-                MapLayer destinationLayer = MapService.CreateMapLayer(destination);
+                MapLayer originLayer = MapService.Default.CreateMapLayer(origin);
+                MapLayer destinationLayer = MapService.Default.CreateMapLayer(destination);
 
                 map.Layers.Add(originLayer);
                 map.Layers.Add(destinationLayer);

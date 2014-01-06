@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -54,7 +55,8 @@ namespace Please2.ViewModels
 
             data.Add("title", "horoscope");
             data.Add("subtitle", ZodiacSign + " for " + date);
-            data.Add("scheme", "default");
+            data.Add("scheme", ColorScheme.Default);
+            data.Add("margin", new Thickness(12, 24, 12, 24));
 
             return data;
         }

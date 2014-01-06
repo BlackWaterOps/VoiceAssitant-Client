@@ -31,13 +31,13 @@ namespace Please2.ViewModels
         private string templateName;
         
         #region properties
-        private string scheme;
-        public string Scheme
+        private ColorScheme scheme;
+        public ColorScheme Scheme
         {
             get { return scheme; }
             set 
             {
-                scheme = value.CamelCase();
+                scheme = value;
                 RaisePropertyChanged("Scheme");
             }
         }
@@ -162,10 +162,20 @@ namespace Please2.ViewModels
             plexiService.Choice(choice);
         }
 
+        public void EventItemSelected(EventModel model)
+        {
+            var vm = ViewModelLocator.GetServiceInstance<EventDetailsViewModel>();
+
+            vm.CurrentItem = model;
+            vm.Scheme = this.Scheme;
+            vm.Title = model.title;
+
+            navigationService.NavigateTo(new Uri("/Views/EventDetails.xaml", UriKind.Relative));
+        }
+
+        /*
         public void EventItemSelected(EventModel e)
         {
-            //navigationService.NavigateTo(new Uri("/Views/EventDetailsPage.xaml?id=" + e.id, UriKind.Relative));
-
             var isSet = SetDetails(this.templateName, e);
 
             if (isSet)
@@ -179,6 +189,7 @@ namespace Please2.ViewModels
                 // no template found message
             }
         }
+        */
 
         public void MovieItemSelected(MoviesModel movie)
         {
@@ -297,38 +308,38 @@ namespace Please2.ViewModels
             {
                 case "images":
                     data = arr.ToObject<IEnumerable<string>>();
-                    Scheme = "default";
+                    Scheme = ColorScheme.Default;
                     break;
 
                 case "fuel":
                     data = arr.ToObject<IEnumerable<AltFuelModel>>();
-                    Scheme = "information";
+                    Scheme = ColorScheme.Information;
                     break;
 
                 case "product":
                 case "shopping":
                     data = arr.ToObject<IEnumerable<ShoppingModel>>();
-                    Scheme = "commerce";
+                    Scheme = ColorScheme.Commerce;
                     break;
 
                 case "events":
                     data = arr.ToObject<IEnumerable<EventModel>>();
-                    Scheme = "commerce";
+                    Scheme = ColorScheme.Commerce;
                     break;
 
                 case "movies":
                     data = arr.ToObject<IEnumerable<MoviesModel>>();
-                    Scheme = "commerce";
+                    Scheme = ColorScheme.Commerce;
                     break;
 
                 case "choice":
                     data = arr.ToObject<IEnumerable<ChoiceModel>>();
-                    Scheme = "default";
+                    Scheme = ColorScheme.Default;
                     break;
 
                 case "search":
                     data = arr.ToObject<IEnumerable<SearchModel>>();
-                    Scheme = "information";
+                    Scheme = ColorScheme.Information;
                     break;
             }
 

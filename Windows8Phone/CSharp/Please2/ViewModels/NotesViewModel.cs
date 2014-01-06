@@ -14,12 +14,13 @@ using Microsoft.Phone.Data.Linq;
 
 using Please2.Models;
 using Please2.Resources;
+using Please2.Util;
 
 namespace Please2.ViewModels
 {
     public class NotesViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        public string Scheme { get { return "Notes"; } }
+        public ColorScheme Scheme { get { return ColorScheme.Notes; } }
 
         private List<NoteItem> notes;
         public List<NoteItem> Notes

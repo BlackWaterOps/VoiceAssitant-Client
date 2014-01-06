@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 using Newtonsoft.Json.Linq;
 
@@ -60,7 +61,8 @@ namespace Please2.ViewModels
 
             data.Add("title", "stock");
             data.Add("subtitle", stockData.name + "(" + stockData.symbol + ")");
-            data.Add("scheme", "information");
+            data.Add("scheme", ColorScheme.Information);
+            data.Add("margin", new Thickness(12, 24, 12, 24));
 
             return data;
         }

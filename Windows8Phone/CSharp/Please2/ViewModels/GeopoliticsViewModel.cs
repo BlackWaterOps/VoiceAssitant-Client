@@ -28,6 +28,8 @@ namespace Please2.ViewModels
 {
     public class GeopoliticsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
+        public ColorScheme Scheme { get { return ColorScheme.Information; } }
+        
         private string country;
         public string Country
         {
@@ -91,7 +93,8 @@ namespace Please2.ViewModels
             var data = new Dictionary<string, object>();
 
             data.Add("title", "Geopolitics");
-            data.Add("scheme", "information");
+            data.Add("scheme", this.Scheme);
+            data.Add("margin", new Thickness(12, 24, 12, 24));
 
             return data;
         }

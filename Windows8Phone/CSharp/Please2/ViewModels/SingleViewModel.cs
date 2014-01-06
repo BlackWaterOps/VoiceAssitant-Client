@@ -18,17 +18,19 @@ using Please2.Util;
 
 using Plexi;
 using Plexi.Util;
+
+//TODO: major refactor
 namespace Please2.ViewModels
 {
     public class SingleViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
-        private string scheme;
-        public string Scheme
+        private ColorScheme scheme;
+        public ColorScheme Scheme
         {
             get { return scheme; }
             set
             {
-                scheme = value.CamelCase();
+                scheme = value;
                 RaisePropertyChanged("Scheme");
             }
         }
@@ -74,6 +76,17 @@ namespace Please2.ViewModels
             {
                 contentTemplate = value;
                 RaisePropertyChanged("ContentTemplate");
+            }
+        }
+
+        private Thickness margin;
+        public Thickness Margin
+        {
+            get { return margin; }
+            set
+            {
+                margin = value;
+                RaisePropertyChanged("Margin");
             }
         }
 
@@ -138,7 +151,12 @@ namespace Please2.ViewModels
 
                 if (response.ContainsKey("scheme"))
                 {
-                    Scheme = (string)response["scheme"];
+                    Scheme = (ColorScheme)response["scheme"];
+                }
+
+                if (response.ContainsKey("margin"))
+                {
+                    Margin = (Thickness)response["margin"];
                 }
             }
             catch (Exception err)

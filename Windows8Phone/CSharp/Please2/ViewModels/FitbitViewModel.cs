@@ -19,6 +19,8 @@ namespace Please2.ViewModels
 {
     public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
+        public ColorScheme Scheme { get { return ColorScheme.Application; } }
+
         /* WEIGHT */
         private IEnumerable<object> points;
         public IEnumerable<object> Points
@@ -123,7 +125,7 @@ namespace Please2.ViewModels
                 }    
             }
 
-            data.Add("scheme", "application");
+            data.Add("scheme", this.Scheme);
 
             return data;
         }

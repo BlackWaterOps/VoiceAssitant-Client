@@ -25,7 +25,7 @@ namespace Please2.ViewModels
 {
     public class RealEstateViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
-        private string scheme = "commerce";
+        public ColorScheme Scheme { get { return ColorScheme.Commerce; } }
 
         private string templateName = "real_estate";
 
@@ -66,6 +66,18 @@ namespace Please2.ViewModels
 
         private void RealEstateItemSelected(RealEstateListing model)
         {
+            var vm = ViewModelLocator.GetServiceInstance<RealEstateDetailsViewModel>();
+
+            vm.CurrentItem = model;
+            vm.Title = model.title;
+            vm.Scheme = this.Scheme;
+
+            navigationService.NavigateTo(new Uri("/Views/RealEstateDetails.xaml", UriKind.Relative));
+        }
+
+        /*
+        private void RealEstateItemSelected(RealEstateListing model)
+        {
             var isSet = SetDetails(this.templateName, model);
 
             if (isSet)
@@ -80,7 +92,7 @@ namespace Please2.ViewModels
             }
         }
 
-        private bool SetDetails(string template, object model)
+        private bool SetDetails(string template, RealEstateListing model)
         {
             var templates = ViewModelLocator.DetailsTemplates;
 
@@ -88,16 +100,18 @@ namespace Please2.ViewModels
 
             if (templates[template] != null)
             {
-                var vm = ViewModelLocator.GetServiceInstance<DetailsViewModel>();
+                var vm = ViewModelLocator.GetServiceInstance<RealEstateDetailsViewModel>();
 
                 vm.CurrentItem = model;
+                vm.Title = model.title;
                 vm.Scheme = this.scheme;
-
+                
                 isSet = true;
             }
 
             return isSet;
         }
+        */
 
         private void BuildMap()
         {
@@ -117,7 +131,7 @@ namespace Please2.ViewModels
 
                     geoList.Add(geo);
 
-                    MapLayer mapLayer = MapService.CreateMapLayer(geo);
+                    MapLayer mapLayer = MapService.Default.CreateMapLayer(geo);
 
                     map.Layers.Add(mapLayer);
                 }
@@ -147,7 +161,7 @@ namespace Please2.ViewModels
             Stats = realestateResults.stats;
 
             ret.Add("title", "real estate");
-            ret.Add("scheme", "commerce");
+            ret.Add("scheme", this.Scheme);
             //ret.Add("subtitle", ZodiacSign + " for " + date);
 
             return ret;

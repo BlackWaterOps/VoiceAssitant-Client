@@ -22,7 +22,7 @@ namespace Please2.ViewModels
     {
         private const string phrase = "how may I help you?";
 
-        public string Scheme { get { return "Default"; } }
+        public ColorScheme Scheme { get { return ColorScheme.Default; } }
 
         public DateTime SubTitle
         {

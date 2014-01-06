@@ -23,7 +23,7 @@ namespace Please2.ViewModels
 
         private const List<ProviderModel> ProvidersSettingsDefault = null;
 
-        public string Scheme { get { return "Settings"; } }
+        public ColorScheme Scheme { get { return ColorScheme.Settings; } }
 
         private List<ProviderModel> providers;
 
