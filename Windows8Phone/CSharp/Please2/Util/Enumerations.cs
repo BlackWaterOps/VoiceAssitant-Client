@@ -22,4 +22,9 @@ namespace Please2.Util
     {
         None, Google, Facebook, Fitbit
     }
+
+    public enum ColorScheme
+    {
+        Default, Information, Weather, Application, Commerce, Settings, Notes, Notifications
+    }
 }
