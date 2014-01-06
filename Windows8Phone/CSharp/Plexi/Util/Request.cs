@@ -157,6 +157,8 @@ namespace Plexi.Util
 
                 String errResp = reader.ReadToEnd();
 
+                Debug.WriteLine(String.Format("Web Exception: {0}", errResp));
+
                 return DeserializeData<T>(errResp);
             }
 
