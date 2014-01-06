@@ -192,14 +192,25 @@ namespace Plexi.Util
         {
             if (newDate.Equals(null))
             {
-                Debug.WriteLine("item is a string");
-                newDate = (dateortime.Contains("now")) ? DateTime.Now : DateTime.Parse(dateortime);
+                if (dateortime.Contains("now"))
+                {
+                    newDate = DateTime.Now;
+                }
+                else 
+                {
+                    newDate = DateTime.Parse(dateortime);
+
+                    if (newDate < DateTime.Now)
+                    {
+                        newDate = ((DateTime)newDate).AddDays(1);
+                    }
+                }
             }
             else
             {
                 if (timeRegex.IsMatch(dateortime) && newDate > DateTime.Parse(dateortime))
                 {
-                    ((DateTime)newDate).AddDays(1);
+                    newDate = ((DateTime)newDate).AddDays(1);
                 }
                 /*
                 if (timeRegex.IsMatch(dateortime))
