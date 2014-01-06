@@ -9,11 +9,13 @@ import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
@@ -27,7 +29,7 @@ import java.net.URISyntaxException;
 /**
  * Created by jeffschifano on 10/29/13.
  */
-public class RequestTask<T> extends AsyncTask<Object, Void, T> {
+public class RequestTask<T> extends AsyncTask<Object, Void, AsyncTaskResult<T>> {
     public enum HttpMethod { GET, POST };
 
     private static final String TAG = "QueryTask";
@@ -42,120 +44,104 @@ public class RequestTask<T> extends AsyncTask<Object, Void, T> {
 
     private Class<T> type;
     private IResponseListener listener;
-    private HttpMethod method;
     private String contentType;
 
     public RequestTask(Class<T> classType, IResponseListener responseListener) {
-        this(classType, responseListener, HttpMethod.POST);
-    }
-
-    public RequestTask(Class<T> classType, IResponseListener responseListener, HttpMethod method) {
         this.type = classType;
         this.listener = responseListener;
-        this.method = method;
     }
 
     /**
      * Sends a query to the server.
      *
-     * @param args Three arguments of the form:
-     *             1. String endpoint
-     *             2. String postData
+     * @param args 3-4 arguments of the form:
+     *             1. HttpMethod method
+     *             2. String endpoint
+     *             3. String postData
+     *             4. Header[] headers (may be null or omitted)
      */
     @Override
-    protected T doInBackground(Object... args) {
-        assert args.length == 2;
+    protected AsyncTaskResult<T> doInBackground(Object... args) {
+        assert args.length >= 3 && args.length <= 4;
 
-        String endpoint = (String) args[0];
-        String postData = (String) args[1];
+        HttpMethod method = (HttpMethod) args[0];
+        String endpoint = (String) args[1];
+        String postData = (String) args[2];
+        Header[] headers = args.length == 4 ? (Header[]) args[3] : null;
 
         URI uri;
 
         try {
             uri = new URI(endpoint);
         } catch (URISyntaxException e) {
-            Log.e(TAG, "Failed to create uri object from endpoint");
-            return null;
+            Log.e(TAG, "Failed to create uri object from endpoint", e);
+            Exception throwing = new IllegalArgumentException(e);
+            return new AsyncTaskResult<T>(throwing);
         }
 
         HttpClient client = new DefaultHttpClient();
-        HttpResponse response = null;
+        HttpResponse response;
 
         try {
+            HttpUriRequest req = null;
             if (method == HttpMethod.GET) {
-                HttpGet get = new HttpGet();
-
-                get.setURI(uri);
-
-                response = client.execute(get);
+                req = new HttpGet();
+                ((HttpGet) req).setURI(uri);
             } else if (method == HttpMethod.POST) {
-                HttpPost post = new HttpPost();
-                post.setURI(uri);
+                req = new HttpPost();
+                ((HttpPost) req).setURI(uri);
 
                 if (postData != null) {
                     HttpEntity entity = new StringEntity(postData, HTTP.UTF_8);
-                    post.setEntity(entity);
+                    ((HttpPost) req).setEntity(entity);
                 }
-
-                response = client.execute(post);
             }
+
+            if (headers != null)
+                req.setHeaders(headers);
+
+            response = client.execute(req);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Failed to encode query JSON", e);
-            return null;
+            return new AsyncTaskResult<T>(e);
         } catch (IOException e) {
             Log.e(TAG, "Failed to read HTTP response: " + e.getLocalizedMessage(), e);
-            return null;
+            return new AsyncTaskResult<T>(e);
+        }
+
+        if (response.getStatusLine().getStatusCode() == 500) {
+            Exception e = new IOException("Internal Plexi server error");
+            Log.e(TAG, "Remote Plexi server error", e);
+            return new AsyncTaskResult<T>(e);
         }
 
         HttpEntity responseEntity = response.getEntity();
         if ( responseEntity == null ) {
-            Log.e(TAG, "Failed to determine HTTP response");
+            Exception e = new RuntimeException("Failed to determine HTTP response");
+            Log.e(TAG, "Failed to determine HTTP response", e);
+            return new AsyncTaskResult<T>(e);
         }
 
-        String responseBody = null;
+        String responseBody;
         try {
             responseBody = EntityUtils.toString(responseEntity);
         } catch (IOException e) {
             Log.e(TAG, "Failed to parse HTTP response string", e);
-            return null;
+            return new AsyncTaskResult<T>(e);
         }
 
-        return gson.fromJson(responseBody, this.type);
-
-        /*
-         JSONObject responseObject = null;
-        try {
-            // need to cast against model here!!
-            responseObject = new JSONObject(responseBody);
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse HTTP response JSON", e);
-            return null;
-        }
-
-        Object qResponse = null;
-        try {
-            qResponse = new QueryResponse(responseObject);
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to parse query response fields", e);
-            return null;
-        }
-
-        return qResponse;
-        */
+        return new AsyncTaskResult<T>(gson.fromJson(responseBody, this.type));
     }
 
     @Override
-    protected void onPostExecute(T queryResponse) {
-        if ( listener != null )
-            listener.onQueryResponse(queryResponse);
-    }
-
-    public HttpMethod getMethod() {
-        return method;
-    }
-
-    public void setMethod(HttpMethod method) {
-        this.method = method;
+    protected void onPostExecute(AsyncTaskResult<T> result) {
+        if (result.getException() != null) {
+            Exception e = result.getException();
+            if (e instanceof IOException || e instanceof RuntimeException)
+                listener.onInternalError();
+        } else if (!isCancelled() && listener != null) {
+            listener.onQueryResponse(result.getResult());
+        }
     }
 
     public String getContentType() {

@@ -12,6 +12,8 @@ import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
+
 /**
  * An IRequestHelper stub implementation which simulates the following scenario:
  *
@@ -41,7 +43,7 @@ public class RequestHelperStub4 implements IRequestHelper {
             parser.parse("{\"location\":" + locationObject.toString() + "}").getAsJsonObject());
 
     public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              IResponseListener listener) {
+                              Header[] headers, IResponseListener listener) {
         if (type == ClassifierModel.class) {
             ClassifierModel response = null;
             try {
@@ -52,8 +54,8 @@ public class RequestHelperStub4 implements IRequestHelper {
         }
     }
 
-    public <T> void doRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method,
-                              Object data, boolean includeNulls, IResponseListener listener) {
+    public <T> void doSerializedRequest(Class<T> type, String endpoint, RequestTask.HttpMethod method, Header[] headers,
+                                        Object data, boolean includeNulls, IResponseListener listener) {
         if (type == JsonObject.class && endpoint.contains("disambiguate")) {
             // This is a disambiguation call.
             assert data instanceof DisambiguatorModel;
@@ -75,7 +77,7 @@ public class RequestHelperStub4 implements IRequestHelper {
 
             if (location.isJsonNull()) {
                 // Needs disambiguation!
-                response = new ResponderModel("disambiguate", "location", "location");
+                response = new ResponderModel("disambiguate", "location", "payload.location");
             } else if (location.isJsonObject() && location.equals(locationObject)) {
                 response = new ResponderModel("completed", "foobar", null, pkg);
             } else {
@@ -85,13 +87,8 @@ public class RequestHelperStub4 implements IRequestHelper {
             listener.onQueryResponse(response);
         } else if (type == ActorModel.class) {
             // This is an actor call.
-            ActorModel response = new ActorModel();
-            response.speak = "Hello world";
-
-            ShowModel show = new ShowModel(parser.parse("{\"text\":\"Hello world\"}")
-                    .getAsJsonObject(), null);
-            response.show = show;
-
+            ActorModel response = new ActorModel(new ShowModel(parser.parse("{\"text\":\"Hello world\"}")
+                    .getAsJsonObject(), null), "Hello world", null);
             listener.onQueryResponse(response);
         }
     }

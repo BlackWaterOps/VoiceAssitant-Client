@@ -1,29 +1,37 @@
 package com.stremor.plexi;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.stremor.plexi.interfaces.IPlexiListener;
 import com.stremor.plexi.interfaces.IPlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
-import com.stremor.plexi.models.ChoiceModel;
+import com.stremor.plexi.models.Choice;
 import com.stremor.plexi.models.ClassifierModel;
-import com.stremor.plexi.models.DisambiguationCandidate;
 import com.stremor.plexi.models.DisambiguatorModel;
+import com.stremor.plexi.models.LoginRequest;
+import com.stremor.plexi.models.LoginResponse;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.ShowModel;
+import com.stremor.plexi.models.SignupRequest;
+import com.stremor.plexi.models.SignupResponse;
 import com.stremor.plexi.models.StateModel;
 import com.stremor.plexi.util.Datetime;
+import com.stremor.plexi.util.Installation;
 import com.stremor.plexi.util.JsonObjectUtil;
 import com.stremor.plexi.util.LocationTracker;
 import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.joda.time.DateTimeZone;
 
 import java.io.UnsupportedEncodingException;
@@ -33,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jeffschifano on 10/28/13.
@@ -43,6 +52,12 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private static final String DISAMBIGUATOR = CLASSIFIER + "/disambiguate";
     private static final String RESPONDER = "http://rez.stremor-apier.appspot.com/v1/";
     private static final String PUD = "http://stremor-pud.appspot.com/v1/";
+    private static final String LOGIN = "http://stremor-pud.appspot.com/v1/login";
+    private static final String SIGNUP = "http://stremor-pud.appspot.com/v1/signup";
+
+    // header names
+    private static final String HEADER_STREMOR_AUTH_TOKEN = "Stremor-Auth-Token";
+    private static final String HEADER_STREMOR_AUTH_DEVICE = "Stremor-Auth-Device";
 
     // tag for logging
     private static final String TAG = "PlexiService";
@@ -66,8 +81,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private LocationTracker locationTracker;
     private String originalQuery;
 
-    // Class dependencies
+    // Request-related members
     private IRequestHelper requestHelper;
+    private String authToken;
+    private Header[] headers;
 
     /**
      * State data
@@ -102,12 +119,9 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     public PlexiService(Context context, IRequestHelper requestHelper) {
         this.context = context;
         this.requestHelper = requestHelper;
+        this.locationTracker = new LocationTracker(context);
 
         createTimer();
-
-        if (this.locationTracker == null) {
-            this.locationTracker = new LocationTracker(context);
-        }
     }
 
     public String getOriginalQuery() { return originalQuery; }
@@ -144,7 +158,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 show((ResponderModel) data);
                 break;
             case CHOICE:
-                choiceList((ResponderModel) data);
+                requestChoice((ResponderModel) data);
                 break;
             case RESTART:
                 restart((ResponderModel) data);
@@ -208,75 +222,88 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
             @Override
             public void onFinish() {
-                reset();
+                clearContext();
             }
         };
     }
 
-    private void reset() {
-        clearContext();
+    /**
+     * Log in to a Stremor account. Plexi listeners will be called at
+     * {@link com.stremor.plexi.interfaces.IPlexiListener#onLoginResponse(com.stremor.plexi.models.LoginResponse)}
+     * when the login request completes.
+     *
+     * @param username
+     * @param password
+     */
+    public void login(String username, String password) {
+        String deviceId = Installation.id(context);
+        Header[] headers = new Header[] {
+                new BasicHeader(HEADER_STREMOR_AUTH_DEVICE, deviceId)
+        };
+
+        LoginRequest req = new LoginRequest(username, password);
+
+        requestHelper.doSerializedRequest(LoginResponse.class, LOGIN, RequestTask.HttpMethod.POST,
+                headers, req, true, this);
     }
 
-    private void choiceList(ResponderModel response) {
-        try {
-            DisambiguationCandidate[] list = response.getShow().getSimple().getList();
+    private void handleLoginResponse(LoginResponse response) {
+        notifyListeners(PublicEvent.LOGIN_RESPONSE, response);
+    }
 
-            if (list != null) {
-                // TODO send response to listener
-            } else {
-                Log.d(TAG, "no list could be found");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+    /**
+     * Sign up for a Stremor account.
+     *
+     * @param username
+     * @param password
+     */
+    public void signup(String username, String password) {
+        SignupRequest req = new SignupRequest(username, password);
+        requestHelper.doSerializedRequest(SignupResponse.class, SIGNUP, RequestTask.HttpMethod.POST,
+                null, req, true, this);
+    }
+
+    private void handleSignupResponse(SignupResponse response) {
+        notifyListeners(PublicEvent.SIGNUP_RESPONSE, response);
+    }
+
+    /**
+     * From a response model present a choice list to the user.
+     *
+     * @param response
+     */
+    private void requestChoice(ResponderModel response) {
+        Choice[] list = response.getShow().getSimple().getList();
+
+        if (list == null)
+            Log.e(TAG, "choiceList called with an invalid responder model (empty list)");
+
+        notifyListeners(PublicEvent.DO_REQUEST_CHOICE, new Object[] {list});
+    }
+
+    /**
+     * Called by a client after the user makes a choice from a choice list.
+     *
+     * @param choice
+     */
+    public void choice(Choice choice) {
+        // Replace fields in a clone of the current context
+        ClassifierModel clone = null;
+        try {
+            clone = mainContext.clone();
+        } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "Clone of context failed", e);
+            return;
         }
+
+        String field = tempContext.getField().replace("payload.", "");
+        JsonObjectUtil.replace(clone.getPayload(), field, choice.getData());
+        changeState(State.AUDIT, clone);
     }
 
     // called from "inprogress" status
     private void show(ResponderModel response) {
-        /*
-        try
-        {
-            PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
-
-            if (frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
-            {
-                Show(response.show, response.speak);
-            }
-            else
-            {
-                //ConversationViewModel vm = ViewModelLocator.GetViewModelInstance<ConversationViewModel>();
-
-                // this won't have any speak
-                //vm.AddDialog("please", (string)response.show.simple["text"]);
-
-                Show(response.show, response.speak);
-
-                // navigate to conversation.xaml
-                this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
-            }
-        }
-        catch (Exception err)
-        {
-            Debug.WriteLine("Show:inprogress - " + err.Message);
-        }
-        */
-        show(response.getShow(), response.getSpeak());
-    }
-
-    // called from actor
-    private void show(ShowModel model, String speak) {
-        notifyListeners(PublicEvent.SHOW, model, speak);
-
-//        JsonObject simple = model.getSimple();
-//        if (simple.has("text")) {
-//            String show = simple.get("text").getAsString();
-//
-//            String link = simple.has("link")
-//                    ? link = simple.get("link").getAsString()
-//                    : null;
-//
-//            show(speak, show, link);
-//        }
+        notifyListeners(PublicEvent.DO_SHOW, response.getShow(), response.getSpeak());
     }
 
     private void errorMessage(String message) {
@@ -290,7 +317,7 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     private void classify(String query) {
         try {
             requestHelper.doRequest(ClassifierModel.class, CLASSIFIER + "?query=" +
-                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, this);
+                    URLEncoder.encode(query, "utf-8"), RequestTask.HttpMethod.GET, headers, this);
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "UnsupportedEncodingException during classification request building", e);
         }
@@ -312,41 +339,51 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void disambiguateActive(String data) {
         DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType());
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/active",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/active",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguateCandidate(String data) {
-        DisambiguationCandidate[] candidates = tempContext.getShow().getSimple().getList();
+        Choice[] candidates = tempContext.getShow().getSimple().getList();
         // String field = tempContext.field;
 
-        candidates = candidates == null ? new DisambiguationCandidate[]{} : candidates;
+        candidates = candidates == null ? new Choice[]{} : candidates;
         DisambiguatorModel postData = new DisambiguatorModel(data, tempContext.getType(),
                 candidates);
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/candidate",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguatePassive(ResponderModel data) {
         String field = data.getField();
         String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type, getDeviceInfo());
-        requestHelper.doRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, DISAMBIGUATOR + "/passive",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     private void disambiguatePersonal(ResponderModel data) {
+        if (authToken == null) {
+            Log.e(TAG, "Missing auth token");
+            return;
+        }
+
         String field = data.getField();
         String type = data.getType();
 
-        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field);
+        Object payload = JsonObjectUtil.find(mainContext.getPayload(), field.replace("payload.", ""));
+
+        Header[] headers = new Header[] {
+                new BasicHeader(HEADER_STREMOR_AUTH_DEVICE, Installation.id(context)),
+                new BasicHeader(HEADER_STREMOR_AUTH_TOKEN, authToken)
+        };
 
         DisambiguatorModel postData = new DisambiguatorModel(payload, type);
-        requestHelper.doRequest(JsonObject.class, PUD + "disambiguate",
-                RequestTask.HttpMethod.POST, postData, true, this);
+        requestHelper.doSerializedRequest(JsonObject.class, PUD + "disambiguate",
+                RequestTask.HttpMethod.POST, headers, postData, true, this);
     }
 
     // disambiguator response handler
@@ -367,7 +404,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 try {
                     clone = mainContext.clone();
                 } catch (CloneNotSupportedException e) {
-                    /* pass */
+                    Log.e(TAG, "Clone of context failed", e);
+                    return;
                 }
 
                 if (response.has(type)) {
@@ -381,14 +419,6 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         }
     }
 
-    public void choice(ChoiceModel choice) {
-        // send message to update conversation with choice.text
-
-        String field = tempContext.getField();
-        JsonObjectUtil.replace(mainContext.getPayload(), field, choice.data);
-        changeState(State.AUDIT, mainContext);
-    }
-
     /**
      * Auditor methods
      */
@@ -397,8 +427,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         if (!context.equals(mainContext)) {
             this.mainContext = context;
 
-            requestHelper.doRequest(ResponderModel.class, RESPONDER + "audit",
-                    RequestTask.HttpMethod.POST, context, false, this);
+            requestHelper.doSerializedRequest(ResponderModel.class, RESPONDER + "audit",
+                    RequestTask.HttpMethod.POST, headers, context, false, this);
         } else {
             throw new RuntimeException("potential request loop detected");
 //            Log.e(TAG, "potential request loop detected");
@@ -444,8 +474,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
                 endpoint = PUD + "actors/" + actor.replace("private:", "");
             }
 
-            requestHelper.doRequest(ActorModel.class, endpoint, RequestTask.HttpMethod.POST,
-                    this.mainContext, false, this);
+            requestHelper.doSerializedRequest(ActorModel.class, endpoint,
+                    RequestTask.HttpMethod.POST, headers, this.mainContext, false, this);
         } else {
             show(data);
         }
@@ -454,17 +484,10 @@ public final class PlexiService implements IPlexiService, IResponseListener {
     public void handleActorResponse(ActorModel response) {
         this.clearContext();
 
-        if (response.error != null) {
-            changeState(State.EXCEPTION, response.error.getMessage());
+        if (response.getError() != null) {
+            changeState(State.EXCEPTION, response.getError().getMessage());
         } else {
-            notifyListeners(PublicEvent.SHOW, response.show, response.speak);
-
-//            TODO will be possible when ShowModel is more strongly typed
-//            Intent intent = new Intent("plexiActor");
-//
-//            intent.putExtra("response", response);
-//
-//            LocalBroadcastManager.getInstance(this.context).sendBroadcast(intent);
+            notifyListeners(PublicEvent.DO_SHOW, response.getShow(), response.getSpeak());
         }
     }
 
@@ -476,16 +499,22 @@ public final class PlexiService implements IPlexiService, IResponseListener {
      * @param response
      */
     private void doClientOperations(JsonObject response) {
-        response = replaceLocation(response);
-        response = buildDateTime(response);
+        replaceLocation(response);
+        buildDateTime(response);
 //        prependTo(context, response);
     }
 
+    /**
+     * Perform prepend_to operations.
+     *
+     * @param context
+     * @param data
+     */
     private void prependTo(ClassifierModel context, JsonObject data) {
         if (!data.has("unused_tokens") || data.getAsJsonArray("unused_tokens").size() == 0)
             return;
 
-        // TODO
+        // TODO not implemented on backend
 //        if (((JSONArray) data.get("unused_tokens")).length() <= 0) {
 //            return context;
 //        }
@@ -504,18 +533,37 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 //        context.payload.put(field, (prepend + payloadField));
     }
 
-    private JsonObject replaceLocation(JsonObject payload) {
-        // TODO
-//        if (payload.get("location") instanceof String) {
-//            String location = (String) payload.get("location");
-//
-//            if (location.contains("current_location")) {
-//                // TODO get device info
-//                // payload.put("location", deviceInfo);
-//            }
-//        }
+    /**
+     * Replace `#current_location` client operators with latitude / longitude location objects.
+     * @param payload
+     */
+    private void replaceLocation(JsonObject payload) {
+        replaceLocation(payload, null);
+    }
 
-        return payload;
+    /**
+     * Inner recursive function. See {@link #replaceLocation(com.google.gson.JsonObject)}.
+     * @param payload
+     * @param location
+     */
+    private void replaceLocation(JsonObject payload, JsonObject location) {
+        for (Map.Entry<String, JsonElement> entry : payload.entrySet()) {
+            if (entry.getValue().isJsonPrimitive()
+                    && entry.getValue().getAsString().equals("#current_location")) {
+                if (location == null) {
+                    Location locationObj = locationTracker.getLocation();
+                    if (locationObj != null) {
+                        location = new JsonObject();
+                        location.addProperty("latitude", locationObj.getLatitude());
+                        location.addProperty("longitude", locationObj.getLongitude());
+                    }
+                }
+
+                payload.add(entry.getKey(), location);
+            } else if (entry.getValue().isJsonObject()) {
+                replaceLocation(entry.getValue().getAsJsonObject(), location);
+            }
+        }
     }
 
     private static Pair[] DATETIME_KEY_NAMES = new Pair[] {
@@ -563,8 +611,20 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         return data;
     }
 
-    private HashMap<String, Object> getDeviceInfo() {
-        HashMap<String, Object> deviceInfo = new HashMap<String, Object>();
+    private JsonObject getLocation() {
+        JsonObject ret = new JsonObject();
+
+        Location location = locationTracker.getLocation();
+        if (location != null) {
+            ret.addProperty("latitude", location.getLatitude());
+            ret.addProperty("longitude", location.getLongitude());
+        }
+
+        return ret;
+    }
+
+    private JsonObject getDeviceInfo() {
+        JsonObject deviceInfo = getLocation();
 
         long time = System.currentTimeMillis();
         int offset = DateTimeZone.getDefault().getOffset(time) / 1000;
@@ -573,21 +633,8 @@ public final class PlexiService implements IPlexiService, IResponseListener {
         int minutes = (offset % 3600) / 60;
         String timeOffset = String.format("%d:%02d", hours, minutes);
 
-        deviceInfo.put("timestamp", System.currentTimeMillis() / 1000L);
-        deviceInfo.put("timeoffset", timeOffset);
-
-        HashMap<String, Object> geolocation = this.locationTracker.getCurrentPosition();
-
-        if (geolocation == null) {
-            geolocation = this.locationTracker.getGeolocation();
-        }
-
-        if (!geolocation.containsKey("error") && geolocation.size() > 1) {
-            deviceInfo.put("latitude", geolocation.get("latitude"));
-            deviceInfo.put("longitude", geolocation.get("longitude"));
-        } else if (geolocation.containsKey("error")) {
-            Log.e(TAG, (String) geolocation.get("error"));
-        }
+        deviceInfo.addProperty("timestamp", System.currentTimeMillis() / 1000L);
+        deviceInfo.addProperty("timeoffset", timeOffset);
 
         return deviceInfo;
     }
@@ -602,14 +649,23 @@ public final class PlexiService implements IPlexiService, IResponseListener {
             handleAuditorResponse((ResponderModel) response);
         else if (response instanceof ActorModel)
             handleActorResponse((ActorModel) response);
+        else if (response instanceof LoginResponse)
+            handleLoginResponse((LoginResponse) response);
+        else if (response instanceof SignupResponse)
+            handleSignupResponse((SignupResponse) response);
         else if (response instanceof JsonObject)
             handleDisambiguationResponse((JsonObject) response);
         else
             Log.e(TAG, "unhandled query response");
     }
 
+    @Override
+    public void onInternalError() {
+        notifyListeners(PublicEvent.INTERNAL_ERROR);
+    }
+
     private enum PublicEvent {
-        SHOW, ERROR
+        DO_SHOW, DO_REQUEST_CHOICE, LOGIN_RESPONSE, SIGNUP_RESPONSE, ERROR, INTERNAL_ERROR
     };
 
     public void addListener(IPlexiListener listener) {
@@ -622,17 +678,37 @@ public final class PlexiService implements IPlexiService, IResponseListener {
 
     private void notifyListeners(PublicEvent event, Object... data) {
         switch (event) {
-            case SHOW:
+            case DO_SHOW:
                 for (IPlexiListener listener : listeners)
                     listener.show((ShowModel) data[0], (String) data[1]);
                 break;
+            case DO_REQUEST_CHOICE:
+                for (IPlexiListener listener : listeners)
+                    listener.requestChoice((Choice[]) data[0]);
+                break;
+            case LOGIN_RESPONSE:
+                for (IPlexiListener listener : listeners)
+                    listener.onLoginResponse((LoginResponse) data[0]);
+                break;
+            case SIGNUP_RESPONSE:
+                for (IPlexiListener listener : listeners)
+                    listener.onSignupResponse((SignupResponse) data[0]);
+                break;
             case ERROR:
                 for (IPlexiListener listener : listeners)
-                    listener.error((String) data[0]);
+                    listener.onError((String) data[0]);
+                break;
+            case INTERNAL_ERROR:
+                for (IPlexiListener listener : listeners)
+                    listener.onInternalError();
                 break;
             default:
                 throw new IllegalArgumentException(
                         "PublicEvent value missing dispatch implementation");
         }
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

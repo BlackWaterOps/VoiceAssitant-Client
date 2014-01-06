@@ -1,0 +1,23 @@
+<resources>
+        <string name="title_activity_login">Log in or sign up</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+
+    <string name="action_sign_in">Log in</string>
+    <string name="action_sign_up">Sign up</string>
+
+    <string name="login_progress_signing_in">Logging in&#8230;</string>
+    <string name="login_progress_signing_up">Signing up&#8230;</string>
+
+    <string name="error_invalid_username">This username is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <string name="error_signup_title">Signup Error</string>
+    <string name="error_signup_message">
+        We can\'t create an account with those credentials. Try a different username.
+    </string>
+</resources>

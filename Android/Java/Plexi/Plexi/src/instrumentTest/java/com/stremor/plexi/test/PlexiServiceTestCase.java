@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.interfaces.IRequestHelper;
 import com.stremor.plexi.interfaces.IResponseListener;
 import com.stremor.plexi.models.ActorModel;
@@ -12,10 +13,10 @@ import com.stremor.plexi.models.ClassifierModel;
 import com.stremor.plexi.models.DisambiguatorModel;
 import com.stremor.plexi.models.ResponderModel;
 import com.stremor.plexi.models.StateModel;
-import com.stremor.plexi.PlexiService;
 import com.stremor.plexi.util.RequestHelper;
 import com.stremor.plexi.util.RequestTask;
 
+import org.apache.http.Header;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -164,25 +166,60 @@ public class PlexiServiceTestCase extends AndroidTestCase {
         InOrder order = inOrder(spy);
 
         order.verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
-                eq(RequestTask.HttpMethod.GET), isA(IResponseListener.class));
-        order.verify(spy, times(1)).doRequest(eq(ResponderModel.class), contains("audit"),
-                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+                eq(RequestTask.HttpMethod.GET), (Header[]) isNull(), isA(IResponseListener.class));
+        order.verify(spy, times(1)).doSerializedRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), anyObject(), eq(false),
                 isA(IResponseListener.class));
-        order.verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/passive"),
-                eq(RequestTask.HttpMethod.POST), argThat(isValidDisambig), eq(true),
+        order.verify(spy, times(1)).doSerializedRequest(eq(JsonObject.class), contains("disambiguate/passive"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), argThat(isValidDisambig), eq(true),
                 isA(IResponseListener.class));
-        order.verify(spy, times(1)).doRequest(eq(ResponderModel.class), contains("audit"),
-                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+        order.verify(spy, times(1)).doSerializedRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), anyObject(), eq(false),
                 isA(IResponseListener.class));
-        order.verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
-                eq(RequestTask.HttpMethod.POST), eq(spy.MODEL_COMPLETE), eq(false),
-                any(IResponseListener.class));
+        order.verify(spy, times(1)).doSerializedRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), eq(spy.MODEL_COMPLETE), eq(false),
+                isA(IResponseListener.class));
+        order.verifyNoMoreInteractions();
+    }
+
+    /**
+     * Tests a full flow: query -> choice disambiguation -> completion
+     *
+     * Tightly coupled with RequestHelperStub5.
+     */
+    public void testWithStub5() {
+        RequestHelperStub5 spy = Mockito.spy(new RequestHelperStub5());
+        PlexiService plexi = new PlexiService(getContext(), spy);
+
+        plexi.query("What is the stock price of apollo");
+
+        // Should be waiting for choice input
+        assertEquals(PlexiService.State.CHOICE, plexi.getCurrentState().getState());
+
+        plexi.choice(RequestHelperStub5.CHOICES[RequestHelperStub5.CHOICE_IDX]);
+
+        // Now we should be finished
+        assertEquals(PlexiService.State.UNINITIALIZED, plexi.getCurrentState().getState());
+
+        // Verify all calls
+        InOrder order = inOrder(spy);
+
+        order.verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
+                eq(RequestTask.HttpMethod.GET), (Header[]) isNull(), isA(IResponseListener.class));
+        // Request helper stub will make an assertion about the contents of the second of the
+        // following adjusted requests
+        order.verify(spy, times(2)).doSerializedRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), anyObject(), eq(false),
+                isA(IResponseListener.class));
+        order.verify(spy, times(1)).doSerializedRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(),
+                /*eq(spy.MODEL_COMPLETE)*/ anyObject(), eq(false), isA(IResponseListener.class));
         order.verifyNoMoreInteractions();
     }
 
     private void verifyClassificationCall(IRequestHelper spy) {
         verify(spy, times(1)).doRequest(eq(ClassifierModel.class), anyString(),
-                eq(RequestTask.HttpMethod.GET), isA(IResponseListener.class));
+                eq(RequestTask.HttpMethod.GET), (Header[]) isNull(), isA(IResponseListener.class));
     }
 
     private void verifyAuditCall(IRequestHelper spy) {
@@ -190,30 +227,30 @@ public class PlexiServiceTestCase extends AndroidTestCase {
     }
 
     private void verifyAuditCall(IRequestHelper spy, int times) {
-        verify(spy, times(times)).doRequest(eq(ResponderModel.class), contains("audit"),
-                eq(RequestTask.HttpMethod.POST), anyObject(), eq(false),
+        verify(spy, times(times)).doSerializedRequest(eq(ResponderModel.class), contains("audit"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), anyObject(), eq(false),
                 isA(IResponseListener.class));
     }
 
     private void verifyActorCall(IRequestHelper spy) {
-        verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
-                eq(RequestTask.HttpMethod.POST), isA(ClassifierModel.class), eq(false),
-                isA(IResponseListener.class));
+        verify(spy, times(1)).doSerializedRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), isA(ClassifierModel.class),
+                eq(false), isA(IResponseListener.class));
     }
 
     private void verifyActorCall(IRequestHelper spy, ClassifierModel expectedData,
                                  boolean includeNulls) {
-        verify(spy, times(1)).doRequest(eq(ActorModel.class), contains("actor"),
-                eq(RequestTask.HttpMethod.POST), eq(expectedData), eq(includeNulls),
-                any(IResponseListener.class));
+        verify(spy, times(1)).doSerializedRequest(eq(ActorModel.class), contains("actor"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), eq(expectedData),
+                eq(includeNulls), any(IResponseListener.class));
     }
 
     private void verifyDisambiguateActiveCall(IRequestHelper spy, String expectedType,
                                               String expectedPayload) {
         DisambiguatorModel expected = new DisambiguatorModel(expectedPayload, expectedType);
 
-        verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/active"),
-                eq(RequestTask.HttpMethod.POST), eq(expected), eq(true),
+        verify(spy, times(1)).doSerializedRequest(eq(JsonObject.class), contains("disambiguate/active"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), eq(expected), eq(true),
                 isA(IResponseListener.class));
     }
 
@@ -221,8 +258,8 @@ public class PlexiServiceTestCase extends AndroidTestCase {
                                                String expectedPayload) {
         DisambiguatorModel expected = new DisambiguatorModel(expectedPayload, expectedType);
 
-        verify(spy, times(1)).doRequest(eq(JsonObject.class), contains("disambiguate/passive"),
-                eq(RequestTask.HttpMethod.POST), eq(expected), eq(true),
+        verify(spy, times(1)).doSerializedRequest(eq(JsonObject.class), contains("disambiguate/passive"),
+                eq(RequestTask.HttpMethod.POST), (Header[]) isNull(), eq(expected), eq(true),
                 isA(IResponseListener.class));
     }
 }

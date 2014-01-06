@@ -5,4 +5,6 @@ package com.stremor.plexi.interfaces;
  */
 public interface IResponseListener {
     public void onQueryResponse(Object queryResponse);
+
+    public void onInternalError();
 }
