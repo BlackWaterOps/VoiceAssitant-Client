@@ -15,14 +15,21 @@ using Microsoft.Phone.Maps.Toolkit;
 
 namespace Please2.Util
 {
-    static class MapService
+    class MapService
     {
-        public static MapLayer CreateMapLayer(GeoCoordinate geo)
+        public static readonly MapService Default = new MapService();
+
+        private MapService()
+        {
+
+        }
+
+        public MapLayer CreateMapLayer(GeoCoordinate geo)
         {
             return CreateMapLayer(geo.Latitude, geo.Longitude);
         }
         
-        public static MapLayer CreateMapLayer(double lat, double lon)
+        public MapLayer CreateMapLayer(double lat, double lon)
         {
             var coord = new GeoCoordinate(lat, lon);
 
@@ -43,7 +50,7 @@ namespace Please2.Util
             return layer;
         }
 
-        public static MapPolyline CreatePolyline(List<GeoCoordinate> geoList)
+        public MapPolyline CreatePolyline(List<GeoCoordinate> geoList)
         {
             MapPolyline polyline = new MapPolyline();
 
@@ -62,7 +69,7 @@ namespace Please2.Util
             return polyline;
         }
 
-        public static async Task<IList<MapLocation>> GeoQuery(string searchTerm)
+        public async Task<IList<MapLocation>> GeoQuery(string searchTerm)
         {
             Debug.WriteLine(searchTerm);
 
@@ -74,14 +81,14 @@ namespace Please2.Util
             return await query.ExecuteAsync();
         }
 
-        public static async Task<IList<MapLocation>> ReverseGeoQuery(double lat, double lon)
+        public async Task<IList<MapLocation>> ReverseGeoQuery(double lat, double lon)
         {
             GeoCoordinate coordinate = new GeoCoordinate(lat, lon);
 
             return await ReverseGeoQuery(coordinate);
         }
 
-        public static async Task<IList<MapLocation>> ReverseGeoQuery(GeoCoordinate coordinate)
+        public async Task<IList<MapLocation>> ReverseGeoQuery(GeoCoordinate coordinate)
         {
             ReverseGeocodeQuery query = new ReverseGeocodeQuery();
             query.GeoCoordinate = coordinate;
@@ -89,7 +96,7 @@ namespace Please2.Util
             return await query.ExecuteAsync();
         }
 
-        public static GeoCoordinate GetCentrePointFromListOfCoordinates(List<GeoCoordinate> coordList)
+        public GeoCoordinate GetCentrePointFromListOfCoordinates(List<GeoCoordinate> coordList)
         {
             int total = coordList.Count;
 
@@ -121,30 +128,33 @@ namespace Please2.Util
 
             return new GeoCoordinate(Lat * 180 / Math.PI, Lon * 180 / Math.PI);
         }
+    }
 
-        private static Task<T> ExecuteAsync<T>(this Query<T> query)
+    public static class MapExtensions
+    {
+        public static Task<T> ExecuteAsync<T>(this Query<T> query)
         {
             var taskSource = new TaskCompletionSource<T>();
 
             EventHandler<QueryCompletedEventArgs<T>> handler = null;
 
             handler = (s, e) =>
-                {
-                    query.QueryCompleted -= handler;
+            {
+                query.QueryCompleted -= handler;
 
-                    if (e.Cancelled)
-                    {
-                        taskSource.SetCanceled();
-                    }
-                    else if (e.Error != null)
-                    {
-                        taskSource.SetException(e.Error);
-                    }
-                    else
-                    {
-                        taskSource.SetResult(e.Result);
-                    }
-                };
+                if (e.Cancelled)
+                {
+                    taskSource.SetCanceled();
+                }
+                else if (e.Error != null)
+                {
+                    taskSource.SetException(e.Error);
+                }
+                else
+                {
+                    taskSource.SetResult(e.Result);
+                }
+            };
 
             query.QueryCompleted += handler;
 

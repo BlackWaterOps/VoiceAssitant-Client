@@ -8,44 +8,34 @@ using System.Windows.Threading;
 
 using Windows.Devices.Geolocation;
 
+using Plexi.Models;
+
 namespace Plexi.Util
 {
-    public static class LocationService
+    internal class LocationService
     {
-        private static Geolocator geolocator = new Geolocator();
+        private Geolocator geolocator = new Geolocator();
 
-        private static CancellationTokenSource _cts = null;
+        private CancellationTokenSource _cts = null;
 
-        private static bool isTracking = false;
+        private bool isTracking = false;
 
-        private static Geoposition geoPosition;
-        public static Geoposition GeoPosition
+        //public Geoposition GeoPosition { get; private set; }
+
+        public LocationModel CurrentPosition { get; private set; }
+
+        public static readonly LocationService Default = new LocationService();
+
+        private LocationService()
         {
-            get
-            {
-                return geoPosition;
-            }
+
         }
 
-        private static Dictionary<string, object> currentPosition;
-        public static Dictionary<string, object> CurrentPosition
-        {
-            get
-            {
-                return currentPosition;
-            }
-        }
-        
-        private static void OnPositionChanged(Geolocator sender, PositionChangedEventArgs e)
+        private void OnPositionChanged(Geolocator sender, PositionChangedEventArgs e)
         {
             try
             {
-                geoPosition = e.Position;
-
-                var lat = e.Position.Coordinate.Latitude;
-                var lon =  e.Position.Coordinate.Longitude;
-
-                SetCurrentLocation(lat, lon);         
+                SetCurrentLocation(e.Position);         
             }
             catch (Exception err)
             {
@@ -54,7 +44,7 @@ namespace Plexi.Util
             }
         }
 
-        private static void OnStatusChanged(Geolocator sender, StatusChangedEventArgs e)
+        private void OnStatusChanged(Geolocator sender, StatusChangedEventArgs e)
         {
             Debug.WriteLine("location status: " + e.Status);
             
@@ -104,13 +94,13 @@ namespace Plexi.Util
                     break;
             }
 
-            if (currentPosition == null)
+            if (CurrentPosition == null)
             {
-                currentPosition = new Dictionary<string, object>();
+                CurrentPosition = new LocationModel();
             }
 
-            currentPosition["status"] = e.Status;
-            currentPosition["statusText"] = statusText;
+            CurrentPosition.status = e.Status;
+            CurrentPosition.statusText = statusText;
         }
 
         /// <summary>
@@ -121,43 +111,22 @@ namespace Plexi.Util
         /// <param name="timeout"></param>
         /// </summary>
         /// <returns>Dictionary<string, string></returns>
-        public static async Task<Dictionary<string, object>> GetGeolocation(uint accuracy = 50, uint interval = 600000, int maxAge = 5, int timeout = 10)
-        {            
-            try
-            {
-                geolocator.DesiredAccuracyInMeters = accuracy;
-                geolocator.ReportInterval = interval; // 10 min in milliseconds
+        public async Task<LocationModel> GetGeolocation(uint accuracy = 50, uint interval = 600000, int maxAge = 5, int timeout = 10)
+        {
+            geolocator.DesiredAccuracyInMeters = accuracy;
+            geolocator.ReportInterval = interval; // 10 min in milliseconds
 
-                _cts = new CancellationTokenSource();
-                CancellationToken token = _cts.Token;
+            _cts = new CancellationTokenSource();
+            CancellationToken token = _cts.Token;
 
-                geoPosition = await geolocator.GetGeopositionAsync(
-                    maximumAge: TimeSpan.FromMinutes(maxAge),
-                    timeout: TimeSpan.FromSeconds(timeout)
-                ).AsTask(token);
+            Geoposition geoPosition = await geolocator.GetGeopositionAsync(
+                maximumAge: TimeSpan.FromMinutes(maxAge),
+                timeout: TimeSpan.FromSeconds(timeout)
+            ).AsTask(token);
 
-                var lat = geoPosition.Coordinate.Latitude;
-                var lon = geoPosition.Coordinate.Longitude;
+            SetCurrentLocation(geoPosition);
 
-                SetCurrentLocation(lat, lon);
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err);
-
-                if ((uint)err.HResult == 0x80004004)
-                {
-                    // location has been diabled in phone settings. display appropriate message
-                    currentPosition.Add("error", "location is disabled in phone settings");
-                }
-                else
-                {
-                    // unforeseen error
-                    currentPosition.Add("error", err.ToString());
-                }
-            }
-
-            return currentPosition;
+            return CurrentPosition;
         }
 
         /// <summary>
@@ -165,7 +134,7 @@ namespace Plexi.Util
         /// <param name="threshold"></param>
         /// <param name="reportInterval"></param>
         /// </summary>
-        public static void StartTrackingGeolocation(double threshold = 50, uint reportInterval = 300000)
+        public void StartTrackingGeolocation(double threshold = 50, uint reportInterval = 300000)
         {
             if (isTracking == false)
             {
@@ -182,7 +151,7 @@ namespace Plexi.Util
         /// <summary>
         /// Stop update of currentPosition variable by removing the PositionChanged and StautusChanged events
         /// </summary>
-        public static void StopTrackingGeolocation()
+        public void StopTrackingGeolocation()
         {
             geolocator.PositionChanged -= new Windows.Foundation.TypedEventHandler<Geolocator, PositionChangedEventArgs>(OnPositionChanged);
             geolocator.StatusChanged -= new Windows.Foundation.TypedEventHandler<Geolocator, StatusChangedEventArgs>(OnStatusChanged);
@@ -193,29 +162,29 @@ namespace Plexi.Util
         /// <summary>
         /// Cancel any pending Geolocation request
         /// </summary>
-        public static void CancelGetGeolocation()
+        public void CancelGetGeolocation()
         {
-            if (LocationService._cts != null)
+            if (_cts != null)
             {
-                LocationService._cts.Cancel();
-                LocationService._cts = null;
+                _cts.Cancel();
+                _cts = null;
             }
         }
 
-        public static bool IsLocationEnabled()
+        public bool IsLocationEnabled()
         {
             return (geolocator.LocationStatus != PositionStatus.Disabled);
         }
 
-        private static void SetCurrentLocation(double lat, double lon)
+        private void SetCurrentLocation(Geoposition position)
         {
-            if (currentPosition == null)
+            if (CurrentPosition == null)
             {
-                currentPosition = new Dictionary<string, object>();
+                CurrentPosition = new LocationModel();
             }
 
-            currentPosition["latitude"] = lat;
-            currentPosition["longitude"] = lon;
+            CurrentPosition.geoCoordinate = position.Coordinate;
+            CurrentPosition.civicAddress = position.CivicAddress;
         }
     }
 }
