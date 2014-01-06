@@ -16,9 +16,13 @@ using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Please2.Models;
 using Please2.ViewModels;
 
+using Plexi;
 using Plexi.Models;
+
+//TODO: major refactor
 namespace Please2.Util
 {
     class TaskService : ITaskService
@@ -26,6 +30,8 @@ namespace Please2.Util
         private Dictionary<string, object> payload;
 
         private INavigationService navigationService;
+
+        private IPlexiService plexiService;
 
         private List<string> unused_tokens = new List<string>();
 
@@ -40,24 +46,18 @@ namespace Please2.Util
             } 
         }
 
-        /*
-        private string taskToFulfill;
-        public string TaskToFulfill
-        {
-            get
-            {
-                return taskToFulfill;
-            }
-        }
-        */
-
         public TaskService()
         {
             navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
+
+            plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
         }
 
+        #region Email
         public void ComposeEmail(Dictionary<string, object> payload)
         {
+            string errorMessage;
+
             if (payload.ContainsKey("contact"))
             {
                 JObject contact = (JObject)payload["contact"];
@@ -66,19 +66,46 @@ namespace Please2.Util
 
                 if (contact.TryGetValue("emails", out emails))
                 {
-                    JObject first = (JObject)emails.First;
+                    JObject first = (JObject)emails.FirstOrDefault();
 
+                    foreach (JObject email in emails)
+                    {
+                        if ((bool)email["default"] == true)
+                        {
+                            first = email;
+                        }
+                    }
+
+                    string successMessage = String.Format("sending an email to {0}", (string)contact["name"]);
+
+                    Messenger.Default.Send(new ShowMessage(successMessage, successMessage));
+                    
                     string message = (string)payload["message"];
 
-                    string email = (string)first.GetValue("value");
+                    string address = (string)first.GetValue("value");
 
-                    DoEmailTask(email, message);
+                    DoEmailTask(address, message);
+                    return;
                 }
 
                 // no email found message
+                errorMessage = String.Format("I could not find an email address for {0}", (string)contact["name"]);
             }
 
             // no contact found message
+            errorMessage = String.Format("No contact could be found");
+
+            if (errorMessage != null)
+            {
+                Messenger.Default.Send(new ShowMessage(errorMessage, errorMessage));
+
+                PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
+
+                if (!frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
+                {
+                    this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                }
+            }
         }
 
         public void ComposeEmail(Contact contact)
@@ -110,9 +137,13 @@ namespace Please2.Util
                 );
             }
         }
+        #endregion
 
+        #region Sms
         public void ComposeSms(Dictionary<string, object> payload)
         {
+            string errorMessage;
+
             if (payload.ContainsKey("contact"))
             {
                 JObject contact = (JObject)payload["contact"];
@@ -125,20 +156,50 @@ namespace Please2.Util
 
                     if (numbers.Count > 0)
                     {
-                        JObject primary = (JObject)numbers.First();
+                        JObject primary = (JObject)numbers.FirstOrDefault();
+
+                        foreach (JObject number in numbers)
+                        {
+                            if ((bool)number["default"] == true)
+                            {
+                                primary = number;
+                            }
+                        }
+
+                        string successMessage = String.Format("sending a text message to {0}", (string)contact["name"]);
+
+                        Messenger.Default.Send(new ShowMessage(successMessage, successMessage));
 
                         string phoneNumber = (string)primary.GetValue("value");
 
                         string message = (string)payload["message"];
 
-                        DoSmsTask(phoneNumber, message); 
+                        DoSmsTask(phoneNumber, message);
+                        return;
                     }
                 }
 
                 // no phone numbers message
+                errorMessage = String.Format("I could not find a phone number for {0}", (string)contact["name"]);
+            }
+            else
+            {
+                // no contact found message
+                errorMessage = String.Format("No contact could be found");
             }
 
-            // no contact found message
+            if (errorMessage != null)
+            {
+                Messenger.Default.Send(new ShowMessage(errorMessage, errorMessage));
+
+                PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
+
+                if (!frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
+                {
+                    this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                }
+            }
+            
             return;
         }
 
@@ -179,9 +240,13 @@ namespace Please2.Util
                 });
             }
         }
+        #endregion
 
+        #region Call
         public void PhoneCall(Dictionary<string, object> payload)
         {
+            string errorMessage;
+
             if (payload.ContainsKey("contact"))
             {
                 JObject contact = (JObject)payload["contact"];
@@ -196,18 +261,40 @@ namespace Please2.Util
                     {
                         JObject primary = (JObject)numbers.First();
 
+                        string successMessage = String.Format("calling {0}", (string)contact["name"]);
+
+                        Messenger.Default.Send(new ShowMessage(successMessage, successMessage));
+
                         string phoneNumber = (string)primary.GetValue("value");
 
                         string displayName = (string)payload["name"];
 
                         DoPhoneCallTask(displayName, phoneNumber);
+                        return;
                     }
                 }
 
                 // no phone numbers message
+                errorMessage = String.Format("I could not find a phone number for {0}", (string)contact["name"]);
+            }
+            else
+            {
+                // no contact found message
+                errorMessage = String.Format("No contact could be found");
             }
 
-            // no contact found message
+            if (errorMessage != null)
+            {
+                Messenger.Default.Send(new ShowMessage(errorMessage, errorMessage));
+
+                PhoneApplicationFrame frame = App.Current.RootVisual as PhoneApplicationFrame;
+
+                if (!frame.CurrentSource.Equals(ViewModelLocator.ConversationPageUri))
+                {
+                    this.navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                }
+            }
+            
         }
 
         public void PhoneCall(Contact contact)
@@ -247,18 +334,37 @@ namespace Please2.Util
                 );
             }
         }
+        #endregion
 
-        public void SetAppointment()
+        public void SetAppointment(Dictionary<string, object> payload)
         {
             var cal = new SaveAppointmentTask();
 
             cal.Subject = (string)payload["subject"];
-            cal.Details = "";
+            cal.Details = String.Empty;
             if (payload.ContainsKey("location") && payload["location"] != null)
             {
                 cal.Location = (string)payload["location"];
             }
-            cal.StartTime = DateTime.Now;
+
+            if (payload.ContainsKey("start_date") && payload["start_date"] != null)
+            {
+                string startTime;
+
+                string startDate = (string)payload["start_date"];
+
+                if (payload.ContainsKey("start_time") && payload["start_time"] != null)
+                {
+                    startTime = String.Format("{0} {1}", startDate , (string)payload["start_time"]);
+                }
+                else
+                {
+                    startTime = startDate;
+                }
+
+                cal.StartTime = DateTime.Parse(startTime);
+            }
+
             if (payload.ContainsKey("end_date") && payload["end_date"] != null)
             {
                 cal.EndTime = DateTime.Parse((string)payload["end_date"]);
@@ -269,31 +375,63 @@ namespace Please2.Util
 
         // TODO: get appointment(s)
 
-        public void GetDirections()
+        public async void GetDirections(Dictionary<string, object> payload)
         {
-            var dir = new MapsDirectionsTask();
+            try
+            {
+                if (payload.ContainsKey("to"))
+                {
+                    string destination = (string)payload["to"];
 
-            dir.Start = new LabeledMapLocation("start text", new System.Device.Location.GeoCoordinate(33.4930947, -111.928558)); // scottsdale
-            dir.End = new LabeledMapLocation("end text", new System.Device.Location.GeoCoordinate(33.4930947, -111.928558)); // scottsdale
+                    LocationModel currLocation = await plexiService.GetDeviceInfo();
 
-            dir.Show();
+                    //IList<MapLocation> locations = await MapService.Default.GeoQuery(destination);
+
+                    var task = new BingMapsDirectionsTask();
+
+                    task.Start = new LabeledMapLocation(null, new System.Device.Location.GeoCoordinate(currLocation.geoCoordinate.Latitude, currLocation.geoCoordinate.Longitude));
+                    task.End = new LabeledMapLocation(destination, null);
+
+                    task.Show();
+                    return;
+
+                    // show no location message
+                    // Messenger.Default.Send(new ShowMessage(errorMessage, errorMessage));
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
         }
 
-        public void ShowClock()
+        public void ShowClock(Dictionary<string, object> payload)
         {
+            string speak = "the current time is";
+
+            if (payload.Count > 0)
+            {
+                
+            }
+
+            //Messenger.Default.Send(new ShowMessage());
+
             navigationService.NavigateTo(ViewModelLocator.TimePageUri);
         }
 
-        public void SetAlarm()
+        public void SetAlarm(Dictionary<string, object> payload)
         {
+            Debug.WriteLine("set alarm task");
+
+
             // need to prepop view model
-            navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
+            //navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
         }
 
         public void SetReminder()
         {
             // need to prepop view model
-            navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
+            //navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
         }
 
         #region helpers
