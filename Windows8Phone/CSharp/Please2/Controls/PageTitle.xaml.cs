@@ -20,7 +20,7 @@ namespace Please2.Controls
         {
             InitializeComponent();
 
-            DataContext = this;
+            PageTitleLayoutRoot.DataContext = this;
         }
 
         public static readonly DependencyProperty SchemeProperty = DependencyProperty.Register(

@@ -29,7 +29,8 @@
         <Style x:Key="PageTitleBase" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe WP" />
             <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="WordEllipsis"/>
         </Style>
 
         <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
