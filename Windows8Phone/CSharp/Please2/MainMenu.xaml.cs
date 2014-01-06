@@ -36,19 +36,13 @@ namespace Please2
             vm = (MainMenuViewModel)DataContext;
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            // kick off geolocation listener
-            // this should be done somewhere else!!
-            LocationService.StartTrackingGeolocation();
 
             NavigationService.NavigationFailed += OnNavigationFailed;
            
             var navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
-
-            //Windows.System.Launcher.LaunchUriAsync
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
