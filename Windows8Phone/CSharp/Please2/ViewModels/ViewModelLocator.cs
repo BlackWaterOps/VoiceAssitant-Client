@@ -98,7 +98,7 @@ namespace Please2.ViewModels
             SimpleIoc.Default.Register<MainMenuViewModel>();
             SimpleIoc.Default.Register<ConversationViewModel>();
 
-            new PlexiHandler();
+            PlexiHandler.Default.Listen();
         }
 
         public MainMenuViewModel MainMenuViewModel
@@ -190,12 +190,24 @@ namespace Please2.ViewModels
         {
             get { return GetServiceInstance<SettingsViewModel>(); }
         }
-        /*
-        public TimeViewModel TimeViewModel
+    
+        public ClockViewModel ClockViewModel
         {
-            get { return GetViewModelInstance<TimeViewModel>(); }
+            get { return GetServiceInstance<ClockViewModel>(); }
         }
-        */
+
+        #region Detail ViewModels
+        public RealEstateDetailsViewModel RealEstateDetailsViewModel
+        {
+            get { return GetServiceInstance<RealEstateDetailsViewModel>(); }
+        }
+
+        public EventDetailsViewModel EventDetailsViewModel
+        {
+            get { return GetServiceInstance<EventDetailsViewModel>(); }
+        }
+        #endregion 
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
