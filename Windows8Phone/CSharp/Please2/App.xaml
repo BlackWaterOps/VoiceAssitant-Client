@@ -125,6 +125,7 @@
             </Setter>
         </Style>
         
+        <!--
         <Canvas x:Key="LoadingScreen" x:Name="LoadingScreen">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="ProgressStates">
@@ -147,28 +148,7 @@
                 </StackPanel>
             </Border>
         </Canvas>
-        
-        <!-- pivot templates -->
-        <ControlTemplate x:Key="PivotControlTemplate" TargetType="phone:Pivot">
-            <Grid HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                  VerticalAlignment="{TemplateBinding VerticalAlignment}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid Background="{Binding DataContext.Scheme, ElementName=LayoutRoot, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}" CacheMode="BitmapCache" Grid.RowSpan="2" />
-                <Grid Background="{TemplateBinding Background}" CacheMode="BitmapCache" Grid.Row="2" />
-                <ContentPresenter ContentTemplate="{TemplateBinding TitleTemplate}" Content="{TemplateBinding Title}" Margin="24,17,0,-7"/>
-                <primitives:PivotHeadersControl x:Name="HeadersListElement" Grid.Row="1" />
-                <ItemsPresenter x:Name="PivotItemPresenter" Margin="{TemplateBinding Padding}" Grid.Row="2"/>
-            </Grid>
-        </ControlTemplate>
-
-        <DataTemplate x:Key="PivotHeaderTemplate">
-            <TextBlock Text="{Binding}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" MinWidth="400"/>
-        </DataTemplate>
-
+        -->
         <!-- chat bubble with rounded corners -->
         <!--
         <Style x:Key="RoundedChatBubble" TargetType="c4f:ChatBubble">
@@ -336,11 +316,11 @@
         <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
         <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
-        <ResourceDictionary x:Key="ListTemplateDictionary" Source="TemplateDictionary.List.xaml" />
-        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="TemplateDictionary.Single.xaml" />
-        <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="TemplateDictionary.Details.xaml" />
-        <ResourceDictionary x:Key="SchemeDictionary" Source="ColorScheme.xaml" />
-        
+        <ResourceDictionary x:Key="ListTemplateDictionary" Source="/Please2;component/Templates/List.xaml" />
+        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="/Please2;component/Templates/Single.xaml" />
+        <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="/Please2;component/Templates/Details.xaml" />
+        <ResourceDictionary x:Key="SchemeDictionary" Source="/Please2;component/Templates/ColorScheme.xaml" />
+   
         <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
     </Application.Resources>
     
