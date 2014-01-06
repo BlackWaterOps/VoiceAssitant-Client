@@ -56,19 +56,6 @@ namespace Please2
 
                 WebBrowser.Navigate(new Uri(url, UriKind.Absolute), null, headers);
             }
-
-            /*
-            try
-            {
-                ApplicationBarIconButton skip = ApplicationBar.Buttons[0] as ApplicationBarIconButton;
-
-                skip.IsEnabled = (isOptional == Convert.ToString(true)) ? true : false;
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-            }
-            */
         }
 
         protected void WebBrowser_Navigated(object sender, NavigationEventArgs e)
@@ -143,7 +130,8 @@ namespace Please2
             Dictionary<string, string> headers = new Dictionary<string, string>();
 
             headers.Add(tokenHeader, authToken);
-            headers.Add(deviceHeader, "cRljODI+F0i6w8l72x9Kc9Ez6V8=");
+            headers.Add(deviceHeader, duid);
+            //headers.Add(deviceHeader, "cRljODI+F0i6w8l72x9Kc9Ez6V8=");
 
             string headerString = String.Empty;
 
