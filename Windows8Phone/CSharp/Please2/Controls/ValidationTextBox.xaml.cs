@@ -49,6 +49,8 @@ namespace Please2.Controls
             InitializeComponent();
 
             DataContext = this;
+
+            ValPasswordBox.PasswordChanged += ValPasswordBox_PasswordChanged;
         }
 
         #region Error Properties
@@ -178,12 +180,24 @@ namespace Please2.Controls
             "Text",
             typeof(string),
             typeof(ValidationTextBox),
-            new PropertyMetadata(String.Empty));
+            null);
 
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
+        }
+
+        public static readonly DependencyProperty PasswordProperty = DependencyProperty.Register(
+            "Password",
+            typeof(string),
+            typeof(ValidationTextBox),
+            null);
+
+        public string Password
+        {
+            get { return (string)GetValue(PasswordProperty); }
+            set { SetValue(PasswordProperty, value); }
         }
 
         public new static readonly DependencyProperty PaddingProperty = DependencyProperty.Register(
@@ -306,10 +320,18 @@ namespace Please2.Controls
             private set { SetValue(InputScopeProperty, value); }
         }
 
-        private bool isValid;
+        private bool? isValid;
         public bool IsValid
         {
-            get { return isValid; }
+            get 
+            {
+                if (!isValid.HasValue)
+                {
+                    Validate();
+                }
+
+                return isValid.Value;
+            }
             private set { isValid = value; }
         }
         #endregion
@@ -351,6 +373,11 @@ namespace Please2.Controls
         #endregion
 
         #region helpers
+        private void ValPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            this.Password = ValPasswordBox.Password;
+        }
+
         private void UpdateInputMethod(bool isPasswordVisible)
         {
             if (isPasswordVisible)

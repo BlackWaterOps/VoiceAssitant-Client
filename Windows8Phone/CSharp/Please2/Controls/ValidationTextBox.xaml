@@ -43,6 +43,7 @@
                     <TextBox x:Name="ValTextBox" 
                              Grid.Column="0"
                              Style="{StaticResource ValidationTextBoxStyle}"
+                             Text="{Binding Text, Mode=TwoWay}"
                              Template="{Binding Template}"
                              Foreground="{Binding Foreground}"
                              CaretBrush="{Binding CaretBrush}"
