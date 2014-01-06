@@ -36,11 +36,45 @@ namespace Please2.Views
 
             if (NavigationContext.QueryString.TryGetValue("id", out alarmID))
             {
-                DeleteSavePanel.Visibility = Visibility.Visible;
-                SavePanel.Visibility = Visibility.Collapsed;
+                //DeleteSavePanel.Visibility = Visibility.Visible;
+                //SavePanel.Visibility = Visibility.Collapsed;
+                AddDeleteSaveButtons();
 
                 currentAlarm = vm.GetAlarm(alarmID);
             }
+            else
+            {
+                AddSaveButton();
+            }
+        }
+
+        private void AddDeleteSaveButtons()
+        {
+            ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
+
+            deleteButton.Text = "delete";
+            deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
+            deleteButton.Click += DeleteAlarmButton_Click;
+
+            ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
+
+            updateButton.Text = "update";
+            updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            updateButton.Click += UpdateAlarmButton_Click;
+
+            ApplicationBar.Buttons.Add(updateButton);
+            ApplicationBar.Buttons.Add(deleteButton);
+        }
+
+        private void AddSaveButton()
+        {
+            ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
+
+            saveButton.Text = "save";
+            saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            saveButton.Click += SaveAlarmButton_Click;
+
+            ApplicationBar.Buttons.Add(saveButton);
         }
 
         protected void SaveAlarmButton_Click(object sender, EventArgs e)

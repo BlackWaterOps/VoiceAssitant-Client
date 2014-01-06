@@ -36,25 +36,59 @@ namespace Please2.Views
 
             if (NavigationContext.QueryString.TryGetValue("name", out name))
             {
-                DeleteSavePanel.Visibility = Visibility.Visible;
-                SavePanel.Visibility = Visibility.Collapsed;
+                //DeleteSavePanel.Visibility = Visibility.Visible;
+                //SavePanel.Visibility = Visibility.Collapsed;
+                AddDeleteSaveButtons();
 
                 currentReminder = vm.GetReminder(name);
             }
+            else
+            {
+                AddSaveButton();
+            }
         }
 
-        protected void SaveReminderButton_Click(object sender, EventArgs e)
+        private void AddDeleteSaveButtons()
+        {
+            ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
+
+            deleteButton.Text = "delete";
+            deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
+            deleteButton.Click += DeleteReminderButton_Click;
+
+            ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
+
+            updateButton.Text = "update";
+            updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            updateButton.Click += UpdateReminderButton_Click;
+
+            ApplicationBar.Buttons.Add(updateButton);
+            ApplicationBar.Buttons.Add(deleteButton);
+        }
+
+        private void AddSaveButton()
+        {
+            ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
+
+            saveButton.Text = "save";
+            saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+            saveButton.Click += SaveReminderButton_Click;
+
+            ApplicationBar.Buttons.Add(saveButton);
+        }
+
+        private void SaveReminderButton_Click(object sender, EventArgs e)
         {
             SaveOrUpdateReminder(false);
         }
 
-        protected void DeleteReminderButton_Click(object sender, EventArgs e)
+        private void DeleteReminderButton_Click(object sender, EventArgs e)
         {
             vm.DeleteReminder(currentReminder);
             GoToNotifications();
         }
 
-        protected void UpdateReminderButton_Click(object sender, EventArgs e)
+        private void UpdateReminderButton_Click(object sender, EventArgs e)
         {
             SaveOrUpdateReminder(true);
         }
@@ -87,7 +121,7 @@ namespace Please2.Views
 
         private void GoToNotifications()
         {
-            NavigationService.Navigate(new Uri("/Pages/NotificationsPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(ViewModelLocator.NotificationsPageUri);
         }
     }
 }
