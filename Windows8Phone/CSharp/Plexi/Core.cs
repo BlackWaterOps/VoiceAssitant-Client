@@ -86,10 +86,11 @@ namespace Plexi
         /// Provides a mechanism for registering a new user.
         /// <para>Note: this should only be used if you plan to have Plexi manage your users</para>
         /// </summary>
+        /// <param name="email"></param>
         /// <param name="accountName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<RegisterModel> RegisterUser(string accountName, string password);
+        Task<RegisterModel> RegisterUser(string email, string accountName, string password);
 
         /// <summary>
         /// Provides a mechanism for logging a user in
@@ -105,6 +106,8 @@ namespace Plexi
         /// <para>Note: this should only be used if you plan to have Plexi manage your users</para>
         /// </summary>
         void LogoutUser();
+
+        Task<Dictionary<string, object>> ForgotPassword(string id);
 
         /// <summary>
         /// Provides a mechanism for retrieving an decrypted auth token when stored with a call to StoreAuthToken
@@ -122,7 +125,7 @@ namespace Plexi
         /// Provides a mechanism to retrieve device location information
         /// </summary>
         /// <returns></returns>
-        Task<Dictionary<string, object>> GetDeviceInfo();
+        Task<LocationModel> GetDeviceInfo();
 
         /// <summary>
         /// Occurs when dialog is to be shown to the user
@@ -178,6 +181,8 @@ namespace Plexi
         private static string REGISTRATION = Resources.PlexiResources.Registration;
 
         private static string LOGIN = Resources.PlexiResources.Login;
+
+        private static string FORGOTPASSWORD = Resources.PlexiResources.Password;
 
         private static Dictionary<string, State> StateMap = new Dictionary<string, State>()
         {
@@ -244,6 +249,9 @@ namespace Plexi
             pushService.NotificationReceived += PushNotificationReceived;
             */
 
+            // kick off geolocation listener 
+            LocationService.Default.StartTrackingGeolocation();
+
             CreateTimer();
 
             if (this.stopWatch == null)
@@ -252,12 +260,13 @@ namespace Plexi
             }
         }
 
-        public async Task<RegisterModel> RegisterUser(string accountName, string password)
+        public async Task<RegisterModel> RegisterUser(string email, string accountName, string password)
         {
             Dictionary<string, object> postData = new Dictionary<string, object>();
 
             //postData.Add("device_id", getDuid());
             //postData.Add("user_id", UserExtendedProperties.GetValue("ANID2"));
+            postData.Add("email", email);
             postData.Add("username", accountName);
             postData.Add("password", password);
 
@@ -305,6 +314,21 @@ namespace Plexi
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
 
             settings.Remove(Resources.PlexiResources.SettingsAuthKey);
+
+            settings.Save();
+        }
+
+        public async Task<Dictionary<string, object>> ForgotPassword(string id)
+        {
+            Dictionary<string, object> postData = new Dictionary<string, object>();
+
+            postData.Add("id", id);
+
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(FORGOTPASSWORD, "POST", postData);
+
+            Debug.WriteLine(String.Format("Forgot Password Response: {0}", SerializeData(response)));
+
+            return response;
         }
 
         public void Query(string query)
@@ -604,7 +628,7 @@ namespace Plexi
                 payload = this.mainContext.payload[field];
             }
 
-            Dictionary<string, object> deviceInfo = new Dictionary<string, object>();
+            LocationModel deviceInfo = new LocationModel();
 
             try
             {
@@ -620,7 +644,13 @@ namespace Plexi
 
             postData.payload = payload;
             postData.type = type;
-            postData.device_info = deviceInfo;
+            postData.device_info = new Dictionary<string, object>() 
+            { 
+                { "timestamp", deviceInfo.timestamp },
+                { "timeoffset", deviceInfo.timeoffset.Hours },
+                { "latitude", deviceInfo.geoCoordinate.Latitude },
+                { "longitude", deviceInfo.geoCoordinate.Longitude }
+            };
 
             String endpoint = String.Format("{0}/passive", DISAMBIGUATOR);
 
@@ -646,7 +676,7 @@ namespace Plexi
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
-            headers.Add(Resources.PlexiResources.AuthDeviceHeader, "cRljODI+F0i6w8l72x9Kc9Ez6V8=");
+            headers.Add(Resources.PlexiResources.AuthDeviceHeader, GetDuid());
 
             string field = data.field;
 
@@ -838,6 +868,7 @@ namespace Plexi
 
                         headers = new Dictionary<string, string>();
                         headers.Add(Resources.PlexiResources.AuthTokenHeader, authToken);
+                        headers.Add(Resources.PlexiResources.AuthDeviceHeader, GetDuid());
                     }
 
                     ActorModel response = await RequestHelper<ActorModel>(endpoint, "POST", mainContext, headers);
@@ -918,6 +949,7 @@ namespace Plexi
             this.stopWatch.Reset();
 
             // Notify the listener that the request is complete
+         
             if (handler != null)
             {
                 handler(this, new ProgressEventArgs(false));
@@ -928,19 +960,19 @@ namespace Plexi
 
         public string GetDuid()
         {
-            return "cRljODI+F0i6w8l72x9Kc9Ez6V8=";
-            /*
+            //return "cRljODI+F0i6w8l72x9Kc9Ez6V8=";
+            
+            
             byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
 
             return Convert.ToBase64String(duidAsBytes);
-             */
         }
 
         public string GetAuthToken()
         {
-            return "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
+            //return "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
 
-            /*
+            
             string key = Resources.PlexiResources.SettingsAuthKey;
             
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
@@ -953,7 +985,7 @@ namespace Plexi
             byte[] tokenBytes = (byte[])settings[key];
 
             return Security.Decrypt(tokenBytes);
-            */
+            
         }
 
         // TODO: handle increase quota issue
@@ -1072,8 +1104,14 @@ namespace Plexi
                         string location = (string)payload["location"];
                         if (location.Contains("current_location"))
                         {
-                            //Debug.WriteLine(SerializeData(GetDeviceInfo()));
-                            payload["location"] = await GetDeviceInfo();
+                            LocationModel currLocation =  await GetDeviceInfo();
+                            payload["location"] = new Dictionary<string, object>()
+                            {
+                                { "timestamp", currLocation.timestamp },
+                                { "timeoffset", currLocation.timeoffset.Hours },
+                                { "latitude", currLocation.geoCoordinate.Latitude },
+                                { "longitude", currLocation.geoCoordinate.Longitude }
+                            };
                         }
                     }
                 }
@@ -1158,33 +1196,42 @@ namespace Plexi
             return data;
         }
 
-        public async Task<Dictionary<string, object>> GetDeviceInfo()
+        public async Task<LocationModel> GetDeviceInfo()
         {
-            Dictionary<string, object> deviceInfo = new Dictionary<string, object>();
-            
-            deviceInfo["timestamp"] = Datetime.ConvertToUnixTimestamp(DateTime.Now);
-            deviceInfo["timeoffset"] = DateTimeOffset.Now.Offset.Hours;
-
-            Dictionary<string, object> geolocation = LocationService.CurrentPosition;
-            // geo fell down so 'manually' get geolocation
-            if (geolocation == null)
+            try
             {
-                geolocation = await LocationService.GetGeolocation();
-            }
+                LocationModel geolocation = LocationService.Default.CurrentPosition;
 
-            if (!geolocation.ContainsKey("error") && geolocation.Count > 1)
-            {
-                deviceInfo["latitude"] = geolocation["latitude"];
-                deviceInfo["longitude"] = geolocation["longitude"];
-            }
-            else if (geolocation.ContainsKey("error"))
-            {
-                // ran into error acquiring geolocation
-                // prob wanna throw an exception in the Location object
-                Debug.WriteLine(geolocation["error"]);
-            }
+                // geo fell down so 'manually' get geolocation
+                if (geolocation == null)
+                {
+                    Debug.WriteLine("manually retrieve device location");
+                    geolocation = await LocationService.Default.GetGeolocation();
+                }
 
-            return deviceInfo;
+                geolocation.timestamp = Datetime.ConvertToUnixTimestamp(DateTime.Now);
+                geolocation.timeoffset = DateTimeOffset.Now.Offset;
+
+                return geolocation;
+            }
+            catch (Exception err)
+            {
+               
+                Debug.WriteLine(err.Message);
+
+                /*
+                if ((uint)err.HResult == 0x80004004)
+                {
+                    // location has been diabled in phone settings. display appropriate message
+                }
+                else
+                {
+                    // unforeseen error
+                }
+                */
+
+                return default(LocationModel);
+            }
         }
 
         private string SerializeData(object data, bool includeNulls = false)
