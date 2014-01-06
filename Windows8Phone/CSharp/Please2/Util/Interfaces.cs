@@ -113,13 +113,13 @@ namespace Please2.Util
         /// </summary>
         void PhoneCall();
 
-        void GetDirections();
+        void GetDirections(Dictionary<string, object> payload);
 
-        void SetAppointment();
+        void SetAppointment(Dictionary<string, object> payload);
 
-        void ShowClock();
+        void ShowClock(Dictionary<string, object> payload);
 
-        void SetAlarm();
+        void SetAlarm(Dictionary<string, object> payload);
 
         void SetReminder();
     }
