@@ -261,13 +261,15 @@ namespace Please2.Util
                     {
                         JObject primary = (JObject)numbers.First();
 
-                        string successMessage = String.Format("calling {0}", (string)contact["name"]);
+                        //string recipient = (contact["name"] != null) ? (string)contact["name"] : (string)primary.GetValue("value");
+                       
+                        //string successMessage = String.Format("calling {0}", recipient);
 
-                        Messenger.Default.Send(new ShowMessage(successMessage, successMessage));
+                        //Messenger.Default.Send(new ShowMessage(successMessage, successMessage));
 
                         string phoneNumber = (string)primary.GetValue("value");
 
-                        string displayName = (string)payload["name"];
+                        string displayName = (string)contact["name"];
 
                         DoPhoneCallTask(displayName, phoneNumber);
                         return;
@@ -338,36 +340,46 @@ namespace Please2.Util
 
         public void SetAppointment(Dictionary<string, object> payload)
         {
-            var cal = new SaveAppointmentTask();
+            string location = String.Empty;
+            string startTime = String.Empty;
+            string endTime = String.Empty;
 
-            cal.Subject = (string)payload["subject"];
-            cal.Details = String.Empty;
             if (payload.ContainsKey("location") && payload["location"] != null)
             {
-                cal.Location = (string)payload["location"];
+                location = (string)payload["location"];
             }
 
             if (payload.ContainsKey("start_date") && payload["start_date"] != null)
             {
-                string startTime;
+                startTime = (string)payload["start_date"];
+            }
 
-                string startDate = (string)payload["start_date"];
+            if (payload.ContainsKey("start_time") && payload["start_time"] != null)
+            {
+                string startTimeString =  (string)payload["start_time"];
 
-                if (payload.ContainsKey("start_time") && payload["start_time"] != null)
-                {
-                    startTime = String.Format("{0} {1}", startDate , (string)payload["start_time"]);
-                }
-                else
-                {
-                    startTime = startDate;
-                }
+                startTime = (!String.IsNullOrEmpty(startTime)) ? String.Format("{0} {1}", startTime, startTimeString) : startTimeString;
+            }
 
+            if (payload.ContainsKey("end_date") && payload["end_date"] != null && payload.ContainsKey("end_time") && payload["end_time"] != null)
+            {
+                endTime = String.Format("{0} {1}", (string)payload["end_date"], (string)payload["end_time"]);
+            }
+
+            SaveAppointmentTask cal = new SaveAppointmentTask();
+
+            cal.Location = location;
+            cal.Subject = (string)payload["subject"];
+            cal.Details = String.Empty;
+
+            if (!String.IsNullOrEmpty(startTime))
+            {
                 cal.StartTime = DateTime.Parse(startTime);
             }
 
-            if (payload.ContainsKey("end_date") && payload["end_date"] != null)
+            if (!String.IsNullOrEmpty(endTime))
             {
-                cal.EndTime = DateTime.Parse((string)payload["end_date"]);
+                cal.EndTime = DateTime.Parse(endTime);
             }
 
             cal.Show();
@@ -421,17 +433,61 @@ namespace Please2.Util
 
         public void SetAlarm(Dictionary<string, object> payload)
         {
-            Debug.WriteLine("set alarm task");
+            NotificationsViewModel vm = ViewModelLocator.GetServiceInstance<NotificationsViewModel>();
 
+            if (payload.ContainsKey("time"))
+            {
+                string timeString = (string)payload["time"];
 
-            // need to prepop view model
-            //navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
+                if (!String.IsNullOrEmpty(timeString))
+                {
+                    vm.AlarmTime = DateTime.Parse(timeString);
+                }
+            }
+
+            if (payload.ContainsKey("date"))
+            {
+                string dateString = (string)payload["date"];
+
+                if (!String.IsNullOrEmpty(dateString))
+                {
+                    vm.AlarmSelectedItems = new List<string>() { DateTime.Parse(dateString).ToString("dddd") };
+                }
+            }
+
+            navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
         }
 
-        public void SetReminder()
+        public void SetReminder(Dictionary<string, object> payload)
         {
-            // need to prepop view model
-            //navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
+            NotificationsViewModel vm = ViewModelLocator.GetServiceInstance<NotificationsViewModel>();
+
+            if (payload.ContainsKey("time"))
+            {
+                string timeString = (string)payload["time"];
+
+                if (!String.IsNullOrEmpty(timeString))
+                {
+                    vm.ReminderTime = DateTime.Parse(timeString);
+                }
+            }
+
+            if (payload.ContainsKey("date"))
+            {
+                string dateString = (string)payload["date"];
+
+                if (!String.IsNullOrEmpty(dateString))
+                {
+                    vm.ReminderDate = DateTime.Parse(dateString);
+                }
+            }
+
+            if (payload.ContainsKey("subject"))
+            {
+                vm.ReminderSubject = (string)payload["subject"];
+            }
+
+            navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
         }
 
         #region helpers
