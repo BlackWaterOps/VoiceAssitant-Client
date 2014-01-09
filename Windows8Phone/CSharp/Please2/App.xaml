@@ -301,6 +301,7 @@
         <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />  
         <util:VisibilityConverter x:Key="VisibilityConverter"/>
         -->
+        <util:DayOfWeekConverter x:Key="DayOfWeekConverter" />
         <util:PrettyDateConverter x:Key="PrettyDateConverter" />
         <util:SchemeConverter x:Key="SchemeConverter" />
         <util:EntityConverter x:Key="EntityConverter" />
