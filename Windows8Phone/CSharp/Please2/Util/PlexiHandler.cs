@@ -9,6 +9,8 @@ using System.Windows;
 
 using Microsoft.Phone.Controls;
 
+using Windows.System;
+
 using GalaSoft.MvvmLight.Messaging;
 
 using Newtonsoft.Json.Linq;
@@ -190,12 +192,13 @@ namespace Please2.Util
 
         private void OnAct(object sender, ActorEventArgs e)
         {
-            // run local actors
-            if (ActorMap.ContainsKey(e.data.model))
-            {
-                // let Plexi know that we'll handle the actor locally
-                e.handled = true;
+            ClassifierModel data = e.data;
 
+            string action = data.action;
+
+            // run local actors
+            if (ActorMap.ContainsKey(data.model))
+            {           
                 Actor actor = ActorMap[e.data.model];
 
                 Dictionary<string, object> payload = e.data.payload;
@@ -209,11 +212,27 @@ namespace Please2.Util
                         break;
 
                     case Actor.Email:
-                        tasks.ComposeEmail(payload);
+                        switch (action)
+                        {
+                            case "create":
+                                e.handled = true;
+                                tasks.ComposeEmail(payload);
+                                break;
+
+                            case "query":
+                                // call phone's email app
+                                break;
+                        }
                         break;
 
                     case Actor.Sms:
-                        tasks.ComposeSms(payload);
+                        switch (action)
+                        {
+                            case "create":
+                                e.handled = true;
+                                tasks.ComposeSms(payload);
+                                break;
+                        }
                         break;
 
                     case Actor.Directions:
@@ -221,19 +240,43 @@ namespace Please2.Util
                         break;
 
                     case Actor.Call:
-                        tasks.PhoneCall(payload);
+                        switch (action)
+                        {
+                            case "trigger":
+                                e.handled = true;
+                                tasks.PhoneCall(payload);
+                                break; 
+                        }
                         break;
 
                     case Actor.Calendar:
-                        tasks.SetAppointment(payload);
+                        switch (action)
+                        {
+                            case "create":
+                                e.handled = true;
+                                tasks.SetAppointment(payload);
+                                break;
+                        }
                         break;
 
                     case Actor.Alarm:
-                        tasks.SetAlarm(payload);
+                        switch (action)
+                        {
+                            case "create":
+                                e.handled = true;
+                                tasks.SetAlarm(payload);
+                                break;
+                        }
                         break;
 
                     case Actor.Reminder:
-                        tasks.SetReminder();
+                        switch (action)
+                        {
+                            case "create":
+                                e.handled = true;
+                                tasks.SetReminder(payload);
+                                break;
+                        }
                         break;
                 }
             }
@@ -445,68 +488,5 @@ namespace Please2.Util
                 return null;
             }
         }
-
-        /*
-        private void ActorInterceptor(string actor)
-        {
-            Dictionary<string, object> payload = this.mainContext.payload;
-
-            if (!SimpleIoc.Default.IsRegistered<ITaskService>())
-            {
-                SimpleIoc.Default.Register<ITaskService, TaskService>();
-            }
-
-            ITaskService tasks = SimpleIoc.Default.GetInstance<ITaskService>();
-
-            tasks.MainContext = this.mainContext;
-
-            switch (actor)
-            {
-                case "time":
-                    tasks.ShowClock();
-                    break;
-
-                case "email":
-                case "email_denial":
-                    tasks.ComposeEmail(payload);
-                    break;
-
-                case "sms":
-                case "sms_denial":
-                    tasks.ComposeSms(payload);
-                    break;
-
-                case "directions":
-                case "directions_denial":
-                    tasks.GetDirections();
-                    break;
-
-                case "call":
-                case "call_denial":
-                    tasks.PhoneCall(payload);
-                    break;
-
-                case "calendar":
-                case "calendar_create":
-                case "calendar_create_denial":
-                    tasks.SetAppointment();
-                    break;
-
-                case "information":
-
-                    break;
-
-                case "alarm":
-                    tasks.SetAlarm();
-                    break;
-
-                case "reminder":
-                    tasks.SetReminder();
-                    break;
-            }
-
-            return;
-        }
-        */
     }
 }
