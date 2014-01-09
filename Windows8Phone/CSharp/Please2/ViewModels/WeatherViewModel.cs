@@ -14,6 +14,8 @@ namespace Please2.ViewModels
 {
     public class WeatherViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
+        public ColorScheme Scheme { get { return ColorScheme.Weather; } }
+        
         private WeatherModel singleForecast;
         public WeatherModel SingleForecast
         {
@@ -82,7 +84,7 @@ namespace Please2.ViewModels
 
             data.Add("title", "weather");
             data.Add("subtitle", DateTime.Now.ToString("dddd, MMMM d, yyyy"));
-            data.Add("scheme", "weather");
+            data.Add("scheme", this.Scheme);
 
             return data;
         }
