@@ -66,7 +66,7 @@ namespace Please2.ViewModels
 
         private void RealEstateItemSelected(RealEstateListing model)
         {
-            var vm = ViewModelLocator.GetServiceInstance<RealEstateDetailsViewModel>();
+            RealEstateDetailsViewModel vm = ViewModelLocator.GetServiceInstance<RealEstateDetailsViewModel>();
 
             vm.CurrentItem = model;
             vm.Title = model.title;
