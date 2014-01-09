@@ -53,6 +53,20 @@ namespace Please2.Views
             SystemTray.ProgressIndicator.IsIndeterminate = true;
         }
 
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            try
+            {
+                App.RootFrame.RemoveBackEntry();
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(String.Format("Backstack Error: {0}", err.Message));
+            }          
+        }
+
         private void Pivot_LoadedPivotItem(object sender, PivotItemEventArgs e)
         {
             Pivot pivot = sender as Pivot;
