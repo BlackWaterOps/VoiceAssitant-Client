@@ -73,7 +73,7 @@ namespace Please2
 
                 SettingsViewModel settings = ViewModelLocator.GetServiceInstance<SettingsViewModel>();
 
-                settings.UpdateProvider(account, AccountStatus.Connected);
+                settings.UpdateAccount(account, AccountStatus.Connected);
 
                 if (NavigationService.CanGoBack)
                 {
