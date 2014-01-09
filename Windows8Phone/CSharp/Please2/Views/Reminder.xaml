@@ -37,13 +37,13 @@
             
             <StackPanel>
                 <TextBlock Text="Label"/>
-                <TextBox x:Name="ReminderLabel"/>
+                <TextBox x:Name="ReminderLabel" Text="{Binding ReminderSubject}"/>
 
                 <TextBlock Text="Date"/>
-                <toolkit:DatePicker x:Name="ReminderDate"/>
+                <toolkit:DatePicker x:Name="ReminderDate" Value="{Binding ReminderDate}"/>
 
                 <TextBlock Text="Time"/>
-                <toolkit:TimePicker x:Name="ReminderTime"/>
+                <toolkit:TimePicker x:Name="ReminderTime" Value="{Binding ReminderTime}"/>
             </StackPanel>
 
             <!--

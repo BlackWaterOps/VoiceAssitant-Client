@@ -21,6 +21,8 @@ namespace Please2.Views
 
         NotificationsViewModel vm;
 
+        private bool isSet = false;
+
         public Reminder()
         {
             InitializeComponent();
@@ -50,31 +52,41 @@ namespace Please2.Views
 
         private void AddDeleteSaveButtons()
         {
-            ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
+            if (!isSet)
+            {
+                ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
 
-            deleteButton.Text = "delete";
-            deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
-            deleteButton.Click += DeleteReminderButton_Click;
+                deleteButton.Text = "delete";
+                deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
+                deleteButton.Click += DeleteReminderButton_Click;
 
-            ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
+                ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
 
-            updateButton.Text = "update";
-            updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
-            updateButton.Click += UpdateReminderButton_Click;
+                updateButton.Text = "update";
+                updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+                updateButton.Click += UpdateReminderButton_Click;
 
-            ApplicationBar.Buttons.Add(updateButton);
-            ApplicationBar.Buttons.Add(deleteButton);
+                ApplicationBar.Buttons.Add(updateButton);
+                ApplicationBar.Buttons.Add(deleteButton);
+
+                isSet = true;
+            }
         }
 
         private void AddSaveButton()
         {
-            ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
+            if (!isSet)
+            {
+                ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
 
-            saveButton.Text = "save";
-            saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
-            saveButton.Click += SaveReminderButton_Click;
+                saveButton.Text = "save";
+                saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+                saveButton.Click += SaveReminderButton_Click;
 
-            ApplicationBar.Buttons.Add(saveButton);
+                ApplicationBar.Buttons.Add(saveButton);
+
+                isSet = true;
+            }
         }
 
         private void SaveReminderButton_Click(object sender, EventArgs e)

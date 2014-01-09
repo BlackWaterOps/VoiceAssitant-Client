@@ -11,15 +11,18 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Scheduler;
 using Microsoft.Phone.Shell;
 
+using Please2.Models;
 using Please2.ViewModels;
 
 namespace Please2.Views
 {
     public partial class Alarm : PhoneApplicationPage
     {
-        Please2.Models.Alarm currentAlarm = null;
+        AlarmItem currentAlarm = null;
 
         NotificationsViewModel vm;
+
+        private bool isSet = false;
 
         public Alarm()
         {
@@ -36,8 +39,6 @@ namespace Please2.Views
 
             if (NavigationContext.QueryString.TryGetValue("id", out alarmID))
             {
-                //DeleteSavePanel.Visibility = Visibility.Visible;
-                //SavePanel.Visibility = Visibility.Collapsed;
                 AddDeleteSaveButtons();
 
                 currentAlarm = vm.GetAlarm(alarmID);
@@ -50,31 +51,41 @@ namespace Please2.Views
 
         private void AddDeleteSaveButtons()
         {
-            ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
+            if (!isSet)
+            {
+                ApplicationBarIconButton deleteButton = new ApplicationBarIconButton();
 
-            deleteButton.Text = "delete";
-            deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
-            deleteButton.Click += DeleteAlarmButton_Click;
+                deleteButton.Text = "delete";
+                deleteButton.IconUri = new Uri("/Assets/delete.png", UriKind.Relative);
+                deleteButton.Click += DeleteAlarmButton_Click;
 
-            ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
+                ApplicationBarIconButton updateButton = new ApplicationBarIconButton();
 
-            updateButton.Text = "update";
-            updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
-            updateButton.Click += UpdateAlarmButton_Click;
+                updateButton.Text = "update";
+                updateButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+                updateButton.Click += UpdateAlarmButton_Click;
 
-            ApplicationBar.Buttons.Add(updateButton);
-            ApplicationBar.Buttons.Add(deleteButton);
+                ApplicationBar.Buttons.Add(updateButton);
+                ApplicationBar.Buttons.Add(deleteButton);
+
+                isSet = true;
+            }
         }
 
         private void AddSaveButton()
         {
-            ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
+            if (!isSet)
+            {
+                ApplicationBarIconButton saveButton = new ApplicationBarIconButton();
 
-            saveButton.Text = "save";
-            saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
-            saveButton.Click += SaveAlarmButton_Click;
+                saveButton.Text = "save";
+                saveButton.IconUri = new Uri("/Assets/check.png", UriKind.Relative);
+                saveButton.Click += SaveAlarmButton_Click;
 
-            ApplicationBar.Buttons.Add(saveButton);
+                ApplicationBar.Buttons.Add(saveButton);
+
+                isSet = true;
+            }
         }
 
         protected void SaveAlarmButton_Click(object sender, EventArgs e)

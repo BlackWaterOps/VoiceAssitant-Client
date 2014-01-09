@@ -37,10 +37,10 @@
 
             <StackPanel Grid.Row="0">
                 <TextBlock Text="Time" Margin="12,0"/>
-                <toolkit:TimePicker x:Name="AlarmTime"/>
+                <toolkit:TimePicker x:Name="AlarmTime" Value="{Binding AlarmTime}"/>
 
                 <TextBlock Text="Occurrence" Margin="12,0"/>
-                <toolkit:RecurringDaysPicker x:Name="AlarmRecurringDays"/>
+                <toolkit:RecurringDaysPicker x:Name="AlarmRecurringDays" SelectedItems="{Binding AlarmSelectedItems}"/>
             </StackPanel>
             
             <!--
