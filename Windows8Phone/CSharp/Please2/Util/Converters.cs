@@ -1,12 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Controls.LocalizedResources;
 
 using Coding4Fun.Toolkit.Controls;
 
@@ -125,6 +132,108 @@ namespace Please2.Util
         }
     }
     */
+
+    public class DayOfWeekConverter : IValueConverter
+    {
+        private const string CommaSpace = ", ";
+
+        private string[] DayNames = CultureInfo.CurrentCulture.DateTimeFormat.DayNames;
+
+        private string[] AbbreviatedDayNames = CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames;
+
+        private string HandleGroups(List<string> days, out IEnumerable<string> unhandledDays)
+        {
+            if (days.Count == 7)
+            {
+                unhandledDays = new List<string>();
+                return ControlResources.RepeatsEveryDay;
+            }
+
+            var weekdays = CultureInfo.CurrentCulture.Weekdays();
+            var weekends = CultureInfo.CurrentCulture.Weekends();
+
+            if (days.Intersect(weekdays).Count() == weekdays.Count)
+            {
+                unhandledDays = days.Where(day => !weekdays.Contains(day));
+                return ControlResources.RepeatsOnWeekdays;
+            }
+            else if (days.Intersect(weekends).Count() == weekends.Count)
+            {
+                unhandledDays = days.Where(day => !weekends.Contains(day));
+                return ControlResources.RepeatsOnWeekends;
+            }
+            else
+            {
+                unhandledDays = days;
+                return string.Empty;
+            }
+        }
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value != null && value is EntitySet<AlarmDayItem>)
+            {
+                try
+                {
+                    EntitySet<AlarmDayItem> alarmDays = (EntitySet<AlarmDayItem>)value;
+
+                    List<string> days = new List<string>();
+
+                    foreach (AlarmDayItem item in alarmDays)
+                    {
+                        days.Add(Enum.GetName(typeof(DayOfWeek), item.Day));
+                    }
+
+                    if (days.Count == 0)
+                    {
+                        return ControlResources.RepeatsOnlyOnce;
+                    }
+
+                    StringBuilder builder = new StringBuilder();
+
+                    IEnumerable<string> unhandledDays;
+
+                    builder.Append(HandleGroups(days, out unhandledDays));
+
+                    if (builder.Length > 0)
+                    {
+                        builder.Append(CommaSpace);
+                    }
+
+                    DayOfWeek dow = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+                    
+                    for (int i = 0; i < DayNames.Count(); i++)
+                    {
+                        int index = ((int)dow + i) % DayNames.Count();
+                        string day = DayNames[index];
+
+                        if (unhandledDays.Contains(day))
+                        {
+                            builder.Append(AbbreviatedDayNames[index]);
+                            builder.Append(", ");
+                        }
+                    }
+
+                    // trim off the remaining ", " characters, as it was the last day
+                    builder.Length -= CommaSpace.Length;
+                    return builder.ToString();
+
+                 
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            }
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     public class VisibilityToMarginConverter : IValueConverter
     {
