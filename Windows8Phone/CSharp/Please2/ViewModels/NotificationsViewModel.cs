@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Linq;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -10,21 +11,104 @@ using System.Windows;
 using Microsoft.Phone.Data.Linq;
 using Microsoft.Phone.Scheduler;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 using Please2.Models;
 using Please2.Resources;
 using Please2.Util;
 
-// TODO: need to add properties so we can bind data returned from please
+// TODO: split vm into a Reminder vm and Alarm vm which inherit Notification vm base
 namespace Please2.ViewModels
 {
     public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         public ColorScheme Scheme { get { return ColorScheme.Notifications; } }
 
+        #region Alarm Properties
+        private DateTime? alarmTime;
+        public DateTime AlarmTime
+        {
+            get { return (!alarmTime.HasValue) ? DateTime.Now : alarmTime.Value; }
+            set
+            {
+                alarmTime = value;
+                RaisePropertyChanged("AlarmTime");
+            }
+        }
+
+        private List<string> alarmSelectedItems;
+        public List<string> AlarmSelectedItems  
+        {
+            get { return alarmSelectedItems; }
+            set
+            {
+                alarmSelectedItems = value;
+                RaisePropertyChanged("AlarmSelectedItems");
+            }
+        }
+
+        private Visibility? alarmVisibility;
+        public Visibility AlarmVisibility
+        {
+            get { return (!alarmVisibility.HasValue) ? Visibility.Visible : alarmVisibility.Value; }
+            set
+            {
+                alarmVisibility = value;
+                RaisePropertyChanged("AlarmVisibility");
+            }
+        }
+
+        private ObservableCollection<AlarmItem> alarms;
+        public ObservableCollection<AlarmItem> Alarms
+        {
+            get { return alarms; }
+            set
+            {
+                alarms = value;
+                RaisePropertyChanged("Alarms");
+            }
+        }
+        #endregion
+
+        #region Reminder Properties
+        private DateTime? reminderDate;
+        public DateTime ReminderDate
+        {
+            get { return (!reminderDate.HasValue) ? DateTime.Now : reminderDate.Value; }
+            set
+            {
+                reminderDate = value;
+                RaisePropertyChanged("ReminderDate");
+            }
+        }
+
+        private DateTime? reminderTime;
+        public DateTime ReminderTime
+        {
+            get { return (!reminderTime.HasValue) ? DateTime.Now : reminderTime.Value; }
+            set
+            {
+                reminderTime = value;
+                RaisePropertyChanged("ReminderTime");
+            }
+        }
+
+        private string reminderSubject;
+        public string ReminderSubject
+        {
+            get { return reminderSubject; }
+            set
+            {
+                reminderSubject = value;
+                RaisePropertyChanged("ReminderSubject");
+            }
+        }
+
         private Visibility? reminderVisibility;
         public Visibility ReminderVisibility
         {
-            get { return (reminderVisibility.HasValue == false) ? Visibility.Visible : reminderVisibility.Value; }
+            get { return (!reminderVisibility.HasValue) ? Visibility.Visible : reminderVisibility.Value; }
             set
             {
                 reminderVisibility = value;
@@ -42,33 +126,12 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("Reminders");
             }
         }
-        
-        private Visibility? alarmVisibility;
-        public Visibility AlarmVisibility
-        {
-            get { return (alarmVisibility.HasValue == false) ? Visibility.Visible : alarmVisibility.Value; }
-            set
-            {
-                alarmVisibility = value;
-                RaisePropertyChanged("AlarmVisibility");
-            }
-        }
-        
-        private ObservableCollection<Please2.Models.Alarm> alarms;
-        public ObservableCollection<Please2.Models.Alarm> Alarms
-        {
-            get { return alarms; }
-            set 
-            { 
-                alarms = value;
-                RaisePropertyChanged("Alarms");
-            }
-        }
+        #endregion
 
         public void LoadNotifications()
         {
-            LoadReminders();
-            //LoadAlarms();
+            //LoadReminders();
+            LoadAlarms();
         }
 
         #region Reminders
@@ -94,7 +157,7 @@ namespace Please2.ViewModels
                 reminders = new ObservableCollection<Reminder>();
             }
 
-            reminderVisibility = (reminders.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
+            ReminderVisibility = (reminders.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public void CreateReminder(DateTime reminderDate, string title)
@@ -167,30 +230,42 @@ namespace Please2.ViewModels
                 {
                     if (db.DatabaseExists().Equals(false))
                     {
-                        this.alarms = new ObservableCollection<Please2.Models.Alarm>();
+                        this.alarms = new ObservableCollection<AlarmItem>();
                         return;
                     }
 
-                    IQueryable<Please2.Models.Alarm> query = from Please2.Models.Alarm alarms in db.Alarms select alarms;
+                    var query = from a in db.Alarms 
+                                select a;
 
                     if (query.Count() > 0)
                     {
                         // TODO: order by beginDate
                         // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
 
-                        this.alarms = new ObservableCollection<Please2.Models.Alarm>(query);
+                        // hack to force the entityset enumeration for days and names
+                        foreach (var item in query)
+                        {
+                            foreach (var day in item.Days)
+                            { }
+
+                            foreach (var name in item.Names)
+                            { }
+                        }
+
+                        Alarms = new ObservableCollection<AlarmItem>(query);
                     }
                     else
                     {
-                        this.alarms = new ObservableCollection<Please2.Models.Alarm>();
+                        Alarms = new ObservableCollection<AlarmItem>();
                     }
 
-                    alarmVisibility = (this.alarms.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
+                    AlarmVisibility = (this.alarms.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
+                    
                 }
             }
             catch (Exception err)
             {
-                Debug.WriteLine(err.Message);
+                Debug.WriteLine(String.Format("Load Alarms Error: {0}", err.Message));
             }
         }
 
@@ -205,7 +280,7 @@ namespace Please2.ViewModels
             ScheduledActionService.Add(alarm);
         }
 
-        public Please2.Models.Alarm GetAlarm(string id)
+        public AlarmItem GetAlarm(string id)
         {
             using (var db = new DatabaseModel(AppResources.DataStore))
             {
@@ -219,7 +294,9 @@ namespace Please2.ViewModels
             {
                 RecurrenceInterval interval = RecurrenceInterval.None;
 
-                var names = new List<string>();
+                //var names = new List<string>();
+
+                EntitySet<AlarmNameItem> names = new EntitySet<AlarmNameItem>();
 
                 string name;
 
@@ -228,11 +305,12 @@ namespace Please2.ViewModels
                 {
                     name = System.Guid.NewGuid().ToString();
 
-                    names.Add(name);
+                    //names.Add(name);
+                    names.Add(new AlarmNameItem() { Name = name });
 
                     interval = (daysOfWeek.Count == 7) ? RecurrenceInterval.Daily : RecurrenceInterval.None;
 
-                    CreateAlarm(name, alarmTime, interval);
+                    //CreateAlarm(name, alarmTime, interval);
                 }
                 else if (daysOfWeek.Count > 0)
                 {
@@ -240,16 +318,24 @@ namespace Please2.ViewModels
                     {
                         name = System.Guid.NewGuid().ToString();
 
-                        names.Add(name);
+                        //names.Add(name);
+                        names.Add(new AlarmNameItem() { Name = name });
 
                         interval = RecurrenceInterval.Weekly;
 
                         string dayOfWeek = Enum.GetName(typeof(DayOfWeek), day);
 
-                        CreateAlarm(name, alarmTime, interval, dayOfWeek);
+                        //CreateAlarm(name, alarmTime, interval, dayOfWeek);
                     }
                 }
 
+                EntitySet<AlarmDayItem> days = new EntitySet<AlarmDayItem>();
+
+                foreach (DayOfWeek day in daysOfWeek)
+                {
+                    days.Add(new AlarmDayItem() { Day = day });
+                }
+              
                 // save alarm info to DB
                 using (var db = new DatabaseModel(AppResources.DataStore))
                 {
@@ -258,13 +344,13 @@ namespace Please2.ViewModels
                         db.CreateDatabase();
 
                         db.Alarms.InsertOnSubmit(
-                            new Please2.Models.Alarm
+                            new AlarmItem
                             {
                                 IsEnabled = true,
                                 Names = names,
                                 Time = alarmTime,
                                 Interval = interval,
-                                DaysOfWeek = daysOfWeek
+                                Days = days
                             }
                         );
 
@@ -294,11 +380,15 @@ namespace Please2.ViewModels
             }
         }
 
-        public void UpdateAlarm(Please2.Models.Alarm alarm, DateTime alarmTime, RecurrenceInterval currentInterval, RecurrenceInterval newInterval, List<DayOfWeek> daysOfWeek)
+        public void UpdateAlarm(AlarmItem alarm, DateTime alarmTime, RecurrenceInterval currentInterval, RecurrenceInterval newInterval, List<DayOfWeek> daysOfWeek)
         {
             try
             {
-                var names = new List<string>();
+                // a list of alarm guids currently in the DB
+                EntitySet<AlarmNameItem> currNames = alarm.Names;
+
+                // a list of newly generated guids for new alarms
+                EntitySet<AlarmNameItem> newNames = new EntitySet<AlarmNameItem>();
 
                 string newName;
 
@@ -309,9 +399,9 @@ namespace Please2.ViewModels
                         // viewModel.DeleteAlarm(currentAlarm);
 
                         // remove old alarms from scheduler
-                        foreach (var name in alarm.Names)
+                        foreach (AlarmNameItem item in currNames)
                         {
-                            DeleteNotification(name);
+                            DeleteNotification(item.Name);
                         }
 
                         // switching from a weekly alarm to daily or single
@@ -319,7 +409,7 @@ namespace Please2.ViewModels
                         {
                             newName = System.Guid.NewGuid().ToString();
 
-                            names.Add(newName);
+                            newNames.Add(new AlarmNameItem() { Name = newName });
 
                             CreateAlarm(newName, alarmTime, newInterval);
                         }
@@ -330,7 +420,7 @@ namespace Please2.ViewModels
                             {
                                 newName = System.Guid.NewGuid().ToString();
 
-                                names.Add(newName);
+                                newNames.Add(new AlarmNameItem() { Name = newName });
 
                                 string dayOfWeek = Enum.GetName(typeof(DayOfWeek), day);
 
@@ -339,13 +429,13 @@ namespace Please2.ViewModels
                         }
                     }
                 }
-
+                 
                 // update interval and time on existing alarm
                 else
                 {
-                    foreach (var name in alarm.Names)
+                    foreach (AlarmNameItem item in currNames)
                     {
-                        var action = ScheduledActionService.Find(name);
+                        var action = ScheduledActionService.Find(item.Name);
 
                         if (action != null)
                         {
@@ -359,12 +449,20 @@ namespace Please2.ViewModels
                     }
                 }
 
+                // create the alarm days entity reference
+                EntitySet<AlarmDayItem> days = new EntitySet<AlarmDayItem>();
+
+                foreach (DayOfWeek day in daysOfWeek)
+                {
+                    days.Add(new AlarmDayItem() { Day = day });
+                }
+
                 // update DB record
                 using (var db = new DatabaseModel(AppResources.DataStore))
                 {
                     alarm.Time = alarmTime;
-                    alarm.Names = names;
-                    alarm.DaysOfWeek = daysOfWeek;
+                    alarm.Names = newNames;
+                    alarm.Days = days;
                     alarm.Interval = newInterval;
 
                     db.SubmitChanges();
@@ -376,12 +474,12 @@ namespace Please2.ViewModels
             }
         }
 
-        public void DeleteAlarm(Please2.Models.Alarm alarm)
+        public void DeleteAlarm(AlarmItem alarm)
         {
             // remove alarms from scheduler
-            foreach (var name in alarm.Names)
+            foreach (AlarmNameItem item in alarm.Names)
             {
-                DeleteNotification(name);
+                DeleteNotification(item.Name);
             }
 
             // delete record from DB
@@ -433,22 +531,15 @@ namespace Please2.ViewModels
 
                 var offset = (currDayInt < dayInt) ? (dayInt - currDayInt) : (7 - (currDayInt - dayInt));
 
-                beginDate.AddDays(offset);
+                beginDate = beginDate.AddDays(offset);
             }
 
             if (currentDate > beginDate)
             {
-                if (day == null)
-                {
-                    // daily or single 
-                    beginDate.AddDays(1);
-                }
-                else
-                {
-                    // weekly
-                    beginDate.AddDays(7);
-                }
+                beginDate = (day == null) ? beginDate.AddDays(1) : beginDate.AddDays(7);
             }
+
+            Debug.WriteLine(String.Format("Begin Date: {0}", beginDate));
 
             return beginDate;
         }
