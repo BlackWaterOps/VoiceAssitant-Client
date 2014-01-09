@@ -10,6 +10,8 @@ namespace Please2.Models
 {
     public class ProviderModel : ModelBase
     {
+        public long id { get; set; }
+
         public AccountType name { get; set; }
 
         private AccountStatus _status;
@@ -22,8 +24,6 @@ namespace Please2.Models
             } 
         }
 
-        public bool isEnabled { get; set; }
-
         public ProviderModel()
         {
         }
@@ -32,13 +32,13 @@ namespace Please2.Models
         {
             this.name = name;
             this.status = status;
-        }
+        } 
 
-        public ProviderModel(AccountType name, AccountStatus status, bool isEnabled)
+        public ProviderModel(long id, AccountType name, AccountStatus status)
         {
+            this.id = id;
             this.name = name;
             this.status = status;
-            this.isEnabled = isEnabled;
         }
     }
 }
