@@ -127,6 +127,10 @@ namespace Plexi
         /// <returns></returns>
         Task<LocationModel> GetDeviceInfo();
 
+        Task<List<AccountModel>> GetAccounts();
+
+        void RemoveAccount(long id);
+
         /// <summary>
         /// Occurs when dialog is to be shown to the user
         /// </summary>
@@ -184,6 +188,10 @@ namespace Plexi
 
         private static string FORGOTPASSWORD = Resources.PlexiResources.Password;
 
+        private static string ACCOUNTS = Resources.PlexiResources.Accounts;
+
+        private static string ACCOUNT = Resources.PlexiResources.Account;
+
         private static Dictionary<string, State> StateMap = new Dictionary<string, State>()
         {
             {"init", State.Init },
@@ -205,7 +213,12 @@ namespace Plexi
         private string[] auditorStates = new string[] { "disambiguate", "inprogress", "choice" };
 
         // used by BuildDateTime
-        private List<Tuple<string, string>> datetimes = new List<Tuple<string, string>>();
+        private List<Tuple<string, string>> datetimes = new List<Tuple<string, string>>()
+            {
+                new Tuple<string, string>("date", "time"),
+                new Tuple<string, string>("start_date", "start_time"),
+                new Tuple<string, string>("end_date", "end_time")
+            };
 
         // used in RequestHelper to benchmark request times
         private Stopwatch stopWatch;
@@ -567,7 +580,7 @@ namespace Plexi
             {
                 string endpoint = String.Format("{0}/active", DISAMBIGUATOR);
 
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -600,7 +613,7 @@ namespace Plexi
             {
                 string endpoint = String.Format("{0}/candidate", DISAMBIGUATOR);
 
-                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
+                Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
                 // hand off response to disambig response handler
                 DisambiguateResponseHandler(response, field, type);
@@ -654,7 +667,7 @@ namespace Plexi
 
             String endpoint = String.Format("{0}/passive", DISAMBIGUATOR);
 
-            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, null, true);
+            Dictionary<string, object> response = await RequestHelper<Dictionary<string, object>>(endpoint, "POST", postData, true);
 
             // hand off response to disambig response handler
             DisambiguateResponseHandler(response, field, type);
@@ -908,7 +921,42 @@ namespace Plexi
         }
 
         #region helpers
-        private async Task<T> RequestHelper<T>(string endpoint, string method, object data = null, Dictionary<string, string> headers = null, bool includeNulls = false)
+        private async Task<T> RequestHelper<T>(string endpoint, string method)
+        {
+            return await RequestHelper<T>(endpoint, method, null, null, false);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data)
+        {
+            return await RequestHelper<T>(endpoint, method, data, null, false);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data, Dictionary<string, string> headers)
+        {
+            return await RequestHelper<T>(endpoint, method, data, headers, false);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data, bool includeNulls)
+        {
+            return await RequestHelper<T>(endpoint, method, data, null, includeNulls);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, Dictionary<string, string> headers)
+        {
+            return await RequestHelper<T>(endpoint, method, null, headers, false);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, bool includeNulls)
+        {
+            return await RequestHelper<T>(endpoint, method, null, null, includeNulls);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, Dictionary<string, string> headers, bool includeNulls)
+        {
+            return await RequestHelper<T>(endpoint, method, null, headers, includeNulls);
+        }
+
+        private async Task<T> RequestHelper<T>(string endpoint, string method, object data, Dictionary<string, string> headers, bool includeNulls)
         {
             Request req = new Request();
 
@@ -1130,48 +1178,45 @@ namespace Plexi
             {
                 if (data != null)
                 {
-                    if (this.datetimes.Count <= 0)
-                    {
-                        this.datetimes.Add(new Tuple<string, string>("date", "time"));
-                        this.datetimes.Add(new Tuple<string, string>("start_date", "start_time"));
-                        this.datetimes.Add(new Tuple<string, string>("end_date", "end_time"));
-                    }
-
                     foreach (Tuple<string, string> datetime in datetimes)
                     {
+                        string first = datetime.Item1;
+                        string second = datetime.Item2;
+
                         if (data.ContainsKey(datetime.Item1) || data.ContainsKey(datetime.Item2))
                         {
-                            bool removeDate = false;
-                            bool removeTime = false;
+                            bool includeDate = true;
+                            bool includeTime = true;
 
-                            // add placeholders to satisfy builder
                             if (!data.ContainsKey(datetime.Item1))
                             {
-                                data[datetime.Item1] = null;
-                                removeDate = true;
+                                //data[datetime.Item1] = null;
+                                includeDate = false;
                             }
 
                             if (!data.ContainsKey(datetime.Item2))
                             {
-                                data[datetime.Item2] = null;
-                                removeTime = true;
+                                //data[datetime.Item2] = null;
+                                includeTime = false;
                             }
 
                             // perform replacement
                             if (data[datetime.Item1] != null || data[datetime.Item2] != null)
                             {
-                                Dictionary<string, string> build = Datetime.BuildDatetimeFromJson(data[datetime.Item1], data[datetime.Item2]);
+                                //Dictionary<string, string> build = Datetime.BuildDatetimeFromJson(data[datetime.Item1], data[datetime.Item2]);
+                                Tuple<string, string> result = Datetime.DateTimeFromJson(data[first], data[second]);                               
 
-                                Debug.WriteLine("datetime build - " + build["date"] + " " + build["time"]);
+                                Debug.WriteLine(String.Format("datetime build - {0} {1}", result.Item1, result.Item2));
 
-                                if (data[datetime.Item1] != null)
-                                    data[datetime.Item1] = build["date"];
+                                if (includeDate)
+                                    data[first] = result.Item1;
 
-                                if (data[datetime.Item2] != null)
-                                    data[datetime.Item2] = build["time"];
+                                if (includeTime)
+                                    data[second] = result.Item2;
                             }
 
                             // cleanup
+                            /*
                             if (removeDate == true)
                             {
                                 data.Remove(datetime.Item1);
@@ -1181,6 +1226,7 @@ namespace Plexi
                             {
                                 data.Remove(datetime.Item2);
                             }
+                             */
                         }
                     }
                 }
@@ -1232,6 +1278,26 @@ namespace Plexi
 
                 return default(LocationModel);
             }
+        }
+
+        public async Task<List<AccountModel>> GetAccounts()
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+
+            headers.Add(Resources.PlexiResources.AuthDeviceHeader, GetDuid());
+            headers.Add(Resources.PlexiResources.AuthTokenHeader, GetAuthToken());
+
+            return await RequestHelper<List<AccountModel>>(ACCOUNTS, "GET", headers);
+        }
+
+        public async void RemoveAccount(long id)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+
+            headers.Add(Resources.PlexiResources.AuthDeviceHeader, GetDuid());
+            headers.Add(Resources.PlexiResources.AuthTokenHeader, GetAuthToken());
+
+            await RequestHelper<Dictionary<string, object>>(ACCOUNT, "DELETE", headers);
         }
 
         private string SerializeData(object data, bool includeNulls = false)
