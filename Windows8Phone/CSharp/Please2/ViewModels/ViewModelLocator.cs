@@ -206,11 +206,18 @@ namespace Please2.ViewModels
         {
             get { return GetServiceInstance<EventDetailsViewModel>(); }
         }
+
+        public FuelDetailsViewModel FuelDetailsViewModel
+        {
+            get { return GetServiceInstance<FuelDetailsViewModel>(); }
+        }
         #endregion 
 
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
+
+    
         }
 
         public static TInterface GetServiceInstance<TInterface, TClass>() where TInterface : class where TClass : class
