@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Windows;
@@ -111,18 +112,20 @@ namespace Please2.Views
 
         protected void AlarmItem_Tapped(object sender, EventArgs e)
         {
-            var alarm = (sender as FrameworkElement).DataContext as Please2.Models.Alarm;
+            var alarm = (sender as FrameworkElement).DataContext as AlarmItem;
 
             NavigationService.Navigate(new Uri("/Views/Alarm.xaml?id=" + alarm.ID, UriKind.Relative));
         }
 
-        protected void AlarmToggle_Click(object sender, EventArgs e)
+        protected void AlarmToggle_Checked(object sender, RoutedEventArgs e)
         {
-            var alarm = (sender as FrameworkElement).DataContext as Please2.Models.Alarm;
+            Debug.WriteLine("checked");
+            var alarm = (sender as FrameworkElement).DataContext as AlarmItem;
 
             alarm.IsEnabled = false;
             // might need to update the DB. ie. db.SubmitChanges();
 
+            /*
             foreach (var name in alarm.Names)
             {
                 var action = ScheduledActionService.Find(name);
@@ -132,8 +135,15 @@ namespace Please2.Views
                     var al = (Microsoft.Phone.Scheduler.Alarm)action;
 
                     // TODO: need to find a way to "disable" an alarm
+                    // possibly use expiration time property
                 }
             }
+             */
+        }
+
+        protected void AlarmToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("unchecked");
         }
         #endregion
     }
