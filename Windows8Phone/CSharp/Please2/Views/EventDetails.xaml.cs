@@ -17,6 +17,8 @@ namespace Please2.Views
     {
         EventDetailsViewModel vm;
 
+        bool mapAdded = false;
+
         public EventDetails()
         {
             InitializeComponent();
@@ -36,9 +38,14 @@ namespace Please2.Views
             }
         }
 
-        private void DirectionsPivotPanel_Loaded(object sender, RoutedEventArgs e)
+        private void DirectionsPivotItem_Loaded(object sender, RoutedEventArgs e)
         {
-            vm.AddDirectionsMap();
+            if (!mapAdded)
+            {
+                vm.AddDirectionsMap();
+
+                mapAdded = true;
+            }
         }
 
         private void LoadEvent(string id)

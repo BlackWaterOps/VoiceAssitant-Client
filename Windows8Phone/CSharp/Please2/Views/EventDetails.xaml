@@ -7,9 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Please2.Views"
-    xmlns:mtoolkit="clr-namespace:Microsoft.Phone.Maps.Toolkit;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
-    xmlns:location="clr-namespace:System.Device.Location;assembly=System.Device"
     xmlns:stremor="clr-namespace:Microsoft.Phone.Controls;assembly=StremorControls"
     xmlns:controls="clr-namespace:Please2.Controls"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
@@ -69,7 +67,7 @@
                     </ScrollViewer>
                 </phone:PivotItem>
 
-                <phone:PivotItem Header="Directions" x:Name="DirectionsPivotPanel" Loaded="DirectionsPivotPanel_Loaded">
+                <phone:PivotItem Header="Directions" x:Name="DirectionsPivotPanel" Loaded="DirectionsPivotItem_Loaded">
                     <StackPanel>
                         <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
 
