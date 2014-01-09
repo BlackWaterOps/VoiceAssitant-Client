@@ -15,8 +15,8 @@ namespace Plexi.Util
 {
     public static class Datetime
     {
-        private static Regex dateRegex = new Regex(@"/\d{2,4}[-]\d{2}[-]\d{2}/i");
-        private static Regex timeRegex = new Regex(@"/\d{1,2}[:]\d{2}[:]\d{2}/i");
+        private static Regex dateRegex = new Regex(@"\d{2,4}[-]\d{2}[-]\d{2}", RegexOptions.IgnoreCase);
+        private static Regex timeRegex = new Regex(@"\d{2}:\d{2}:\d{2}", RegexOptions.IgnoreCase);
 
         /// <summary>
         /// Provides an easy way to convert Unix Timestamps to a DateTime object with locale awareness.
@@ -86,6 +86,213 @@ namespace Plexi.Util
             return elapseString;
         }
 
+        internal static Tuple<string, string> DateTimeFromJson(object dateO, object timeO)
+        {
+            return DateTimeFromJson(dateO, timeO, DateTime.Now);
+        }
+
+        internal static Tuple<string, string> DateTimeFromJson(object dateO, object timeO, DateTime now)
+        {            
+            DateTime? date = null;
+            DateTime? time = null;
+
+            if (dateO == null)
+            {
+
+            }
+            else if (dateO.GetType() == typeof(string))
+            {
+                string dateString = (string)dateO;
+                if (dateString == "#date_now")
+                {
+
+                }
+                else if (dateRegex.IsMatch(dateString))
+                {
+                    date = DateTime.Parse(dateString);
+                }
+            }
+            else if (dateO.GetType() == typeof(JObject))
+            {
+                try
+                {
+                    date = parseDateObject((JObject)dateO, now);
+                }
+                catch (Exception) { }
+            }
+            
+            if (timeO == null)
+            {
+
+            }
+            else if (timeO.GetType() == typeof(string))
+            {
+                string timeString = (string)timeO;
+
+                if (timeString == "#time_now")
+                {
+                    time = now;
+                }
+                else if (timeRegex.IsMatch(timeString))
+                {
+                    time = DateTime.Parse(timeString);
+                }
+            }
+            else if (timeO.GetType() == typeof(JObject))
+            {
+                bool hasDate = date != null;
+
+                DateTime? baseDate = hasDate ? date : now;
+
+                DateTime? ret = null;
+
+                try
+                {
+                    ret = parseTimeObject((JObject)timeO, baseDate, now);
+                }
+                catch (Exception) { }
+
+                if (ret.HasValue)
+                {
+                    time = ret;
+                    if (hasDate)
+                    {
+                        date = ret;
+                    }
+                }
+            }
+
+            string dString = (!date.HasValue) ? null : ((DateTime)date).ToString("yyyy-MM-dd");
+            string tString = (!time.HasValue) ? null : ((DateTime)time).ToString("HH:mm:ss");
+
+            return new Tuple<string, string>(dString, tString);
+        }
+
+        private static DateTime? parseDateObject(JObject dateO, DateTime now)
+        {
+            JToken value;
+
+            if (dateO.TryGetValue("#date_weekday", out value))
+            {
+                return parseDateWeekdayObject(dateO, now);
+            }
+            else if (dateO.TryGetValue("#date_add", out value))
+            {
+                return (DateTime)parseDateAddObject(dateO, now);
+            }
+
+            return null;
+        }
+
+        private static DateTime? parseDateWeekdayObject(JObject obj, DateTime now)
+        {
+            int dayNum = (int)obj["#date_weekday"];
+
+            int currentDay = (int)now.DayOfWeek;
+
+            int offset = (currentDay < dayNum) ? (dayNum - currentDay) : (7 - (currentDay - dayNum));
+
+            now = now.AddDays(offset);
+
+            return now;
+        }
+
+        private static DateTime? parseDateAddObject(JObject obj, DateTime now)
+        {
+            JArray operands = (JArray)obj["#date_add"];
+
+            JToken first = operands[0];
+
+            Type firstType = first.GetType();
+
+            DateTime? baseDate = null;
+
+            JToken value;
+
+            if (firstType == typeof(JObject) && ((JObject)first).TryGetValue("#date_weekday", out value))
+            {
+                baseDate = (DateTime)parseDateObject((JObject)first, now);
+            }
+            else if (firstType == typeof(string) && (string)first == "#date_now")
+            {
+                baseDate = now;
+            }
+            
+            if (!baseDate.HasValue)
+            {
+                return null;
+            }
+            
+            return ((DateTime)baseDate).AddDays((int)operands[1]);
+        }
+
+        private static DateTime? parseTimeObject(JObject timeO, DateTime? baseDate, DateTime now)
+        {
+            JToken value;
+
+            if (timeO.TryGetValue("#time_add", out value))
+            {
+                return parseTimeAddObject(timeO, baseDate, now);
+            }
+            else if (timeO.TryGetValue("#fuzzy_time", out value))
+            {
+                return parseTimeFuzzyObject(timeO, baseDate, now);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static DateTime? parseTimeAddObject(JObject obj, DateTime? baseDate, DateTime now)
+        {
+            JArray operands = (JArray)obj["#time_add"];
+
+            JToken first = operands[0];
+
+            Type firstType = first.GetType();
+
+            DateTime? baseDateTime = null;
+
+            JToken value;
+
+            if (firstType == typeof(JObject) && ((JObject)first).TryGetValue("#fuzzy_time", out value))
+            {
+                baseDateTime = (DateTime)parseTimeObject((JObject)first, baseDate, now);
+            }
+            else if (firstType == typeof(string) && (string)first == "#time_now")
+            {
+                baseDateTime = now;
+            }
+            
+            if (!baseDateTime.HasValue)
+            {
+                return null;
+            }
+
+            return ((DateTime)baseDateTime).AddSeconds((int)operands[1]);
+        }
+
+        private static DateTime? parseTimeFuzzyObject(JObject obj, DateTime? baseDate, DateTime now)
+        {
+            string label = (string)obj["label"];
+
+            DateTime defaultTime = DateTime.Parse((string)obj["default"]);
+
+            DateTime? time = getFuzzyTimeValue(label);
+
+            DateTime datetime = (!time.HasValue) ? defaultTime : (DateTime)time;
+
+            return ((DateTime)baseDate).Add(new TimeSpan(datetime.Hour, datetime.Minute, datetime.Second));
+        }
+
+        private static DateTime? getFuzzyTimeValue(string label)
+        {
+            // TODO: lookup settings
+            return null;
+
+        }
+        /*
         internal static Dictionary<string, string> BuildDatetimeFromJson(object date = null, object time = null)
         {
             DateTime? dateObj = null;
@@ -123,10 +330,11 @@ namespace Plexi.Util
           
             return newDate;
         }
+        */
 
-        private static object GetPreference(string name)
-        {
-            return null;
+        //private static object GetPreference(string name)
+        //{
+            //return null;
             /*
             DatabaseModel db;
 
@@ -144,8 +352,8 @@ namespace Plexi.Util
                 return query.First();
             }
             */ 
-        }
-
+        //}
+        /*
         private static DateTime WeekdayHelper(int dayOfWeek)
         {
             DateTime date = DateTime.Now;
@@ -158,8 +366,9 @@ namespace Plexi.Util
 
             return date;
         }
-
-        // {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
+        */
+        
+        /*
         private static DateTime FuzzyHelper(JObject datetime, bool isDate)
         {
             string label = null;
@@ -186,8 +395,10 @@ namespace Plexi.Util
 
             return DateTime.Parse(pref);               
         }
+        */
 
         // this will fail if we have a date obj and time is a string.
+        /*
         private static DateTime? BuildDatetimeHelper(string dateortime, DateTime? newDate = null)
         {
             if (newDate.Equals(null))
@@ -211,7 +422,7 @@ namespace Plexi.Util
                 if (timeRegex.IsMatch(dateortime) && newDate > DateTime.Parse(dateortime))
                 {
                     newDate = ((DateTime)newDate).AddDays(1);
-                }
+                }*/
                 /*
                 if (timeRegex.IsMatch(dateortime))
                 {
@@ -226,11 +437,12 @@ namespace Plexi.Util
                     }
                 }
                 */
-            }
+            //}
             
-            return newDate;
-        }
+            //return newDate;
+        //}
 
+        /*
         private static DateTime? BuildDatetimeHelper(JObject dateortime, DateTime? newDate = null)
         {            
             foreach (KeyValuePair<string, JToken> partial in dateortime)
@@ -330,5 +542,6 @@ namespace Plexi.Util
 
             return newDate;
         }
+         */
     }
 }
