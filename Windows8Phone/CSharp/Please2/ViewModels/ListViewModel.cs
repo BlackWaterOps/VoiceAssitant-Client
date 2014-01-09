@@ -217,25 +217,15 @@ namespace Please2.ViewModels
             navigationService.NavigateTo(ViewModelLocator.ImagePageUri);
         }
 
-        public void FuelItemSelected(AltFuelModel fuel)
+        public void FuelItemSelected(AltFuelModel model)
         {
-            //var uri = String.Format(ViewModelLocator.DetailsUri, "fuel", fuel.id);
+            FuelDetailsViewModel vm = ViewModelLocator.GetServiceInstance<FuelDetailsViewModel>();
 
-            // navigate to generic details page with movies id and template name
-            //navigationService.NavigateTo(new Uri(uri, UriKind.Absolute));
-            var isSet = SetDetails(this.templateName, fuel);
+            vm.CurrentItem = model;
+            vm.Title = model.station_name;
+            vm.Scheme = this.Scheme;
 
-            if (isSet)
-            {
-                var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
-
-                navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
-            }
-            else
-            {
-                // no template found message
-            }
-
+            navigationService.NavigateTo(new Uri("/Views/FuelDetails.xaml", UriKind.Relative));
         }
         #endregion
 
