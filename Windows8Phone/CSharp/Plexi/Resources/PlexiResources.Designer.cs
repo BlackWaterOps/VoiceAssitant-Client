@@ -61,6 +61,24 @@ namespace Plexi.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/auth/account.
+        /// </summary>
+        internal static string Account {
+            get {
+                return ResourceManager.GetString("Account", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://stremor-pud.appspot.com/auth/accounts.
+        /// </summary>
+        internal static string Accounts {
+            get {
+                return ResourceManager.GetString("Accounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to http://rez.stremor-apier.appspot.com/v1.
         /// </summary>
         internal static string Auditor {

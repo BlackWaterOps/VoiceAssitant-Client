@@ -150,7 +150,13 @@
   <data name="Deauthorization" xml:space="preserve">
     <value>http://stremor-pud.appspot/deauth</value>
   </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>http://stremor-pud.appspot.com/auth/accounts</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>http://stremor-pud.appspot.com/v1/assist</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>http://stremor-pud.appspot.com/auth/account</value>
   </data>
 </root>
