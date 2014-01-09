@@ -113,7 +113,7 @@
                     </ScrollViewer>
                 </phone:PivotItem>
 
-                <phone:PivotItem Header="Location" x:Name="DirectionsPivotPanel" Loaded="DirectionsPivotPanel_Loaded">
+                <phone:PivotItem Header="Location" x:Name="DirectionsPivotPanel" Loaded="DirectionsPivotItem_Loaded">
                     <StackPanel>
                         <map:Map x:Name="EventMap" Height="400" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ZoomLevel="15"/>
 
