@@ -12,6 +12,7 @@ using Please2.Models;
 using Please2.Util;
 
 using Plexi;
+using Plexi.Models;
 
 namespace Please2.ViewModels
 {
@@ -37,70 +38,93 @@ namespace Please2.ViewModels
             }
         }
 
+        IPlexiService plexiService;
+
         public SettingsViewModel(INavigationService navigationService, IPlexiService plexiService)
         {
             this.settings = IsolatedStorageSettings.ApplicationSettings;
 
-            InitializeSettings();
+            this.plexiService = plexiService;
         }
 
-        public void InitializeSettings()
+        public async Task InitializeSettings()
         {
-            InitializeAccounts(); 
+            await InitializeAccounts(); 
         }
 
         #region accounts
-        //TODO: need to handle to ability to remove/disable an account
-        private void InitializeAccounts()
+        //TODO: save settings with id so we can deauth later
+        // need to be able to handle multiple accounts of the same type
+        private async Task InitializeAccounts()
         {
-            Array provs = Enum.GetValues(typeof(AccountType));
+            List<ProviderModel> providers = new List<ProviderModel>();
 
-            foreach (AccountType prov in provs)
+            List<AccountModel> authedAccounts = await plexiService.GetAccounts();
+
+            Array accounts = Enum.GetValues(typeof(AccountType));
+
+            foreach (AccountType account in accounts)
             {
-                if (prov != AccountType.None)
+                if (account != AccountType.None)
                 {
-                    string providerString = prov.ToString();
+                    IEnumerable<AccountModel> query = from authedAccount in authedAccounts
+                                                      where authedAccount.service_name.ToLower() == account.ToString().ToLower()
+                                                      select authedAccount;
 
-                    if (!settings.Contains(providerString))
+                    AccountStatus status = AccountStatus.NotConnected;
+
+                    ProviderModel provider;
+
+                    if (query.Count() > 0)
                     {
-                        Debug.WriteLine("provider init");
-
-                        if (AddOrUpdateValue(providerString, AccountStatus.NotConnected))
-                        {
-                            Save();
-                        }
+                        status = AccountStatus.Connected;
+                        provider = new ProviderModel(query.LastOrDefault().id, account, status);
                     }
+                    else
+                    {
+                        provider = new ProviderModel(account, status);
+                    }
+
+                    if (AddOrUpdateValue(account.ToString(), status))
+                    {
+                        Save();
+                    }
+
+                    providers.Add(provider);
                 }
             }
 
-            LoadProviders();
+            Providers = providers;
+            //LoadAccounts();
         }
 
-        private void LoadProviders()
+        private void LoadAccounts()
         {
-            Array provs = Enum.GetValues(typeof(AccountType));
+            /*
+            Array accounts = Enum.GetValues(typeof(AccountType));
 
             List<ProviderModel> list = new List<ProviderModel>();
 
-            foreach (AccountType prov in provs)
+            foreach (AccountType account in accounts)
             {
-                if (prov != AccountType.None)
+                if (account != AccountType.None)
                 {
-                    string providerString = prov.ToString();
+                    string accountString = account.ToString();
 
-                    if (settings.Contains(providerString))
+                    if (settings.Contains(accountString))
                     {
-                        AccountStatus status = (AccountStatus)settings[providerString];
+                        AccountStatus status = (AccountStatus)settings[accountString];
 
-                        list.Add(new ProviderModel(prov, status));
+                        list.Add(new ProviderModel(id, account, status));
                     }
                 }
             }
 
             Providers = list;
+            */
         }
 
-        public void UpdateProvider(AccountType type, AccountStatus status)
+        public void UpdateAccount(AccountType type, AccountStatus status)
         {
             // update provider model
             ProviderModel provider = Providers.Where(x => x.name == type).FirstOrDefault();
@@ -114,6 +138,12 @@ namespace Please2.ViewModels
             }
         }
 
+        public void RemoveAccount(ProviderModel account)
+        {
+            plexiService.RemoveAccount(account.id);
+
+            UpdateAccount(account.name, account.status);
+        }
         #endregion
 
         #region helpers
@@ -138,6 +168,7 @@ namespace Please2.ViewModels
                 settings.Add(Key, value);
                 valueChanged = true;
             }
+
             return valueChanged;
         }
 
