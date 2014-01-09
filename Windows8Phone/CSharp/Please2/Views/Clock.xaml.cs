@@ -12,6 +12,8 @@ using System.Windows.Threading;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
+using NodaTime;
+
 using Please2.ViewModels;
 
 namespace Please2.Views
