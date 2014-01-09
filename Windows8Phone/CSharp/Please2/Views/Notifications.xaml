@@ -56,8 +56,8 @@
                                         Tap="ReminderItem_Tapped">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="85"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0" Grid.Row="0">
@@ -84,7 +84,7 @@
                                                FontSize="20" 
                                                />
                                             
-                                            <!--<ToggleButton Click="ReminderToggle_Click"/>-->
+                                            <!--<toolkit:ToggleSwitch Click="ReminderToggle_Click"/>-->
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -109,43 +109,34 @@
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
-                                        BorderBrush="Black"
+                                <Border Background="{Binding Time, Converter={StaticResource NotificationBackgroundConverter}}" 
                                         Padding="10" 
                                         Margin="0,15,0,0"
                                         Tap="AlarmItem_Tapped">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="104"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-
+                                        
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="6"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
-
-                                        <StackPanel Grid.Column="0" Grid.Row="0">
-                                            <Image Source="{Binding image}" Width="104" Height="104"/>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
-                                            <HyperlinkButton x:Name="ShoppingTitle" 
-                                                     NavigateUri="{Binding url}" 
-                                                     TargetName="shopping" 
-                                                     Content="{Binding title}"
-                                                     Foreground="Blue" 
-                                                     Margin="-12,0,0,0" 
-                                                     HorizontalAlignment="Left"/>
-                                            <TextBlock x:Name="ShoppingPrice" 
-                                               Text="{Binding price}" 
-                                               Margin="0,10,0,0" 
-                                               Foreground="Black" 
-                                               FontSize="{StaticResource PhoneFontSizeLarge}" 
-                                               FontWeight="SemiBold"/>
-
-                                            <ToggleButton Click="ReminderToggle_Click"/>
-                                        </StackPanel>
+                                        
+                                        <TextBlock Grid.Row="0" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                                        <!--
+                                        <TextBlock Grid.Row="1" Text="{Binding Names}"/>
+                                        -->
+                                        <TextBlock Grid.Row="2" Text="{Binding Days, Converter={StaticResource DayOfWeekConverter}}"/>
+                                        <!--
+                                        <toolkit:ToggleSwitch Grid.Column="1" Header="" Checked="AlarmToggle_Checked" Unchecked="AlarmToggle_Unchecked">
+                                            <toolkit:ToggleSwitch.HeaderTemplate>
+                                                <DataTemplate/>                                                
+                                            </toolkit:ToggleSwitch.HeaderTemplate>
+                                        </toolkit:ToggleSwitch>
+                                        -->
                                     </Grid>
                                 </Border>
                             </DataTemplate>
