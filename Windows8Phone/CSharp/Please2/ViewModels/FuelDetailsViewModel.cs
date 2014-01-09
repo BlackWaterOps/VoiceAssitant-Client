@@ -23,7 +23,7 @@ using Plexi;
 
 namespace Please2.ViewModels
 {
-    class FuelDetailsViewModel : DetailsViewModel
+    public class FuelDetailsViewModel : DetailsViewModel
     {
         public RelayCommand FuelDirectionsLoaded { get; set; }
 
@@ -41,7 +41,7 @@ namespace Please2.ViewModels
             FuelDirectionsLoaded = new RelayCommand(AddDirectionsMap);
         }
 
-        private void PinToStart()
+        public void PinToStart()
         {
             AltFuelModel fuel = CurrentItem as AltFuelModel;
 
@@ -52,7 +52,7 @@ namespace Please2.ViewModels
             base.PinToStart(uri, title, content, null);
         }
 
-        private void AddDirectionsMap()
+        public void AddDirectionsMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
 
@@ -69,7 +69,7 @@ namespace Please2.ViewModels
             }
         }
 
-        private async void ShowFullMap()
+        public async void ShowFullMap()
         {
             AltFuelModel fuel = CurrentItem as AltFuelModel;
             
