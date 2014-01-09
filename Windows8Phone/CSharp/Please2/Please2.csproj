@@ -130,6 +130,7 @@
     <Compile Include="Util\MapService.cs" />
     <Compile Include="Util\NavigationService.cs" />
     <Compile Include="Util\PlexiHandler.cs" />
+    <Compile Include="Util\Serialization.cs" />
     <Compile Include="Util\SpeechService.cs" />
     <Compile Include="Util\TaskService.cs" />
     <Compile Include="ViewModels\ClockViewModel.cs" />
@@ -173,6 +174,9 @@
     </Compile>
     <Compile Include="Views\ForgotPassword.xaml.cs">
       <DependentUpon>ForgotPassword.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FuelDetails.xaml.cs">
+      <DependentUpon>FuelDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Image.xaml.cs">
       <DependentUpon>Image.xaml</DependentUpon>
@@ -311,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ForgotPassword.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FuelDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -91,6 +91,7 @@
     <Compile Include="Events\ErrorEventArgs.cs" />
     <Compile Include="Events\ProgressEventArgs.cs" />
     <Compile Include="Events\ShowEventArgs.cs" />
+    <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Models\ActorModel.cs" />
     <Compile Include="Models\ChoiceModel.cs" />
     <Compile Include="Models\ClassifierModel.cs" />
