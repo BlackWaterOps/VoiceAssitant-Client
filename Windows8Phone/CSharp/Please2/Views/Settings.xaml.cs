@@ -21,22 +21,27 @@ namespace Please2.Views
 {
     public partial class Settings : PhoneApplicationPage
     {
+        SettingsViewModel vm;
+
         public Settings()
         {
-            try
-            {
-                InitializeComponent();
-            }
-            catch (Exception err)
-            {
-                Debug.WriteLine(err.Message);
-                Debug.WriteLine(err.InnerException.Message);
-            }
+            InitializeComponent();
+
+            vm = DataContext as SettingsViewModel;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            SystemTray.ProgressIndicator = new ProgressIndicator();
+            SystemTray.ProgressIndicator.IsIndeterminate = true;
+            SystemTray.ProgressIndicator.Text = "retrieving accounts";
+            SystemTray.ProgressIndicator.IsVisible = true;
+
+            await vm.InitializeSettings();
+
+            SystemTray.ProgressIndicator.IsVisible = false;
         }
 
         private void Provider_Tap(object sender, System.Windows.Input.GestureEventArgs e)
@@ -45,13 +50,22 @@ namespace Please2.Views
 
             ProviderModel provider = (sender as FrameworkElement).DataContext as ProviderModel;
 
-            string endpoint = (provider.status == AccountStatus.NotConnected) ? resx.GetString("Authorization") : resx.GetString("Deauthorization");
+            if (provider.status == AccountStatus.NotConnected)
+            {
+                string endpoint = resx.GetString("Authorization");
 
-            string auth = String.Format("{0}/{1}", endpoint, provider.name.ToString().ToLower());
+                string auth = String.Format("{0}/{1}", endpoint, provider.name.ToString().ToLower());
 
-            string url = String.Format(ViewModelLocator.ChildBrowserUri, auth, provider.name);
+                string url = String.Format(ViewModelLocator.ChildBrowserUri, auth, provider.name);
 
-            NavigationService.Navigate(new Uri(url, UriKind.Relative));
+                NavigationService.Navigate(new Uri(url, UriKind.Relative));
+            }
+            else
+            {
+                // call deauth endpoint
+                // no reason to navigate to browser so just call a plexi method
+                //vm.RemoveAccount(provider);
+            }
         }
     }
 }
