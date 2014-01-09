@@ -21,8 +21,10 @@ namespace Please2.Models
         public Table<NoteItem> Notes;
         public Table<NoteItemBody> NoteBody;
 
-        public Table<Alarm> Alarms;
-        
+        public Table<AlarmItem> Alarms;
+        public Table<AlarmNameItem> AlarmNames;
+        public Table<AlarmDayItem> AlarmDays;
+
         public Table<PreferenceItem> Preferences;
     }
 
@@ -283,7 +285,7 @@ namespace Please2.Models
 
     #region Alarms Table
     [Table]
-    public class Alarm : ModelBase
+    public class AlarmItem : ModelBase
     {
         private int _id;
 
@@ -301,26 +303,6 @@ namespace Please2.Models
                     NotifyPropertyChanging("ID");
                     _id = value;
                     NotifyPropertyChanged("ID");
-                }
-            }
-        }
-
-        private List<string> _names;
-
-        [Column]
-        public List<string> Names
-        {
-            get
-            {
-                return _names;
-            }
-            set
-            {
-                if (_names != value)
-                {
-                    NotifyPropertyChanging("Names");
-                    _names = value;
-                    NotifyPropertyChanged("Names");
                 }
             }
         }
@@ -384,23 +366,109 @@ namespace Please2.Models
                 }
             }
         }
+        
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version; 
 
-        private List<DayOfWeek> _daysOfWeek;
+         // Define the entity set for the collection side of the relationship.
+        private EntitySet<AlarmNameItem> _names;
+        private EntitySet<AlarmDayItem> _days;
 
-        [Column]
-        public List<DayOfWeek> DaysOfWeek
+        [Association(Storage = "_names", OtherKey = "_alarmID", ThisKey = "ID")]
+        public EntitySet<AlarmNameItem> Names
+        {
+            get { return this._names; }
+            set { this._names.Assign(value); }
+        }
+
+        [Association(Storage = "_days", OtherKey = "_alarmID", ThisKey = "ID")]
+        public EntitySet<AlarmDayItem> Days
+        {
+            get { return this._days; }
+            set { this._days.Assign(value); }
+        }
+
+        // Assign handlers for the add and remove operations, respectively. 
+        public AlarmItem()
+        {
+            _names = new EntitySet<AlarmNameItem>(
+                new Action<AlarmNameItem>(this.attach_names),
+                new Action<AlarmNameItem>(this.detach_names)
+                );
+
+            _days = new EntitySet<AlarmDayItem>(
+                new Action<AlarmDayItem>(this.attach_days),
+                new Action<AlarmDayItem>(this.detach_days)
+                );
+        }
+
+        // Called during an add operation 
+        private void attach_names(AlarmNameItem alarmName)
+        {
+            NotifyPropertyChanging("Names");
+            alarmName.Alarm = this;
+        }
+
+        private void attach_days(AlarmDayItem alarmDay)
+        {
+            NotifyPropertyChanging("Days");
+            alarmDay.Alarm = this;
+        }
+
+        // Called during a remove operation
+        private void detach_names(AlarmNameItem alarmName)
+        {
+            NotifyPropertyChanging("Names");
+            alarmName.Alarm = null; 
+        }
+
+        private void detach_days(AlarmDayItem alarmDay)
+        {
+            NotifyPropertyChanging("Days");
+            alarmDay.Alarm = null;
+        }
+    }
+
+    [Table]
+    public class AlarmDayItem : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
         {
             get
             {
-                return _daysOfWeek;
+                return _id;
             }
             set
             {
-                if (_daysOfWeek != value)
+                if (_id != value)
                 {
-                    NotifyPropertyChanging("DaysOfWeek");
-                    _daysOfWeek = value;
-                    NotifyPropertyChanged("DaysOfWeek");
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+   
+        private DayOfWeek _day;
+
+        [Column]
+        public DayOfWeek Day
+        {
+            get
+            {
+                return _day;
+            }
+            set
+            {
+                if (_day != value)
+                {
+                    NotifyPropertyChanging("Day");
+                    _day = value;
+                    NotifyPropertyChanged("Day");
                 }
             }
         }
@@ -408,6 +476,106 @@ namespace Please2.Models
         // Version column aids update performance. 
         [Column(IsVersion = true)]
         private Binary _version; 
+
+        // Internal column for the associated ToDoCategory ID value 
+        [Column] 
+        internal int _alarmID; 
+ 
+        // Entity reference, to identify the ToDoCategory "storage" table 
+        private EntityRef<AlarmItem> _alarm; 
+ 
+        // Association, to describe the relationship between this key and that "storage" table 
+        [Association(Storage = "_alarm", ThisKey = "_alarmID", OtherKey = "ID", IsForeignKey = true)] 
+        public AlarmItem Alarm 
+        { 
+            get { return _alarm.Entity; } 
+            set 
+            { 
+                NotifyPropertyChanging("Alarm"); 
+                _alarm.Entity = value; 
+ 
+                if (value != null) 
+                { 
+                    _alarmID = value.ID; 
+                } 
+ 
+                NotifyPropertyChanging("Alarm"); 
+            } 
+        } 
+    }
+
+    [Table]
+    public class AlarmNameItem : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+   
+        private string _name;
+
+        [Column]
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (_name != value)
+                {
+                    NotifyPropertyChanging("Name");
+                    _name = value;
+                    NotifyPropertyChanged("Name");
+                }
+            }
+        }
+
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version; 
+
+        // Internal column for the associated ToDoCategory ID value 
+        [Column] 
+        internal int _alarmID; 
+ 
+        // Entity reference, to identify the ToDoCategory "storage" table 
+        private EntityRef<AlarmItem> _alarm; 
+ 
+        // Association, to describe the relationship between this key and that "storage" table 
+        [Association(Storage = "_alarm", ThisKey = "_alarmID", OtherKey = "ID", IsForeignKey = true)] 
+        public AlarmItem Alarm 
+        { 
+            get { return _alarm.Entity; } 
+            set 
+            { 
+                NotifyPropertyChanging("Alarm"); 
+                _alarm.Entity = value; 
+ 
+                if (value != null) 
+                { 
+                    _alarmID = value.ID; 
+                } 
+ 
+                NotifyPropertyChanging("Alarm"); 
+            } 
+        } 
     }
     #endregion
 
