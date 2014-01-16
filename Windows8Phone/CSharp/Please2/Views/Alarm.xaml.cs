@@ -18,11 +18,13 @@ namespace Please2.Views
 {
     public partial class Alarm : PhoneApplicationPage
     {
-        AlarmItem currentAlarm = null;
-
         NotificationsViewModel vm;
 
         private bool isSet = false;
+
+        private int? currentAlarmID;
+
+        private static Uri redirectUri = new Uri(String.Format(ViewModelLocator.NotificationsUri, "index", 1), UriKind.Relative);
 
         public Alarm()
         {
@@ -41,7 +43,9 @@ namespace Please2.Views
             {
                 AddDeleteSaveButtons();
 
-                currentAlarm = vm.GetAlarm(alarmID);
+                this.currentAlarmID = int.Parse(alarmID);
+
+                vm.SetCurrentAlarm(alarmID);
             }
             else
             {
@@ -90,6 +94,8 @@ namespace Please2.Views
 
         protected void SaveAlarmButton_Click(object sender, EventArgs e)
         {
+            string alarmName = AlarmLabel.Text;
+
             DateTime alarmTime = (DateTime)AlarmTime.Value;
 
             var daysOfWeek = new List<DayOfWeek>();
@@ -100,25 +106,27 @@ namespace Please2.Views
                 daysOfWeek.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)day, true));
             }
 
-            vm.SaveAlarm(alarmTime, daysOfWeek);
+            vm.SaveAlarm(alarmName, alarmTime, daysOfWeek);
+
+            NavigationService.GoBack();
         }
 
         protected void UpdateAlarmButton_Click(object sender, EventArgs e)
         {
-            if (currentAlarm != null)
+            if (currentAlarmID.HasValue)
             {
                 RecurrenceInterval newInterval;
 
-                var daysOfWeek = new List<DayOfWeek>();
-                
-                var currentInterval = currentAlarm.Interval;
+                List<DayOfWeek> newDaysOfWeek = new List<DayOfWeek>();
 
-                var alarmTime = (DateTime)AlarmTime.Value;
+                string newAlarmName = AlarmLabel.Text;
+
+                DateTime newAlarmTime = (DateTime)AlarmTime.Value;
 
                 // populate new list of DayOfWeek
                 foreach (var day in AlarmRecurringDays.SelectedItems)
                 {
-                    daysOfWeek.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)day, true));
+                    newDaysOfWeek.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)day, true));
                 }
 
                 // set new alarm interval
@@ -135,15 +143,17 @@ namespace Please2.Views
                     newInterval = RecurrenceInterval.None;
                 }
 
-                vm.UpdateAlarm(currentAlarm, alarmTime, currentInterval, newInterval, daysOfWeek);
+                vm.UpdateAlarm(currentAlarmID.Value, newAlarmName, newAlarmTime, newInterval, newDaysOfWeek);
             }
         }
 
         protected void DeleteAlarmButton_Click(object sender, EventArgs e)
         {
 
-            if (currentAlarm != null)
-                vm.DeleteAlarm(currentAlarm);
+            if (currentAlarmID.HasValue)
+                vm.DeleteAlarm(currentAlarmID.Value);
+
+            NavigationService.GoBack();
         }
     }
 }

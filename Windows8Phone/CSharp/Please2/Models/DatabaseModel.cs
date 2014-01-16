@@ -327,6 +327,26 @@ namespace Please2.Models
             }
         }
 
+        private string _displayName;
+
+        [Column]
+        public string DisplayName
+        {
+            get
+            {
+                return _displayName;
+            }
+            set
+            {
+                if (_displayName != value)
+                {
+                    NotifyPropertyChanging("DisplayName");
+                    _displayName = value;
+                    NotifyPropertyChanged("DisplayName");
+                }
+            }
+        }
+
         private DateTime _time;
 
         [Column]
@@ -371,8 +391,11 @@ namespace Please2.Models
         [Column(IsVersion = true)]
         private Binary _version; 
 
-         // Define the entity set for the collection side of the relationship.
+        // Define the entity set for the collection side of the relationship.
+        // _names is a collection of scheduled alarm GUID's 
         private EntitySet<AlarmNameItem> _names;
+
+        // _days is a collection of DayOfWeek enums 
         private EntitySet<AlarmDayItem> _days;
 
         [Association(Storage = "_names", OtherKey = "_alarmID", ThisKey = "ID")]
