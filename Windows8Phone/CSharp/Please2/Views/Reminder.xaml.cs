@@ -38,11 +38,11 @@ namespace Please2.Views
 
             if (NavigationContext.QueryString.TryGetValue("name", out name))
             {
-                //DeleteSavePanel.Visibility = Visibility.Visible;
-                //SavePanel.Visibility = Visibility.Collapsed;
                 AddDeleteSaveButtons();
 
                 currentReminder = vm.GetReminder(name);
+
+                vm.SetCurrentReminder(name);
             }
             else
             {
@@ -97,7 +97,8 @@ namespace Please2.Views
         private void DeleteReminderButton_Click(object sender, EventArgs e)
         {
             vm.DeleteReminder(currentReminder);
-            GoToNotifications();
+            
+            NavigationService.GoBack();
         }
 
         private void UpdateReminderButton_Click(object sender, EventArgs e)
@@ -109,7 +110,8 @@ namespace Please2.Views
         {
             DateTime date = (DateTime)ReminderDate.Value;
             DateTime time = (DateTime)ReminderTime.Value;
-            DateTime beginTime = date + time.TimeOfDay;
+
+            DateTime beginTime = new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
 
             if (beginTime < DateTime.Now)
             {
@@ -128,12 +130,7 @@ namespace Please2.Views
                 vm.CreateReminder(beginTime, title);
             }
 
-            GoToNotifications();
-        }
-
-        private void GoToNotifications()
-        {
-            NavigationService.Navigate(ViewModelLocator.NotificationsPageUri);
+            NavigationService.GoBack();
         }
     }
 }
