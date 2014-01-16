@@ -121,6 +121,10 @@ namespace Please2.Util
 
         void SetAlarm(Dictionary<string, object> payload);
 
+        void UpdateAlarm(Dictionary<string, object> payload);
+
         void SetReminder(Dictionary<string, object> payload);
+
+        void UpdateReminder(Dictionary<string, object> payload);
     }
 }

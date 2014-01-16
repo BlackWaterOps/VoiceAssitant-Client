@@ -455,7 +455,12 @@ namespace Please2.Util
                 }
             }
 
-            navigationService.NavigateTo(ViewModelLocator.AlarmPageUri);
+            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.NotificationsUri, "page", "alarm"), UriKind.Relative));
+        }
+
+        public void UpdateAlarm(Dictionary<string, object> payload)
+        {
+
         }
 
         public void SetReminder(Dictionary<string, object> payload)
@@ -487,9 +492,13 @@ namespace Please2.Util
                 vm.ReminderSubject = (string)payload["subject"];
             }
 
-            navigationService.NavigateTo(ViewModelLocator.ReminderPageUri);
+            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.NotificationsUri, "page", "reminder"), UriKind.Relative));
         }
 
+        public void UpdateReminder(Dictionary<string, object> payload)
+        {
+
+        }
         #region helpers
         private JArray GetCandidates()
         {
