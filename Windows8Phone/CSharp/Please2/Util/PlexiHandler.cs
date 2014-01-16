@@ -61,6 +61,8 @@ namespace Please2.Util
             {"time", Actor.Time}
         };
 
+        private static Dictionary<Tuple<Actor, string>, Delegate> Actors = new Dictionary<Tuple<Actor, string>, Delegate>();
+
         public static readonly PlexiHandler Default = new PlexiHandler();
 
         private PlexiHandler()
@@ -70,6 +72,34 @@ namespace Please2.Util
 
             // attach plexi service
             this.plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
+
+            BuildActors();
+        }
+
+        private void BuildActors()
+        {
+            if (Actors.Count == 0)
+            {
+                ITaskService tasks = ViewModelLocator.GetServiceInstance<ITaskService, TaskService>();
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Alarm, "create"), new Action<Dictionary<string, object>>(tasks.SetAlarm));
+                Actors.Add(new Tuple<Actor, string>(Actor.Alarm, "edit"), new Action<Dictionary<string, object>>(tasks.UpdateAlarm));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Reminder, "create"), new Action<Dictionary<string, object>>(tasks.SetReminder));
+                Actors.Add(new Tuple<Actor, string>(Actor.Reminder, "edit"), new Action<Dictionary<string, object>>(tasks.UpdateReminder));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Time, "create"), new Action<Dictionary<string, object>>(tasks.ShowClock));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Email, "create"), new Action<Dictionary<string, object>>(tasks.ComposeEmail));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Sms, "create"), new Action<Dictionary<string, object>>(tasks.ComposeSms));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Directions, "query"), new Action<Dictionary<string, object>>(tasks.GetDirections));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Call, "trigger"), new Action<Dictionary<string, object>>(tasks.PhoneCall));
+
+                Actors.Add(new Tuple<Actor, string>(Actor.Calendar, "create"), new Action<Dictionary<string, object>>(tasks.SetAppointment));
+            }
         }
 
         public void Listen()
@@ -198,86 +228,30 @@ namespace Please2.Util
 
             // run local actors
             if (ActorMap.ContainsKey(data.model))
-            {           
+            {
+                ITaskService tasks = ViewModelLocator.GetServiceInstance<ITaskService, TaskService>();
+
                 Actor actor = ActorMap[e.data.model];
 
                 Dictionary<string, object> payload = e.data.payload;
 
-                ITaskService tasks = ViewModelLocator.GetServiceInstance<ITaskService, TaskService>();
-
-                switch (actor)
+                if (Actors != null && Actors.Count > 0)
                 {
-                    case Actor.Time:
-                        tasks.ShowClock(payload);
-                        break;
+                    Tuple<Actor, string> actorAction = new Tuple<Actor, string>(actor, action);
 
-                    case Actor.Email:
-                        switch (action)
-                        {
-                            case "create":
-                                e.handled = true;
-                                tasks.ComposeEmail(payload);
-                                break;
-
-                            case "query":
-                                // call phone's email app
-                                break;
-                        }
-                        break;
-
-                    case Actor.Sms:
-                        switch (action)
-                        {
-                            case "create":
-                                e.handled = true;
-                                tasks.ComposeSms(payload);
-                                break;
-                        }
-                        break;
-
-                    case Actor.Directions:
-                        tasks.GetDirections(payload);
-                        break;
-
-                    case Actor.Call:
-                        switch (action)
-                        {
-                            case "trigger":
-                                e.handled = true;
-                                tasks.PhoneCall(payload);
-                                break; 
-                        }
-                        break;
-
-                    case Actor.Calendar:
-                        switch (action)
-                        {
-                            case "create":
-                                e.handled = true;
-                                tasks.SetAppointment(payload);
-                                break;
-                        }
-                        break;
-
-                    case Actor.Alarm:
-                        switch (action)
-                        {
-                            case "create":
-                                e.handled = true;
-                                tasks.SetAlarm(payload);
-                                break;
-                        }
-                        break;
-
-                    case Actor.Reminder:
-                        switch (action)
-                        {
-                            case "create":
-                                e.handled = true;
-                                tasks.SetReminder(payload);
-                                break;
-                        }
-                        break;
+                    if (Actors.ContainsKey(actorAction))
+                    {
+                        e.handled = true;
+                        Actors[actorAction].DynamicInvoke(payload);
+                    }
+                    else
+                    {
+                        Debug.WriteLine(String.Format("action'{0}' is not supported by {1}", action, actor));
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("no actors set up. nothing to do");
                 }
             }
         }
