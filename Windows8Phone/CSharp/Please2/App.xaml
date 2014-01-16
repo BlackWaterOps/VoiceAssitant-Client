@@ -96,7 +96,12 @@
         <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
             <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" />
         </Style>
-        
+
+        <Style x:Key="ThumbnailStyle" TargetType="c4f:SuperImage">
+            <Setter Property="Stretch" Value="Uniform"/>
+            <Setter Property="PlaceholderOpacity" Value="0.06"/>
+        </Style>
+
         <!-- toolkit page transitions -->
         <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
             <Setter Property="toolkit:TransitionService.NavigationInTransition">
