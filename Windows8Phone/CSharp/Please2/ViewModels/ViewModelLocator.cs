@@ -45,6 +45,8 @@ namespace Please2.ViewModels
 
         public const string NoteUri = @"/Views/Note.xaml?noteid={0}";
 
+        public const string NotificationsUri = @"/Views/Notifications.xaml?{0}={1}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/MainMenu.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
