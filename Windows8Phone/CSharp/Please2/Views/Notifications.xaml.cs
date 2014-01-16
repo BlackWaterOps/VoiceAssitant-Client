@@ -30,6 +30,31 @@ namespace Please2.Views
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            string value;
+
+            Debug.WriteLine(e.Uri.OriginalString);
+
+            if (NavigationContext.QueryString.TryGetValue("index", out value))
+            {
+                int idx = int.Parse(value);
+
+                NotificationsPivot.SelectedIndex = idx;
+            }
+
+            if (NavigationContext.QueryString.TryGetValue("page", out value))
+            {
+                switch (value)
+                {
+                    case "alarm":
+                        NavigationService.Navigate(ViewModelLocator.AlarmPageUri);
+                        break;
+
+                    case "reminder":
+                        NavigationService.Navigate(ViewModelLocator.ReminderPageUri);
+                        break;
+                }
+            }
         }
 
         private void Pivot_LoadedPivotItem(object sender, PivotItemEventArgs e)
@@ -69,19 +94,19 @@ namespace Please2.Views
 
         protected void ReminderButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/Reminder.xaml", UriKind.Relative));
+            NavigationService.Navigate(ViewModelLocator.ReminderPageUri);
         }
 
         protected void ReminderItem_Tapped(object sender, EventArgs e)
         {
-            var reminder = (sender as FrameworkElement).DataContext as Reminder;
+            var reminder = (sender as FrameworkElement).DataContext as Microsoft.Phone.Scheduler.Reminder;
 
-            NavigationService.Navigate(new Uri("/Views/Reminder.xaml?name=" + reminder.Name, UriKind.Relative));
+            NavigationService.Navigate(new Uri(String.Format("/Views/Reminder.xaml?name={0}", reminder.Name), UriKind.Relative));
         }
 
         protected void ReminderToggle_Click(object sender, EventArgs e)
         {
-            var reminder = (sender as FrameworkElement).DataContext as Reminder;
+            var reminder = (sender as FrameworkElement).DataContext as Microsoft.Phone.Scheduler.Reminder;
             
             //TODO: need to find a way to "disable" a reminder
 
@@ -107,14 +132,14 @@ namespace Please2.Views
 
         protected void AlarmButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/Views/Alarm.xaml", UriKind.Relative));
+            NavigationService.Navigate(ViewModelLocator.AlarmPageUri);
         }
 
         protected void AlarmItem_Tapped(object sender, EventArgs e)
         {
             var alarm = (sender as FrameworkElement).DataContext as AlarmItem;
 
-            NavigationService.Navigate(new Uri("/Views/Alarm.xaml?id=" + alarm.ID, UriKind.Relative));
+            NavigationService.Navigate(new Uri(String.Format("/Views/Alarm.xaml?id={0}", alarm.ID), UriKind.Relative));
         }
 
         protected void AlarmToggle_Checked(object sender, RoutedEventArgs e)

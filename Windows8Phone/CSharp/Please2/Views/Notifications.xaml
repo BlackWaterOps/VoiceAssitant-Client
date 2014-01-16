@@ -29,7 +29,8 @@
                             Title="Notifications"/>
         
         <!--Pivot Control-->
-        <stremor:StremorPivot Grid.Row="1"
+        <stremor:StremorPivot x:Name="NotificationsPivot" 
+                              Grid.Row="1"
                               LoadedPivotItem="Pivot_LoadedPivotItem"
                               Background="{StaticResource ContentBackground}"
                               HeaderBackground="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
@@ -49,8 +50,6 @@
                         <phone:LongListSelector.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
-                                        BorderBrush="Black"
-                                        BorderThickness="2"
                                         Padding="10" 
                                         Margin="0,15,0,0"
                                         Tap="ReminderItem_Tapped">
@@ -60,15 +59,16 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         
-                                        <StackPanel Grid.Column="0" Grid.Row="0">
-                                            <Image Source="/Assets/feature.alarm.png" 
-                                                   Width="100" 
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"                                                   
-                                                   Opacity="{Binding BeginTime, Converter={StaticResource NotificationOpacityConverter}}"/>
-                                        </StackPanel>
+                                        <Image Grid.Column="0" Grid.Row="0" 
+                                               Source="/Assets/feature.alarm.png" 
+                                               Width="100" 
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"                                                   
+                                               Opacity="{Binding BeginTime, Converter={StaticResource NotificationOpacityConverter}}"/>
 
-                                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="12,0,0,0">
+                                        <StackPanel Grid.Column="1" Grid.Row="0" 
+                                                    Margin="12,0,0,0" 
+                                                    VerticalAlignment="Center">
                                             <TextBlock 
                                             Text="{Binding Title}" 
                                             Foreground="White" 
@@ -81,8 +81,7 @@
                                                Text="{Binding BeginTime, Converter={StaticResource NotificationDateConverter}}"
                                                Margin="0,10,0,0" 
                                                Foreground="White" 
-                                               FontSize="20" 
-                                               />
+                                               FontSize="20"/>
                                             
                                             <!--<toolkit:ToggleSwitch Click="ReminderToggle_Click"/>-->
                                         </StackPanel>
@@ -126,9 +125,9 @@
                                         </Grid.RowDefinitions>
                                         
                                         <TextBlock Grid.Row="0" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
-                                        <!--
-                                        <TextBlock Grid.Row="1" Text="{Binding Names}"/>
-                                        -->
+
+                                        <TextBlock Grid.Row="1" Text="{Binding DisplayName}"/>
+                                        
                                         <TextBlock Grid.Row="2" Text="{Binding Days, Converter={StaticResource DayOfWeekConverter}}"/>
                                         <!--
                                         <toolkit:ToggleSwitch Grid.Column="1" Header="" Checked="AlarmToggle_Checked" Unchecked="AlarmToggle_Unchecked">
