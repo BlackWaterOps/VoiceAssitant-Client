@@ -98,6 +98,9 @@
       <DependentUpon>Pivot.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\Thumbnail.xaml.cs">
+      <DependentUpon>Thumbnail.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ValidationTextBox.xaml.cs">
       <DependentUpon>ValidationTextBox.xaml</DependentUpon>
     </Compile>
@@ -233,6 +236,9 @@
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\delete.png">
       <Link>Assets\delete.png</Link>
     </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\feature.camera.png">
+      <Link>Assets\feature.camera.png</Link>
+    </Content>
     <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\next.png">
       <Link>Assets\next.png</Link>
     </Content>
@@ -258,6 +264,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="Controls\Thumbnail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Templates\ColorScheme.xaml">
       <Generator>MSBuild:MarkupCompilePass1</Generator>
       <SubType>Designer</SubType>
