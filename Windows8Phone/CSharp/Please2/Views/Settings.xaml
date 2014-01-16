@@ -35,42 +35,75 @@
 
             <!--Pivot item one-->
             <phone:PivotItem Header="General" x:Name="PreferencesPivotPanel">
-                <StackPanel x:Name="AccountsStackPanel">
-                    <TextBlock Text="Accounts" FontSize="{StaticResource PhoneFontSizeLarge}" FontWeight="Bold"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <StackPanel x:Name="GeneralStackPanel">
+                        <TextBlock Text="Temperature"/>
+                        
+                        <toolkit:ListPicker SelectionChanged="Temperature_SelectionChanged">
+                            <toolkit:ListPickerItem Content="F &#176;"/>
+                            <toolkit:ListPickerItem Content="C &#176;"/>
+                        </toolkit:ListPicker>
 
-                    <ListBox ItemsSource="{Binding Providers}" ItemContainerStyle="{StaticResource ListBoxItem}" toolkit:TiltEffect.IsTiltEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="White" 
+                        <TextBlock Text="Distance"/>
+
+                        <toolkit:ListPicker SelectionChanged="Temperature_SelectionChanged">
+                            <toolkit:ListPickerItem Content="miles"/>
+                            <toolkit:ListPickerItem Content="kilometers"/>
+                        </toolkit:ListPicker>
+                    </StackPanel>
+
+                    <StackPanel x:Name="AccountsStackPanel" Grid.Row="1">
+                        <TextBlock Text="Accounts" FontSize="{StaticResource PhoneFontSizeLarge}" FontWeight="Bold"/>
+
+                        <ListBox ItemsSource="{Binding Providers}" ItemContainerStyle="{StaticResource ListBoxItem}" toolkit:TiltEffect.IsTiltEnabled="True" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White" 
                                         HorizontalAlignment="Stretch"
                                         Padding="10,20"
                                         Margin="0,10,0,0"
                                         Tap="Provider_Tap">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding name}" Foreground="DarkGray" Grid.Column="0" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding status}" Foreground="LightGray" Grid.Column="1" TextAlignment="Right"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+                                            <TextBlock Text="{Binding name}" Foreground="DarkGray" Grid.Column="0" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding status}" Foreground="LightGray" Grid.Column="1" TextAlignment="Right"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
             </phone:PivotItem>
 
             <!--Pivot item two-->
             <phone:PivotItem Header="About" x:Name="AboutPivotPanel">
-
+                <StackPanel>
+                    <TextBlock Text="Plexi Voice Assistant" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                    
+                    <TextBlock Text="Windows Phone application"/>
+                    
+                    <TextBlock Text="http://stremor.com"/>
+                    
+                    <TextBlock Text="Version 0.5"/>
+                </StackPanel>
             </phone:PivotItem>
 
             <!--Pivot item three-->
+            <!--
             <phone:PivotItem Header="Feedback" x:Name="FeedbackPivotPanel">
 
             </phone:PivotItem>
+            -->
         </stremor:StremorPivot>
     </Grid>
 

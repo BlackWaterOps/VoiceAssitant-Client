@@ -67,5 +67,10 @@ namespace Please2.Views
                 //vm.RemoveAccount(provider);
             }
         }
+
+        private void Temperature_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
