@@ -13,8 +13,7 @@ using Newtonsoft.Json.Linq;
 
 using Please2.Util;
 
-using Plexi;
-
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class ImageViewModel : GalaSoft.MvvmLight.ViewModelBase

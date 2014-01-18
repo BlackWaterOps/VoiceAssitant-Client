@@ -20,10 +20,9 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
-using Plexi.Models;
-using Plexi.Util;
-
+using PlexiSDK;
+using PlexiSDK.Models;
+using PlexiSDK.Util;
 namespace Please2.ViewModels
 {
     public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -230,7 +229,7 @@ namespace Please2.ViewModels
         #endregion
 
         #region helpers
-        public Dictionary<string, object> Populate(Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(Dictionary<string, object> structured)
         {
             var templates = ViewModelLocator.ListTemplates;
 

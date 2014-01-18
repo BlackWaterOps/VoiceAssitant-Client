@@ -33,26 +33,27 @@ namespace Please2.Views
 
             string value;
 
-            Debug.WriteLine(e.Uri.OriginalString);
-
-            if (NavigationContext.QueryString.TryGetValue("index", out value))
+            if (e.NavigationMode != NavigationMode.Back)
             {
-                int idx = int.Parse(value);
-
-                NotificationsPivot.SelectedIndex = idx;
-            }
-
-            if (NavigationContext.QueryString.TryGetValue("page", out value))
-            {
-                switch (value)
+                if (NavigationContext.QueryString.TryGetValue("index", out value))
                 {
-                    case "alarm":
-                        NavigationService.Navigate(ViewModelLocator.AlarmPageUri);
-                        break;
+                    int idx = int.Parse(value);
 
-                    case "reminder":
-                        NavigationService.Navigate(ViewModelLocator.ReminderPageUri);
-                        break;
+                    NotificationsPivot.SelectedIndex = idx;
+                }
+
+                if (NavigationContext.QueryString.TryGetValue("page", out value))
+                {
+                    switch (value)
+                    {
+                        case "alarm":
+                            NavigationService.Navigate(ViewModelLocator.AlarmPageUri);
+                            break;
+
+                        case "reminder":
+                            NavigationService.Navigate(ViewModelLocator.ReminderPageUri);
+                            break;
+                    }
                 }
             }
         }

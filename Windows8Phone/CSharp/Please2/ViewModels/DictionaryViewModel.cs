@@ -15,29 +15,6 @@ namespace Please2.ViewModels
 {
     public class DictionaryViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
-        /*
-        private string definitions;
-        public string Definitions
-        {
-            get { return definitions; }
-            set
-            {
-                definitions = value;
-                RaisePropertyChanged("Definitions");
-            }
-        }
-
-        private List<string> examples;
-        public List<string> Examples
-        {
-            get { return examples; }
-            set
-            {
-                examples = value;
-                RaisePropertyChanged("Examples");
-            }
-        }
-        */
         private string headword;
         public string Headword
         {
@@ -59,18 +36,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("Senses");
             }
         }
-        /*
-        private string part;
-        public string Part
-        {
-            get { return part; }
-            set
-            {
-                part = value;
-                RaisePropertyChanged("Part");
-            }
-        }
-        */
+     
         private List<string> pos;
         public List<string> Pos
         {
@@ -82,7 +48,7 @@ namespace Please2.ViewModels
             }
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var dictionaryResults = (structured["item"] as JObject).ToObject<DictionaryModel>();
 

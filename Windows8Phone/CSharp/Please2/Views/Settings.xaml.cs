@@ -16,12 +16,11 @@ using Microsoft.Phone.Shell;
 using Please2.Models;
 using Please2.Util;
 using Please2.ViewModels;
-
 namespace Please2.Views
 {
     public partial class Settings : PhoneApplicationPage
     {
-        SettingsViewModel vm;
+        private SettingsViewModel vm;
 
         public Settings()
         {
@@ -44,7 +43,7 @@ namespace Please2.Views
             SystemTray.ProgressIndicator.IsVisible = false;
         }
 
-        private void Provider_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        private async void Provider_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
             ResourceManager resx = new ResourceManager("Plexi.Resources.PlexiResources", Assembly.Load("Plexi"));
 
@@ -62,6 +61,17 @@ namespace Please2.Views
             }
             else
             {
+                List<ProviderModel> accounts = await vm.GetAccounts(provider.name);
+
+                if (accounts.Count == 1)
+                {
+                    vm.RemoveAccount(accounts.First());
+                }
+                else
+                {
+                    // show list of accounts of this provider's type to deauth
+                }
+
                 // call deauth endpoint
                 // no reason to navigate to browser so just call a plexi method
                 //vm.RemoveAccount(provider);

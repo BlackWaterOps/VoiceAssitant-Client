@@ -20,8 +20,7 @@ using Microsoft.Phone.Shell;
 using Please2.ViewModels;
 using Please2.Util;
 
-using Plexi;
-
+using PlexiSDK;
 namespace Please2
 {
     public partial class ChildBrowser : PhoneApplicationPage

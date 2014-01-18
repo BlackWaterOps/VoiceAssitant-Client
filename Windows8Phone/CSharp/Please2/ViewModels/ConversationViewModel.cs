@@ -15,7 +15,7 @@ using GalaSoft.MvvmLight.Messaging;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class ConversationViewModel : GalaSoft.MvvmLight.ViewModelBase

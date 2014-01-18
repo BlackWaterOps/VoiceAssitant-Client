@@ -19,8 +19,8 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
-using Plexi;
-using Plexi.Models;
+using PlexiSDK;
+using PlexiSDK.Models;
 
 //TODO: major refactor
 namespace Please2.Util

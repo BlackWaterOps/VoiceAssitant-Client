@@ -21,8 +21,7 @@ using Please2.Util;
 using Please2.Views;
 using Please2.ViewModels;
 
-using Plexi.Util;
-
+using PlexiSDK.Util;
 namespace Please2
 {
     public partial class MainMenu : ViewBase
@@ -58,9 +57,9 @@ namespace Please2
             {
                 var item = sender as FrameworkElement;
 
-                var model = item.DataContext as MainMenuModel;
+                var model = item.DataContext as Please2.Models.MenuItem;
 
-                vm.LoadDefaultTemplate(model);
+                vm.HandleMenuItem(model);
             }
             catch (Exception err)
             {

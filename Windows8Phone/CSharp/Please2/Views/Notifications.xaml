@@ -39,6 +39,7 @@
                 <Grid>
                     <TextBlock x:Name="RemindersEmpty" 
                                Text="No Saved Reminders" 
+                               FontSize="{StaticResource PhoneFontSizeLarge}"
                                Visibility="{Binding ReminderVisibility}"/>
 
                     <phone:LongListSelector
@@ -98,6 +99,7 @@
                 <Grid>
                     <TextBlock x:Name="AlarmsEmpty" 
                                Text="No Saved Alarms" 
+                               FontSize="{StaticResource PhoneFontSizeLarge}"
                                Visibility="{Binding AlarmVisibility}"/>
 
                     <phone:LongListSelector 

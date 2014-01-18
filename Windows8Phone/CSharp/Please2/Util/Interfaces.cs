@@ -9,7 +9,7 @@ using Microsoft.Phone.UserData;
 
 using Please2.Models;
 
-using Plexi.Models;
+using PlexiSDK.Models;
 namespace Please2.Util
 {
     public interface INavigationService
@@ -55,7 +55,7 @@ namespace Please2.Util
         /// A Mechanism to load data in the view model before navigation
         /// </summary>
         /// <param name="payload"></param>
-        Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured);
+        Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured);
     }
 
     public interface ITaskService

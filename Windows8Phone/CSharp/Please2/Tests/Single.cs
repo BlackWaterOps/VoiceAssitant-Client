@@ -12,8 +12,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
-using Plexi.Models;
-
+using PlexiSDK.Models;
 namespace Please2.Tests
 {
     class Single
@@ -34,7 +33,7 @@ namespace Please2.Tests
 
             var show = actor.show;
 
-            return vm.Populate((string)show.structured["template"], show.structured);
+            return vm.Load((string)show.structured["template"], show.structured);
 
             /*
             var dictionaryResults = (show.structured["item"] as JObject).ToObject<DictionaryModel>();
@@ -68,7 +67,7 @@ namespace Please2.Tests
 
                 var show = actor.show;
 
-                return vm.Populate((string)show.structured["template"], show.structured);
+                return vm.Load((string)show.structured["template"], show.structured);
 
                 /*
                 var realestateResults = (show.structured["item"] as JObject).ToObject<RealEstateModel>();
@@ -102,7 +101,7 @@ namespace Please2.Tests
 
             var show = actor.show;
 
-            return vm.Populate((string)show.structured["template"], show.structured);
+            return vm.Load((string)show.structured["template"], show.structured);
             
             /*
             var geoResults = (show.structured["item"] as JObject).ToObject<GeopoliticsModel>();
@@ -133,7 +132,7 @@ namespace Please2.Tests
 
             var show = actor.show;
 
-            return vm.Populate((string)show.structured["template"], show.structured);
+            return vm.Load((string)show.structured["template"], show.structured);
 
             /*
             var flightResults = (show.structured["item"] as JObject).ToObject<FlightModel>();
@@ -166,7 +165,7 @@ namespace Please2.Tests
 
                 var show = actor.show;
 
-                return vm.Populate((string)show.structured["template"], show.structured);
+                return vm.Load((string)show.structured["template"], show.structured);
 
                 /*
                 IEnumerable<object> stories = ((JToken)show.structured["items"]).ToObject<IEnumerable<NewsModel>>();
@@ -199,7 +198,7 @@ namespace Please2.Tests
 
             var show = actor.show;
 
-            return vm.Populate((string)show.structured["template"], show.structured);
+            return vm.Load((string)show.structured["template"], show.structured);
 
             /*
             vm.StockData = ((JToken)show.structured["item"]).ToObject<StockModel>();

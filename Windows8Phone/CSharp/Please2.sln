@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Please2", "Please2\Please2.csproj", "{DC54AFCF-270B-45EA-A314-D7AEFF85003F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plexi", "Plexi\Plexi.csproj", "{B7493D43-DE39-40B3-ADB8-772385B03B5F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaViewer", "..\..\Samples\MediaViewer\MediaViewer.csproj", "{41D422A7-5968-47DF-8B7B-4DBFA1484B07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StremorControls", "EnhancedPivot\StremorControls.csproj", "{FF519311-9B18-4D40-A078-44D0230C259A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexiSDK", "..\..\SDK\WP8\PlexiSDK\PlexiSDK\PlexiSDK.csproj", "{8D014A37-1956-491E-BD58-B3A62A0040CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,18 +37,6 @@ Global
 		{DC54AFCF-270B-45EA-A314-D7AEFF85003F}.Release|x86.ActiveCfg = Release|x86
 		{DC54AFCF-270B-45EA-A314-D7AEFF85003F}.Release|x86.Build.0 = Release|x86
 		{DC54AFCF-270B-45EA-A314-D7AEFF85003F}.Release|x86.Deploy.0 = Release|x86
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|ARM.ActiveCfg = Debug|ARM
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|ARM.Build.0 = Debug|ARM
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|x86.ActiveCfg = Debug|x86
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Debug|x86.Build.0 = Debug|x86
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|ARM.ActiveCfg = Release|ARM
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|ARM.Build.0 = Release|ARM
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|x86.ActiveCfg = Release|x86
-		{B7493D43-DE39-40B3-ADB8-772385B03B5F}.Release|x86.Build.0 = Release|x86
 		{41D422A7-5968-47DF-8B7B-4DBFA1484B07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41D422A7-5968-47DF-8B7B-4DBFA1484B07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41D422A7-5968-47DF-8B7B-4DBFA1484B07}.Debug|ARM.ActiveCfg = Debug|ARM
@@ -73,6 +61,18 @@ Global
 		{FF519311-9B18-4D40-A078-44D0230C259A}.Release|ARM.Build.0 = Release|ARM
 		{FF519311-9B18-4D40-A078-44D0230C259A}.Release|x86.ActiveCfg = Release|x86
 		{FF519311-9B18-4D40-A078-44D0230C259A}.Release|x86.Build.0 = Release|x86
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|ARM.ActiveCfg = Debug|ARM
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|ARM.Build.0 = Debug|ARM
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|x86.ActiveCfg = Debug|x86
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Debug|x86.Build.0 = Debug|x86
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|ARM.ActiveCfg = Release|ARM
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|ARM.Build.0 = Release|ARM
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|x86.ActiveCfg = Release|x86
+		{8D014A37-1956-491E-BD58-B3A62A0040CE}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

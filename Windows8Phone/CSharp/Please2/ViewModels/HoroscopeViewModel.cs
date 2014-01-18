@@ -11,7 +11,6 @@ using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
-
 namespace Please2.ViewModels
 {
     public class HoroscopeViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -42,7 +41,7 @@ namespace Please2.ViewModels
             }
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             HoroscopeModel horoscopeResults = ((JObject)structured["item"]).ToObject<HoroscopeModel>();
 

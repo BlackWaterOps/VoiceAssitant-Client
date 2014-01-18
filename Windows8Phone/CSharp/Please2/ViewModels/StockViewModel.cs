@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
-
 namespace Please2.ViewModels
 {
     public class StockViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -39,7 +38,7 @@ namespace Please2.ViewModels
             set { directionSymbol = value; }
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             StockData = ((JToken)structured["item"]).ToObject<StockModel>();
 

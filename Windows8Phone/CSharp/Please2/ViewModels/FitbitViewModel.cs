@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -96,7 +96,7 @@ namespace Please2.ViewModels
             // protein, carbs, fat
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var data = new Dictionary<string, object>();
 

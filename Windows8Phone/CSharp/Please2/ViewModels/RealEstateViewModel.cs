@@ -6,9 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
+using Microsoft.Phone.Maps.Toolkit;
 
 using GalaSoft.MvvmLight.Command;
 
@@ -20,14 +22,12 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class RealEstateViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
     {
         public ColorScheme Scheme { get { return ColorScheme.Commerce; } }
-
-        private string templateName = "real_estate";
 
         private List<RealEstateListing> listings;
         public List<RealEstateListing> Listings
@@ -75,44 +75,6 @@ namespace Please2.ViewModels
             navigationService.NavigateTo(new Uri("/Views/RealEstateDetails.xaml", UriKind.Relative));
         }
 
-        /*
-        private void RealEstateItemSelected(RealEstateListing model)
-        {
-            var isSet = SetDetails(this.templateName, model);
-
-            if (isSet)
-            {
-                var uri = String.Format(ViewModelLocator.DetailsUri, this.templateName);
-
-                navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
-            }
-            else
-            {
-                // no template found message
-            }
-        }
-
-        private bool SetDetails(string template, RealEstateListing model)
-        {
-            var templates = ViewModelLocator.DetailsTemplates;
-
-            var isSet = false;
-
-            if (templates[template] != null)
-            {
-                var vm = ViewModelLocator.GetServiceInstance<RealEstateDetailsViewModel>();
-
-                vm.CurrentItem = model;
-                vm.Title = model.title;
-                vm.Scheme = this.scheme;
-                
-                isSet = true;
-            }
-
-            return isSet;
-        }
-        */
-
         private void BuildMap()
         {
             var currentPage = ((App.Current.RootVisual as PhoneApplicationFrame).Content as PhoneApplicationPage);
@@ -125,15 +87,29 @@ namespace Please2.ViewModels
 
                 foreach (RealEstateListing listing in listings)
                 {
-                    Debug.WriteLine(String.Format("{0}:{1}", listing.location.latitude, listing.location.longitude));
+                    double lat = listing.location.latitude;
+                    double lon = listing.location.longitude;
 
-                    GeoCoordinate geo = new GeoCoordinate(listing.location.latitude, listing.location.longitude);
+                    GeoCoordinate geo = new GeoCoordinate(lat, lon);
 
                     geoList.Add(geo);
 
-                    MapLayer mapLayer = MapService.Default.CreateMapLayer(geo);
+                    try
+                    {
+                        ResourceDictionary colorSchemes = ViewModelLocator.ColorSchemes;
 
-                    map.Layers.Add(mapLayer);
+                        string colorKey = String.Format("{0}Background", this.Scheme.ToString());
+
+                        SolidColorBrush brush = (SolidColorBrush)colorSchemes[colorKey];
+
+                        MapLayer mapLayer = MapService.Default.CreateMapLayer(lat, lon, (listings.IndexOf(listing) + 1), brush);
+
+                        map.Layers.Add(mapLayer);
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine(err.Message);
+                    }
                 }
 
                 if (geoList.Count > 0)
@@ -150,12 +126,27 @@ namespace Please2.ViewModels
             }
         }
 
+        private void MapMarker_Tap(object sender, System.Windows.Input.GestureEventArgs e, RealEstateListing listing)
+        {
+            var marker = (sender as UserLocationMarker);
+
+            var transform = App.RootFrame.TransformToVisual(marker);
+
+            Point markerPosition = transform.Transform(new Point(0, 0));
+
+            Debug.WriteLine(String.Format("{0} {1}", markerPosition.X, markerPosition.Y));
+
+            // show listing popup when marker is tapped
+            Debug.WriteLine("map marker tapped");
+        }
+
+
         #region reflection methods
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var ret = new Dictionary<string, object>();
 
-            var realestateResults = ((JObject)structured["item"]).ToObject<RealEstateModel>();
+            RealEstateModel realestateResults = ((JObject)structured["item"]).ToObject<RealEstateModel>();
 
             Listings = realestateResults.listings;
             Stats = realestateResults.stats;
@@ -167,6 +158,7 @@ namespace Please2.ViewModels
             return ret;
         }
 
+        /*
         public Dictionary<string, object> GetMapInfo(object model)
         {
             RealEstateListing listing = model as RealEstateListing;
@@ -192,6 +184,7 @@ namespace Please2.ViewModels
 
             return info;
         }
+        */
         #endregion
     }
 }

@@ -23,116 +23,10 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
-using Plexi.Util;
+using PlexiSDK.Util;
 
 namespace Please2.Util
 {
-    /*
-    public class BackgroundConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string sender = ((string)value).ToLower();
-
-            string brush;
-
-            if (sender == "user")
-            {
-                brush = "UserDialogBackground";
-            }
-            else
-            {
-                brush = "PleaseDialogBackground";
-            }
-
-            return Application.Current.Resources[brush] as SolidColorBrush;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
-    public class ForegroundConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string sender = ((string)value).ToLower();
-
-            string brush;
-
-            if (sender == "user")
-            {
-                brush = "UserDialogForeground";
-            }
-            else
-            {
-                brush = "PleaseDialogForeground";
-            }
-
-            return Application.Current.Resources[brush] as SolidColorBrush;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
-    public class AlignmentConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string sender = ((string)value).ToLower();
-
-            HorizontalAlignment align;
-
-            if (sender == "user")
-            {
-                align = HorizontalAlignment.Right;
-            }
-            else
-            {
-                align = HorizontalAlignment.Left;
-            }
-
-            return align;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
-    public class ChatBubbleConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            string sender = ((string)value).ToLower();
-
-            ChatBubbleDirection dir;
-
-            if (sender == "user")
-            {
-                dir = ChatBubbleDirection.LowerRight;
-            }
-            else
-            {
-                dir = ChatBubbleDirection.UpperLeft;
-            }
-
-            return dir;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return null;
-        }
-    }
-    */
-
     public class DayOfWeekConverter : IValueConverter
     {
         private const string CommaSpace = ", ";
@@ -286,6 +180,16 @@ namespace Please2.Util
                 }
             }
 
+            if (value != null && value is List<RealEstateImage>)
+            {
+                List<RealEstateImage> images = value as List<RealEstateImage>;
+
+                if (images.Count > 0)
+                {
+                    return images[0].src;
+                }
+            }
+
             return null;
         }
 
@@ -398,47 +302,33 @@ namespace Please2.Util
 
     public class ColorConverter : IValueConverter
     {
+        private static Dictionary<Tuple<string, object>, string> colors = new Dictionary<Tuple<string, object>, string>()
+        {
+            { new Tuple<string, object>("stock", "down"), "#b22222" },
+            { new Tuple<string, object>("stock", "up"), "#006400" },
+            { new Tuple<string, object>("flights", true), "#b22222" },
+            { new Tuple<string, object>("flights", false), "#006400" }
+        };
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             var param = (string)parameter;
 
-            string color = null;
-
-            switch (param)
+            if (param == "flights")
             {
-                case "stock":
-                    var direction = (string)value;
+                var delay = System.Convert.ToInt64(value);
 
-                    if (direction == "down")
-                    {
-                        //color = "#dc143c"; // red
-                        color = "#b22222";
-                    }
-                    else if (direction == "up")
-                    {
-                        color = "#006400"; // green
-                    }
-                    break;
-
-                case "flights":
-                    var delay = System.Convert.ToInt64(value);
-
-                    color =  "#006400"; // green
-
-                    if (delay > 0)
-                    {
-                        //color = "#dc143c"; // red
-                        color = "#b22222";
-                    }
-                    break;
+                value = (delay > 0) ? true : false;
             }
 
-            if (color == null)
+            Tuple<string, object> templateColor = new Tuple<string, object>(param, value);
+
+            if (colors.ContainsKey(templateColor))
             {
-                return value;
+                return colors[templateColor];
             }
 
-            return color;
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -490,7 +380,7 @@ namespace Please2.Util
         {
             var margin = new Thickness();
 
-            var item = (MainMenuModel)value;
+            var item = (Please2.Models.MenuItem)value;
 
             var vm = ViewModelLocator.GetServiceInstance<MainMenuViewModel>();
 

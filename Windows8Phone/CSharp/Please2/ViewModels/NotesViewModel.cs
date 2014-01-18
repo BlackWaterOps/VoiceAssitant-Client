@@ -15,7 +15,6 @@ using Microsoft.Phone.Data.Linq;
 using Please2.Models;
 using Please2.Resources;
 using Please2.Util;
-
 namespace Please2.ViewModels
 {
     public class NotesViewModel : GalaSoft.MvvmLight.ViewModelBase

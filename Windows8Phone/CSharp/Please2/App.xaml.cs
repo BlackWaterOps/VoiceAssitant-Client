@@ -71,7 +71,9 @@ namespace Please2
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            //Please2.Util.AccountHelper.Default.Launching();
+#if !DEBUG
+            Please2.Util.AccountHelper.Default.Launching();
+#endif
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -128,8 +130,12 @@ namespace Please2
 
             // Create the frame but don't set it as RootVisual yet; this allows the splash
             // screen to remain active until the application is ready to render.
-            RootFrame = new PhoneApplicationFrame();
-            //RootFrame = new TransitionFrame();
+            //RootFrame = new PhoneApplicationFrame();
+            RootFrame = new TransitionFrame()
+            {
+                Background = new SolidColorBrush(Colors.Transparent)
+            };
+
             RootFrame.Navigated += CompleteInitializePhoneApplication;
 
             // set app background

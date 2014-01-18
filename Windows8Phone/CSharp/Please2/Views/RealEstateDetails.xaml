@@ -120,6 +120,18 @@
                         <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}" CommandParameter="real_estate"/>
                     </StackPanel>
                 </phone:PivotItem>
+                
+                <!--
+                <phone:PivotItem Header="Photos">
+                    <ListBox ItemsSource="{Binding CurrentItem.images}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding src}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </phone:PivotItem>
+                -->
             </stremor:StremorPivot>
         </Grid>
     </Grid>

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class WeatherViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -60,7 +60,7 @@ namespace Please2.ViewModels
             this.plexiService = plexiService;            
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var weatherResults = ((JToken)structured["item"]).ToObject<WeatherModel>();
 

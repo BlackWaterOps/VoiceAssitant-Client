@@ -24,20 +24,79 @@ namespace Please2.Util
 
         }
 
+        public Color HexToColor(string hex)
+        {
+            //remove the # at the front
+            hex = hex.Replace("#", "");
+
+            byte a = 255;
+            byte r = 255;
+            byte g = 255;
+            byte b = 255;
+
+            int start = 0;
+
+            //handle ARGB strings (8 characters long)
+            if (hex.Length == 8)
+            {
+                a = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                start = 2;
+            }
+
+            //convert RGB characters to bytes
+            r = byte.Parse(hex.Substring(start, 2), System.Globalization.NumberStyles.HexNumber);
+            g = byte.Parse(hex.Substring(start + 2, 2), System.Globalization.NumberStyles.HexNumber);
+            b = byte.Parse(hex.Substring(start + 4, 2), System.Globalization.NumberStyles.HexNumber);
+
+            return Color.FromArgb(a, r, g, b);
+        }
+
         public MapLayer CreateMapLayer(GeoCoordinate geo)
         {
             return CreateMapLayer(geo.Latitude, geo.Longitude);
         }
-        
+
         public MapLayer CreateMapLayer(double lat, double lon)
         {
-            var coord = new GeoCoordinate(lat, lon);
+            return CreateMapLayer(lat, lon, null, null, null);
+        }
 
-            var EventMapPushpin = new UserLocationMarker();
+        public MapLayer CreateMapLayer(double lat, double lon, object content)
+        {
+            return CreateMapLayer(lat, lon, content, null, null);
+        }
+        
+        public MapLayer CreateMapLayer(double lat, double lon, object content, Brush pushpinColor)
+        {
+            return CreateMapLayer(lat, lon, content, pushpinColor, null);
+        }
+
+        public MapLayer CreateMapLayer(double lat, double lon, object content, Brush pushpinColor, EventHandler<System.Windows.Input.GestureEventArgs> handler)
+        {
+            GeoCoordinate coord = new GeoCoordinate(lat, lon);
+
+            //UserLocationMarker eventMapPushpin = new UserLocationMarker();
+
+            Pushpin eventMapPushpin = new Pushpin();
+
+            if (pushpinColor != null)
+            {
+                eventMapPushpin.Background = pushpinColor;
+            }
+
+            if (content != null)
+            {
+                eventMapPushpin.Content = content;
+            }
+
+            if (handler != null)
+            {
+                eventMapPushpin.Tap += handler;
+            }
 
             MapOverlay overlay = new MapOverlay();
 
-            overlay.Content = EventMapPushpin;
+            overlay.Content = eventMapPushpin;
 
             overlay.GeoCoordinate = coord;
 

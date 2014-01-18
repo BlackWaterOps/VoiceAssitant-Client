@@ -19,7 +19,7 @@ using LinqToVisualTree;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 
 namespace Please2.ViewModels
 {

@@ -14,8 +14,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
-using Plexi.Models;
-
+using PlexiSDK.Models;
 namespace Please2.Tests
 {
     class List

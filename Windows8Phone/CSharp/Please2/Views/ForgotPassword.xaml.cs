@@ -11,7 +11,7 @@ using Microsoft.Phone.Shell;
 
 using Please2.ViewModels;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.Views
 {
     public partial class ForgotPassword : PhoneApplicationPage

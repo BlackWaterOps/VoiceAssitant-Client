@@ -567,10 +567,10 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <!--<ColumnDefinition Width="Auto"/>-->
                                     </Grid.ColumnDefinitions>
 
-                                    <Border VerticalAlignment="Center" Background="White">
+                                    <Border VerticalAlignment="Center" Background="White" Width="100" Height="100">
                                         <c4f:SuperImage Source="{Binding images, Converter={StaticResource ImageConverter}}" 
                                                         Style="{StaticResource ThumbnailStyle}"
                                                         HorizontalAlignment="Center"
@@ -581,37 +581,24 @@
 
                                     <Border Grid.Column="1" Padding="10" Background="{Binding Path=SingleViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
                                         <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding title}"
+                                                       TextTrimming="WordEllipsis"
+                                                       FontSize="{StaticResource PhoneFontSizeLarge}"
+                                                       FontWeight="Light"/>
+
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="price: " Style="{StaticResource RealEstateLabel}"/>
-                                                <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" 
-                                                           Foreground="White" 
-                                                           TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" Margin="0,0,10,0"/>
+                                                <TextBlock Text="{Binding attributes.bedrooms, StringFormat='{0} bed'}"/>
+                                                <TextBlock Text="{Binding attributes.bathrooms, StringFormat='/{0} bath'}"/>
                                             </StackPanel>
 
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="sqft: " Style="{StaticResource RealEstateLabel}"/>
-                                                <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0}'}" 
-                                                           Foreground="White" 
-                                                           TextWrapping="Wrap"/>
-                                            </StackPanel>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="bedrooms: " Style="{StaticResource RealEstateLabel}"/>
-                                                <TextBlock Text="{Binding attributes.bedrooms}" 
-                                                           Foreground="White" 
-                                                           TextWrapping="Wrap"/>
-                                            </StackPanel>
-
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="bathrooms: " Style="{StaticResource RealEstateLabel}"/>
-                                                <TextBlock Text="{Binding attributes.bathrooms}" 
-                                                           Foreground="White" 
-                                                           TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0} sq ft'}"/>
                                             </StackPanel>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Grid.Column="2" Foreground="Black" Text="{Binding StringFormat='0:n0'}"/>
+                                    <!--<TextBlock Grid.Column="2" Foreground="Black" Text="{Binding StringFormat='0:n0'}"/>-->
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -625,7 +612,7 @@
                          VerticalContentAlignment="Stretch" 
                          HorizontalAlignment="Stretch" 
                          HorizontalContentAlignment="Stretch"
-                         >
+                         IsHitTestVisible="False">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Loaded">
                             <command:EventToCommand Command="{Binding MapLoaded}"/>

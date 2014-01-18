@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
-using Plexi.Models;
-
+using PlexiSDK;
+using PlexiSDK.Models;
 namespace Please2.ViewModels
 {
     public class SettingsViewModel : GalaSoft.MvvmLight.ViewModelBase
@@ -100,7 +99,6 @@ namespace Please2.ViewModels
 
         private void LoadAccounts()
         {
-            /*
             Array accounts = Enum.GetValues(typeof(AccountType));
 
             List<ProviderModel> list = new List<ProviderModel>();
@@ -115,13 +113,50 @@ namespace Please2.ViewModels
                     {
                         AccountStatus status = (AccountStatus)settings[accountString];
 
-                        list.Add(new ProviderModel(id, account, status));
+                        list.Add(new ProviderModel(account, status));
                     }
                 }
             }
 
             Providers = list;
-            */
+        }
+
+        public async Task<List<ProviderModel>> GetAccounts()
+        {
+            return await GetAccounts(AccountType.None);
+        }
+
+        public async Task<List<ProviderModel>> GetAccounts(AccountType type)
+        {
+            List<AccountModel> accounts = await plexiService.GetAccounts();
+
+            List<ProviderModel> providers = new List<ProviderModel>();
+
+            IEnumerable<AccountModel> query;
+
+            if (type == AccountType.None)
+            {
+                query = accounts;
+            }
+            else
+            {
+                query = from account in accounts
+                        where account.service_name.ToLower() == type.ToString().ToLower()
+                        select account;
+            }
+
+            foreach (AccountModel account in query)
+            {
+                ProviderModel provider = new ProviderModel();
+
+                provider.id = account.id;
+                provider.name = (AccountType)Enum.Parse(typeof(AccountType), account.service_name, true);
+                provider.status = AccountStatus.Connected;
+
+                providers.Add(provider);
+            }
+
+            return providers;
         }
 
         public void UpdateAccount(AccountType type, AccountStatus status)
@@ -142,7 +177,7 @@ namespace Please2.ViewModels
         {
             plexiService.RemoveAccount(account.id);
 
-            UpdateAccount(account.name, account.status);
+            UpdateAccount(account.name, AccountStatus.NotConnected);
         }
         #endregion
 

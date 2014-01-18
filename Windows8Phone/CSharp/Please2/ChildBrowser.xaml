@@ -16,9 +16,11 @@
 
     <toolkit:TransitionService.NavigationInTransition>
         <toolkit:NavigationInTransition>
+            <!--
             <toolkit:NavigationInTransition.Backward>
-                <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
+                <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
             </toolkit:NavigationInTransition.Backward>
+            -->
             <toolkit:NavigationInTransition.Forward>
                 <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
             </toolkit:NavigationInTransition.Forward>
@@ -27,9 +29,11 @@
 
     <toolkit:TransitionService.NavigationOutTransition>
         <toolkit:NavigationOutTransition>
+            <!--
             <toolkit:NavigationOutTransition.Backward>
-                <toolkit:SlideTransition Mode="SlideUpFadeIn"/>
+                <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
             </toolkit:NavigationOutTransition.Backward>
+            -->
             <toolkit:NavigationOutTransition.Forward>
                 <toolkit:SlideTransition Mode="SlideDownFadeOut"/>
             </toolkit:NavigationOutTransition.Forward>

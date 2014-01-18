@@ -125,21 +125,18 @@
                 </StackPanel>
                 -->
                 <StackPanel Grid.ColumnSpan="3">
-                    <TextBlock Text="{Binding station_name}" 
-                               TextWrapping="Wrap" 
-                               FontWeight="SemiBold"
-                               Foreground="White"
-                               FontSize="{StaticResource PhoneFontSizeMedium}"/>
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding station_name}" 
+                               TextTrimming="WordEllipsis"
+                               FontSize="{StaticResource PhoneFontSizeLarge}"
+                               FontWeight="Light"/>
+                    
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding address}" 
+                                TextTrimming="WordEllipsis"/>
 
-                    <TextBlock Text="{Binding address}" 
-                               TextWrapping="Wrap"
-                               Foreground="White"
-                               FontSize="{StaticResource PhoneFontSizeSmall}"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Distance: " Style="{StaticResource FuelLabel}"/>
-                        <TextBlock Text="{Binding distance, StringFormat='{0:n2} miles away'}"/>
-                    </StackPanel>
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding distance, StringFormat='About {0:n2} miles away'}"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -203,67 +200,20 @@
 
     <!-- Events -->
     <Style x:Key="EventTitle" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="TextTrimming" Value="WordEllipsis"/>
+        <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}"/>
+        <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
     <Style x:Key="EventTime" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Margin" Value="0,10"/>
+        <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
     <Style x:Key="EventLocation" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="TextTrimming" Value="WordEllipsis"/>
     </Style>
     
-    <DataTemplate x:Key="EventWithoutImage">
-        <Border Margin="0,0,0,10">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="Tap">
-                    <command:EventToCommand Command="{Binding Path=ListViewModel.EventItemSelection, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Border Padding="10" Background="White" Width="148">
-                    <Glyphs Style="{StaticResource FontAwesomeNoPhoto}"
-                            Margin="0,10,0,0"
-                            FontRenderingEmSize="65"/>
-                </Border>
-
-                <Border Grid.Column="1" Padding="10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
-                    <StackPanel>
-                        <TextBlock Text="{Binding title}" 
-                                   Style="{StaticResource EventTitle}"/>
-
-                        <TextBlock Text="{Binding start_time, StringFormat='ddd, MMM d, yyyy'}" 
-                                   Style="{StaticResource EventTime}"/>
-
-                        <TextBlock Text="{Binding location.address}" 
-                                   Style="{StaticResource EventLocation}"/>
-                    </StackPanel>
-                </Border>
-                <!--
-                <TextBlock Grid.ColumnSpan="2" Grid.Row="1" 
-                           Text="{Binding location.address}" 
-                           Style="{StaticResource EventLocation}"/>
-                -->
-            </Grid>
-        </Border>
-    </DataTemplate>
-
     <DataTemplate x:Key="events">
         <Border Margin="0,0,0,10">
             <i:Interaction.Triggers>
@@ -283,13 +233,11 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <Border Padding="10" Background="White" Width="148">
+                <Border Padding="10" Background="White" Width="100">
                     <c4f:SuperImage Source="{Binding image}" 
                                     Style="{StaticResource ThumbnailStyle}"
                                     PlaceholderImageSource="/Assets/feature.camera.png" 
                                     PlaceholderImageStretch="Uniform" />
-                    
-                    <!--<Image Source="{Binding image}" Width="128"/>-->
                 </Border>
 
                 <Border Grid.Column="1" Padding="10" Background="{Binding Path=ListViewModel.Scheme, Source={StaticResource Locator}, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
@@ -304,23 +252,9 @@
                                    Style="{StaticResource EventLocation}"/>
                     </StackPanel>
                 </Border>
-                <!--
-                <TextBlock Grid.ColumnSpan="2" Grid.Row="1" 
-                           Text="{Binding location.address}" 
-                           Style="{StaticResource EventLocation}"/>
-                -->
             </Grid>
         </Border>
     </DataTemplate>
-
-    <!--
-    <DataTemplate x:Key="events">
-        <util:EventsTemplateSelector Content="{Binding}" 
-                                     Image="{StaticResource EventWithImage}" 
-                                     NoImage="{StaticResource EventWithoutImage}"
-                                     HorizontalContentAlignment="Stretch"/>
-    </DataTemplate>
-    -->
     
     <!-- Movies -->
     <DataTemplate x:Key="movies">

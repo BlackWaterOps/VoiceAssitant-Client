@@ -17,6 +17,7 @@ namespace Please2.Models
         public DatabaseModel(string connectionString) : base(connectionString)
         {
         }
+        public Table<MenuItem> Menu;
 
         public Table<NoteItem> Notes;
         public Table<NoteItemBody> NoteBody;
@@ -27,6 +28,151 @@ namespace Please2.Models
 
         public Table<PreferenceItem> Preferences;
     }
+    #region Menu Table
+    [Table]
+    public class MenuItem : ModelBase
+    {
+        private int _id;
+
+        [Column(IsPrimaryKey = true, IsDbGenerated = true, DbType = "INT NOT NULL Identity", CanBeNull = false, AutoSync = AutoSync.OnInsert)]
+        public int ID
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                if (_id != value)
+                {
+                    NotifyPropertyChanging("ID");
+                    _id = value;
+                    NotifyPropertyChanged("ID");
+                }
+            }
+        }
+
+        private string _background;
+
+        [Column]
+        public string Background
+        {
+            get
+            {
+                return _background;
+            }
+            set
+            {
+                if (_background != value)
+                {
+                    NotifyPropertyChanging("Background");
+                    _background = value;
+                    NotifyPropertyChanged("Background");
+                }
+            }
+        }
+
+        private string _title;
+
+        [Column]
+        public string Title
+        {
+            get
+            {
+                return _title;
+            }
+            set
+            {
+                if (_title != value)
+                {
+                    NotifyPropertyChanging("Title");
+                    _title = value;
+                    NotifyPropertyChanged("Title");
+                }
+            }
+        }
+
+        private bool _enabled;
+
+        [Column]
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                if (_enabled != value)
+                {
+                    NotifyPropertyChanging("Enabled");
+                    _enabled = value;
+                    NotifyPropertyChanged("Enabled");
+                }
+            }
+        }
+
+        private string _page;
+
+        [Column]
+        public string Page
+        {
+            get
+            {
+                return _page;
+            }
+            set
+            {
+                if (_page != value)
+                {
+                    NotifyPropertyChanging("Page");
+                    _page = value;
+                    NotifyPropertyChanged("Page");
+                }
+            }
+        }
+
+        private string _icon;
+
+        [Column]
+        public string Icon
+        {
+            get
+            {
+                return _icon;
+            }
+            set
+            {
+                if (_icon != value)
+                {
+                    NotifyPropertyChanging("Icon");
+                    _icon = value;
+                    NotifyPropertyChanged("Icon");
+                }
+            }
+        }
+
+        private string _details;
+        
+        [Column]
+        public string Details
+        {
+            get
+            {
+                return _details;
+            }
+            set
+            {
+                if (_details != value)
+                {
+                    NotifyPropertyChanging("Details");
+                    _details = value;
+                    NotifyPropertyChanged("Details");
+                }
+            }
+        }
+    }
+    #endregion
 
     #region Notes Table
     [Table]

@@ -32,7 +32,7 @@ using Please2.Models;
 using Please2.Util;
 using Please2.ViewModels;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.Views
 {
     public class ViewBase : PhoneApplicationPage, IDialogService
@@ -83,9 +83,9 @@ namespace Please2.Views
             RegisterListeners();
 
             CreateApplicationBar(); 
-
+#if DEBUG
             AddDebugger();
-
+#endif
             //AddVerifyPrompt();
         }
 

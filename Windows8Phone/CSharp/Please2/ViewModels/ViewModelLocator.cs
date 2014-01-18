@@ -21,8 +21,7 @@ using Microsoft.Practices.ServiceLocation;
 
 using Please2.Util;
 
-using Plexi;
-
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     /// <summary>
@@ -36,6 +35,8 @@ namespace Please2.ViewModels
         public static ResourceDictionary SingleTemplates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
 
         public static ResourceDictionary DetailsTemplates = App.Current.Resources["DetailsTemplateDictionary"] as ResourceDictionary;
+
+        public static ResourceDictionary ColorSchemes = App.Current.Resources["SchemeDictionary"] as ResourceDictionary;
 
         public const string FullImageUri = @"/Views/Image.xaml?imageIndex={0}";
 
@@ -93,7 +94,7 @@ namespace Please2.ViewModels
 
             SimpleIoc.Default.Register<INavigationService, NavigationService>();
             
-            SimpleIoc.Default.Register<IPlexiService, Plexi.Core>();
+            SimpleIoc.Default.Register<IPlexiService, PlexiSDK.Core>();
             
             SimpleIoc.Default.Register<ISpeechService, SpeechService>();
 

@@ -23,8 +23,8 @@ using GalaSoft.MvvmLight.Command;
 using Please2.Util;
 using Please2.Models;
 
-using Plexi;
-using Plexi.Util;
+using PlexiSDK;
+using PlexiSDK.Util;
 
 namespace Please2.ViewModels
 {

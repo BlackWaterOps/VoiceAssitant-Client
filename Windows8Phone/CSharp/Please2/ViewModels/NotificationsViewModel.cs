@@ -25,6 +25,8 @@ namespace Please2.ViewModels
     {
         public ColorScheme Scheme { get { return ColorScheme.Notifications; } }
 
+        private DatabaseModel db = new DatabaseModel(AppResources.DataStore);
+
         #region Alarm Properties
         private string alarmName;
         public string AlarmName
@@ -249,40 +251,38 @@ namespace Please2.ViewModels
         {
             try
             {
-                using (var db = new DatabaseModel(AppResources.DataStore))
+                if (db.DatabaseExists() == false)
                 {
-                    if (db.DatabaseExists() == false)
-                    {
-                        db.CreateDatabase();
-                    }
-
-                    IQueryable<AlarmItem> query = from a in db.Alarms select a;
-
-                    if (query.Count() > 0)
-                    {
-                        // TODO: order by beginDate
-                        // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
-
-                        // hack to force the entityset enumeration for days and names
-                        foreach (var item in query)
-                        {
-                            foreach (var day in item.Days)
-                            { }
-
-                            foreach (var name in item.Names)
-                            { }
-                        }
-
-                        Alarms = new ObservableCollection<AlarmItem>(query);
-                    }
-                    else
-                    {
-                        Alarms = new ObservableCollection<AlarmItem>();
-                    }
-
-                    AlarmVisibility = (this.alarms.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
-                    
+                    db.CreateDatabase();
                 }
+
+                IQueryable<AlarmItem> query = from a in db.Alarms select a;
+
+                if (query.Count() > 0)
+                {
+                    // TODO: order by beginDate
+                    // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
+
+                    // hack to force the entityset enumeration for days and names
+                    /*
+                    foreach (var item in query)
+                    {
+                        foreach (var day in item.Days)
+                        { }
+
+                        foreach (var name in item.Names)
+                        { }
+                    }
+                    */
+
+                    Alarms = new ObservableCollection<AlarmItem>(query);
+                }
+                else
+                {
+                    Alarms = new ObservableCollection<AlarmItem>();
+                }
+
+                AlarmVisibility = (this.alarms.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
             }
             catch (Exception err)
             {
@@ -323,20 +323,19 @@ namespace Please2.ViewModels
 
         public AlarmItem GetAlarm(int id)
         {
-            using (var db = new DatabaseModel(AppResources.DataStore))
+            AlarmItem alarm = db.Alarms.First(x => x.ID == id);
+
+            // gross hack
+            /*
+            foreach (var day in alarm.Days)
             {
-                AlarmItem alarm = db.Alarms.First(x => x.ID == id);
-
-                // gross hack
-                foreach (var day in alarm.Days)
-                {
-                }
-                foreach (var name in alarm.Names)
-                {
-                }
-
-                return alarm;
             }
+            foreach (var name in alarm.Names)
+            {
+            }
+            */
+
+            return alarm;
         }
 
         public void SaveAlarm(string alarmName, DateTime alarmTime, List<DayOfWeek> daysOfWeek)
@@ -384,45 +383,43 @@ namespace Please2.ViewModels
                 {
                     days.Add(new AlarmDayItem() { Day = day });
                 }
-              
+
                 // save alarm info to DB
-                using (var db = new DatabaseModel(AppResources.DataStore))
+
+                if (db.DatabaseExists() == false)
                 {
-                    if (db.DatabaseExists() == false)
-                    {
-                        db.CreateDatabase();
-                    }
-                    else
-                    {
-                        // check if db needs to be updated
-                        /*
-                         DatabaseSchemaUpdater dbUpdater = readerDB.CreateDatabaseSchemaUpdater();
-
-                         if (dbUpdater.DatabaseSchemaVersion < App.APP_VERSION)
-                         {
-                         
-                         }
-                        */
-                    }
-
-                    AlarmItem newAlarm = new AlarmItem
-                        {
-                            DisplayName = alarmName,
-                            IsEnabled = true,
-                            Names = names,
-                            Time = alarmTime,
-                            Interval = interval,
-                            Days = days
-                        };
-
-                    db.Alarms.InsertOnSubmit(newAlarm);
-
-                    db.SubmitChanges();
-
-                    // DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
-                    // dbUpdater.DatabaseSchemaVersion = App.APP_VERSION;
-                    // dbUpdater.Execute();
+                    db.CreateDatabase();
                 }
+                else
+                {
+                    // check if db needs to be updated
+                    /*
+                     DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
+
+                     if (dbUpdater.DatabaseSchemaVersion < App.APP_VERSION)
+                     {
+                         
+                     }
+                    */
+                }
+
+                AlarmItem newAlarm = new AlarmItem
+                    {
+                        DisplayName = alarmName,
+                        IsEnabled = true,
+                        Names = names,
+                        Time = alarmTime,
+                        Interval = interval,
+                        Days = days
+                    };
+
+                db.Alarms.InsertOnSubmit(newAlarm);
+
+                db.SubmitChanges();
+
+                // DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
+                // dbUpdater.DatabaseSchemaVersion = App.APP_VERSION;
+                // dbUpdater.Execute();
 
                 LoadAlarms();
             }
@@ -436,98 +433,96 @@ namespace Please2.ViewModels
         {
             try
             {
-                using (var db = new DatabaseModel(AppResources.DataStore))
+
+                AlarmItem alarm = db.Alarms.FirstOrDefault(x => x.ID == alarmID);
+
+                if (alarm != null)
                 {
-                    AlarmItem alarm = db.Alarms.FirstOrDefault(x => x.ID == alarmID);
 
-                    if (alarm != null)
+                    // get the current alarm interval so we can run a comparison
+                    RecurrenceInterval currentInterval = alarm.Interval;
+
+                    // a list of alarm guids currently in the DB
+                    EntitySet<AlarmNameItem> currNames = alarm.Names;
+
+                    // a list of newly generated guids for new alarms
+                    EntitySet<AlarmNameItem> newNames = new EntitySet<AlarmNameItem>();
+
+                    string newName;
+
+                    if (currentInterval != newInterval)
                     {
-
-                        // get the current alarm interval so we can run a comparison
-                        RecurrenceInterval currentInterval = alarm.Interval;
-
-                        // a list of alarm guids currently in the DB
-                        EntitySet<AlarmNameItem> currNames = alarm.Names;
-
-                        // a list of newly generated guids for new alarms
-                        EntitySet<AlarmNameItem> newNames = new EntitySet<AlarmNameItem>();
-
-                        string newName;
-
-                        if (currentInterval != newInterval)
+                        if (currentInterval == RecurrenceInterval.Weekly || newInterval == RecurrenceInterval.Weekly)
                         {
-                            if (currentInterval == RecurrenceInterval.Weekly || newInterval == RecurrenceInterval.Weekly)
+                            // viewModel.DeleteAlarm(currentAlarm);
+
+                            // remove old alarms from scheduler
+                            foreach (AlarmNameItem item in currNames)
                             {
-                                // viewModel.DeleteAlarm(currentAlarm);
+                                DeleteNotification(item.Name);
+                            }
 
-                                // remove old alarms from scheduler
-                                foreach (AlarmNameItem item in currNames)
-                                {
-                                    DeleteNotification(item.Name);
-                                }
+                            // switching from a weekly alarm to daily or single
+                            if (currentInterval == RecurrenceInterval.Weekly)
+                            {
+                                newName = System.Guid.NewGuid().ToString();
 
-                                // switching from a weekly alarm to daily or single
-                                if (currentInterval == RecurrenceInterval.Weekly)
+                                newNames.Add(new AlarmNameItem() { Name = newName });
+
+                                CreateAlarm(newName, newAlarmTime, newInterval);
+                            }
+                            // switching from daily or single to weekly
+                            else if (newInterval == RecurrenceInterval.Weekly)
+                            {
+                                foreach (DayOfWeek day in newDaysOfWeek)
                                 {
                                     newName = System.Guid.NewGuid().ToString();
 
                                     newNames.Add(new AlarmNameItem() { Name = newName });
 
-                                    CreateAlarm(newName, newAlarmTime, newInterval);
-                                }
-                                // switching from daily or single to weekly
-                                else if (newInterval == RecurrenceInterval.Weekly)
-                                {
-                                    foreach (DayOfWeek day in newDaysOfWeek)
-                                    {
-                                        newName = System.Guid.NewGuid().ToString();
+                                    string dayOfWeek = Enum.GetName(typeof(DayOfWeek), day);
 
-                                        newNames.Add(new AlarmNameItem() { Name = newName });
-
-                                        string dayOfWeek = Enum.GetName(typeof(DayOfWeek), day);
-
-                                        CreateAlarm(newName, newAlarmTime, newInterval, dayOfWeek);
-                                    }
+                                    CreateAlarm(newName, newAlarmTime, newInterval, dayOfWeek);
                                 }
                             }
                         }
-
-                        // update interval and time on existing alarm
-                        else
-                        {
-                            foreach (AlarmNameItem item in currNames)
-                            {
-                                var action = ScheduledActionService.Find(item.Name);
-
-                                if (action != null)
-                                {
-                                    var oldAlarm = (Microsoft.Phone.Scheduler.Alarm)action;
-
-                                    oldAlarm.BeginTime = newAlarmTime;
-                                    oldAlarm.RecurrenceType = newInterval;
-
-                                    ScheduledActionService.Replace(oldAlarm);
-                                }
-                            }
-                        }
-
-                        // create the alarm days entity reference
-                        EntitySet<AlarmDayItem> days = new EntitySet<AlarmDayItem>();
-
-                        foreach (DayOfWeek day in newDaysOfWeek)
-                        {
-                            days.Add(new AlarmDayItem() { Day = day });
-                        }
-
-                        // update DB record
-                        alarm.DisplayName = newAlarmName;
-                        alarm.Time = newAlarmTime;
-                        alarm.Names = newNames;
-                        alarm.Days = days;
-                        alarm.Interval = newInterval;
-
-                        db.SubmitChanges();
                     }
+
+                    // update interval and time on existing alarm
+                    else
+                    {
+                        foreach (AlarmNameItem item in currNames)
+                        {
+                            var action = ScheduledActionService.Find(item.Name);
+
+                            if (action != null)
+                            {
+                                var oldAlarm = (Microsoft.Phone.Scheduler.Alarm)action;
+
+                                oldAlarm.BeginTime = newAlarmTime;
+                                oldAlarm.RecurrenceType = newInterval;
+
+                                ScheduledActionService.Replace(oldAlarm);
+                            }
+                        }
+                    }
+
+                    // create the alarm days entity reference
+                    EntitySet<AlarmDayItem> days = new EntitySet<AlarmDayItem>();
+
+                    foreach (DayOfWeek day in newDaysOfWeek)
+                    {
+                        days.Add(new AlarmDayItem() { Day = day });
+                    }
+
+                    // update DB record
+                    alarm.DisplayName = newAlarmName;
+                    alarm.Time = newAlarmTime;
+                    alarm.Names = newNames;
+                    alarm.Days = days;
+                    alarm.Interval = newInterval;
+
+                    db.SubmitChanges();
                 }
 
                 LoadAlarms();
@@ -542,24 +537,21 @@ namespace Please2.ViewModels
         {
             try
             {
-                using (var db = new DatabaseModel(AppResources.DataStore))
+                AlarmItem alarm = db.Alarms.FirstOrDefault(x => x.ID == alarmID);
+
+                if (alarm != null)
                 {
-                    AlarmItem alarm = db.Alarms.FirstOrDefault(x => x.ID == alarmID);
-
-                    if (alarm != null)
+                    // remove alarms from scheduler
+                    foreach (AlarmNameItem item in alarm.Names)
                     {
-                        // remove alarms from scheduler
-                        foreach (AlarmNameItem item in alarm.Names)
-                        {
-                            DeleteNotification(item.Name);
-                        }
-
-                        // delete record from DB
-                        db.AlarmDays.DeleteAllOnSubmit(alarm.Days);
-                        db.AlarmNames.DeleteAllOnSubmit(alarm.Names);
-                        db.Alarms.DeleteOnSubmit(alarm);
-                        db.SubmitChanges();
+                        DeleteNotification(item.Name);
                     }
+
+                    // delete record from DB
+                    db.AlarmDays.DeleteAllOnSubmit(alarm.Days);
+                    db.AlarmNames.DeleteAllOnSubmit(alarm.Names);
+                    db.Alarms.DeleteOnSubmit(alarm);
+                    db.SubmitChanges();
                 }
 
                 AlarmName = String.Empty;

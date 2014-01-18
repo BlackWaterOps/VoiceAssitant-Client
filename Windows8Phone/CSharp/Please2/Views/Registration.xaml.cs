@@ -23,14 +23,14 @@ using LinqToVisualTree;
 using Please2.ViewModels;
 using Please2.Util;
 
-using Plexi.Models;
-using Plexi.Util;
-
+using PlexiSDK;
+using PlexiSDK.Models;
+using PlexiSDK.Util;
 namespace Please2.Views
 {
     public partial class Registration : ViewBase
     {
-        private Plexi.IPlexiService plexiService;
+        private IPlexiService plexiService;
 
         public ColorScheme Scheme { get { return ColorScheme.Settings; } }
 
@@ -42,7 +42,7 @@ namespace Please2.Views
 
             DataContext = this;
 
-            plexiService = ViewModelLocator.GetServiceInstance<Plexi.IPlexiService>();
+            plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

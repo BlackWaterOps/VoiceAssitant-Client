@@ -21,7 +21,7 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.Util;
 
-using Plexi;
+using PlexiSDK;
 namespace Please2.ViewModels
 {
     public class FlightsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
@@ -70,7 +70,7 @@ namespace Please2.ViewModels
             MapLoaded = new RelayCommand(BuildMap);
         }
 
-        public Dictionary<string, object> Populate(string templateName, Dictionary<string, object> structured)
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var flightResults = (structured["item"] as JObject).ToObject<FlightModel>();
 

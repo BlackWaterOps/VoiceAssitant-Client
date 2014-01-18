@@ -18,10 +18,10 @@ using Newtonsoft.Json.Linq;
 using Please2.Models;
 using Please2.ViewModels;
 
-using Plexi;
-using Plexi.Events;
-using Plexi.Models;
-using Plexi.Util;
+using PlexiSDK;
+using PlexiSDK.Events;
+using PlexiSDK.Models;
+using PlexiSDK.Util;
 
 // NOTE: currently this object is instantiated in the view locator, 
 // but really all this logic is better suited as a view model base

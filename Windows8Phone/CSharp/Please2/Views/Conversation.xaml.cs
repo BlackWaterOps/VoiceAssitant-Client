@@ -98,7 +98,7 @@ namespace Please2.Views
 
         private void ContextMenuItem_Click(object sender, EventArgs e)
         {
-            DialogModel dialog = (sender as MenuItem).DataContext as DialogModel;
+            DialogModel dialog = (sender as Microsoft.Phone.Controls.MenuItem).DataContext as DialogModel;
 
             Debug.WriteLine(dialog.message);
 
