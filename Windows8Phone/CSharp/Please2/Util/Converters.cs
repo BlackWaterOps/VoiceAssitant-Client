@@ -210,8 +210,6 @@ namespace Please2.Util
 
             string brush = null;
 
-            ResourceDictionary schemes = App.Current.Resources["SchemeDictionary"] as ResourceDictionary;
-
             switch ((string)parameter)
             {
                 case "background":
@@ -232,7 +230,7 @@ namespace Please2.Util
                     break;
             }
 
-            return (brush != null) ? schemes[brush] : null;
+            return (brush != null) ? App.Current.Resources[brush] : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -568,6 +566,20 @@ namespace Please2.Util
 
     public class WeatherConverter : IValueConverter
     {
+        private static Dictionary<Tuple<string, string>, List<string>> conditions = new Dictionary<Tuple<string, string>, List<string>>()
+                {
+                    { new Tuple<string, string>("2", "a"), new List<string> { "partly cloudy", "partly sunny", "mostly sunny" } },
+                    { new Tuple<string, string>("3", "3"), new List<string> { "overcast", "cloudy" } },
+                    { new Tuple<string, string>("1", "6"), new List<string> { "clear", "sunny" } },
+                    { new Tuple<string, string>("Q", "q"), new List<string> { "thundershower", "snow showers" } },
+                    { new Tuple<string, string>("G", "g"), new List<string> { "rain", "shower", "drizzle", "pour", "sprinkle", "sleet" } },
+                    { new Tuple<string, string>("I", "i"), new List<string> { "snow", "blizzard", "flurries" } },
+                    { new Tuple<string, string>("D", "e"), new List<string> { "windy", "gust", "blustery", "breeze" } },
+
+                    { new Tuple<string, string>("P", "q"), new List<string> { "thunder", "stormy" } },
+                    { new Tuple<string, string>(":", ":"), new List<string> { "hurricane", "tornado", "typhoon", "cyclone", "monsoon", "tropical" } }
+                };
+
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             try
@@ -592,35 +604,15 @@ namespace Please2.Util
 
                 string icon = null;
 
-                var conditions = new Dictionary<List<string>, List<string>>()
-                {
-                    { new List<string> { "3" }, new List<string> { "overcast", "cloudy" } },
-                    { new List<string> { "1", "6" }, new List<string> { "clear", "sunny" } },
-                    { new List<string> { "", "" }, new List<string> { "rain", "shower", "drizzle", "pour", "sprinkle", "sleet" } },
-                    { new List<string> { "", "" }, new List<string> { "snow", "blizzard", "flurries" } },
-                    { new List<string> { "", "" }, new List<string> { "windy", "gust", "blustery", "breeze" } },
-                    { new List<string> { "", "" }, new List<string> { "thunder", "stormy" } },
-                    { new List<string> { "", "" }, new List<string> { "hurricane", "tornado", "typhoon", "cyclone", "monsoon", "tropical" } }
-                };
-
                 foreach (var conditionList in conditions)
                 {
                     foreach (var condition in conditionList.Value)
                     {
-                        //TODO: check for condition in currCondition. NOT equal to
-                        if (currCondition == condition)
+                        if (currCondition.Contains(condition))
                         {
-                            // set icon to appropriate glyph char
-                            var t = conditionList.Key;
+                            Tuple<string, string> key = conditionList.Key;
 
-                            if (isNight == true && conditionList.Key.Count > 1)
-                            {
-                                icon = conditionList.Key[1];
-                            }
-                            else
-                            {
-                                icon = conditionList.Key[0];
-                            }
+                            return (isNight == true) ? key.Item2 : key.Item1;
                         }
                     }
                 }
