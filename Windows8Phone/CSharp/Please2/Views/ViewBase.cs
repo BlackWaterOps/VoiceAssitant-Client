@@ -250,7 +250,7 @@ namespace Please2.Views
                 }
 
                 // add initial query to conversation list
-                vm.AddDialog("user", query);
+                vm.AddDialog(DialogOwner.User, query);
 
                 // send message to pleaseService to start the api adventure!!
                 plexiService.Query(query);
