@@ -52,6 +52,27 @@ namespace Please2.Models
             }
         }
 
+
+        private int _orderID;
+        
+        [Column]
+        public int OrderID
+        {
+            get
+            {
+                return _orderID;
+            }
+            set
+            {
+                if (_orderID != value)
+                {
+                    NotifyPropertyChanging("OrderID");
+                    _orderID = value;
+                    NotifyPropertyChanged("OrderID");
+                }
+            }
+        }
+
         private string _background;
 
         [Column]
@@ -148,6 +169,27 @@ namespace Please2.Models
                     NotifyPropertyChanging("Icon");
                     _icon = value;
                     NotifyPropertyChanged("Icon");
+                }
+            }
+        }
+
+
+        private string _viewModel;
+
+        [Column]
+        public string ViewModel
+        {
+            get
+            {
+                return _viewModel;
+            }
+            set
+            {
+                if (_viewModel != value)
+                {
+                    NotifyPropertyChanging("ViewModel");
+                    _viewModel = value;
+                    NotifyPropertyChanged("ViewModel");
                 }
             }
         }
