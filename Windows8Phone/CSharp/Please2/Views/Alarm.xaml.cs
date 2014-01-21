@@ -101,9 +101,12 @@ namespace Please2.Views
             var daysOfWeek = new List<DayOfWeek>();
 
             // add selected days to a list which will be stored in the DB
-            foreach (var day in AlarmRecurringDays.SelectedItems)
+            if (AlarmRecurringDays.SelectedItems != null)
             {
-                daysOfWeek.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)day, true));
+                foreach (var day in AlarmRecurringDays.SelectedItems)
+                {
+                    daysOfWeek.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), (string)day, true));
+                }
             }
 
             vm.SaveAlarm(alarmName, alarmTime, daysOfWeek);
