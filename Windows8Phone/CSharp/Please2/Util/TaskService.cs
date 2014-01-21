@@ -419,11 +419,20 @@ namespace Please2.Util
 
         public void ShowClock(Dictionary<string, object> payload)
         {
-            string speak = "the current time is";
+            //string speak = "the current time is";
 
             if (payload.Count > 0)
             {
-                
+                ClockViewModel vm = ViewModelLocator.GetServiceInstance<ClockViewModel>();
+
+                if (payload.ContainsKey("dst"))
+                {
+                    vm.ObservesDST = (bool)payload["dst"];
+                }
+
+                TimeSpan timeSpan = (payload.ContainsKey("time_offset")) ? TimeSpan.FromHours((int)payload["time_offset"]) : TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
+               
+                vm.SetDateTime(timeSpan);
             }
 
             //Messenger.Default.Send(new ShowMessage());
@@ -581,7 +590,7 @@ namespace Please2.Util
             var listView = ViewModelLocator.GetServiceInstance<ListViewModel>();
 
             //set data
-            listView.ListResults = contacts.ToList<object>();
+            listView.Items = contacts.ToList<object>();
 
             navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
         }
