@@ -27,4 +27,9 @@ namespace Please2.Util
     {
         Default, Information, Weather, Application, Commerce, Settings, Notes, Notifications
     }
+
+    public enum DialogOwner
+    {
+        User, Plexi
+    }
 }

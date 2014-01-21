@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using Please2.Util;
+
 namespace Please2.Models
 {
     public class DialogModel : ModelBase
     {
-        public string sender { get; set; }
+        public DialogOwner sender { get; set; }
         public object message { get; set; }
         private string _link;
         public string link 
