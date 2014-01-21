@@ -12,6 +12,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Toolkit;
 
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 using LinqToVisualTree;
@@ -25,7 +26,7 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class RealEstateViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class RealEstateViewModel : ViewModelBase, IViewModel
     {
         public ColorScheme Scheme { get { return ColorScheme.Commerce; } }
 
@@ -56,9 +57,9 @@ namespace Please2.ViewModels
 
         INavigationService navigationService;
 
-        public RealEstateViewModel(INavigationService navigationService, IPlexiService plexiService)
+        public RealEstateViewModel()
         {
-            this.navigationService = navigationService;
+            this.navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
 
             RealEstateItemSelection = new RelayCommand<RealEstateListing>(RealEstateItemSelected);
             MapLoaded = new RelayCommand(BuildMap);
@@ -96,11 +97,9 @@ namespace Please2.ViewModels
 
                     try
                     {
-                        ResourceDictionary colorSchemes = ViewModelLocator.ColorSchemes;
-
                         string colorKey = String.Format("{0}Background", this.Scheme.ToString());
 
-                        SolidColorBrush brush = (SolidColorBrush)colorSchemes[colorKey];
+                        SolidColorBrush brush = (SolidColorBrush)App.Current.Resources[colorKey];
 
                         MapLayer mapLayer = MapService.Default.CreateMapLayer(lat, lon, (listings.IndexOf(listing) + 1), brush);
 

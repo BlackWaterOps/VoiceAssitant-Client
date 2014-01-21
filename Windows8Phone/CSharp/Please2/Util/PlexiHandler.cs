@@ -140,15 +140,18 @@ namespace Please2.Util
 
             List<ChoiceModel> list = ((JArray)simple["list"]).ToObject<List<ChoiceModel>>();
 
-            ListViewModel vm = ViewModelLocator.GetServiceInstance<ListViewModel>();
+            ChoiceViewModel vm = new ChoiceViewModel();
 
-            vm.ListResults = list.ToList<object>();
-            vm.Template = (DataTemplate)templates["choice"];
-            vm.Title = (string)simple["text"];
+            vm.Load(null, simple);
+
+            SingleViewModel svm = ViewModelLocator.GetServiceInstance<SingleViewModel>();
+
+            svm.Content = vm;
+            svm.Title = (string)simple["text"];
 
             Show(e.results.show, e.results.speak);
            
-            navigationService.NavigateTo(ViewModelLocator.ListResultsPageUri);
+            navigationService.NavigateTo(ViewModelLocator.SingleResultPageUri);
         }
 
         private void OnError(object sender, ErrorEventArgs e)
@@ -275,6 +278,84 @@ namespace Please2.Util
                     string type = template[0];
                     string templateName = null;
 
+                    bool viewModelLoaded = false;
+
+                    object viewModel = null;
+
+                    // try to load specific viewmodel. ie. shopping:amazon
+                    if (template.Count() > 2)
+                    {
+                        string secondaryString = template[2];
+
+                        // normalize fitbit secondary names
+                        switch (template[2])
+                        {
+                            case "weight":
+                                secondaryString = "weight";
+                                break;
+
+                            case "food":
+                            case "log-food":
+                            case "calories":
+                                secondaryString = "food";
+                                break;
+
+                            case "activity":
+                            case "log-activity":
+                                secondaryString = "activity";
+                                break;
+                        }
+
+                        templateName = String.Format("{0}:{1}", template[1], secondaryString);
+
+                        viewModelLoaded = TryLoadViewModel(templateName, structured, out viewModel);
+                    }
+
+                    // if a specific vm was not found, try to load up a generic one. ie. shopping
+                    if (!viewModelLoaded && template.Count() > 1)
+                    {
+                        templateName = template[1];
+
+                        viewModelLoaded = TryLoadViewModel(templateName, structured, out viewModel);
+                    }
+
+                    if (viewModelLoaded)
+                    {
+                        view = ViewModelLocator.SingleResultPageUri;
+
+                        SingleViewModel resultsPage = ViewModelLocator.GetServiceInstance<SingleViewModel>();
+                        resultsPage.Content = viewModel;
+                    }
+                }
+
+                navigationService.NavigateTo(view);
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine(err.Message);
+            }
+        }
+
+        /*
+        private void OnComplete(object sender, CompleteEventArgs e)
+        {
+            try
+            {
+                ActorModel response = e.actor;
+
+                Show(response.show, response.speak);
+
+                Uri view = ViewModelLocator.ConversationPageUri;
+
+                if (response.show.structured != null && response.show.structured.ContainsKey("template"))
+                {
+                    Dictionary<string, object> structured = response.show.structured;
+
+                    string[] template = (structured["template"] as string).Split(':');
+
+                    string type = template[0];
+                    string templateName = null;
+
                     if (template.Count() > 1)
                     {
                         templateName = template[1];
@@ -336,60 +417,110 @@ namespace Please2.Util
                 Debug.WriteLine(String.Format("OnAct Error: {0}", err.Message));
             }
         }
+        */
 
-        private Dictionary<string, object> PopulateViewModel(string templateName, Dictionary<string, object> structured)
+        private bool TryLoadViewModel(string templateName, Dictionary<string, object> structured, out object viewModel)
         {
             try
             {
+                /*
                 ViewModelLocator locator = App.Current.Resources["Locator"] as ViewModelLocator;
 
                 PropertyInfo viewmodelProperty = locator.GetType().GetProperty(String.Format("{0}ViewModel", templateName.CamelCase()));
 
                 if (viewmodelProperty == null)
                 {
-                    Debug.WriteLine(String.Format("PouplateViewModel: view model {0} could not be found", templateName));
-                    return null;
+                    Debug.WriteLine(String.Format("LoadViewModel: view model {0} could not be found", templateName));
+                    viewModel = null;
+                    return false;
                 }
 
-                object viewModel = viewmodelProperty.GetValue(locator, null);
+                object vm = viewmodelProperty.GetValue(locator, null);
+                */
 
-                MethodInfo populateMethod = viewModel.GetType().GetMethod("Populate");
+                string viewModelName = String.Format("{0}ViewModel", templateName.CamelCase());
 
-                if (populateMethod == null)
+                Debug.WriteLine(Assembly.GetExecutingAssembly().GetName().Name);
+
+                string fullTypeName = String.Format("{0}.ViewModels.{1}", Assembly.GetExecutingAssembly().GetName().Name, viewModelName);
+
+                Type type = Type.GetType(fullTypeName);
+
+                if (type == null)
                 {
-                    Debug.WriteLine(String.Format("PopulateViewModel: 'Populate' method not implemented in {0}", templateName));
-                    return null;
+                    Debug.WriteLine(String.Format("TryLoadViewModel: view model {0} could not be found", templateName));
+                    viewModel = null;
+                    return false;
+                }
+
+                object vm = Activator.CreateInstance(type);
+
+                MethodInfo loadMethod = vm.GetType().GetMethod("Load");
+
+                if (loadMethod == null)
+                {
+                    Debug.WriteLine(String.Format("TryLoadViewModel: 'Populate' method not implemented in {0}", templateName));
+                    viewModel = null;
+                    return false;
                 }
 
                 if (!structured.ContainsKey("item") && !structured.ContainsKey("items"))
                 {
-                    Debug.WriteLine("PopulateViewModel: unable to find 'item' or 'items' in response");
-                    return null;
+                    Debug.WriteLine("TryLoadViewModel: unable to find 'item' or 'items' in response");
+                    viewModel = null;
+                    return false;
                 }
 
                 if (structured.ContainsKey("items") && ((JArray)structured["items"]).Count <= 0)
                 {
-                    Debug.WriteLine("PopulateViewModel: items list is emtpy nothing to set");
-                    return null;
+                    Debug.WriteLine("TryLoadViewModel: items list is emtpy nothing to set");
+                    viewModel = null;
+                    return false;
                 }
 
                 if (structured.ContainsKey("item") && ((JObject)structured["item"]).Count <= 0)
                 {
-                    Debug.WriteLine("PopulateViewModel: item object is emtpy nothing to set");
-                    return null;
+                    Debug.WriteLine("TryLoadViewModel: item object is emtpy nothing to set");
+                    viewModel = null;
+                    return false;
                 }
 
-                object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
-                
-                return (Dictionary<string, object>)populateMethod.Invoke(viewModel, parameters);
+                //object[] parameters = (templateName == "list") ? new object[] { structured } : new object[] { templateName, structured };
+                object[] parameters = new object[] { templateName, structured };
+
+                Dictionary<string, object> response = (Dictionary<string, object>)loadMethod.Invoke(vm, parameters);
+
+                // TODO: return the dict along with the vm
+                SingleViewModel svm = ViewModelLocator.GetServiceInstance<SingleViewModel>();
+
+                if (response.ContainsKey("scheme"))
+                {
+                    svm.Scheme = (ColorScheme)response["scheme"];
+                }
+
+                if (response.ContainsKey("title"))
+                {
+                    svm.Title = (string)response["title"];
+                }
+
+                if (response.ContainsKey("subtitle"))
+                {
+                    svm.SubTitle = (string)response["subtitle"];
+                }
+
+                viewModel = vm;
+
+                return true;
             }
             catch (Exception err)
             {
                 Debug.WriteLine(String.Format("PopulateViewModel Error: {0}", err.Message));
-                return null;
+                viewModel = null;
+                return false;
             }
         }
 
+        /*
         private Uri LoadSingleResult(Dictionary<string, object> structured)
         {
             try
@@ -462,5 +593,6 @@ namespace Please2.Util
                 return null;
             }
         }
+        */
     }
 }

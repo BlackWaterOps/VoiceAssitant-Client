@@ -25,7 +25,7 @@ using PlexiSDK.Models;
 using PlexiSDK.Util;
 namespace Please2.ViewModels
 {
-    public class ListViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class ListViewModel : ViewModelBase
     {
         private string templateName;
         
@@ -62,7 +62,7 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("SubTitle");
             }
         }
-
+        /*
         private DataTemplate template;
         public DataTemplate Template
         {
@@ -106,11 +106,22 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("ListResults");
             }
         }
+        */
+        private IEnumerable<object> items;
+        public IEnumerable<object> Items
+        {
+            get { return items; }
+            set
+            {
+                items = value;
+                RaisePropertyChanged("Items");
+            }
+        }
         #endregion
 
-        INavigationService navigationService;
-        IPlexiService plexiService;
-
+        protected INavigationService navigationService;
+        protected IPlexiService plexiService;
+        /*
         public RelayCommand<EventModel> EventItemSelection { get; set; }
         public RelayCommand<MoviesModel> MovieItemSelection { get; set; }
         public RelayCommand<ShoppingModel> ShoppingItemSelection { get; set; }
@@ -120,17 +131,18 @@ namespace Please2.ViewModels
         public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
         public RelayCommand<ChoiceModel> ChoiceItemSelection { get; set; }
         public RelayCommand<SearchModel> SearchItemSelection { get; set; }
-
-        public ListViewModel(INavigationService navigationService, IPlexiService plexiService)
+        */
+        public ListViewModel()
         {
-            this.navigationService = navigationService;
-            this.plexiService = plexiService;
+            this.navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
+            this.plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();
 
             AttachEventHandlers();
         }
 
         private void AttachEventHandlers()
         {
+            /*
             EventItemSelection = new RelayCommand<EventModel>(EventItemSelected);
             MovieItemSelection = new RelayCommand<MoviesModel>(MovieItemSelected);
             ShoppingItemSelection = new RelayCommand<ShoppingModel>(ShoppingItemSelected);
@@ -138,6 +150,7 @@ namespace Please2.ViewModels
             FuelItemSelection = new RelayCommand<AltFuelModel>(FuelItemSelected);
             ChoiceItemSelection = new RelayCommand<ChoiceModel>(ChoiceItemSelected);
             SearchItemSelection = new RelayCommand<SearchModel>(SearchItemSelected);
+            */
         }
 
         #region event handlers
@@ -155,7 +168,7 @@ namespace Please2.ViewModels
             // add choice to conversation page
             ConversationViewModel vm = ViewModelLocator.GetServiceInstance<ConversationViewModel>();
 
-            vm.AddDialog("user", choice.text);
+            vm.AddDialog(DialogOwner.User, choice.text);
 
             // pass selection to please service to process and send to auditor
             plexiService.Choice(choice);
@@ -206,14 +219,16 @@ namespace Please2.ViewModels
 
         public void ImageItemSelected(string imageUrl)
         {
+            /*
             string uri = String.Format(ViewModelLocator.FullImageUri, imageUrl);
 
             ImageViewModel vm = ViewModelLocator.GetServiceInstance<ImageViewModel>();
 
-            vm.LoadImages(ListResults, imageUrl);
+            vm.LoadImages(Images, imageUrl);
 
             //navigationService.NavigateTo(new Uri(uri, UriKind.Relative));
             navigationService.NavigateTo(ViewModelLocator.ImagePageUri);
+            */
         }
 
         public void FuelItemSelected(AltFuelModel model)
@@ -229,6 +244,7 @@ namespace Please2.ViewModels
         #endregion
 
         #region helpers
+        /*
         public Dictionary<string, object> Load(Dictionary<string, object> structured)
         {
             var templates = ViewModelLocator.ListTemplates;
@@ -269,7 +285,8 @@ namespace Please2.ViewModels
             // nothing really to send back. everything is set on this page
             return new Dictionary<string, object>();
         }
-
+        */
+        /*
         public bool SetDetails(string template, object model)
         {
             var templates = ViewModelLocator.DetailsTemplates;
@@ -286,7 +303,8 @@ namespace Please2.ViewModels
 
             return isSet;
         }
-
+        */
+        /*
         public IEnumerable<object> CreateTypedList(string name, object items)
         {
             IEnumerable<object> data = new List<object>();
@@ -334,9 +352,10 @@ namespace Please2.ViewModels
 
             return data;
         }
-
+        */
         public void RunTest(string templateName)
         {
+            /*
             try
             {
                 var templates = ViewModelLocator.ListTemplates;
@@ -398,6 +417,7 @@ namespace Please2.ViewModels
             {
                 Debug.WriteLine("run test: " + err.Message);
             }
+             */
         }
 
         private void GoTo(string location)

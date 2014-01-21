@@ -1,44 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Please2.Models;
+using GalaSoft.MvvmLight.Command;
 
+using Newtonsoft.Json.Linq;
+
+using Please2.Models;
+using Please2.Util;
 namespace Please2.ViewModels
 {
-    public class ShoppingViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class ShoppingViewModel : ListViewModel, IViewModel
     {
-        private List<ShoppingModel> shoppingResults;
-        public List<ShoppingModel> ShoppingResults
+        public RelayCommand<ShoppingModel> ShoppingItemSelection { get; set; }
+
+        public ShoppingViewModel()
         {
-            get { return shoppingResults; }
-            set { shoppingResults = value; }
+            ShoppingItemSelection = new RelayCommand<ShoppingModel>(ShoppingItemSelected);
         }
 
-        // type: amazon, bestbuy, walmart, etc.
-        private string shoppingType;
-        public string ShoppingType
+        public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
-            get { return shoppingType; }
-            set { shoppingType = value; }
+            Debug.WriteLine("load shopping data");
+
+            Items = (structured["items"] as JArray).ToObject<List<ShoppingModel>>();
+
+            this.Scheme = ColorScheme.Commerce;
+            this.Title = "shopping";
+
+            return new Dictionary<string, object>()
+            {
+                { "scheme", this.Scheme },
+                { "title", this.Title }
+            };
         }
 
-        private string shoppingQuery;
-        public string ShoppingQuery
+        public void ShoppingItemSelected(ShoppingModel product)
         {
-            get { return shoppingQuery; }
-            set { shoppingQuery = value; }
-        }
-
-        public void SetShoppingResults(object items)
-        {
-            if (ShoppingResults == null)
-                ShoppingResults = new List<ShoppingModel>();
-
-            //ShoppingResults = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ShoppingModel>>(SerializeData(items));
-            ShoppingResults = (List<ShoppingModel>)items;
+            // navigate to generic details page with movies id and template name
+            //navigationService.NavigateTo(new Uri(product.url, UriKind.Absolute));
         }
     }
 }

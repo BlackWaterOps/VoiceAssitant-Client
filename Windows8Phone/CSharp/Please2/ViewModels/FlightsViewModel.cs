@@ -12,6 +12,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Services;
 
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 using LinqToVisualTree;
@@ -24,7 +25,7 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class FlightsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class FlightsViewModel : ViewModelBase, IViewModel
     {
         private List<Flight> flights;
         public List<Flight> Flights
@@ -61,12 +62,8 @@ namespace Please2.ViewModels
 
         public RelayCommand MapLoaded { get; set; }
         
-        INavigationService navigationService;
-
-        public FlightsViewModel(INavigationService navigationService, IPlexiService pleaseService)
+        public FlightsViewModel()
         {
-            this.navigationService = navigationService;
-
             MapLoaded = new RelayCommand(BuildMap);
         }
 

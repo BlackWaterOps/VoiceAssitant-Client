@@ -15,8 +15,8 @@ using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Scheduler;
 
-using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 
 using Please2.Models;
@@ -26,7 +26,7 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class MainMenuViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class MainMenuViewModel : ViewModelBase
     {
         private DatabaseModel db = new DatabaseModel(AppResources.DataStore);
 
@@ -95,19 +95,40 @@ namespace Please2.ViewModels
 
         private void InitializeMenu()
         {
-            if (db.DatabaseExists() == false)
+            try
             {
-                db.CreateDatabase();
+                if (db.DatabaseExists() == false)
+                {
+                    db.CreateDatabase();
+                }
+
+                try
+                {
+                    DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
+
+                    if (dbUpdater.DatabaseSchemaVersion < 2)
+                    {
+
+                        dbUpdater.AddTable<Please2.Models.MenuItem>();
+
+                        dbUpdater.Execute();
+                    }
+                }
+                catch { }
+
+                IQueryable<Please2.Models.MenuItem> query = from menuItem in db.Menu select menuItem;
+
+                if (query.Count() == 0)
+                {
+                    AddDefaultMenuItems();
+                }
+
+                MainMenu = new ObservableCollection<Models.MenuItem>(query);
             }
-
-            IQueryable<Please2.Models.MenuItem> query = from menuItem in db.Menu select menuItem;
-
-            if (query.Count() == 0)
+            catch (Exception err)
             {
-                AddDefaultMenuItems();
+                Debug.WriteLine(err.Message);
             }
-
-            MainMenu = new ObservableCollection<Models.MenuItem>(query);
         }
 
         private void AddDefaultMenuItems() {
@@ -117,7 +138,7 @@ namespace Please2.ViewModels
             //IEnumerable<ScheduledNotification> notifications = ScheduledActionService.GetActions<ScheduledNotification>();
 
             AddMenuItem("#1ab154", "conversation", "\uf130", ViewModelLocator.ConversationPageUri);
-            AddMenuItem("#1ec0c3", "weather", "\uf0e9", ViewModelLocator.SingleResultPageUri);
+            AddMenuItem("#1ec0c3", "weather", "\uf0e9", ViewModelLocator.SingleResultPageUri, typeof(WeatherViewModel));
             AddMenuItem("#f7301e", "notifications", "\uf0f3", ViewModelLocator.NotificationsPageUri);
             AddMenuItem("#bd731b", "notes", "\uf15c", ViewModelLocator.NotesUri);
             AddMenuItem("#a3cd53", "search", "\uf002", ViewModelLocator.SearchPageUri);
@@ -126,30 +147,35 @@ namespace Please2.ViewModels
 
         public void AddMenuItem(string background, string title, string icon)
         {
-            AddMenuItem(background, title, icon, null, true, null);
+            AddMenuItem(background, title, icon, null, null, true, null);
         }
 
         public void AddMenuItem(string background, string title, string icon, bool isEnabled)
         {
-            AddMenuItem(background, title, icon, null, isEnabled, null);
+            AddMenuItem(background, title, icon, null, null, isEnabled, null);
         }
 
         public void AddMenuItem(string background, string title, string icon, Uri page)
         {
-            AddMenuItem(background, title, icon, page, true, null);
+            AddMenuItem(background, title, icon, page, null, true, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, bool isEnabled)
+        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel)
         {
-            AddMenuItem(background, title, icon, page, isEnabled, null);
+            AddMenuItem(background, title, icon, page, viewModel, true, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, string details)
+        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, bool isEnabled)
         {
-            AddMenuItem(background, title, icon, page, true, details);
+            AddMenuItem(background, title, icon, page, viewModel, isEnabled, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, bool isEnabled, string details)
+        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, string details)
+        {
+            AddMenuItem(background, title, icon, page, viewModel, true, details);
+        }
+
+        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, bool isEnabled, string details)
         {
             try
             {
@@ -158,17 +184,6 @@ namespace Please2.ViewModels
                     db.CreateDatabase();
                 }
 
-                /*
-                DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
-
-                if (dbUpdater.DatabaseSchemaVersion < 2)
-                {
-                   
-                    dbUpdater.AddTable<Please2.Models.MenuItem>();
-
-                    dbUpdater.Execute();
-                }
-                */
                 Please2.Models.MenuItem menuItem = new Please2.Models.MenuItem()
                 {
                     Background = background,
@@ -176,7 +191,8 @@ namespace Please2.ViewModels
                     Icon = icon,
                     Page = page.OriginalString,
                     Enabled = isEnabled,
-                    Details = details
+                    Details = details,
+                    ViewModel = (viewModel != null) ? viewModel.ToString() : null
                 };
 
                 db.Menu.InsertOnSubmit(menuItem);
@@ -195,9 +211,21 @@ namespace Please2.ViewModels
 
             if (uri == ViewModelLocator.SingleResultPageUri || uri == ViewModelLocator.ListResultsPageUri)
             {
-                // do some reflection to load some default values ie. weather LoadDefault()
+                Type type = Type.GetType(item.ViewModel);
 
+                object vm = Activator.CreateInstance(type);
 
+                MethodInfo loadMethod = vm.GetType().GetMethod("LoadDefault");
+
+                if (loadMethod == null)
+                {
+                    Debug.WriteLine(String.Format("HandleMenuItem: 'LoadDefault' method not implemented in {0}", item.ViewModel));
+                    return;
+                }
+
+                // kick off default query for this tile
+                loadMethod.Invoke(vm, null);
+                return;
             }
 
             navigationService.NavigateTo(uri);

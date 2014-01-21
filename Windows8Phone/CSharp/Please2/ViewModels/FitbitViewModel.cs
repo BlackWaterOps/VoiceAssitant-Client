@@ -9,6 +9,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
@@ -17,11 +19,23 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class FitbitViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class FitbitViewModel : ViewModelBase
     {
         public ColorScheme Scheme { get { return ColorScheme.Application; } }
 
+        private string title;
+        public string Title
+        {
+            get { return title; }
+            set
+            {
+                title = value;
+                RaisePropertyChanged("Title");
+            }
+        }
+
         /* WEIGHT */
+        /*
         private IEnumerable<object> points;
         public IEnumerable<object> Points
         {
@@ -43,8 +57,9 @@ namespace Please2.ViewModels
                 RaisePropertyChanged("Goals");
             }
         }
-
+        */
         /* FOOD */
+        /*
         private FitbitFoodSummary foodSummary;
         public FitbitFoodSummary FoodSummary
         {
@@ -89,13 +104,15 @@ namespace Please2.ViewModels
             }
         }
 
-        public FitbitViewModel(INavigationService navigationService, IPlexiService pleaseService)
+        public FitbitViewModel()
         {
             // TODO: create pie chart 
             // 4, 4, 9 rule
             // protein, carbs, fat
         }
+        */
 
+        /*
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var data = new Dictionary<string, object>();
@@ -165,5 +182,6 @@ namespace Please2.ViewModels
 
             return ret;
         }
+         */
     }
 }

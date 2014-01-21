@@ -14,6 +14,7 @@ using Microsoft.Phone.Maps.Controls;
 
 using LinqToVisualTree;
 
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class GeopoliticsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class GeopoliticsViewModel : ViewModelBase, IViewModel
     {
         public ColorScheme Scheme { get { return ColorScheme.Information; } }
         
@@ -75,7 +76,7 @@ namespace Please2.ViewModels
 
         public RelayCommand MapLoaded { get; set; }
 
-        public GeopoliticsViewModel(INavigationService navigationService, IPlexiService plexiService)
+        public GeopoliticsViewModel()
         {
             MapLoaded = new RelayCommand(BuildMap);
         }

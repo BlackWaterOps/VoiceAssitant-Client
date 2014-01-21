@@ -36,8 +36,6 @@ namespace Please2.ViewModels
 
         public static ResourceDictionary DetailsTemplates = App.Current.Resources["DetailsTemplateDictionary"] as ResourceDictionary;
 
-        public static ResourceDictionary ColorSchemes = App.Current.Resources["SchemeDictionary"] as ResourceDictionary;
-
         public const string FullImageUri = @"/Views/Image.xaml?imageIndex={0}";
 
         public const string DetailsUri = @"/Views/Details.xaml?template={0}";
@@ -52,6 +50,7 @@ namespace Please2.ViewModels
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
 
+        // TODO: remove
         public static readonly Uri ListResultsPageUri = new Uri("/Views/List.xaml", UriKind.Relative);
 
         public static readonly Uri SingleResultPageUri = new Uri("/Views/Single.xaml", UriKind.Relative);
@@ -114,6 +113,7 @@ namespace Please2.ViewModels
             get { return GetServiceInstance<ConversationViewModel>(); }
         }
 
+        // TODO: remove
         public ListViewModel ListViewModel
         {
             get { return GetServiceInstance<ListViewModel>(); }
@@ -124,6 +124,32 @@ namespace Please2.ViewModels
             get { return GetServiceInstance<SingleViewModel>(); }
         }
 
+        public NotesViewModel NotesViewModel
+        {
+            get { return GetServiceInstance<NotesViewModel>(); }
+        }
+
+        public SettingsViewModel SettingsViewModel
+        {
+            get { return GetServiceInstance<SettingsViewModel>(); }
+        }
+
+        public NotificationsViewModel NotificationsViewModel
+        {
+            get { return GetServiceInstance<NotificationsViewModel>(); }
+        }
+
+        public ImageViewModel ImageViewModel
+        {
+            get { return GetServiceInstance<ImageViewModel>(); }
+        }
+
+        public ClockViewModel ClockViewModel
+        {
+            get { return GetServiceInstance<ClockViewModel>(); }
+        }
+
+        /* Templates
         public DetailsViewModel DetailsViewModel
         {
             get { return GetServiceInstance<DetailsViewModel>(); }
@@ -139,11 +165,6 @@ namespace Please2.ViewModels
             get { return GetServiceInstance<StockViewModel>(); }
         }
 
-        public NotificationsViewModel NotificationsViewModel
-        {
-            get { return GetServiceInstance<NotificationsViewModel>(); }
-        }
-
         public FitbitViewModel FitbitViewModel
         {
             get { return GetServiceInstance<FitbitViewModel>(); }
@@ -152,11 +173,6 @@ namespace Please2.ViewModels
         public NewsViewModel NewsViewModel
         {
             get { return GetServiceInstance<NewsViewModel>(); }
-        }
-
-        public ImageViewModel ImageViewModel
-        {
-            get { return GetServiceInstance<ImageViewModel>(); }
         }
 
         public FlightsViewModel FlightsViewModel
@@ -183,21 +199,7 @@ namespace Please2.ViewModels
         {
             get { return GetServiceInstance<DictionaryViewModel>(); }
         }
-
-        public NotesViewModel NotesViewModel
-        {
-            get { return GetServiceInstance<NotesViewModel>(); }
-        }
-
-        public SettingsViewModel SettingsViewModel
-        {
-            get { return GetServiceInstance<SettingsViewModel>(); }
-        }
-    
-        public ClockViewModel ClockViewModel
-        {
-            get { return GetServiceInstance<ClockViewModel>(); }
-        }
+        */
 
         #region Detail ViewModels
         public RealEstateDetailsViewModel RealEstateDetailsViewModel
@@ -219,8 +221,7 @@ namespace Please2.ViewModels
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
-
-    
+            //SimpleIoc.Default.Reset();
         }
 
         public static TInterface GetServiceInstance<TInterface, TClass>() where TInterface : class where TClass : class

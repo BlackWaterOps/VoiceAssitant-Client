@@ -7,13 +7,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
 namespace Please2.ViewModels
 {
-    public class HoroscopeViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class HoroscopeViewModel : ViewModelBase, IViewModel
     {
         private string zodiacSignCap;
         public string ZodiacSignCap { get { return zodiacSignCap; } }
@@ -39,6 +41,10 @@ namespace Please2.ViewModels
                 horoscope = value;
                 RaisePropertyChanged("Horoscope");
             }
+        }
+
+        public HoroscopeViewModel()
+        {
         }
 
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)

@@ -5,13 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Toolkit;
 
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 
 using LinqToVisualTree;
@@ -22,48 +20,41 @@ using Please2.Models;
 using Please2.Util;
 
 using PlexiSDK;
+
 namespace Please2.ViewModels
 {
-    public class EventsViewModel : ListViewModel, IViewModel
+    class FuelViewModel : ListViewModel
     {
-        private List<EventModel> _eventResults;
-        public List<EventModel> EventResults
-        {
-            get { return _eventResults; }
-            set { _eventResults = value; }
-        }
-
-        public RelayCommand<EventModel> EventItemSelection { get; set; }
+        public RelayCommand<AltFuelModel> FuelItemSelection { get; set; }
         public RelayCommand MapLoaded { get; set; }
 
-        public EventsViewModel()
+        public FuelViewModel()
         {
-            // attach event handlers
-            EventItemSelection = new RelayCommand<EventModel>(EventItemSelected);
+            FuelItemSelection = new RelayCommand<AltFuelModel>(FuelItemSelected);
             MapLoaded = new RelayCommand(BuildMap);
         }
 
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
-            Items = (structured["items"] as JArray).ToObject<List<EventModel>>();
+            Items = (structured["items"] as JArray).ToObject<List<AltFuelModel>>();
 
-            this.Scheme = ColorScheme.Commerce;
-            this.Title = "events";
+            this.Scheme = ColorScheme.Information;
+            this.Title = "fuel";
 
-            return new Dictionary<string, object>()
+            return new Dictionary<string,object>()
             {
                 { "scheme", this.Scheme },
                 { "title", this.Title }
             };
         }
 
-        public void EventItemSelected(EventModel model)
+        public void FuelItemSelected(AltFuelModel model)
         {
-            EventDetailsViewModel vm = ViewModelLocator.GetServiceInstance<EventDetailsViewModel>();
+            FuelDetailsViewModel vm = ViewModelLocator.GetServiceInstance<FuelDetailsViewModel>();
 
             vm.CurrentItem = model;
 
-            navigationService.NavigateTo(new Uri("/Views/EventDetails.xaml", UriKind.Relative));           
+            navigationService.NavigateTo(new Uri("/Views/FuelDetails.xaml", UriKind.Relative));
         }
 
         private void BuildMap()
@@ -79,10 +70,10 @@ namespace Please2.ViewModels
                 // create list so we can get index of elements
                 List<object> itemsList = Items.ToList();
 
-                foreach (EventModel item in itemsList)
+                foreach (AltFuelModel item in itemsList)
                 {
-                    double lat = item.location.lat;
-                    double lon = item.location.lon;
+                    double lat = item.latitude;
+                    double lon = item.longitude;
 
                     GeoCoordinate geo = new GeoCoordinate(lat, lon);
 

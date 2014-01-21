@@ -68,7 +68,7 @@ namespace Please2.ViewModels
         {
             for (int i = 0; i < count; i++)
             {
-                string sender = (i % 2 == 0) ? "user" : "please";
+                DialogOwner sender = (i % 2 == 0) ? DialogOwner.User : DialogOwner.Plexi;
 
                 AddDialog(sender, "Your cells react to bacteria and viruses differently than mine. You don't get sick, I do.", ((i % 5 == 0) ? "http://www.plexisearch.com" : null));
             }
@@ -78,7 +78,7 @@ namespace Please2.ViewModels
         {
             if (DialogList.Count == 0)
             {
-                AddDialog("please", phrase);
+                AddDialog(DialogOwner.Plexi, phrase);
 
                 if (speak == true)
                 {
@@ -97,7 +97,12 @@ namespace Please2.ViewModels
             }
         }
 
-        public void AddDialog(string sender, string message, string link = null)
+        public void AddDialog(DialogOwner sender, string message)
+        {
+            AddDialog(sender, message, null);
+        }
+
+        public void AddDialog(DialogOwner sender, string message, string link)
         {
             Debug.WriteLine(message);
 
@@ -132,7 +137,7 @@ namespace Please2.ViewModels
 
             if (text != null)
             {
-                AddDialog("please", text, link);
+                AddDialog(DialogOwner.Plexi, text, link);
             }
         }
     }

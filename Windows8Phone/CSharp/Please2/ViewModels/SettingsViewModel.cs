@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GalaSoft.MvvmLight;
+
 using Please2.Models;
 using Please2.Util;
 
@@ -15,7 +17,7 @@ using PlexiSDK;
 using PlexiSDK.Models;
 namespace Please2.ViewModels
 {
-    public class SettingsViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class SettingsViewModel : ViewModelBase
     {
         private IsolatedStorageSettings settings;
 

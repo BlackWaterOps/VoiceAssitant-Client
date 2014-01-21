@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using Microsoft.Phone.Controls;
+
 using GalaSoft.MvvmLight.Ioc;
+
+using LinqToVisualTree;
 
 using Please2.Models;
 using Please2.ViewModels;
@@ -26,6 +31,98 @@ namespace Please2.Util
         }
     }
 
+    /// <summary>
+    /// Main Template for the Voice Assistante results.
+    /// <para>By default, If a template is not set, the speach text will be shownt</para>
+    /// </summary>
+    public class ResultsTemplateSelector : TemplateSelector
+    {
+        public DataTemplate AlarmTemplate { get; set; }
+
+        public DataTemplate ChoiceTemplate { get; set; }
+
+        public DataTemplate ClockTemplate { get; set; }
+
+        public DataTemplate DialogTemplate { get; set; }
+
+        public DataTemplate DictionaryTemplate { get; set; }
+
+        public DataTemplate EventsTemplate { get; set; }
+
+        public DataTemplate FitbitActivityTemplate { get; set; }
+
+        public DataTemplate FitbitFoodTemplate { get; set; }
+
+        public DataTemplate FitbitWeightTemplate { get; set; }
+
+        public DataTemplate FlightsTemplate { get; set; }
+
+        public DataTemplate FuelTemplate { get; set; }
+
+        public DataTemplate GeopoliticsTemplate { get; set; }
+
+        public DataTemplate HoroscopeTemplate { get; set; }
+
+        public DataTemplate ImagesTemplate { get; set; }
+
+        public DataTemplate ListTemplate { get; set; }
+
+        public DataTemplate MoviesTemplate { get; set; }
+
+        public DataTemplate NewsTemplate { get; set; }
+
+        public DataTemplate RealEstateTemplate { get; set; }
+
+        public DataTemplate SearchTemplate { get; set; }
+
+        public DataTemplate ShoppingTemplate { get; set; }
+
+        public DataTemplate StockTemplate { get; set; }
+
+        public DataTemplate WeatherTemplate { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            if (item != null)
+            {
+                try
+                {   /*
+                    if (item is DialogModel)
+                    {
+                        return DialogTemplate;
+                    }
+                    */
+
+                    Type type = item.GetType();
+
+                    string typeString = type.ToString();
+
+                    string vmName = typeString.Split('.').Last();
+
+                    string templateString = vmName.Replace("ViewModel", "Template");
+
+                    Debug.WriteLine(templateString);
+
+                    PropertyInfo templateProperty = this.GetType().GetProperty(templateString);
+
+                    if (templateProperty != null)
+                    {
+                        Debug.WriteLine("attach " + templateString);
+
+                        // we have a template attached that matches the viewmodel/item
+                        return (DataTemplate)templateProperty.GetValue(this, null);
+                    }
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            }
+
+            return null;
+        }
+    }
+
     public class DialogTemplateSelector : TemplateSelector
     {
         public DataTemplate PlexiDialog { get; set; }
@@ -40,7 +137,7 @@ namespace Please2.Util
 
                 DialogModel model = item as DialogModel;
 
-                return (model.sender == "user") ? UserDialog : PlexiDialog;
+                return (model.sender == DialogOwner.User) ? UserDialog : PlexiDialog;
             }
             return null;
         }
@@ -56,30 +153,27 @@ namespace Please2.Util
         {
             if (item != null)
             { 
+                /*
                 WeatherViewModel vm = ViewModelLocator.GetServiceInstance<WeatherViewModel>();
 
                 int index = vm.MultiForecast.IndexOf((WeatherDay)item);
 
-                return (index == 0) ?  WeatherFull : WeatherShort;                
-            }
+                return (index == 0) ?  WeatherFull : WeatherShort;
+                */
 
-            return null;
-        }
-    }
+                WeatherTemplateSelector selector = container as WeatherTemplateSelector;
 
-    public class EventsTemplateSelector : TemplateSelector
-    {
-        public DataTemplate NoImage { get; set; }
+                ListBox list = selector.Ancestors<ListBox>().Cast<ListBox>().Where(x => x.Name == "WeatherListBox").FirstOrDefault();
 
-        public DataTemplate Image { get; set; }
+                if (list != null)
+                {
+                    int index = list.Items.IndexOf((WeatherDay)item);
 
-        public override DataTemplate SelectTemplate(object item, DependencyObject container)
-        {
-            if (item != null)
-            {
-                EventModel result = item as EventModel;
+                    return (index == 0) ? WeatherFull : WeatherShort;
 
-                return (result.image == null) ? NoImage : Image;
+                }
+
+                return WeatherShort;
             }
 
             return null;

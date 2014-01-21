@@ -5,14 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
 using Please2.Util;
 namespace Please2.ViewModels
 {
-    public class StockViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class StockViewModel : ViewModelBase, IViewModel
     {
+        public ColorScheme Scheme { get { return ColorScheme.Information; } }
+
         private StockModel stockData;
         public StockModel StockData
         {
@@ -38,6 +42,10 @@ namespace Please2.ViewModels
             set { directionSymbol = value; }
         }
 
+        public StockViewModel()
+        {
+        }
+
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             StockData = ((JToken)structured["item"]).ToObject<StockModel>();
@@ -60,8 +68,7 @@ namespace Please2.ViewModels
 
             data.Add("title", "stock");
             data.Add("subtitle", stockData.name + "(" + stockData.symbol + ")");
-            data.Add("scheme", ColorScheme.Information);
-            data.Add("margin", new Thickness(12, 24, 12, 24));
+            data.Add("scheme", this.Scheme);
 
             return data;
         }

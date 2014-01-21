@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using Microsoft.Phone.Maps.Services;
+
 using GalaSoft.MvvmLight;
 
 using Newtonsoft.Json.Linq;
@@ -10,9 +12,10 @@ using Please2.Models;
 using Please2.Util;
 
 using PlexiSDK;
+using PlexiSDK.Models;
 namespace Please2.ViewModels
 {
-    public class WeatherViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class WeatherViewModel : ViewModelBase, IViewModel
     {
         public ColorScheme Scheme { get { return ColorScheme.Weather; } }
         
@@ -52,12 +55,12 @@ namespace Please2.ViewModels
         INavigationService navigationService;
 
         IPlexiService plexiService;
-     
-        public WeatherViewModel(INavigationService navigationService, IPlexiService plexiService)
+    
+        public WeatherViewModel()
         {
-            this.navigationService = navigationService;
+            this.navigationService = ViewModelLocator.GetServiceInstance<INavigationService>();
 
-            this.plexiService = plexiService;            
+            this.plexiService = ViewModelLocator.GetServiceInstance<IPlexiService>();            
         }
 
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
@@ -89,10 +92,9 @@ namespace Please2.ViewModels
             return data;
         }
 
-        public void GetDefaultForecast()
+        public void LoadDefault()
         {
-            // TODO: get city/state from device location data 
-            plexiService.Query("weather today for scottsdale arizona");
+            plexiService.Query("weather today");
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 
 using Newtonsoft.Json;
@@ -21,7 +22,7 @@ using PlexiSDK.Util;
 //TODO: major refactor
 namespace Please2.ViewModels
 {
-    public class SingleViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class SingleViewModel : ViewModelBase
     {
         private ColorScheme scheme;
         public ColorScheme Scheme
@@ -67,6 +68,17 @@ namespace Please2.ViewModels
             }
         }
 
+        private object content;
+        public object Content
+        {
+            get { return content; }
+            set
+            {
+                content = value;
+                RaisePropertyChanged("Content");
+            }
+        }
+
         private DataTemplate contentTemplate;
         public DataTemplate ContentTemplate
         {
@@ -105,6 +117,7 @@ namespace Please2.ViewModels
 
         public void RunTest(string templateName)
         {
+            /*
             try
             {
                 var templates = ViewModelLocator.SingleTemplates;
@@ -163,6 +176,7 @@ namespace Please2.ViewModels
                 Debug.WriteLine("run test failure");
                 Debug.WriteLine(err.Message);
             }
+            */
         }
 
         private void GoHome()

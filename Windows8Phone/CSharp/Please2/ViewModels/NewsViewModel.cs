@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using GalaSoft.MvvmLight.Command;
+
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
@@ -13,38 +15,31 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class NewsViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class NewsViewModel : ListViewModel, IViewModel
     {
-        private List<NewsModel> stories;
-        public List<NewsModel> Stories
+        public RelayCommand<NewsModel> NewsItemSelection { get; set; }
+
+        public NewsViewModel()
         {
-            get { return stories; }
-            set
-            {
-                stories = value;
-                RaisePropertyChanged("Stories");
-            }
+            NewsItemSelection = new RelayCommand<NewsModel>(NewsItemSelected);
         }
-
-        //private IPleaseService pleaseService;
-        private IPlexiService plexiService;
-
-        public NewsViewModel(INavigationService navigationService, IPlexiService plexiService)
-        {
-            this.plexiService = plexiService;
-        }
-
+        
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
-            Stories = (structured["items"] as JArray).ToObject<List<NewsModel>>();
+            Items = (structured["items"] as JArray).ToObject<List<NewsModel>>();
 
-            var data = new Dictionary<string, object>();
+            this.Scheme = ColorScheme.Information;
+            this.Title = "news";
 
-            data.Add("title", "news results");
-            data.Add("scheme", ColorScheme.Information);
-            data.Add("margin", new Thickness(12, 24, 12, 24));
+            return new Dictionary<string, object>()
+            {
+                { "scheme", this.Scheme },
+                { "title", this.Title }
+            };
+        }
 
-            return data;
+        public void NewsItemSelected(NewsModel e)
+        {
         }
     }
 }

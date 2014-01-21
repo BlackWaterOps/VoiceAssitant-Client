@@ -8,6 +8,8 @@ using System.Windows.Media.Imaging;
 
 using Microsoft.Phone.Controls;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +18,7 @@ using Please2.Util;
 using PlexiSDK;
 namespace Please2.ViewModels
 {
-    public class ImageViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class ImageViewModel : ViewModelBase
     {
         private IThumbnailedImageAsync initialImage;
         public IThumbnailedImageAsync InitialImage

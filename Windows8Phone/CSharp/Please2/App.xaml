@@ -16,121 +16,77 @@
     
   <!--Application Resources-->
     <Application.Resources>
-        <local:LocalizedStrings xmlns:local="clr-namespace:Please2" x:Key="LocalizedStrings" />
-        
-        <shell:ApplicationBarIconButton x:Key="CancelBtn" IconUri="/Assets/close.png" Text="cancel" />
-        
-        <LinearGradientBrush x:Key="AppBackground" StartPoint="0.5,0" EndPoint="0.5,1">
-            <GradientStop Color="#192128" Offset="0.0" />
-            <GradientStop Color="#32393f" Offset="1.0" />
-        </LinearGradientBrush>
-   
-        <ImageBrush x:Key="ContentBackground" 
+        <ResourceDictionary>
+            <local:LocalizedStrings xmlns:local="clr-namespace:Please2" x:Key="LocalizedStrings" />
+
+            <shell:ApplicationBarIconButton x:Key="CancelBtn" IconUri="/Assets/close.png" Text="cancel" />
+                        
+            <LinearGradientBrush x:Key="AppBackground" StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Color="#192128" Offset="0.0" />
+                <GradientStop Color="#32393f" Offset="1.0" />
+            </LinearGradientBrush>
+
+            <ImageBrush x:Key="ContentBackground" 
                     ImageSource="/Assets/plexi-background.png"
                     AlignmentX="Center"
                     AlignmentY="Center"
                     Stretch="UniformToFill"/>
-                         
-        <LinearGradientBrush x:Key="ResultItemBackground" StartPoint="0.5,0" EndPoint="0.5,1">
-            <GradientStop Color="#000000" Offset="0.0" />
-            <GradientStop Color="#51575c" Offset="1.0" />
-        </LinearGradientBrush>
-        
-        <Style x:Key="ResultItemStyle" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource ResultItemBackground}" />
-            <Setter Property="BorderBrush" Value="#666666" />
-            <Setter Property="BorderThickness" Value="3" />
-        </Style>
-        
-        <!-- chat bubble colors -->
-        <!--
-        <SolidColorBrush x:Key="UserDialogBackground" Color="#1ba0e1" />
-        <SolidColorBrush x:Key="PleaseDialogBackground" Color="#60aa17" />
-        <SolidColorBrush x:Key="UserDialogForeground" Color="White" />
-        <SolidColorBrush x:Key="PleaseDialogForeground" Color="White" />
-        -->
-        
-        <!-- listbox item 100% width -->
-        <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        </Style>
-        
-        <!-- various page titles -->
-        <!--
-        <Style x:Key="AppTitleIcon" TargetType="Image">
-            <Setter Property="Source" Value="/Assets/plexi-UI-logo.png"/>
-            <Setter Property="Width" Value="41"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="Margin" Value="16,10"/>
-        </Style>
-        
-        <Style x:Key="AppTitle" TargetType="TextBlock">
-            <Setter Property="Text" Value="plexi" />
-            <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeNormal}" />
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
-            <Setter Property="Margin" Value="16,10" />
-        </Style>
-        
-        <Style x:Key="PageTitleBase" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe WP" />
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-        </Style>
-        
-        <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeExtraLarge}" />
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="16,0,0,10" />
-            <Setter Property="FontWeight" Value="Light"/>
-        </Style>
-        
-        <Style x:Key="PageSubTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
-            <Setter Property="Margin" Value="16,10" />
-        </Style>
-        -->
-        
-        <!-- global fontawesome uri -->
-        <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
-            <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" />
-        </Style>
 
-        <Style x:Key="ThumbnailStyle" TargetType="c4f:SuperImage">
-            <Setter Property="Stretch" Value="Uniform"/>
-            <Setter Property="PlaceholderOpacity" Value="0.06"/>
-        </Style>
+            <LinearGradientBrush x:Key="ResultItemBackground" StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Color="#000000" Offset="0.0" />
+                <GradientStop Color="#51575c" Offset="1.0" />
+            </LinearGradientBrush>
 
-        <!-- toolkit page transitions -->
-        <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
-            <Setter Property="toolkit:TransitionService.NavigationInTransition">
-                <Setter.Value>
-                    <toolkit:NavigationInTransition>
-                        <toolkit:NavigationInTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideUpFadeIn" />
-                        </toolkit:NavigationInTransition.Backward>
-                        <toolkit:NavigationInTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideUpFadeIn" />
-                        </toolkit:NavigationInTransition.Forward>
-                    </toolkit:NavigationInTransition>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="toolkit:TransitionService.NavigationOutTransition">
-                <Setter.Value>
-                    <toolkit:NavigationOutTransition>
-                        <toolkit:NavigationOutTransition.Backward>
-                            <toolkit:SlideTransition Mode="SlideDownFadeOut" />
-                        </toolkit:NavigationOutTransition.Backward>
-                        <toolkit:NavigationOutTransition.Forward>
-                            <toolkit:SlideTransition Mode="SlideDownFadeOut" />
-                        </toolkit:NavigationOutTransition.Forward>
-                    </toolkit:NavigationOutTransition>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!--
+            <Style x:Key="ResultItemStyle" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource ResultItemBackground}" />
+                <Setter Property="BorderBrush" Value="#666666" />
+                <Setter Property="BorderThickness" Value="3" />
+            </Style>
+
+            <!-- listbox item 100% width -->
+            <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            </Style>
+
+            <!-- global fontawesome uri -->
+            <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
+                <Setter Property="FontUri" Value="/Please2;component/Assets/Fonts/FontAwesome.otf#FontAwesome" />
+            </Style>
+
+            <Style x:Key="ThumbnailStyle" TargetType="c4f:SuperImage">
+                <Setter Property="Stretch" Value="Uniform"/>
+                <Setter Property="PlaceholderOpacity" Value="0.06"/>
+            </Style>
+
+            <!-- toolkit page transitions -->
+            <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
+                <Setter Property="toolkit:TransitionService.NavigationInTransition">
+                    <Setter.Value>
+                        <toolkit:NavigationInTransition>
+                            <toolkit:NavigationInTransition.Backward>
+                                <toolkit:SlideTransition Mode="SlideUpFadeIn" />
+                            </toolkit:NavigationInTransition.Backward>
+                            <toolkit:NavigationInTransition.Forward>
+                                <toolkit:SlideTransition Mode="SlideUpFadeIn" />
+                            </toolkit:NavigationInTransition.Forward>
+                        </toolkit:NavigationInTransition>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="toolkit:TransitionService.NavigationOutTransition">
+                    <Setter.Value>
+                        <toolkit:NavigationOutTransition>
+                            <toolkit:NavigationOutTransition.Backward>
+                                <toolkit:SlideTransition Mode="SlideDownFadeOut" />
+                            </toolkit:NavigationOutTransition.Backward>
+                            <toolkit:NavigationOutTransition.Forward>
+                                <toolkit:SlideTransition Mode="SlideDownFadeOut" />
+                            </toolkit:NavigationOutTransition.Forward>
+                        </toolkit:NavigationOutTransition>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!--
         <Canvas x:Key="LoadingScreen" x:Name="LoadingScreen">
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="ProgressStates">
@@ -154,180 +110,53 @@
             </Border>
         </Canvas>
         -->
-        <!-- chat bubble with rounded corners -->
-        <!--
-        <Style x:Key="RoundedChatBubble" TargetType="c4f:ChatBubble">
-            <Setter Property="Background" Value="{StaticResource PhoneAccentBrush}" />
-            <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}" />
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeMediumLarge}" />
-            <Setter Property="BorderBrush" Value="{StaticResource PhoneTextBoxBrush}" />
-            <Setter Property="BorderThickness" Value="{StaticResource PhoneBorderThickness}" />
-            <Setter Property="Padding" Value="6, 2" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="c4f:ChatBubble">
-                        <Grid Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="MouseOver" />
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="ContentBorder">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentBorder">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="LowerRightPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="LowerLeftPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="UpperRightPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Fill" Storyboard.TargetName="UpperLeftPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="ChatBubbleDirectionStates">
-                                    <VisualState x:Name="UpperRight">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="UpperRightPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="UpperLeft">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="UpperLeftPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LowerRight">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="LowerRightPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LowerLeft">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="LowerLeftPath">
-                                                <DiscreteObjectKeyFrame KeyTime="0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <Visibility>Visible</Visibility>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Border x:Name="ContentBorder" Grid.Row="1" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding Background}" Background="{TemplateBinding Background}" CornerRadius="10">
-                                <ContentControl HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{StaticResource PhoneTextBoxInnerMargin}" Content="{TemplateBinding Content}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" />
-                            </Border>
-                            <Path Name="LowerRightPath" Data="M0,0 L1,1 L1,0 " Grid.Row="2" Fill="{TemplateBinding Background}" Stretch="Fill" Margin="12,0" Height="12" Width="18" Visibility="Collapsed" HorizontalAlignment="Right" />
-                            <Path Name="LowerLeftPath" Data="M0,0 L0,1 L1,0" Grid.Row="2" Fill="{TemplateBinding Background}" Stretch="Fill" Margin="12,0" Height="12" Width="18" Visibility="Collapsed" HorizontalAlignment="Left" />
-                            <Path Name="UpperLeftPath" Data="M0,0 L1,1 L0,1 " Grid.Row="0" Fill="{TemplateBinding Background}" Stretch="Fill" Margin="12,0" Height="12" Width="18" Visibility="Collapsed" HorizontalAlignment="Left" />
-                            <Path Name="UpperRightPath" Data="M0,1 L1,1 L1,0 " Grid.Row="0" Fill="{TemplateBinding Background}" Stretch="Fill" Margin="12,0" Height="12" Width="18" Visibility="Collapsed" HorizontalAlignment="Right" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        -->
-        <!-- override default style so we can wrap text -->
-        <!--
-        <Style x:Key="CustomHyperlinkButtonStyle" TargetType="HyperlinkButton">
-            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeMedium}" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="HyperlinkButton">
-                        <Border Background="Transparent">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal" />
-                                    <VisualState x:Name="MouseOver" />
-                                    <VisualState x:Name="Pressed">
-                                        <Storyboard>
-                                            <DoubleAnimation Duration="0" To="0.5" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="TextElement" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="TextElement">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Border Background="{TemplateBinding Background}" Margin="{StaticResource PhoneHorizontalMargin}" Padding="{TemplateBinding Padding}">
-                                <TextBlock x:Name="TextElement" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Text="{TemplateBinding Content}" TextDecorations="None" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" TextWrapping="Wrap" />
-                            </Border>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        -->
-        <!-- converters -->
-        <!--
-        <util:BackgroundConverter x:Key="BackgroundConverter" />
-        <util:ForegroundConverter x:Key="ForegroundConverter" />
-        <util:AlignmentConverter x:Key="AlignmentConverter" />
-        <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />  
-        <util:VisibilityConverter x:Key="VisibilityConverter"/>
-        -->
-        <util:DayOfWeekConverter x:Key="DayOfWeekConverter" />
-        <util:PrettyDateConverter x:Key="PrettyDateConverter" />
-        <util:SchemeConverter x:Key="SchemeConverter" />
-        <util:EntityConverter x:Key="EntityConverter" />
-        <util:WeatherConverter x:Key="WeatherConverter" />
-        <util:StatusConverter x:Key="StatusConverter" />
-        <util:ColorConverter x:Key="ColorConverter" />
-        <util:MarginConverter x:Key="MarginConverter" />
-        <util:VisibilityConverter x:Key="VisibilityConverter" />
-        <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter" />
-        <util:NotificationDateConverter x:Key="NotificationDateConverter" />
-        <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
-        <util:ImageConverter x:Key="ImageConverter"/>
-        <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
-        <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
 
-        <ResourceDictionary x:Key="ListTemplateDictionary" Source="/Please2;component/Templates/List.xaml" />
-        <ResourceDictionary x:Key="SingleTemplateDictionary" Source="/Please2;component/Templates/Single.xaml" />
-        <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="/Please2;component/Templates/Details.xaml" />
-        <ResourceDictionary x:Key="SchemeDictionary" Source="/Please2;component/Templates/ColorScheme.xaml" />
-   
-        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+            <!-- converters -->
+            <util:DayOfWeekConverter x:Key="DayOfWeekConverter" />
+            <util:PrettyDateConverter x:Key="PrettyDateConverter" />
+            <util:SchemeConverter x:Key="SchemeConverter" />
+            <util:EntityConverter x:Key="EntityConverter" />
+            <util:WeatherConverter x:Key="WeatherConverter" />
+            <util:StatusConverter x:Key="StatusConverter" />
+            <util:ColorConverter x:Key="ColorConverter" />
+            <util:MarginConverter x:Key="MarginConverter" />
+            <util:VisibilityConverter x:Key="VisibilityConverter" />
+            <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter" />
+            <util:NotificationDateConverter x:Key="NotificationDateConverter" />
+            <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
+            <util:ImageConverter x:Key="ImageConverter"/>
+            <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
+            <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Please2;component/Templates/ColorScheme.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/ChoiceTemplate.xaml" />
+                <!--<ResourceDictionary Source="/Please2;component/Templates/AccessoryTemplates.xaml" />-->
+                <ResourceDictionary Source="/Please2;component/Templates/DictionaryTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/EventsTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/FitbitTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/FlightsTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/FuelTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/GeopoliticsTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/HoroscopeTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/ImagesTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/MoviesTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/NewsTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/RealEstateTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/SearchTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/ShoppingTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/StockTemplate.xaml" />
+                <ResourceDictionary Source="/Please2;component/Templates/WeatherTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!--
+            <ResourceDictionary x:Key="ListTemplateDictionary" Source="/Please2;component/Templates/List.xaml" />
+            <ResourceDictionary x:Key="SingleTemplateDictionary" Source="/Please2;component/Templates/Single.xaml" />
+            <ResourceDictionary x:Key="DetailsTemplateDictionary" Source="/Please2;component/Templates/Details.xaml" />
+            -->
+        </ResourceDictionary>
     </Application.Resources>
     
     <Application.ApplicationLifetimeObjects>

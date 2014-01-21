@@ -12,12 +12,14 @@ using System.Windows.Media.Imaging;
 
 using Microsoft.Phone.Data.Linq;
 
+using GalaSoft.MvvmLight;
+
 using Please2.Models;
 using Please2.Resources;
 using Please2.Util;
 namespace Please2.ViewModels
 {
-    public class NotesViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class NotesViewModel : ViewModelBase
     {
         public ColorScheme Scheme { get { return ColorScheme.Notes; } }
 

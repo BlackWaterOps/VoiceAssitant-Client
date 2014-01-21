@@ -32,11 +32,37 @@
         
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Background="{StaticResource ContentBackground}">
-            <ContentControl x:Name="SingleContentControl" 
+            <ContentControl x:Name="SingleContentControl"
                             Margin="{Binding Margin}"
-                            HorizontalContentAlignment="Stretch" 
-                            VerticalContentAlignment="Stretch" 
-                            ContentTemplate="{Binding ContentTemplate}"/>
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Stretch"
+                            Content="{Binding Content}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate>
+                        <util:ResultsTemplateSelector Content="{Binding}"
+                                                      HorizontalContentAlignment="Stretch"
+                                                      ChoiceTemplate="{StaticResource choice}"
+                                                      DictionaryTemplate="{StaticResource dictionary}"
+                                                      EventsTemplate="{StaticResource events}"
+                                                      FitbitFoodTemplate="{StaticResource fitbitFood}"
+                                                      FitbitWeightTemplate="{StaticResource fitbitWeight}"
+                                                      FlightsTemplate="{StaticResource flights}"
+                                                      FuelTemplate="{StaticResource fuel}"
+                                                      GeopoliticsTemplate="{StaticResource geopolitics}"
+                                                      HoroscopeTemplate="{StaticResource horoscope}"
+                                                      ImagesTemplate="{StaticResource images}"
+                                                      MoviesTemplate="{StaticResource movies}"
+                                                      NewsTemplate="{StaticResource news}"
+                                                      RealEstateTemplate="{StaticResource real_estate}"
+                                                      SearchTemplate="{StaticResource search}"
+                                                      ShoppingTemplate="{StaticResource shopping}"
+                                                      StockTemplate="{StaticResource stock}"
+                                                      WeatherTemplate="{StaticResource weather}"/>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
         </Grid>
     </Grid>
 

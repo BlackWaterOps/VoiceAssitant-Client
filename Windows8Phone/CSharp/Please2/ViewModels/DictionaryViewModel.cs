@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,8 +15,10 @@ using Please2.Util;
 
 namespace Please2.ViewModels
 {
-    public class DictionaryViewModel : GalaSoft.MvvmLight.ViewModelBase, IViewModel
+    public class DictionaryViewModel : ViewModelBase, IViewModel
     {
+        public ColorScheme Scheme { get { return ColorScheme.Information; } }
+
         private string headword;
         public string Headword
         {
@@ -48,6 +52,10 @@ namespace Please2.ViewModels
             }
         }
 
+        public DictionaryViewModel()
+        {
+        }
+
         public Dictionary<string, object> Load(string templateName, Dictionary<string, object> structured)
         {
             var dictionaryResults = (structured["item"] as JObject).ToObject<DictionaryModel>();
@@ -61,7 +69,7 @@ namespace Please2.ViewModels
             var data = new Dictionary<string, object>();
 
             data.Add("title", "dictionary");
-            data.Add("scheme", ColorScheme.Information);
+            data.Add("scheme", this.Scheme);
             data.Add("margin", new Thickness(12, 24, 12, 24));
 
             return data;

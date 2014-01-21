@@ -11,6 +11,8 @@ using System.Windows;
 using Microsoft.Phone.Data.Linq;
 using Microsoft.Phone.Scheduler;
 
+using GalaSoft.MvvmLight;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,7 +23,7 @@ using Please2.Util;
 // TODO: split vm into a Reminder vm and Alarm vm which inherit Notification vm base
 namespace Please2.ViewModels
 {
-    public class NotificationsViewModel : GalaSoft.MvvmLight.ViewModelBase
+    public class NotificationsViewModel : ViewModelBase
     {
         public ColorScheme Scheme { get { return ColorScheme.Notifications; } }
 
@@ -141,6 +143,11 @@ namespace Please2.ViewModels
         }
         #endregion
 
+        public NotificationsViewModel()
+        {
+            LoadNotifications();
+        }
+
         public void LoadNotifications()
         {
             LoadReminders();
@@ -150,6 +157,7 @@ namespace Please2.ViewModels
         #region Reminders
         public void LoadReminders()
         {
+            Debug.WriteLine("load reminders");
             var query = ScheduledActionService.GetActions<Microsoft.Phone.Scheduler.Reminder>().OrderBy(x => x.BeginTime);
            
             if (query.Count() > 0)
@@ -290,7 +298,12 @@ namespace Please2.ViewModels
             }
         }
 
-        public void CreateAlarm(string name, DateTime alarmTime, RecurrenceInterval interval, string day = null)
+        public void CreateAlarm(string name, DateTime alarmTime, RecurrenceInterval interval)
+        {
+            CreateAlarm(name, alarmTime, interval, null);
+        }
+
+        public void CreateAlarm(string name, DateTime alarmTime, RecurrenceInterval interval, string day)
         {
             var alarm = new Microsoft.Phone.Scheduler.Alarm(name);
 

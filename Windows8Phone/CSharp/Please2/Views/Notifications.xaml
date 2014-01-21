@@ -50,7 +50,7 @@
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{Binding BeginTime, Converter={StaticResource NotificationBackgroundConverter}}" 
+                                <Border Background="{Binding DataContext.Scheme, ElementName=RemindersList, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}"
                                         Padding="10" 
                                         Margin="0,15,0,0"
                                         Tap="ReminderItem_Tapped">
@@ -59,33 +59,34 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                    
+                                        <!--
                                         <Image Grid.Column="0" Grid.Row="0" 
                                                Source="/Assets/feature.alarm.png" 
                                                Width="100" 
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"                                                   
                                                Opacity="{Binding BeginTime, Converter={StaticResource NotificationOpacityConverter}}"/>
+                                        -->
+                                    
+                                        <TextBlock Grid.Row="0"
+                                                   Text="{Binding Title}" 
+                                                   Foreground="White" 
+                                                   TextWrapping="NoWrap"
+                                                   TextTrimming="WordEllipsis"
+                                                   FontSize="{StaticResource PhoneFontSizeLarge}"/>
 
-                                        <StackPanel Grid.Column="1" Grid.Row="0" 
-                                                    Margin="12,0,0,0" 
-                                                    VerticalAlignment="Center">
-                                            <TextBlock 
-                                            Text="{Binding Title}" 
-                                            Foreground="White" 
-                                            TextWrapping="NoWrap"
-                                            TextTrimming="WordEllipsis"
-                                            FontSize="30" 
-                                            FontWeight="Bold"/>
-
-                                            <TextBlock 
-                                               Text="{Binding BeginTime, Converter={StaticResource NotificationDateConverter}}"
-                                               Margin="0,10,0,0" 
-                                               Foreground="White" 
-                                               FontSize="20"/>
+                                        <TextBlock Grid.Row="1"
+                                                   Text="{Binding BeginTime, Converter={StaticResource NotificationDateConverter}}"
+                                                   Margin="0,10,0,0" 
+                                                   Foreground="White" />
                                             
                                             <!--<toolkit:ToggleSwitch Click="ReminderToggle_Click"/>-->
-                                        </StackPanel>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -110,7 +111,7 @@
                                     toolkit:TiltEffect.IsTiltEnabled="True">
                         <phone:LongListSelector.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{Binding Time, Converter={StaticResource NotificationBackgroundConverter}}" 
+                                <Border Background="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagetitle}"
                                         Padding="10" 
                                         Margin="0,15,0,0"
                                         Tap="AlarmItem_Tapped">
@@ -128,7 +129,10 @@
                                         
                                         <TextBlock Grid.Row="0" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
 
-                                        <TextBlock Grid.Row="1" Text="{Binding DisplayName}"/>
+                                        <TextBlock Grid.Row="1" 
+                                                   Text="{Binding DisplayName}" 
+                                                   TextWrapping="NoWrap"
+                                                   TextTrimming="WordEllipsis"/>
                                         
                                         <TextBlock Grid.Row="2" Text="{Binding Days, Converter={StaticResource DayOfWeekConverter}}"/>
                                         <!--
