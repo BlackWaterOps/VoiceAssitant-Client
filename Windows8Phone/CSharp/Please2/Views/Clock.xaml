@@ -61,35 +61,45 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel VerticalAlignment="Center">
-                <Border Background="{StaticResource ClockFaceBackground}" 
-                        Height="350" 
-                        Width="350"
+                <Border Height="354" 
+                        Width="354"
                         BorderBrush="White" 
-                        BorderThickness="3" 
+                        BorderThickness="2" 
                         CornerRadius="200">
+                    <Border.Background>
+                        <ImageBrush ImageSource="/Assets/clock_face.png"/>
+                    </Border.Background>
 
-                    <Canvas>
-                        <Polygon x:Name="Min" Points="175,25 170,170 175,180 180,170 175,25" Stroke="White" StrokeThickness="3" Fill="DarkGreen">
+                    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Polygon x:Name="Min" Points="175,25 170,175 175,180 180,175 175,25" Stroke="Black" StrokeThickness="3" Fill="Black">
                             <Polygon.RenderTransform>
-                                <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                                <RotateTransform CenterX="175" CenterY="175" Angle="0"/>
                             </Polygon.RenderTransform>
                         </Polygon>
 
-                        <Polygon x:Name="Hour" Points="175,45 170,170 175,180 180,170 175,45" Stroke="White" StrokeThickness="3" Fill="White">
+                        <Polygon x:Name="Hour" Points="175,55 170,175 175,180 180,175 175,55" Stroke="Black" StrokeThickness="3" Fill="Black">
                             <Polygon.RenderTransform>
-                                <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                                <RotateTransform CenterX="175" CenterY="175" Angle="0"/>
                             </Polygon.RenderTransform>
                         </Polygon>
 
-                        <Polygon x:Name="Sec" Points="175,10 175,180" Stroke="Red">
+                        <Polygon x:Name="Sec" Points="175,10 175,175" Stroke="Red">
                             <Polygon.RenderTransform>
-                                <RotateTransform CenterX="175" CenterY="180" Angle="0"/>
+                                <RotateTransform CenterX="175" CenterY="175" Angle="0"/>
                             </Polygon.RenderTransform>
                         </Polygon>
+                        
+                        <Border Width="20" Height="20" CornerRadius="20" Background="Black" Canvas.Left="165" Canvas.Top="165"/>                            
                     </Canvas>
                 </Border>
                 
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock x:Name="TimeTextBlock" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                    <TextBlock x:Name="NameTextBlock" Text="{Binding TimeZoneName}" FontSize="{StaticResource PhoneFontSizeLarge}" TextTrimming="WordEllipsis" Margin="10,0,0,0"/>
+                </StackPanel>
+                <!--
                 <TextBlock x:Name="TimeTextBlock" TextAlignment="Center" Margin="0,50,0,0" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                -->
             </StackPanel>
         </Grid>
     </Grid>

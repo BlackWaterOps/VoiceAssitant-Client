@@ -12,7 +12,7 @@ using System.Windows.Threading;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
-using NodaTime;
+using TimeZones;
 
 using Please2.ViewModels;
 
@@ -36,37 +36,6 @@ namespace Please2.Views
             timer.Tick += Timer_Tick;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            string offset;
-
-            if (NavigationContext.QueryString.TryGetValue("offset", out offset))
-            {
-                try
-                {
-                    //TODO: handle dst   
-                    DateTime utc = DateTime.UtcNow;
-
-                    DateTime locale = utc.AddHours(Convert.ToDouble(offset));
-
-                    vm.Time = locale;
-                }
-                catch (Exception err)
-                {
-                    Debug.WriteLine(err.Message);
-                    vm.Time = DateTime.Now;
-                }
-            }
-            else
-            {
-                vm.Time = DateTime.Now;
-            }
-
-            timer.Start();
-        }
-
         protected void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -77,12 +46,15 @@ namespace Please2.Views
 
                 int second = vm.Time.Second;
                 SecondHand.Seek(new TimeSpan(0, 0, second));
-
+                
                 int minute = vm.Time.Minute;
                 LongHand.Seek(new TimeSpan(0, minute, second));
 
                 int hour = vm.Time.Hour;
                 HourHand.Seek(new TimeSpan(hour, minute, second));
+
+                timer.Interval = TimeSpan.FromSeconds(60 - second);
+                timer.Start();
             }
             catch (Exception err)
             {
@@ -92,16 +64,9 @@ namespace Please2.Views
 
         protected void Timer_Tick(object sender, EventArgs e)
         {
-            var timezone = TimeZoneInfo.Local;
+            vm.Time = vm.Time.AddMinutes(1);
 
-            var name = timezone.DisplayName.Substring(timezone.DisplayName.IndexOf(")")+1).Trim();
-
-            if (name != null && name != "")
-            {
-                name += " Time";
-            }
-
-            TimeTextBlock.Text = String.Format("{0} {1}", vm.Time.ToString("h:mm tt "), name);
+            timer.Interval = TimeSpan.FromMinutes(1);
         }
     }
 }
