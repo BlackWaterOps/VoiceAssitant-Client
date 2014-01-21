@@ -1,0 +1,93 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+    
+    <!-- Search -->
+    <Style x:Key="SearchTitle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="SearchUrl" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+
+    </Style>
+
+    <Style x:Key="SearchSummary" TargetType="TextBlock">
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <DataTemplate x:Key="SearchWithoutImage">
+        <Border Padding="10" Margin="0,0,0,10"
+                Background="{Binding DataContext.Scheme, ElementName=SearchListBox, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
+            <StackPanel>
+                <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
+                <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
+                <TextBlock Text="{Binding summary}" Style="{StaticResource SearchSummary}"/>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="SearchWithImage">
+        <Border Margin="0,0,0,10" Padding="10" Background="{Binding DataContext.Scheme, ElementName=SearchListBox, Converter={StaticResource SchemeConverter}, ConverterParameter=item}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Image Source="{Binding opengraph_image}" Width="104"/>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="{Binding title}" Style="{StaticResource SearchTitle}"/>
+                    <TextBlock Text="{Binding url}" Style="{StaticResource SearchUrl}"/>
+                </StackPanel>
+
+                <TextBlock Grid.ColumnSpan="3" Grid.Row="1" Text="{Binding summary}" Margin="0,10,0,0" Style="{StaticResource SearchSummary}"/>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="search">
+        <ListBox x:Name="SearchListBox"  
+                 ItemsSource="{Binding Items}"
+                 ItemContainerStyle="{StaticResource ListBoxItem}"
+                 Margin="12,24">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <util:SearchTemplateSelector Content="{Binding}" 
+                                     Image="{StaticResource SearchWithImage}" 
+                                     NoImage="{StaticResource SearchWithoutImage}"
+                                     HorizontalContentAlignment="Stretch">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Tap">
+                                <command:EventToCommand Command="{Binding DataContext.SearchItemSelection, ElementName=SearchListBox}" CommandParameter="{Binding}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </util:SearchTemplateSelector>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DataTemplate>
+</ResourceDictionary>

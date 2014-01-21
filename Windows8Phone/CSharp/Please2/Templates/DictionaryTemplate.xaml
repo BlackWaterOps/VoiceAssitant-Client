@@ -1,0 +1,74 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+
+    <DataTemplate x:Key="dictionary">
+        <Border Margin="12,24">
+            <StackPanel>
+                <TextBlock Text="{Binding Headword}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" FontWeight="Light"/>
+                <ListBox x:Name="DictionaryListBox" 
+                         ItemsSource="{Binding Senses}" 
+                         ItemContainerStyle="{StaticResource ListBoxItem}" 
+                         Height="500">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,20">
+                                    <TextBlock Text="part of speech: " FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                                    <TextBlock Text="{Binding Key}" FontSize="{StaticResource PhoneFontSizeLarge}" FontStyle="Italic"/>
+                                </StackPanel>
+
+                                <ListBox ItemsSource="{Binding Value}"
+                                         ItemContainerStyle="{StaticResource ListBoxItem}" 
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0,0,0,10"
+                                                    Padding="10" 
+                                                    HorizontalAlignment="Stretch"
+                                                    Background="{Binding DataContext.Scheme, ElementName=DictionaryListBox, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding definition}" 
+                                                               Foreground="White" 
+                                                               FontSize="{StaticResource PhoneFontSizeMedium}" 
+                                                               TextWrapping="Wrap"/>
+
+                                                    <TextBlock Text="Examples" 
+                                                               FontWeight="SemiBold" 
+                                                               Foreground="White" 
+                                                               Visibility="{Binding examples, Converter={StaticResource VisibilityConverter}}"/>
+
+                                                    <ListBox ItemsSource="{Binding examples}"
+                                                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                Margin="10,0,0,0">
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding StringFormat='&#x2022; {0}'}" Foreground="White" TextWrapping="Wrap"/>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

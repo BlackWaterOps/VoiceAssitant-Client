@@ -1,0 +1,192 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Please2.Controls"
+    xmlns:util="clr-namespace:Please2.Util"
+    xmlns:stremor="clr-namespace:Microsoft.Phone.Controls;assembly=StremorControls"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+
+    <Style x:Key="RealEstateLabel" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style x:Key="RealEstateAverageLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Average: "/>
+    </Style>
+
+    <Style x:Key="RealEstateMinLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Min: "/>
+    </Style>
+
+    <Style x:Key="RealEstateMaxLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Max: "/>
+    </Style>
+
+    <Style x:Key="RealEstateHeader" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}"/>
+    </Style>
+
+    <DataTemplate x:Key="real_estate">
+        <stremor:StremorPivot HeaderBackground="{Binding Scheme, Converter={StaticResource SchemeConverter}, ConverterParameter=pagesubtitle}">
+            <phone:PivotItem Header="Stats">
+                <ScrollViewer>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0">
+                            <TextBlock Text="Price" Style="{StaticResource RealEstateHeader}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMinLabel}"/>
+                                <TextBlock Text="{Binding Stats.price.min, StringFormat='{0:c}'}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMaxLabel}"/>
+                                <TextBlock Text="{Binding Stats.price.max, StringFormat='{0:c}'}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateAverageLabel}"/>
+                                <TextBlock Text="{Binding Stats.price.mean, StringFormat='{0:c}'}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="0" Grid.Row="2">
+                            <TextBlock Text="Square Feet" Style="{StaticResource RealEstateHeader}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMinLabel}"/>
+                                <TextBlock Text="{Binding Stats.square_feet.min, StringFormat='{0:n0}'}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMaxLabel}"/>
+                                <TextBlock Text="{Binding Stats.square_feet.max, StringFormat='{0:n0}'}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateAverageLabel}"/>
+                                <TextBlock Text="{Binding Stats.square_feet.mean, StringFormat='{0:n0}'}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="0">
+                            <TextBlock Text="Bedrooms" Style="{StaticResource RealEstateHeader}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMinLabel}"/>
+                                <TextBlock Text="{Binding Stats.bedrooms.min}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMaxLabel}"/>
+                                <TextBlock Text="{Binding Stats.bedrooms.max}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateAverageLabel}"/>
+                                <TextBlock Text="{Binding Stats.bedrooms.mean}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="2">
+                            <TextBlock Text="Bathrooms" Style="{StaticResource RealEstateHeader}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMinLabel}"/>
+                                <TextBlock Text="{Binding Stats.bathrooms.min}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateMaxLabel}"/>
+                                <TextBlock Text="{Binding Stats.bathrooms.max}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource RealEstateAverageLabel}"/>
+                                <TextBlock Text="{Binding Stats.bathrooms.mean}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </phone:PivotItem>
+
+            <phone:PivotItem Header="Listings">
+                <ListBox x:Name="RealEstateListBox"
+                         Grid.Row="1" 
+                         ItemsSource="{Binding Listings}" 
+                         ItemContainerStyle="{StaticResource ListBoxItem}"
+                         toolkit:TiltEffect.IsTiltEnabled="True">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" Margin="0,0,0,10">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Tap">
+                                        <command:EventToCommand Command="{Binding DataContext.RealEstateItemSelection, ElementName=RealEstateListBox}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <!--<ColumnDefinition Width="Auto"/>-->
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border VerticalAlignment="Center" Background="White" Width="100" Height="100">
+                                        <c4f:SuperImage Source="{Binding images, Converter={StaticResource ImageConverter}}" 
+                                                        Style="{StaticResource ThumbnailStyle}"
+                                                        HorizontalAlignment="Center"
+                                                        Stretch="UniformToFill"
+                                                        PlaceholderImageSource="/Assets/feature.camera.png"
+                                                        PlaceholderImageStretch="Uniform"/>
+                                    </Border>
+
+                                    <Border Grid.Column="1" Padding="10" Background="{Binding DataContext.Scheme, ElementName=RealEstateListBox, Converter={StaticResource SchemeConverter}, ConverterParameter=apptitle}">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding title}"
+                                                       TextTrimming="WordEllipsis"
+                                                       FontSize="{StaticResource PhoneFontSizeLarge}"
+                                                       FontWeight="Light"/>
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" Margin="0,0,10,0"/>
+                                                <TextBlock Text="{Binding attributes.bedrooms, StringFormat='{0} bed'}"/>
+                                                <TextBlock Text="{Binding attributes.bathrooms, StringFormat='/{0} bath'}"/>
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0} sq ft'}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!--<TextBlock Grid.Column="2" Foreground="Black" Text="{Binding StringFormat='0:n0'}"/>-->
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </phone:PivotItem>
+
+            <phone:PivotItem Header="Map">
+                <map:Map x:Name="RealEstateMap" 
+                         VerticalAlignment="Stretch" 
+                         VerticalContentAlignment="Stretch" 
+                         Height="400"
+                         IsHitTestVisible="False">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <command:EventToCommand Command="{Binding MapLoaded}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </map:Map>
+            </phone:PivotItem>
+        </stremor:StremorPivot>
+    </DataTemplate>
+</ResourceDictionary>
