@@ -15,8 +15,8 @@ class window.Please
 		@loader = $('.loader')
 		@board = $('.board')
 		@input = $('.main-input')
-		@dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i
-		@timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i
+		@dateRegex = /\d{4}[-]\d{2}[-]\d{2}/i
+		@timeRegex = /\d{2}[:]\d{2}[:]\d{2}/i
 		@counter = 0
 		@disableSpeech = false
 
@@ -264,7 +264,6 @@ class window.Please
 			)
 		)
 
-	# disambiguateSuccessHandler: (response, field, type) =>
 	disambiguateSuccessHandler: (response) =>
 		debuggable = ['inprogress', 'error', 'choice']
 
@@ -306,12 +305,6 @@ class window.Please
 
 		@requestHelper(@disambiguator + '/active', 'POST', postData, @disambiguateSuccessHandler)
 
-		###
-		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
-			@disambiguateSuccessHandler(response, field, type)
-		)
-		###
-
 	disambiguateCandidate: (e) =>
 		# field = @disambigContext.field
 
@@ -349,12 +342,6 @@ class window.Please
 			payload: text
 
 		@requestHelper(@personal + 'disambiguate', 'POST', postData, @disambiguateSuccessHandler)
-		
-		###
-		@requestHelper(@personal + 'disambiguate', 'POST', postData, (response) =>
-			@disambiguateSuccessHandler(response, field, type)
-		)
-		###
 
 	disambiguatePassive: (e) =>	
 		data = e.response
@@ -370,12 +357,6 @@ class window.Please
 			payload: text
 
 		@requestHelper(@disambiguator + '/passive', 'POST', postData, @disambiguateSuccessHandler)
-		
-		###
-		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
-			@disambiguateSuccessHandler(response, field, type)
-		)
-		###
 
 	choose: (e) =>
 		data = e.response
@@ -555,9 +536,6 @@ class window.Please
 		@lon = position.coords.longitude
 	
 	isEqual: (object1, object2) =>
-		# console.log(JSON.stringify(object1))
-		# console.log(JSON.stringify(object2))
-
 		JSON.stringify(object1) is JSON.stringify(object2)
 
 	reduce: (fun, iterable, initial) =>
@@ -659,10 +637,11 @@ class window.Please
 			@loader.hide()
 			@mainContext = null
 		)
-
+	###
 	operators = 
 		"+": (left, right) -> parseInt(left, 10) + parseInt(right, 10)
 		"-": (left, right) -> parseInt(left, 10) - parseInt(right, 10)
+	###
 
 	toISOString: (dateObj) =>
 		pad = (number) ->
@@ -722,15 +701,177 @@ class window.Please
 			date = pair[0]
 			time = pair[1]
 
+			if Object.prototype.toString.call(time) is "[object Array]"
+				continue
+
 			if payload[date]? or payload[time]?
+				includeDate = true
+				includeTime = true
+
+				if not payload[date]?
+					console.log("dont include " + date)
+					includeDate = false
+
+				if not payload[time]?
+					console.log("dont include " + time)
+					includeTime = false
+
 				datetime = @buildDatetime(payload[date], payload[time])
 
-				if datetime?
-					payload[date] = datetime.date if payload[date]?
-					payload[time] = datetime.time if payload[time]?
+				payload[date] = datetime[0] if includeDate is true
+					
+				payload[time] = datetime[1] if includeTime is true
 
 		return payload
 	
+	buildDatetime: (dateO, timeO) =>
+		now = new Date()
+
+		date = null
+		time = null
+
+		dateType = Object.prototype.toString.call(dateO)
+		timeType = Object.prototype.toString.call(timeO)
+
+		if dateType is "[object String]"
+			if dateO is "#date_now"
+				date = now
+			else if dateRegex.test(dateO)
+				dateSplit = dateO.split("-")
+
+				date = new Date(dateSplit[0], dateSplit[1], dateSplit[2])
+		else if dateType is "[object Object]"
+			date = @parseDateObject(dateO, now)
+
+		if timeType is "[object String]"
+			if timeO is "#time_now"
+				time = now
+			else if timeRegex.test(timeO)
+				timeSplit = timeO.split(":")
+
+				time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeSplit[0], timeSplit[1])
+		else if timeType is "[object Object]"
+			hasDate = if date? then true else false
+				
+			baseDate = if hasDate then date else now
+
+			ret = @parseTimeObject(timeO, baseDate, now)
+
+			if (ret isnt null)
+				time = ret
+
+				date = ret if hasDate
+
+		dString = null
+		tString = null
+
+		if date?
+			console.log("date", date)
+			date = @toISOString(date)
+			dString = date.split("T")[0]
+
+		if time?
+			console.log("time", time)
+			time = @toISOString(time)
+			tString = time.split("T")[1]
+
+		return [dString, tString]
+		
+
+	parseDateObject: (dateO, now) =>
+		return @parseDateWeekdayObject(dateO, now) if dateO["#date_weekday"]?
+
+		return @parseDateAddObject(dateO, now) if dateO["#date_add"]?
+
+		return null
+
+	parseDateWeekdayObject: (obj, now) =>
+		dayOfWeek = obj["#date_weekday"]
+
+		currentDay = now.getDay()
+		currentDate = now.getDate()
+		
+		if dayOfWeek isnt currentDay
+			offset = if currentDay < dayOfWeek then (dayOfWeek - currentDay) else (7 - (currentDay - dayOfWeek))
+		
+			now.setDate(currentDate + offset)
+
+		return now
+
+	parseDateAddObject: (obj, now) =>
+		operands = obj["#date_add"]
+
+		base = operands[0]
+
+		baseDate = null
+
+		if base["#date_weekday"]?
+			baseDate = @parseDateObject(first, now)
+		else if base is "#date_now"
+			baseDate = now
+
+		return null if baseDate is null
+
+		baseDate.setDate(baseDate.getDate() + parseInt(operands[1], 10))
+
+		return baseDate
+
+	parseTimeObject: (timeO, baseDate, now) =>
+		return @parseTimeAddObject(timeO, baseDate, now) if timeO["#time_add"]?
+
+		return @parseTimeFuzzyObject(timeO, baseDate, now) if timeO["#fuzzy_time"]?
+
+		return null
+
+	parseTimeAddObject: (obj, baseDate, now) =>
+		operands = obj["#time_add"]
+
+		base = operands[0]
+
+		baseDateTime = null
+
+		if first["#fuzzy_time"]?
+			baseDateTime = @parseTimeObject(first, baseDate, now)
+		else if first is "#time_now"
+			baseDateTime = now
+
+		return null if baseDateTime is null
+
+		baseDateTime.setSeconds(baseDateTime.getSeconds() + parseInt(operands[1], 10))
+
+		return baseDateTime
+
+	parseTimeFuzzyObject: (obj, baseDate, now) =>
+		label = obj["label"]
+
+		def = obj["default"]
+
+		defaultSplit = def.split(":")
+
+		defaultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), defaultSplit[0], defaultSplit[1])
+
+		time = @getFuzzyTimeValue(label, now)
+
+		datetime = if time is null then defaultTime else time
+
+		baseDate.setHours(datetime.getHours())
+		baseDate.setMinutes(datetime.getMinutes())
+		baseDate.setSeconds(datetime.getSeconds())
+
+		return baseDate
+
+	getFuzzyTimeValue: (label, now) =>
+		presetLabel = @presets[label]
+		
+		if presetLabel?
+			presetSplit = presetLabel.split(":")
+
+			return new Date(now.getFullYear(), now.getMonth(), now.getDate(), presetSplit[0], presetSplit[1])
+
+		return null
+
+
+	###
 	buildDatetime: (date, time) =>
 		newDate = null
 
@@ -744,7 +885,7 @@ class window.Please
 		
 		date: dateString[0]
 		time: dateString[1]
-
+	
 	# #date-add: {[{#weekday:1}, [1, 'day']]}
 	weekdayHelper: (dayOfWeek) =>
 		date = new Date();
@@ -818,6 +959,7 @@ class window.Please
 
 		return if newDate is null or newDate is undefined then new Date() else newDate
 
+
 	# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
 	datetimeHelper: (dateOrTime, newDate = null) =>
 		#@log dateOrTime
@@ -874,6 +1016,7 @@ class window.Please
 										newDate.setDate(date)
 
 		return newDate
+	###
 
 	elapsedTimeHelper: (dateString) =>
 		formatted = @formatDate(dateString)

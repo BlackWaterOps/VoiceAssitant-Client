@@ -3,17 +3,18 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.Please = (function() {
-    var operators;
-
     function Please(options) {
       this.error = __bind(this.error, this);
       this.log = __bind(this.log, this);
       this.formatDate = __bind(this.formatDate, this);
       this.elapsedTimeHelper = __bind(this.elapsedTimeHelper, this);
-      this.datetimeHelper = __bind(this.datetimeHelper, this);
-      this.newDateHelper = __bind(this.newDateHelper, this);
-      this.fuzzyHelper = __bind(this.fuzzyHelper, this);
-      this.weekdayHelper = __bind(this.weekdayHelper, this);
+      this.getFuzzyTimeValue = __bind(this.getFuzzyTimeValue, this);
+      this.parseTimeFuzzyObject = __bind(this.parseTimeFuzzyObject, this);
+      this.parseTimeAddObject = __bind(this.parseTimeAddObject, this);
+      this.parseTimeObject = __bind(this.parseTimeObject, this);
+      this.parseDateAddObject = __bind(this.parseDateAddObject, this);
+      this.parseDateWeekdayObject = __bind(this.parseDateWeekdayObject, this);
+      this.parseDateObject = __bind(this.parseDateObject, this);
       this.buildDatetime = __bind(this.buildDatetime, this);
       this.replaceDates = __bind(this.replaceDates, this);
       this.replaceLocation = __bind(this.replaceLocation, this);
@@ -68,8 +69,8 @@
       this.loader = $('.loader');
       this.board = $('.board');
       this.input = $('.main-input');
-      this.dateRegex = /\d{2,4}[-]\d{2}[-]\d{2}/i;
-      this.timeRegex = /\d{1,2}[:]\d{2}[:]\d{2}/i;
+      this.dateRegex = /\d{4}[-]\d{2}[-]\d{2}/i;
+      this.timeRegex = /\d{2}[:]\d{2}[:]\d{2}/i;
       this.counter = 0;
       this.disableSpeech = false;
       this.currentState = {
@@ -347,12 +348,6 @@
         type: type
       };
       return this.requestHelper(this.disambiguator + '/active', 'POST', postData, this.disambiguateSuccessHandler);
-      /*
-      		@requestHelper(@disambiguator + '/active', 'POST', postData, (response) =>
-      			@disambiguateSuccessHandler(response, field, type)
-      		)
-      */
-
     };
 
     Please.prototype.disambiguateCandidate = function(e) {
@@ -385,12 +380,6 @@
         payload: text
       };
       return this.requestHelper(this.personal + 'disambiguate', 'POST', postData, this.disambiguateSuccessHandler);
-      /*
-      		@requestHelper(@personal + 'disambiguate', 'POST', postData, (response) =>
-      			@disambiguateSuccessHandler(response, field, type)
-      		)
-      */
-
     };
 
     Please.prototype.disambiguatePassive = function(e) {
@@ -404,12 +393,6 @@
         payload: text
       };
       return this.requestHelper(this.disambiguator + '/passive', 'POST', postData, this.disambiguateSuccessHandler);
-      /*
-      		@requestHelper(@disambiguator + '/passive', 'POST', postData, (response) =>
-      			@disambiguateSuccessHandler(response, field, type)
-      		)
-      */
-
     };
 
     Please.prototype.choose = function(e) {
@@ -696,14 +679,12 @@
       });
     };
 
-    operators = {
-      "+": function(left, right) {
-        return parseInt(left, 10) + parseInt(right, 10);
-      },
-      "-": function(left, right) {
-        return parseInt(left, 10) - parseInt(right, 10);
-      }
-    };
+    /*
+    	operators = 
+    		"+": (left, right) -> parseInt(left, 10) + parseInt(right, 10)
+    		"-": (left, right) -> parseInt(left, 10) - parseInt(right, 10)
+    */
+
 
     Please.prototype.toISOString = function(dateObj) {
       var pad;
@@ -750,183 +731,325 @@
     };
 
     Please.prototype.replaceDates = function(payload) {
-      var date, datetime, datetimes, pair, time, _i, _len;
+      var date, datetime, datetimes, includeDate, includeTime, pair, time, _i, _len;
       datetimes = [['date', 'time'], ['start_date', 'start_time'], ['end_date', 'end_time']];
       for (_i = 0, _len = datetimes.length; _i < _len; _i++) {
         pair = datetimes[_i];
         date = pair[0];
         time = pair[1];
+        if (Object.prototype.toString.call(time) === "[object Array]") {
+          continue;
+        }
         if ((payload[date] != null) || (payload[time] != null)) {
+          includeDate = true;
+          includeTime = true;
+          if (payload[date] == null) {
+            console.log("dont include " + date);
+            includeDate = false;
+          }
+          if (payload[time] == null) {
+            console.log("dont include " + time);
+            includeTime = false;
+          }
           datetime = this.buildDatetime(payload[date], payload[time]);
-          if (datetime != null) {
-            if (payload[date] != null) {
-              payload[date] = datetime.date;
-            }
-            if (payload[time] != null) {
-              payload[time] = datetime.time;
-            }
+          if (includeDate === true) {
+            payload[date] = datetime[0];
+          }
+          if (includeTime === true) {
+            payload[time] = datetime[1];
           }
         }
       }
       return payload;
     };
 
-    Please.prototype.buildDatetime = function(date, time) {
-      var dateString, newDate;
-      newDate = null;
-      if (date !== null && date !== void 0 && this.dateRegex.test(date) === false) {
-        newDate = this.datetimeHelper(date);
-      }
-      if (time !== null && time !== void 0 && this.timeRegex.test(time) === false) {
-        newDate = this.datetimeHelper(time, newDate);
-      }
-      if (newDate == null) {
-        return;
-      }
-      dateString = this.toISOString(newDate).split('T');
-      return {
-        date: dateString[0],
-        time: dateString[1]
-      };
-    };
-
-    Please.prototype.weekdayHelper = function(dayOfWeek) {
-      var currentDate, currentDay, date, offset;
-      date = new Date();
-      currentDay = date.getDay();
-      currentDate = date.getDate();
-      offset = currentDay < dayOfWeek ? dayOfWeek - currentDay : 7 - (currentDay - dayOfWeek);
-      date.setDate(currentDate + offset);
-      return date;
-    };
-
-    Please.prototype.fuzzyHelper = function(datetime, isDate) {
-      var date, datetimeArr, def, key, label, preference, presetLabel, splitSym, val;
-      date = new Date();
-      label = null;
-      def = null;
-      for (key in datetime) {
-        val = datetime[key];
-        if (key === 'label') {
-          label = val;
+    Please.prototype.buildDatetime = function(dateO, timeO) {
+      var baseDate, dString, date, dateSplit, dateType, hasDate, now, ret, tString, time, timeSplit, timeType;
+      now = new Date();
+      date = null;
+      time = null;
+      dateType = Object.prototype.toString.call(dateO);
+      timeType = Object.prototype.toString.call(timeO);
+      if (dateType === "[object String]") {
+        if (dateO === "#date_now") {
+          date = now;
+        } else if (dateRegex.test(dateO)) {
+          dateSplit = dateO.split("-");
+          date = new Date(dateSplit[0], dateSplit[1], dateSplit[2]);
         }
-        if (key === 'default') {
-          def = val;
+      } else if (dateType === "[object Object]") {
+        date = this.parseDateObject(dateO, now);
+      }
+      if (timeType === "[object String]") {
+        if (timeO === "#time_now") {
+          time = now;
+        } else if (timeRegex.test(timeO)) {
+          timeSplit = timeO.split(":");
+          time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeSplit[0], timeSplit[1]);
+        }
+      } else if (timeType === "[object Object]") {
+        hasDate = date != null ? true : false;
+        baseDate = hasDate ? date : now;
+        ret = this.parseTimeObject(timeO, baseDate, now);
+        if (ret !== null) {
+          time = ret;
+          if (hasDate) {
+            date = ret;
+          }
         }
       }
+      dString = null;
+      tString = null;
+      if (date != null) {
+        console.log("date", date);
+        date = this.toISOString(date);
+        dString = date.split("T")[0];
+      }
+      if (time != null) {
+        console.log("time", time);
+        time = this.toISOString(time);
+        tString = time.split("T")[1];
+      }
+      return [dString, tString];
+    };
+
+    Please.prototype.parseDateObject = function(dateO, now) {
+      if (dateO["#date_weekday"] != null) {
+        return this.parseDateWeekdayObject(dateO, now);
+      }
+      if (dateO["#date_add"] != null) {
+        return this.parseDateAddObject(dateO, now);
+      }
+      return null;
+    };
+
+    Please.prototype.parseDateWeekdayObject = function(obj, now) {
+      var currentDate, currentDay, dayOfWeek, offset;
+      dayOfWeek = obj["#date_weekday"];
+      currentDay = now.getDay();
+      currentDate = now.getDate();
+      if (dayOfWeek !== currentDay) {
+        offset = currentDay < dayOfWeek ? dayOfWeek - currentDay : 7 - (currentDay - dayOfWeek);
+        now.setDate(currentDate + offset);
+      }
+      return now;
+    };
+
+    Please.prototype.parseDateAddObject = function(obj, now) {
+      var base, baseDate, operands;
+      operands = obj["#date_add"];
+      base = operands[0];
+      baseDate = null;
+      if (base["#date_weekday"] != null) {
+        baseDate = this.parseDateObject(first, now);
+      } else if (base === "#date_now") {
+        baseDate = now;
+      }
+      if (baseDate === null) {
+        return null;
+      }
+      baseDate.setDate(baseDate.getDate() + parseInt(operands[1], 10));
+      return baseDate;
+    };
+
+    Please.prototype.parseTimeObject = function(timeO, baseDate, now) {
+      if (timeO["#time_add"] != null) {
+        return this.parseTimeAddObject(timeO, baseDate, now);
+      }
+      if (timeO["#fuzzy_time"] != null) {
+        return this.parseTimeFuzzyObject(timeO, baseDate, now);
+      }
+      return null;
+    };
+
+    Please.prototype.parseTimeAddObject = function(obj, baseDate, now) {
+      var base, baseDateTime, operands;
+      operands = obj["#time_add"];
+      base = operands[0];
+      baseDateTime = null;
+      if (first["#fuzzy_time"] != null) {
+        baseDateTime = this.parseTimeObject(first, baseDate, now);
+      } else if (first === "#time_now") {
+        baseDateTime = now;
+      }
+      if (baseDateTime === null) {
+        return null;
+      }
+      baseDateTime.setSeconds(baseDateTime.getSeconds() + parseInt(operands[1], 10));
+      return baseDateTime;
+    };
+
+    Please.prototype.parseTimeFuzzyObject = function(obj, baseDate, now) {
+      var datetime, def, defaultSplit, defaultTime, label, time;
+      label = obj["label"];
+      def = obj["default"];
+      defaultSplit = def.split(":");
+      defaultTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), defaultSplit[0], defaultSplit[1]);
+      time = this.getFuzzyTimeValue(label, now);
+      datetime = time === null ? defaultTime : time;
+      baseDate.setHours(datetime.getHours());
+      baseDate.setMinutes(datetime.getMinutes());
+      baseDate.setSeconds(datetime.getSeconds());
+      return baseDate;
+    };
+
+    Please.prototype.getFuzzyTimeValue = function(label, now) {
+      var presetLabel, presetSplit;
       presetLabel = this.presets[label];
-      preference = presetLabel != null ? presetLabel : def;
-      if (preference === null) {
-        return;
+      if (presetLabel != null) {
+        presetSplit = presetLabel.split(":");
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), presetSplit[0], presetSplit[1]);
       }
-      splitSym = isDate === true ? '-' : ':';
-      datetimeArr = preference.trim().split(splitSym);
-      if (isDate === true) {
-        date.setFullYear(datetimeArr[0]);
-        date.setMonth(datetimeArr[1] - 1);
-        date.setDate(datetimeArr[2]);
-      } else {
-        date.setHours(datetimeArr[0]);
-        date.setMinutes(datetimeArr[1]);
-        date.setSeconds(datetimeArr[2]);
-      }
-      return date;
+      return null;
     };
 
-    Please.prototype.newDateHelper = function(datetime) {
-      var hours, minutes, newDate, seconds, split;
-      if (datetime.indexOf('now') !== -1) {
-        newDate = new Date();
-      } else if (this.dateRegex.test(datetime) === true) {
-        split = datetime.split('-');
-        newDate = new Date(split[0], split[1] - 1, split[2]);
-      } else if (this.timeRegex.test(datetime) === true) {
-        newDate = new Date();
-        split = datetime.split(':');
-        hours = newDate.getHours();
-        minutes = newDate.getMinutes();
-        seconds = newDate.getSeconds();
-        if ((hours > split[0]) || (hours === split[0] && minutes > split[1])) {
-          newDate.setDate(newDate.getDate() + 1);
-        }
-        newDate.setHours(split[0]);
-        newDate.setMinutes(split[1]);
-        newDate.setSeconds(split[2]);
-      }
-      if (newDate === null || newDate === void 0) {
-        return new Date();
-      } else {
-        return newDate;
-      }
-    };
+    /*
+    	buildDatetime: (date, time) =>
+    		newDate = null
+    
+    		newDate = @datetimeHelper(date) if date isnt null and date isnt undefined and @dateRegex.test(date) is false
+    
+    		newDate = @datetimeHelper(time, newDate) if time isnt null and time isnt undefined and @timeRegex.test(time) is false
+    
+    		return if not newDate?
+    
+    		dateString = @toISOString(newDate).split('T')
+    		
+    		date: dateString[0]
+    		time: dateString[1]
+    	
+    	# #date-add: {[{#weekday:1}, [1, 'day']]}
+    	weekdayHelper: (dayOfWeek) =>
+    		date = new Date();
+    
+    		currentDay = date.getDay()
+    		currentDate = date.getDate()
+    
+    		# return date if currentDay is dayOfWeek
+    		
+    		offset = if currentDay < dayOfWeek then (dayOfWeek - currentDay) else (7 - (currentDay - dayOfWeek))
+    		
+    		date.setDate(currentDate + offset)
+    
+    		return date
+    
+    	fuzzyHelper: (datetime, isDate) =>
+    		date = new Date()
+    
+    		label = null
+    		def = null
+    
+    		for key, val of datetime
+    			label = val if key is 'label'
+    			def = val if key is 'default'
+    
+    		presetLabel = @presets[label]
+    		preference = if presetLabel? then presetLabel else def
+    				
+    		if preference is null
+    			return
+    
+    		splitSym = if isDate is true then '-' else ':'
+    
+    		datetimeArr = preference.trim().split(splitSym)
+    
+    		if isDate is true
+    			date.setFullYear datetimeArr[0]
+    			date.setMonth (datetimeArr[1] - 1)
+    			date.setDate datetimeArr[2]
+    		else
+    			date.setHours datetimeArr[0]
+    			date.setMinutes datetimeArr[1]
+    			date.setSeconds datetimeArr[2]
+    
+    		return date
+    	
+    	newDateHelper: (datetime) =>
+    		if datetime.indexOf('now') isnt -1
+    			newDate = new Date();
+    
+    		else if @dateRegex.test(datetime) is true
+    			split = datetime.split('-')
+    			newDate = new Date(split[0], (split[1]-1), split[2])
+    
+    		else if @timeRegex.test(datetime) is true
+    			newDate = new Date();
+    			split = datetime.split(':')
+    			hours = newDate.getHours()
+    			minutes = newDate.getMinutes()
+    			seconds = newDate.getSeconds()
+    
+    			if (hours > split[0]) or (hours is split[0] and minutes > split[1])
+    				# move date up one day
+    				newDate.setDate(newDate.getDate() + 1);
+    
+    			newDate.setHours split[0]
+    			newDate.setMinutes split[1]
+    			newDate.setSeconds split[2]
+    
+    		#@log 'newDate bottom', newDate
+    
+    		return if newDate is null or newDate is undefined then new Date() else newDate
+    
+    
+    	# {'#time_add': [{'#time_fuzzy': {'label': 'dinner', 'default': '19:00:00'}}, 3600]}
+    	datetimeHelper: (dateOrTime, newDate = null) =>
+    		#@log dateOrTime
+    
+    		dateOrTimeType = Object.prototype.toString.call(dateOrTime)
+    
+    		switch (dateOrTimeType)
+    			when '[object String]'
+    				if newDate is null
+    					newDate = @newDateHelper dateOrTime
+    
+    			when '[object Object]'
+    				for action, parsable of dateOrTime
+    					if action.indexOf('weekday') isnt -1
+    						return @weekdayHelper parsable
+    					else if action.indexOf('fuzzy') isnt -1
+    						isDate = if action.indexOf('date') isnt -1 then true else false 
+    						return @fuzzyHelper parsable, isDate
+    					else
+    						operator = if action.indexOf('add') isnt -1 then '+' else '-'
+    
+    						parsableType = Object.prototype.toString.call(parsable)
+    
+    						if parsableType is '[object Array]' # date partials
+    							for item in parsable
+    								itemType = Object.prototype.toString.call(item);
+    
+    								if newDate is null 
+    									switch itemType
+    										when '[object String]' # 'now' or '2013-07-01'
+    											newDate = @newDateHelper item
+    										when '[object Object]' #weekday, #fuzzy operators
+    											for itemKey, itemValue of item
+    												if newDate is null
+    													if itemKey.indexOf('weekday') isnt -1
+    														newDate = @weekdayHelper itemValue
+    													else if itemKey.indexOf('fuzzy') isnt -1
+    														isDate = if itemKey.indexOf('date') isnt -1 then true else false 
+    														newDate = @fuzzyHelper itemValue, isDate
+    								
+    								else if itemType is '[object Number]' # dates to add to Date object 
+    									interval = item
+    									
+    									if interval is null 
+    										return
+    
+    									if action.indexOf('time') isnt -1
+    										curr = newDate.getSeconds()
+    										time = operators[operator](curr, interval)
+    										newDate.setSeconds(time)
+    									else if action.indexOf('date') isnt -1
+    										curr = newDate.getDate()
+    										date = operators[operator](curr, interval)
+    										newDate.setDate(date)
+    
+    		return newDate
+    */
 
-    Please.prototype.datetimeHelper = function(dateOrTime, newDate) {
-      var action, curr, date, dateOrTimeType, interval, isDate, item, itemKey, itemType, itemValue, operator, parsable, parsableType, time, _i, _len;
-      if (newDate == null) {
-        newDate = null;
-      }
-      dateOrTimeType = Object.prototype.toString.call(dateOrTime);
-      switch (dateOrTimeType) {
-        case '[object String]':
-          if (newDate === null) {
-            newDate = this.newDateHelper(dateOrTime);
-          }
-          break;
-        case '[object Object]':
-          for (action in dateOrTime) {
-            parsable = dateOrTime[action];
-            if (action.indexOf('weekday') !== -1) {
-              return this.weekdayHelper(parsable);
-            } else if (action.indexOf('fuzzy') !== -1) {
-              isDate = action.indexOf('date') !== -1 ? true : false;
-              return this.fuzzyHelper(parsable, isDate);
-            } else {
-              operator = action.indexOf('add') !== -1 ? '+' : '-';
-              parsableType = Object.prototype.toString.call(parsable);
-              if (parsableType === '[object Array]') {
-                for (_i = 0, _len = parsable.length; _i < _len; _i++) {
-                  item = parsable[_i];
-                  itemType = Object.prototype.toString.call(item);
-                  if (newDate === null) {
-                    switch (itemType) {
-                      case '[object String]':
-                        newDate = this.newDateHelper(item);
-                        break;
-                      case '[object Object]':
-                        for (itemKey in item) {
-                          itemValue = item[itemKey];
-                          if (newDate === null) {
-                            if (itemKey.indexOf('weekday') !== -1) {
-                              newDate = this.weekdayHelper(itemValue);
-                            } else if (itemKey.indexOf('fuzzy') !== -1) {
-                              isDate = itemKey.indexOf('date') !== -1 ? true : false;
-                              newDate = this.fuzzyHelper(itemValue, isDate);
-                            }
-                          }
-                        }
-                    }
-                  } else if (itemType === '[object Number]') {
-                    interval = item;
-                    if (interval === null) {
-                      return;
-                    }
-                    if (action.indexOf('time') !== -1) {
-                      curr = newDate.getSeconds();
-                      time = operators[operator](curr, interval);
-                      newDate.setSeconds(time);
-                    } else if (action.indexOf('date') !== -1) {
-                      curr = newDate.getDate();
-                      date = operators[operator](curr, interval);
-                      newDate.setDate(date);
-                    }
-                  }
-                }
-              }
-            }
-          }
-      }
-      return newDate;
-    };
 
     Please.prototype.elapsedTimeHelper = function(dateString) {
       var dTime, dt, formatted, origPubdate, origPubtime, pTime, pubdate, pubtime, uTime, ut;
