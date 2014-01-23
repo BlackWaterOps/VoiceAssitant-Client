@@ -40,7 +40,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
+                    <!--
                     <StackPanel x:Name="GeneralStackPanel">
                         <TextBlock Text="Temperature"/>
                         
@@ -56,7 +56,7 @@
                             <toolkit:ListPickerItem Content="kilometers"/>
                         </toolkit:ListPicker>
                     </StackPanel>
-
+                    -->
                     <StackPanel x:Name="AccountsStackPanel" Grid.Row="1">
                         <TextBlock Text="Accounts" FontSize="{StaticResource PhoneFontSizeLarge}" FontWeight="Bold"/>
 
