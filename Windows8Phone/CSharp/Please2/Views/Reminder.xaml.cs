@@ -41,8 +41,6 @@ namespace Please2.Views
                 AddDeleteSaveButtons();
 
                 currentReminder = vm.GetReminder(name);
-
-                vm.SetCurrentReminder(name);
             }
             else
             {

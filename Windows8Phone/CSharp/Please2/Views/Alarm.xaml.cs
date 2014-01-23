@@ -44,8 +44,6 @@ namespace Please2.Views
                 AddDeleteSaveButtons();
 
                 this.currentAlarmID = int.Parse(alarmID);
-
-                vm.SetCurrentAlarm(alarmID);
             }
             else
             {
