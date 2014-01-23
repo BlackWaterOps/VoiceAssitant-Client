@@ -30,8 +30,9 @@ namespace Please2.ViewModels
     /// </summary>
     public class ViewModelLocator
     {
+        //TODO: remove
         public static ResourceDictionary ListTemplates = App.Current.Resources["ListTemplateDictionary"] as ResourceDictionary;
-
+        //TODO: remove
         public static ResourceDictionary SingleTemplates = App.Current.Resources["SingleTemplateDictionary"] as ResourceDictionary;
 
         public static ResourceDictionary DetailsTemplates = App.Current.Resources["DetailsTemplateDictionary"] as ResourceDictionary;
@@ -46,6 +47,12 @@ namespace Please2.ViewModels
 
         public const string NotificationsUri = @"/Views/Notifications.xaml?{0}={1}";
 
+        public const string ReminderUri = @"/Views/Reminder.xaml?name={0}";
+
+        public const string AlarmUri = @"/Views/Alarm.xaml?id={0}";
+
+        public const string TimeUri = @"/Views/Clock.xaml?id={0}";
+
         public static readonly Uri MainMenuPageUri = new Uri("/MainMenu.xaml", UriKind.Relative);
 
         public static readonly Uri ConversationPageUri = new Uri("/Views/Conversation.xaml", UriKind.Relative);
@@ -57,7 +64,7 @@ namespace Please2.ViewModels
 
         public static readonly Uri NotificationsPageUri = new Uri("/Views/Notifications.xaml", UriKind.Relative);
 
-        public static readonly Uri TimePageUri = new Uri("/Views/Clock.xaml", UriKind.Relative);
+        //public static readonly Uri TimePageUri = new Uri("/Views/Clock.xaml", UriKind.Relative);
         
         public static readonly Uri AlarmPageUri = new Uri("/Views/Alarm.xaml", UriKind.Relative);
 
