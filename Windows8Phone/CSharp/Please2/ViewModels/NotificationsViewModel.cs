@@ -27,7 +27,7 @@ namespace Please2.ViewModels
     {
         public ColorScheme Scheme { get { return ColorScheme.Notifications; } }
 
-        private DatabaseModel db = new DatabaseModel(AppResources.DataStore);
+        public DatabaseModel db = new DatabaseModel(AppResources.DataStore);
 
         #region Alarm Properties
         private string alarmName;
@@ -176,9 +176,23 @@ namespace Please2.ViewModels
         {
             Microsoft.Phone.Scheduler.Reminder reminder = GetReminder(name);
 
+            SetCurrentReminder(reminder, null);
+        }
+
+        public void SetCurrentReminder(Microsoft.Phone.Scheduler.Reminder reminder, DateTime? newDateTime)
+        {
             ReminderSubject = reminder.Title;
-            ReminderDate = reminder.BeginTime;
-            ReminderTime = reminder.BeginTime;
+
+            if (newDateTime.HasValue)
+            {
+                ReminderDate = newDateTime.Value;
+                ReminderTime = newDateTime.Value;
+            }
+            else
+            {
+                ReminderDate = reminder.BeginTime;
+                ReminderTime = reminder.BeginTime;
+            }
         }
 
         public void CreateReminder(DateTime reminderDate, string title)
@@ -257,6 +271,11 @@ namespace Please2.ViewModels
         #region Alarms
         public void LoadAlarms()
         {
+            LoadAlarms(null);
+        }
+
+        public void LoadAlarms(DateTime? atTime)
+        {
             try
             {
                 if (db.DatabaseExists() == false)
@@ -264,25 +283,19 @@ namespace Please2.ViewModels
                     db.CreateDatabase();
                 }
 
-                IQueryable<AlarmItem> query = from a in db.Alarms select a;
+                IEnumerable<AlarmItem> query;
+
+                if (atTime.HasValue)
+                {
+                    query = (from a in db.Alarms select a).AsEnumerable().Where(x => x.Time.ToString("hh:mm") == atTime.Value.ToString("hh:mm"));
+                }
+                else
+                {
+                   query = from a in db.Alarms select a;
+                }
 
                 if (query.Count() > 0)
                 {
-                    // TODO: order by beginDate
-                    // IOrderedQueryable<Please2.Models.Alarm> orderedQuery = query.OrderBy(cat => cat.OrderID);
-
-                    // hack to force the entityset enumeration for days and names
-                    /*
-                    foreach (var item in query)
-                    {
-                        foreach (var day in item.Days)
-                        { }
-
-                        foreach (var name in item.Names)
-                        { }
-                    }
-                    */
-
                     Alarms = new ObservableCollection<AlarmItem>(query);
                 }
                 else
@@ -320,7 +333,12 @@ namespace Please2.ViewModels
 
             AlarmItem alarm = GetAlarm(idInt);
 
-            AlarmTime = alarm.Time;
+            SetCurrentAlarm(alarm, null);
+        }
+
+        public void SetCurrentAlarm(AlarmItem alarm, DateTime? newTime)
+        {
+            AlarmTime = (newTime.HasValue) ? newTime.Value : alarm.Time;
 
             AlarmName = alarm.DisplayName;
 
