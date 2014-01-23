@@ -93,9 +93,9 @@
                     </Canvas>
                 </Border>
                 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock x:Name="TimeTextBlock" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
-                    <TextBlock x:Name="NameTextBlock" Text="{Binding TimeZoneName}" FontSize="{StaticResource PhoneFontSizeLarge}" TextTrimming="WordEllipsis" Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <TextBlock x:Name="TimeTextBlock" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+                    <TextBlock x:Name="NameTextBlock" Text="{Binding TimeZoneName}" FontSize="{StaticResource PhoneFontSizeMedium}" TextTrimming="WordEllipsis" Margin="10,0,0,0"/>
                 </StackPanel>
                 <!--
                 <TextBlock x:Name="TimeTextBlock" TextAlignment="Center" Margin="0,50,0,0" FontSize="{StaticResource PhoneFontSizeLarge}"/>
