@@ -33,6 +33,11 @@ namespace Please2.Views
 
             string value;
 
+            if (e.NavigationMode == NavigationMode.Back)
+            {
+                Debug.WriteLine(App.RootFrame.BackStack.First());
+            }
+
             if (e.NavigationMode != NavigationMode.Back)
             {
                 if (NavigationContext.QueryString.TryGetValue("index", out value))
@@ -102,7 +107,9 @@ namespace Please2.Views
         {
             var reminder = (sender as FrameworkElement).DataContext as Microsoft.Phone.Scheduler.Reminder;
 
-            NavigationService.Navigate(new Uri(String.Format("/Views/Reminder.xaml?name={0}", reminder.Name), UriKind.Relative));
+            vm.SetCurrentReminder(reminder, null);
+
+            NavigationService.Navigate(new Uri(String.Format(ViewModelLocator.ReminderUri, reminder.Name), UriKind.Relative));
         }
 
         protected void ReminderToggle_Click(object sender, EventArgs e)
@@ -138,14 +145,15 @@ namespace Please2.Views
 
         protected void AlarmItem_Tapped(object sender, EventArgs e)
         {
-            var alarm = (sender as FrameworkElement).DataContext as AlarmItem;
+            AlarmItem alarm = (sender as FrameworkElement).DataContext as AlarmItem;
 
-            NavigationService.Navigate(new Uri(String.Format("/Views/Alarm.xaml?id={0}", alarm.ID), UriKind.Relative));
+            vm.SetCurrentAlarm(alarm,  null);
+
+            NavigationService.Navigate(new Uri(String.Format(ViewModelLocator.AlarmUri, alarm.ID), UriKind.Relative));
         }
 
         protected void AlarmToggle_Checked(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("checked");
             var alarm = (sender as FrameworkElement).DataContext as AlarmItem;
 
             alarm.IsEnabled = false;
