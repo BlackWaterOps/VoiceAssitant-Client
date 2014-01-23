@@ -24,43 +24,40 @@ namespace PlexiSDK.Util
         public string ContentType = null;
         public string AcceptType = null;
         public string Method = "GET";
-        public Dictionary<string, string> Headers = new Dictionary<string, string>(); 
+        public Dictionary<string, string> Headers = new Dictionary<string, string>();
 
-        public async Task<System.IO.TextReader> DoRequestAsync(WebRequest req, String requestData = "")
+        public async Task<TextReader> DoRequestAsync(WebRequest req, String requestData = "")
         {
-            //try
-            //{
-                Debug.WriteLine(String.Format("post data: {0}{1}", req.RequestUri.Host, req.RequestUri.AbsolutePath));
 
-                // if we have post/put data, write it to the request stream
-                if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
+            Debug.WriteLine(String.Format("{0} data: {1}{2}", this.Method, req.RequestUri.Host, req.RequestUri.AbsolutePath));
+
+            // if we have post/put data, write it to the request stream
+            if ((req.Method == "POST" || req.Method == "PUT") && requestData.Length > 0)
+            {
+                Debug.WriteLine(requestData);
+
+                byte[] data = Encoding.UTF8.GetBytes(requestData);
+                req.ContentLength = data.Length;
+
+                using (var reqStream = await Task<Stream>.Factory.FromAsync(req.BeginGetRequestStream, req.EndGetRequestStream, req))
                 {
-                    Debug.WriteLine(requestData);
-
-                    byte[] data = Encoding.UTF8.GetBytes(requestData);
-                    req.ContentLength = data.Length;
-
-                    using (var reqStream = await Task<Stream>.Factory.FromAsync(req.BeginGetRequestStream, req.EndGetRequestStream, req))
-                    {
-                        await reqStream.WriteAsync(data, 0, data.Length);
-                    }
+                    await reqStream.WriteAsync(data, 0, data.Length);
                 }
+            }
 
-                var task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
+            Task<WebResponse> task = Task<WebResponse>.Factory.FromAsync(req.BeginGetResponse, req.EndGetResponse, req);
 
-                var result = await task;
+            WebResponse result = await task;
 
-                var resp = result;
-                var stream = resp.GetResponseStream();
-                var sr = new StreamReader(stream);
+            if (((HttpWebResponse)result).StatusCode == HttpStatusCode.NoContent)
+            {
+                return default(StreamReader);
+            }
 
-                return sr;
-            //}
-            //catch (WebException webErr)
-            //{
-            //    Debug.WriteLine(String.Format("DoRequestAsync Error: {0}", webErr.Message));
-            //    return null;
-            //}
+            Stream stream = result.GetResponseStream();
+            StreamReader sr = new StreamReader(stream);
+
+            return sr;
         }
 
         public async Task<System.IO.TextReader> DoRequestAsync(String url, String requestData = "")
@@ -90,7 +87,7 @@ namespace PlexiSDK.Util
         {
             try
             {
-                System.IO.TextReader ret = await DoRequestAsync(req, requestData);
+                TextReader ret = await DoRequestAsync(req, requestData);
                 String response = await ret.ReadToEndAsync();
 
                 return DeserializeData<T>(response);
@@ -105,7 +102,7 @@ namespace PlexiSDK.Util
         {
             try
             {
-                System.IO.TextReader ret = await DoRequestAsync(uri, requestData);
+                TextReader ret = await DoRequestAsync(uri, requestData);
                 String response = await ret.ReadToEndAsync();
 
                 Debug.WriteLine(String.Format("Response Data: {0}", response));
@@ -137,23 +134,33 @@ namespace PlexiSDK.Util
 
         private T DeserializeData<T>(String data)
         {
+            
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
 
             jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
             jsonSettings.NullValueHandling = NullValueHandling.Include;
 
-            return JsonConvert.DeserializeObject<T>(data, jsonSettings);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(data, jsonSettings);
+            }
+            catch (JsonException)
+            {
+                return default(T);
+            }
         }
 
         private T HandleWebException<T>(WebException e)
         {
             var resp = (HttpWebResponse)e.Response;
 
-            if (resp.StatusCode != HttpStatusCode.OK)
-            {
-                System.IO.Stream stream = resp.GetResponseStream();
+            Debug.WriteLine(resp.StatusCode);
 
-                System.IO.StreamReader reader = new System.IO.StreamReader(stream);
+            if (resp.StatusCode != HttpStatusCode.OK && resp.StatusCode != HttpStatusCode.NoContent)
+            {
+                Stream stream = resp.GetResponseStream();
+
+                StreamReader reader = new StreamReader(stream);
 
                 String errResp = reader.ReadToEnd();
 
