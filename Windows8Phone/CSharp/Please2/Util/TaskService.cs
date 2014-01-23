@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Device.Location;
 using System.Diagnostics;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Maps.Services;
+using Microsoft.Phone.Scheduler;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.UserData;
 
@@ -17,6 +19,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Please2.Models;
+using Please2.Resources;
 using Please2.ViewModels;
 
 using PlexiSDK;
@@ -417,27 +420,46 @@ namespace Please2.Util
             }
         }
 
+        public void SetLocation(Dictionary<string, object> payload)
+        {
+            BingMapsTask task = new BingMapsTask();
+
+            task.Center = new GeoCoordinate((double)payload["latitude"], (double)payload["longitude"]);
+            task.ZoomLevel = 13;
+
+            task.Show();
+        }
+
         public void ShowClock(Dictionary<string, object> payload)
         {
             //string speak = "the current time is";
+            ClockViewModel vm = ViewModelLocator.GetServiceInstance<ClockViewModel>();
 
-            if (payload.Count > 0)
+            if (payload.Count > 0 && payload.ContainsKey("location"))
             {
-                ClockViewModel vm = ViewModelLocator.GetServiceInstance<ClockViewModel>();
+                JObject location = (JObject)payload["location"];
 
-                if (payload.ContainsKey("dst"))
+                JToken value;
+
+                if (location.TryGetValue("dst", out value))
                 {
-                    vm.ObservesDST = (bool)payload["dst"];
+                    vm.ObservesDST = (bool)value;
                 }
 
-                TimeSpan timeSpan = (payload.ContainsKey("time_offset")) ? TimeSpan.FromHours((int)payload["time_offset"]) : TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
-               
+                TimeSpan timeSpan = (location.TryGetValue("time_offset", out value)) ? TimeSpan.FromHours((int)value) : TimeZoneInfo.Local.GetUtcOffset(DateTimeOffset.Now);
+
                 vm.SetDateTime(timeSpan);
+            }
+            else
+            {
+                // use current time
+                vm.Time = DateTime.Now;
+                vm.TimeZoneName = TimeZoneInfo.Local.StandardName;
             }
 
             //Messenger.Default.Send(new ShowMessage());
 
-            navigationService.NavigateTo(ViewModelLocator.TimePageUri);
+            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.TimeUri, Guid.NewGuid().ToString()), UriKind.Relative));
         }
 
         public void SetAlarm(Dictionary<string, object> payload)
@@ -469,7 +491,87 @@ namespace Please2.Util
 
         public void UpdateAlarm(Dictionary<string, object> payload)
         {
+            if (payload.ContainsKey("from") && payload["from"] != null)
+            {
+                NotificationsViewModel nvm = ViewModelLocator.GetServiceInstance<NotificationsViewModel>();
 
+                DatabaseModel db = nvm.db;
+
+
+                IEnumerable<AlarmItem> q = from alarm in db.Alarms select alarm;
+
+                foreach (var item in q)
+                {
+                    Debug.WriteLine(item.Time.ToString("hh:mm"));
+                }
+
+
+                IEnumerable<AlarmItem> query = (from alarm in db.Alarms select alarm).AsEnumerable().Where(x => x.Time.ToString("hh:mm") == DateTime.Parse((string)payload["from"]).ToString("hh:mm"));
+
+                try
+                {
+                    if (query.Count() == 0)
+                    {
+                        string message = String.Format("I'm sorry, I could not find any alarms for {0}", DateTime.Parse((string)payload["from"]).ToString("h:mm tt"));
+                        Messenger.Default.Send(new ShowMessage(message, message));
+
+                        navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
+                    }
+                    else
+                    {
+                        JToken toField = (JToken)payload["to"];
+
+                        DateTime? newTime = null;
+
+                        if (toField.GetType() == typeof(JObject) && ((JObject)toField).Count == 0)
+                        {
+                            newTime = null;
+                        }
+                        else if (toField.GetType() == typeof(JValue) && ((JValue)toField).Type == JTokenType.String)
+                        {
+                            newTime = DateTime.Parse((string)payload["to"]);
+                        }
+
+                        if (query.Count() > 1)
+                        {
+                            nvm.LoadAlarms(newTime);
+
+                            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.NotificationsUri, "index", "1")));
+
+                            /*
+                            // load up alarm viewmodel to show a list to disambiguate against
+                            AlarmViewModel avm = new AlarmViewModel();
+
+                            avm.Alarms = new ObservableCollection<AlarmItem>(query);
+                            avm.NewTime = newTime;
+
+                            // load alarm viewmodel into single viewmodel to be shown
+                            SingleViewModel svm = ViewModelLocator.GetServiceInstance<SingleViewModel>();
+
+                            svm.Content = avm;
+                            svm.Title = "I found multiple alarms. Which one did you mean?";
+
+                            Messenger.Default.Send(new ShowMessage(svm.Title, svm.Title));
+
+                            // navigate to page
+                            navigationService.NavigateTo(ViewModelLocator.SingleResultPageUri);
+                            */
+                        }
+                        else
+                        {
+                            AlarmItem alarm = query.First();
+
+                            nvm.SetCurrentAlarm(alarm, newTime);
+
+                            navigationService.NavigateTo(new Uri(String.Format(ViewModelLocator.AlarmUri, alarm.ID), UriKind.Relative));
+                        }
+                    }
+                }
+                catch (Exception err)
+                {
+                    Debug.WriteLine(err.Message);
+                }
+            }
         }
 
         public void SetReminder(Dictionary<string, object> payload)
