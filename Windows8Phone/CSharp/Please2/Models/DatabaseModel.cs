@@ -12,7 +12,7 @@ using Please2.Util;
 
 namespace Please2.Models
 {
-    class DatabaseModel : DataContext
+    public class DatabaseModel : DataContext
     {
         public DatabaseModel(string connectionString) : base(connectionString)
         {
@@ -213,6 +213,10 @@ namespace Please2.Models
                 }
             }
         }
+
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version;
     }
     #endregion
 
@@ -319,6 +323,10 @@ namespace Please2.Models
                 }
             }
         }
+
+        // Version column aids update performance. 
+        [Column(IsVersion = true)]
+        private Binary _version;
 
         // Define the entity set for the collection side of the relationship.
         private EntitySet<NoteItemBody> _noteBody;
