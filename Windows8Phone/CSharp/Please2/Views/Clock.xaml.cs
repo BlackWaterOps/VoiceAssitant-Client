@@ -36,6 +36,18 @@ namespace Please2.Views
             timer.Tick += Timer_Tick;
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            string previousPage = NavigationService.BackStack.First().Source.OriginalString;
+
+            if (previousPage.Contains(String.Format(ViewModelLocator.TimeUri, "")))
+            {
+                NavigationService.RemoveBackEntry();
+            }
+        }
+
         protected void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
