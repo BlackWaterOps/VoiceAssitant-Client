@@ -45,7 +45,7 @@ namespace Please2.Views
 
         private async void Provider_Tap(object sender, System.Windows.Input.GestureEventArgs e)
         {
-            ResourceManager resx = new ResourceManager("Plexi.Resources.PlexiResources", Assembly.Load("Plexi"));
+            ResourceManager resx = new ResourceManager("PlexiSDK.Resources.PlexiResources", Assembly.Load("PlexiSDK"));
 
             ProviderModel provider = (sender as FrameworkElement).DataContext as ProviderModel;
 

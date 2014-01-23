@@ -112,7 +112,7 @@ namespace Please2
 
         private string BuildHeaders()
         {
-            resx = new ResourceManager("Plexi.Resources.PlexiResources", Assembly.Load("Plexi"));
+            resx = new ResourceManager("PlexiSDK.Resources.PlexiResources", Assembly.Load("PlexiSDK"));
 
             // Auth Token info
             string tokenHeader = resx.GetString("AuthTokenHeader");
