@@ -23,9 +23,7 @@ using PlexiSDK.Events;
 using PlexiSDK.Models;
 using PlexiSDK.Util;
 
-// NOTE: currently this object is instantiated in the view locator, 
-// but really all this logic is better suited as a view model base
-// which means handling adding and releasing the event handlers :(
+// TODO: listen for Plexi in SingleViewModel
 namespace Please2.Util
 {
     /// <summary>
@@ -37,6 +35,7 @@ namespace Please2.Util
         Email,
         Sms,
         Directions,
+        Location,
         Calendar,
         Alarm,
         Reminder,
@@ -55,6 +54,7 @@ namespace Please2.Util
             {"calendar", Actor.Calendar},
             {"call", Actor.Call},
             {"directions", Actor.Directions},
+            {"location", Actor.Location},
             {"email", Actor.Email},
             {"reminder", Actor.Reminder},
             {"sms", Actor.Sms},
@@ -88,7 +88,7 @@ namespace Please2.Util
                 Actors.Add(new Tuple<Actor, string>(Actor.Reminder, "create"), new Action<Dictionary<string, object>>(tasks.SetReminder));
                 Actors.Add(new Tuple<Actor, string>(Actor.Reminder, "edit"), new Action<Dictionary<string, object>>(tasks.UpdateReminder));
 
-                Actors.Add(new Tuple<Actor, string>(Actor.Time, "create"), new Action<Dictionary<string, object>>(tasks.ShowClock));
+                Actors.Add(new Tuple<Actor, string>(Actor.Time, "query"), new Action<Dictionary<string, object>>(tasks.ShowClock));
 
                 Actors.Add(new Tuple<Actor, string>(Actor.Email, "create"), new Action<Dictionary<string, object>>(tasks.ComposeEmail));
 
@@ -99,6 +99,8 @@ namespace Please2.Util
                 Actors.Add(new Tuple<Actor, string>(Actor.Call, "trigger"), new Action<Dictionary<string, object>>(tasks.PhoneCall));
 
                 Actors.Add(new Tuple<Actor, string>(Actor.Calendar, "create"), new Action<Dictionary<string, object>>(tasks.SetAppointment));
+
+                //Actors.Add(new Tuple<Actor, string>(Actor.Location, "query"), new Action<Dictionary<string, object>>(tasks.SetLocation));
             }
         }
 
@@ -249,7 +251,7 @@ namespace Please2.Util
                     }
                     else
                     {
-                        Debug.WriteLine(String.Format("action'{0}' is not supported by {1}", action, actor));
+                        Debug.WriteLine(String.Format("action '{0}' is not supported by {1}", action, actor));
                     }
                 }
                 else
