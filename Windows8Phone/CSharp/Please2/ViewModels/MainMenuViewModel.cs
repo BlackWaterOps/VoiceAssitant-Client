@@ -137,45 +137,45 @@ namespace Please2.ViewModels
 
             //IEnumerable<ScheduledNotification> notifications = ScheduledActionService.GetActions<ScheduledNotification>();
 
-            AddMenuItem("#1ab154", "conversation", "\uf130", ViewModelLocator.ConversationPageUri);
-            AddMenuItem("#1ec0c3", "weather", "\uf0e9", ViewModelLocator.SingleResultPageUri, typeof(WeatherViewModel));
-            AddMenuItem("#f7301e", "notifications", "\uf0f3", ViewModelLocator.NotificationsPageUri);
-            AddMenuItem("#bd731b", "notes", "\uf15c", ViewModelLocator.NotesUri);
-            AddMenuItem("#a3cd53", "search", "\uf002", ViewModelLocator.SearchPageUri);
-            AddMenuItem("#9e9e9e", "settings", "\uf013", ViewModelLocator.SettingsPageUri);
+            AddMenuItem(1, "#1ab154", "conversation", "\uf130", ViewModelLocator.ConversationPageUri);
+            AddMenuItem(2, "#1ec0c3", "weather", "\uf0e9", ViewModelLocator.SingleResultPageUri, typeof(WeatherViewModel));
+            AddMenuItem(3, "#f7301e", "notifications", "\uf0f3", ViewModelLocator.NotificationsPageUri);
+            AddMenuItem(4, "#bd731b", "notes", "\uf15c", ViewModelLocator.NotesUri);
+            AddMenuItem(5, "#a3cd53", "search", "\uf002", ViewModelLocator.SearchPageUri);
+            AddMenuItem(6, "#9e9e9e", "settings", "\uf013", ViewModelLocator.SettingsPageUri);
         }
 
-        public void AddMenuItem(string background, string title, string icon)
+        public void AddMenuItem(int orderID, string background, string title, string icon)
         {
-            AddMenuItem(background, title, icon, null, null, true, null);
+            AddMenuItem(orderID, background, title, icon, null, null, true, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, bool isEnabled)
+        public void AddMenuItem(int orderID, string background, string title, string icon, bool isEnabled)
         {
-            AddMenuItem(background, title, icon, null, null, isEnabled, null);
+            AddMenuItem(orderID, background, title, icon, null, null, isEnabled, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page)
+        public void AddMenuItem(int orderID, string background, string title, string icon, Uri page)
         {
-            AddMenuItem(background, title, icon, page, null, true, null);
+            AddMenuItem(orderID, background, title, icon, page, null, true, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel)
+        public void AddMenuItem(int orderID, string background, string title, string icon, Uri page, Type viewModel)
         {
-            AddMenuItem(background, title, icon, page, viewModel, true, null);
+            AddMenuItem(orderID, background, title, icon, page, viewModel, true, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, bool isEnabled)
+        public void AddMenuItem(int orderID, string background, string title, string icon, Uri page, Type viewModel, bool isEnabled)
         {
-            AddMenuItem(background, title, icon, page, viewModel, isEnabled, null);
+            AddMenuItem(orderID, background, title, icon, page, viewModel, isEnabled, null);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, string details)
+        public void AddMenuItem(int orderID, string background, string title, string icon, Uri page, Type viewModel, string details)
         {
-            AddMenuItem(background, title, icon, page, viewModel, true, details);
+            AddMenuItem(orderID, background, title, icon, page, viewModel, true, details);
         }
 
-        public void AddMenuItem(string background, string title, string icon, Uri page, Type viewModel, bool isEnabled, string details)
+        public void AddMenuItem(int orderID, string background, string title, string icon, Uri page, Type viewModel, bool isEnabled, string details)
         {
             try
             {
@@ -184,8 +184,23 @@ namespace Please2.ViewModels
                     db.CreateDatabase();
                 }
 
+                try
+                {
+                    DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
+
+                    if (dbUpdater.DatabaseSchemaVersion < 2)
+                    {
+
+                        dbUpdater.AddColumn<int>("OrderID");
+
+                        dbUpdater.Execute();
+                    }
+                }
+                catch { }
+
                 Please2.Models.MenuItem menuItem = new Please2.Models.MenuItem()
                 {
+                    OrderID = orderID,
                     Background = background,
                     Title = title,
                     Icon = icon,
