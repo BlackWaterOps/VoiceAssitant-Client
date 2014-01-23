@@ -701,9 +701,6 @@ class window.Please
 			date = pair[0]
 			time = pair[1]
 
-			if Object.prototype.toString.call(time) is "[object Array]"
-				continue
-
 			if payload[date]? or payload[time]?
 				includeDate = true
 				includeTime = true
@@ -712,7 +709,7 @@ class window.Please
 					console.log("dont include " + date)
 					includeDate = false
 
-				if not payload[time]?
+				if not payload[time]? or Object.prototype.toString.call(time) is "[object Array]"
 					console.log("dont include " + time)
 					includeTime = false
 
@@ -746,7 +743,7 @@ class window.Please
 		if timeType is "[object String]"
 			if timeO is "#time_now"
 				time = now
-			else if timeRegex.test(timeO)
+			else if @timeRegex.test(timeO)
 				timeSplit = timeO.split(":")
 
 				time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeSplit[0], timeSplit[1])

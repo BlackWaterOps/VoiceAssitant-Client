@@ -737,9 +737,6 @@
         pair = datetimes[_i];
         date = pair[0];
         time = pair[1];
-        if (Object.prototype.toString.call(time) === "[object Array]") {
-          continue;
-        }
         if ((payload[date] != null) || (payload[time] != null)) {
           includeDate = true;
           includeTime = true;
@@ -747,7 +744,7 @@
             console.log("dont include " + date);
             includeDate = false;
           }
-          if (payload[time] == null) {
+          if ((payload[time] == null) || Object.prototype.toString.call(time) === "[object Array]") {
             console.log("dont include " + time);
             includeTime = false;
           }
@@ -783,7 +780,7 @@
       if (timeType === "[object String]") {
         if (timeO === "#time_now") {
           time = now;
-        } else if (timeRegex.test(timeO)) {
+        } else if (this.timeRegex.test(timeO)) {
           timeSplit = timeO.split(":");
           time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeSplit[0], timeSplit[1]);
         }
