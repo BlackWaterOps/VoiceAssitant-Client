@@ -1017,20 +1017,14 @@ namespace PlexiSDK
         }
 
         public string GetDuid()
-        {
-            //return "cRljODI+F0i6w8l72x9Kc9Ez6V8=";
-            
-            
+        {            
             byte[] duidAsBytes = DeviceExtendedProperties.GetValue("DeviceUniqueId") as byte[];
 
             return Convert.ToBase64String(duidAsBytes);
         }
 
         public string GetAuthToken()
-        {
-            //return "CF08o2kLQ2qbCVguyLgsTB71p4J2FGt2A79cKVWtW1eiiMxK5zkorrDw6GAyz4zo|1385589452|c23807e8adee2d5c22501e7d795992db54b4d392585f0fe7e4c7bf35bed9610a";
-
-            
+        {   
             string key = Resources.PlexiResources.SettingsAuthKey;
             
             IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
@@ -1184,70 +1178,55 @@ namespace PlexiSDK
 
         private Dictionary<string, object> BuildDateTime(Dictionary<string, object> data)
         {
-            try
+
+            if (data != null)
             {
-                if (data != null)
+                foreach (Tuple<string, string> datetime in datetimes)
                 {
-                    foreach (Tuple<string, string> datetime in datetimes)
+                    string first = datetime.Item1;
+                    string second = datetime.Item2;                    
+
+                    if (data.ContainsKey(first) || data.ContainsKey(second))
                     {
-                        string first = datetime.Item1;
-                        string second = datetime.Item2;
+                        bool includeDate = true;
+                        bool includeTime = true;
 
-                        if (data.ContainsKey(datetime.Item1) || data.ContainsKey(datetime.Item2))
+                        if (!data.ContainsKey(first))
                         {
-                            bool includeDate = true;
-                            bool includeTime = true;
-
-                            if (!data.ContainsKey(datetime.Item1))
-                            {
-                                //data[datetime.Item1] = null;
-                                includeDate = false;
-                            }
-
-                            if (!data.ContainsKey(datetime.Item2))
-                            {
-                                //data[datetime.Item2] = null;
-                                includeTime = false;
-                            }
-
-                            // perform replacement
-                            if (data[datetime.Item1] != null || data[datetime.Item2] != null)
-                            {
-                                //Dictionary<string, string> build = Datetime.BuildDatetimeFromJson(data[datetime.Item1], data[datetime.Item2]);
-                                Tuple<string, string> result = Datetime.DateTimeFromJson(data[first], data[second]);                               
-
-                                Debug.WriteLine(String.Format("datetime build - {0} {1}", result.Item1, result.Item2));
-
-                                if (includeDate)
-                                    data[first] = result.Item1;
-
-                                if (includeTime)
-                                    data[second] = result.Item2;
-                            }
-
-                            // cleanup
-                            /*
-                            if (removeDate == true)
-                            {
-                                data.Remove(datetime.Item1);
-                            }
-
-                            if (removeTime == true)
-                            {
-                                data.Remove(datetime.Item2);
-                            }
-                             */
+                            data[first] = null;
+                            includeDate = false;
                         }
+
+                        if (!data.ContainsKey(second))
+                        {
+                            data[second] = null;
+                            includeTime = false;
+                        }
+                        else if (data[second] is JArray)
+                        {
+                            includeTime = false;
+                        }
+
+                        // perform replacement
+                        Tuple<string, string> result;
+
+                        try
+                        {
+                            result = Datetime.DateTimeFromJson(data[first], data[second]);
+                        }
+                        catch (Exception)
+                        {
+                            return data;
+                        }
+
+                        if (includeDate)
+                            data[first] = result.Item1;
+
+                        if (includeTime)
+                            data[second] = result.Item2;
                     }
                 }
             }
-            catch (Exception err)
-            {
-                Debug.WriteLine(String.Format("BuildDateTime Error: {0}", err.Message));
-            }
-
-            Debug.WriteLine("after build datetime");
-            Debug.WriteLine(SerializeData(data));
 
             return data;
         }
@@ -1307,7 +1286,8 @@ namespace PlexiSDK
             headers.Add(Resources.PlexiResources.AuthDeviceHeader, GetDuid());
             headers.Add(Resources.PlexiResources.AuthTokenHeader, GetAuthToken());
 
-            await RequestHelper<Dictionary<string, object>>(String.Format("{0}/{1}", ACCOUNT, id), "DELETE", headers);
+            // no response is needed
+            await RequestHelper<object>(String.Format("{0}/{1}", ACCOUNT, id), "DELETE", headers);
         }
 
         private string SerializeData(object data, bool includeNulls = false)
