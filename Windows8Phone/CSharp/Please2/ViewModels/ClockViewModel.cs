@@ -56,8 +56,6 @@ namespace Please2.ViewModels
 
             ITimeZoneEx zone = zones.Where(x => x.BaseUtcOffset == offset).FirstOrDefault();
 
-            Debug.WriteLine(zone.DaylightName);
-
             if (zone != null)
             {
                 DateTime utcDateTime = DateTime.UtcNow;
