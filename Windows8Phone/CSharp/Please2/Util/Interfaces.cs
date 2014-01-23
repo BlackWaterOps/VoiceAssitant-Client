@@ -115,6 +115,8 @@ namespace Please2.Util
 
         void GetDirections(Dictionary<string, object> payload);
 
+        void SetLocation(Dictionary<string, object> payload);
+
         void SetAppointment(Dictionary<string, object> payload);
 
         void ShowClock(Dictionary<string, object> payload);
