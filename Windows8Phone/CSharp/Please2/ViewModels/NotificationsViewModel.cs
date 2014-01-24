@@ -151,6 +151,8 @@ namespace Please2.ViewModels
         public void LoadNotifications()
         {
             LoadReminders();
+
+            CheckExpiredAlarms();
             LoadAlarms();
         }
 
@@ -269,6 +271,30 @@ namespace Please2.ViewModels
         #endregion
 
         #region Alarms
+        public void CheckExpiredAlarms()
+        {
+            try
+            {
+                if (db.DatabaseExists() == false)
+                {
+                    return;
+                }
+
+                IEnumerable<AlarmItem> query = (from alarm in db.Alarms where alarm.Interval == RecurrenceInterval.None && alarm.IsEnabled == true select alarm).AsEnumerable().Where(x => x.Time < DateTime.Now);
+
+                if (query.Count() > 0)
+                {
+                    foreach (AlarmItem alarm in query)
+                    {
+                        alarm.IsEnabled = false;
+                    }
+
+                    db.SubmitChanges();
+                }
+            }
+            catch { }
+        }
+
         public void LoadAlarms()
         {
             LoadAlarms(null);
@@ -552,6 +578,7 @@ namespace Please2.ViewModels
                     alarm.Names = newNames;
                     alarm.Days = days;
                     alarm.Interval = newInterval;
+                    alarm.IsEnabled = true;
 
                     db.SubmitChanges();
                 }
