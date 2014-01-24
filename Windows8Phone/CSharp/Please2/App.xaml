@@ -126,11 +126,13 @@
             <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
             <util:ImageConverter x:Key="ImageConverter"/>
             <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
+            <util:OffOnConverter x:Key="OffOnConverter"/>
             <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-
+            
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
 
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Please2;component/Templates/AlarmTemplate.xaml" />
                 <ResourceDictionary Source="/Please2;component/Templates/ColorScheme.xaml" />
                 <ResourceDictionary Source="/Please2;component/Templates/ChoiceTemplate.xaml" />
                 <!--<ResourceDictionary Source="/Please2;component/Templates/AccessoryTemplates.xaml" />-->
