@@ -744,7 +744,7 @@ namespace PlexiSDK
                     context = await DoClientOperations(context, response);
 
                     if (response.ContainsKey(type))
-                    {
+                    {                        
                         if (field.Contains("."))
                         {
                             context = Replace(context, field, response[type]);
@@ -1178,7 +1178,6 @@ namespace PlexiSDK
 
         private Dictionary<string, object> BuildDateTime(Dictionary<string, object> data)
         {
-
             if (data != null)
             {
                 foreach (Tuple<string, string> datetime in datetimes)

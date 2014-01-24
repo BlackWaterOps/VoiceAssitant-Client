@@ -18,6 +18,9 @@ namespace PlexiSDK.Util
         private static Regex dateRegex = new Regex(@"\d{2,4}[-]\d{2}[-]\d{2}", RegexOptions.IgnoreCase);
         private static Regex timeRegex = new Regex(@"\d{2}:\d{2}:\d{2}", RegexOptions.IgnoreCase);
 
+        private static string dateFormat = "yyyy-MM-dd";
+        private static string timeFormat = "HH:mm:ss";
+
         /// <summary>
         /// Provides an easy way to convert Unix Timestamps to a DateTime object with locale awareness.
         /// </summary>
@@ -162,8 +165,8 @@ namespace PlexiSDK.Util
                 }
             }
 
-            string dString = (!date.HasValue) ? null : ((DateTime)date).ToString("yyyy-MM-dd");
-            string tString = (!time.HasValue) ? null : ((DateTime)time).ToString("HH:mm:ss");
+            string dString = (!date.HasValue) ? null : ((DateTime)date).ToString(dateFormat);
+            string tString = (!time.HasValue) ? null : ((DateTime)time).ToString(timeFormat);
 
             return new Tuple<string, string>(dString, tString);
         }
@@ -231,7 +234,16 @@ namespace PlexiSDK.Util
         {
             JToken value;
 
-            if (timeO.TryGetValue("#time_add", out value))
+            // special case for time disambiguation on from/to payload replacement
+            if (timeO.TryGetValue("time", out value))
+            {
+                Debug.WriteLine("type of time");
+                if (value.GetType() == typeof(JValue) && ((JValue)value).Type == JTokenType.String && timeRegex.IsMatch((string)value))
+                {
+                    return DateTime.Parse(String.Format("{0} {1}", ((DateTime)baseDate).ToString(dateFormat), (string)value));
+                }
+            }
+            else if (timeO.TryGetValue("#time_add", out value))
             {
                 return parseTimeAddObject(timeO, baseDate, now);
             }
@@ -239,10 +251,8 @@ namespace PlexiSDK.Util
             {
                 return parseTimeFuzzyObject(timeO, baseDate, now);
             }
-            else
-            {
-                return null;
-            }
+            
+            return null;
         }
 
         private static DateTime? parseTimeAddObject(JObject obj, DateTime? baseDate, DateTime now)
