@@ -505,7 +505,6 @@ namespace Please2.Util
                     Debug.WriteLine(item.Time.ToString("hh:mm"));
                 }
 
-
                 IEnumerable<AlarmItem> query = (from alarm in db.Alarms select alarm).AsEnumerable().Where(x => x.Time.ToString("hh:mm") == DateTime.Parse((string)payload["from"]).ToString("hh:mm"));
 
                 try
@@ -518,18 +517,24 @@ namespace Please2.Util
                         navigationService.NavigateTo(ViewModelLocator.ConversationPageUri);
                     }
                     else
-                    {
-                        JToken toField = (JToken)payload["to"];
-
+                    {                        
                         DateTime? newTime = null;
 
-                        if (toField.GetType() == typeof(JObject) && ((JObject)toField).Count == 0)
-                        {
-                            newTime = null;
-                        }
-                        else if (toField.GetType() == typeof(JValue) && ((JValue)toField).Type == JTokenType.String)
+                        if (payload["to"] is string)
                         {
                             newTime = DateTime.Parse((string)payload["to"]);
+                        }
+                        else
+                        {
+                            JToken toField = (JToken)payload["to"];
+                            if (toField.GetType() == typeof(JObject) && ((JObject)toField).Count == 0)
+                            {
+                                newTime = null;
+                            }
+                            else if (toField.GetType() == typeof(JValue) && ((JValue)toField).Type == JTokenType.String)
+                            {
+                                newTime = DateTime.Parse((string)payload["to"]);
+                            }
                         }
 
                         if (query.Count() > 1)
