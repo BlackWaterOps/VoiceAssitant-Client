@@ -131,6 +131,7 @@
     <Compile Include="Util\Serialization.cs" />
     <Compile Include="Util\SpeechService.cs" />
     <Compile Include="Util\TaskService.cs" />
+    <Compile Include="ViewModels\AlarmViewModel.cs" />
     <Compile Include="ViewModels\ChoiceViewModel.cs" />
     <Compile Include="ViewModels\ClockViewModel.cs" />
     <Compile Include="ViewModels\DetailsViewModel.cs" />
@@ -287,6 +288,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Templates\ChoiceTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Templates\AlarmTemplate.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Templates\Details.xaml">
