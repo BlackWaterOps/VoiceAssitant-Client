@@ -27,6 +27,21 @@ using PlexiSDK.Util;
 
 namespace Please2.Util
 {
+    public class OffOnConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool isEnabled = (bool)value;
+
+            return isEnabled ? ControlResources.On : ControlResources.Off;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class DayOfWeekConverter : IValueConverter
     {
         private const string CommaSpace = ", ";
