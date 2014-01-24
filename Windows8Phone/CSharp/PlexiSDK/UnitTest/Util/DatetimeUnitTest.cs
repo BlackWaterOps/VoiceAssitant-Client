@@ -233,5 +233,28 @@ namespace UnitTest.Util
             Assert.AreEqual("2013-01-06", ret.Item1);
             Assert.AreEqual("23:59:00", ret.Item2);
         }
+
+        // test object returned from a time disambiguation due to an edit operation
+        // {"model":"alarm","action":"edit","payload":{"to":{"time":["07:45:00","19:45:00"]},"from":"19:30:00"}}
+        // {"time": {"time": "19:45:00"}}
+        [TestMethod]
+        public void TestTimeReplace()
+        {
+            DateTime now = new DateTime(2013, 1, 6, 0, 1, 0);
+            JObject input = JsonConvert.DeserializeObject<JObject>("{\"time\":\"19:45:00\"}");
+            Tuple<string, string> ret = Datetime.DateTimeFromJson(now.ToString(DateFormat), input, now);
+            Assert.AreEqual("2013-01-06", ret.Item1);
+            Assert.AreEqual("19:45:00", ret.Item2);
+        }
+
+        [TestMethod]
+        public void TestTimeReplace2()
+        {
+            DateTime now = DateTime.Now;
+            JObject input = JsonConvert.DeserializeObject<JObject>("{\"time\":\"19:30:00\"}");
+            Tuple<string, string> ret = Datetime.DateTimeFromJson(null, input, now);
+            Assert.IsNull(ret.Item1);
+            Assert.AreEqual("19:30:00", ret.Item2);
+        }
     }
 }
