@@ -87,7 +87,7 @@ namespace Please2.Views
             ApplicationBarIconButton button = new ApplicationBarIconButton();
 
             button.Text = "reminder";
-            button.IconUri = new Uri("/Assets/feature.alarm.png", UriKind.Relative);
+            button.IconUri = new Uri("/Assets/feature.calendar.png", UriKind.Relative);
             button.Click += ReminderButton_Click;
 
             if (ApplicationBar.Buttons.Count > 0)
