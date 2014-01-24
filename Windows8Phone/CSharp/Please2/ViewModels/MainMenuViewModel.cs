@@ -102,20 +102,6 @@ namespace Please2.ViewModels
                     db.CreateDatabase();
                 }
 
-                try
-                {
-                    DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
-
-                    if (dbUpdater.DatabaseSchemaVersion < 2)
-                    {
-
-                        dbUpdater.AddTable<Please2.Models.MenuItem>();
-
-                        dbUpdater.Execute();
-                    }
-                }
-                catch { }
-
                 IQueryable<Please2.Models.MenuItem> query = from menuItem in db.Menu select menuItem;
 
                 if (query.Count() == 0)
@@ -183,20 +169,6 @@ namespace Please2.ViewModels
                 {
                     db.CreateDatabase();
                 }
-
-                try
-                {
-                    DatabaseSchemaUpdater dbUpdater = db.CreateDatabaseSchemaUpdater();
-
-                    if (dbUpdater.DatabaseSchemaVersion < 2)
-                    {
-
-                        dbUpdater.AddColumn<int>("OrderID");
-
-                        dbUpdater.Execute();
-                    }
-                }
-                catch { }
 
                 Please2.Models.MenuItem menuItem = new Please2.Models.MenuItem()
                 {
