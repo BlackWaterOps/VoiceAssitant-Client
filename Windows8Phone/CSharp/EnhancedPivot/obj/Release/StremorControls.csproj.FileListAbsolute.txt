@@ -1,0 +1,5 @@
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\Release\StremorControls.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\Release\StremorControls.pdb
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Release\StremorControls.g.resources
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Release\StremorControls.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Release\StremorControls.pdb

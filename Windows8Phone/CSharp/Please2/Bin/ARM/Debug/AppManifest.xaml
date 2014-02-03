@@ -1,0 +1,20 @@
+﻿<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" EntryPointAssembly="Please2" EntryPointType="Please2.App" RuntimeVersion="4.7.50308.0">
+  <Deployment.Parts>
+    <AssemblyPart x:Name="Please2" Source="Please2.dll" />
+    <AssemblyPart x:Name="Coding4Fun.Toolkit.Controls" Source="Coding4Fun.Toolkit.Controls.dll" />
+    <AssemblyPart x:Name="GalaSoft.MvvmLight.Extras.WP8" Source="GalaSoft.MvvmLight.Extras.WP8.dll" />
+    <AssemblyPart x:Name="GalaSoft.MvvmLight.WP8" Source="GalaSoft.MvvmLight.WP8.dll" />
+    <AssemblyPart x:Name="MediaViewer" Source="MediaViewer.dll" />
+    <AssemblyPart x:Name="Microsoft.Phone.Controls" Source="Microsoft.Phone.Controls.dll" />
+    <AssemblyPart x:Name="Microsoft.Phone.Controls.Toolkit" Source="Microsoft.Phone.Controls.Toolkit.dll" />
+    <AssemblyPart x:Name="Microsoft.Practices.ServiceLocation" Source="Microsoft.Practices.ServiceLocation.dll" />
+    <AssemblyPart x:Name="Newtonsoft.Json" Source="Newtonsoft.Json.dll" />
+    <AssemblyPart x:Name="PlexiSDK" Source="PlexiSDK.dll" />
+    <AssemblyPart x:Name="Sparrow.Chart.WP8.45" Source="Sparrow.Chart.WP8.45.dll" />
+    <AssemblyPart x:Name="StremorControls" Source="StremorControls.dll" />
+    <AssemblyPart x:Name="System.Windows.Interactivity" Source="System.Windows.Interactivity.dll" />
+    <AssemblyPart x:Name="TimeZones" Source="TimeZones.dll" />
+    <AssemblyPart x:Name="TimeZones.WP8" Source="TimeZones.WP8.dll" />
+    <AssemblyPart x:Name="WPControls" Source="WPControls.dll" />
+  </Deployment.Parts>
+</Deployment>
