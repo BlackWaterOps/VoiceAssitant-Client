@@ -1,0 +1,126 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+    
+    <Style x:Key="WeatherIconStyle" TargetType="Glyphs">
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Margin" Value="0,-10,0,0"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Fill" Value="White"/>
+        <Setter Property="FontRenderingEmSize" Value="40"/>
+    </Style>
+    
+    <DataTemplate x:Key="WeatherShort">
+        <StackPanel Margin="10,0">
+            <Grid Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Column="0" Text="{Binding date, StringFormat='{0:dddd}'}" FontWeight="SemiBold"/>
+                
+                <Glyphs Grid.Column="1"
+                        Style="{StaticResource WeatherIconStyle}"
+                        UnicodeString="{Binding Converter={StaticResource WeatherConverter}}"
+                        FontUri="/PlexiVoice;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="{Binding daytime.temp, StringFormat='H {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding night.temp, StringFormat='L {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold" Margin="20,0,0,0"/>
+                </StackPanel>
+
+                <!--       
+                <TextBlock Text="{Binding daytime.sky, StringFormat=': {0}'}"/>
+                -->
+            </Grid>
+
+            <Border Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource Divider}"/>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WeatherFull">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.ColumnSpan="3" Text="{Binding DataContext.Location, ElementName=WeatherListBox}" HorizontalAlignment="Center" FontWeight="Thin" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+
+            <TextBlock Grid.ColumnSpan="3" Grid.Row="1" 
+                            Text="{Binding DataContext.CurrentCondition.sky, ElementName=WeatherListBox}" 
+                            FontWeight="Thin" HorizontalAlignment="Center"/>
+
+            <TextBlock Grid.ColumnSpan="3" Grid.Row="2" 
+                           Text="{Binding DataContext.CurrentCondition.temp, ElementName=WeatherListBox, StringFormat='{0}&#176;'}" 
+                           FontSize="{StaticResource PhoneFontSizeExtraExtraLarge}" 
+                           FontWeight="Light"
+                           HorizontalAlignment="Center"/>
+            
+            <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="10,0,0,0">
+                <TextBlock Text="{Binding date, StringFormat='{0:dddd}'}" FontWeight="SemiBold"/>
+                <TextBlock Text="Today" FontWeight="Thin" Foreground="{StaticResource PhoneSubtleBrush}" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <Glyphs Grid.Column="1"
+                    Grid.Row="3"
+                    Style="{StaticResource WeatherIconStyle}"
+                    UnicodeString="{Binding Converter={StaticResource WeatherConverter}}"
+                    FontUri="/PlexiVoice;component/Assets/Fonts/forcasticons.ttf#artill clean weather icons"/>
+
+            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                <TextBlock Text="{Binding daytime.temp, StringFormat='H {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding night.temp, StringFormat='L {0}&#176;'}" FontSize="{StaticResource PhoneFontSizeMediumLarge}" FontWeight="SemiBold" Margin="20,0,0,0"/>
+            </StackPanel>
+
+            <Border Grid.Row="4" Grid.ColumnSpan="3" Style="{StaticResource Divider}"/>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="WeatherTemplate">
+        <Border Background="{StaticResource ResultBackground}">
+        <ListBox x:Name="WeatherListBox"
+                 ItemsSource="{Binding MultiForecast}" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 ItemContainerStyle="{StaticResource ListBoxItem}"
+                 Margin="0,10">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <util:WeatherTemplateSelector Content="{Binding}" 
+                                      WeatherFull="{StaticResource WeatherFull}" 
+                                      WeatherShort="{StaticResource WeatherShort}"
+                                      HorizontalContentAlignment="Stretch"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,437 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+
+    <DataTemplate x:Key="FitbitWeightTemplate">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Your Goal Weight is: " FontWeight="SemiBold" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                <TextBlock Text="{Binding Goals.weight, StringFormat='{0}lbs'}" FontSize="{StaticResource PhoneFontSizeLarge}" Margin="0,0,0,20"/>
+            </StackPanel>
+
+            <sparrow:SparrowChart x:Name="FitbitWeightChart" Height="300">
+                <sparrow:SparrowChart.XAxis>
+                    <sparrow:DateTimeXAxis Header="Date" StringFormat="MMM d" LabelAngle="-25.0" MajorLineSize="10" ShowCrossLines="False" ZoomCoefficient=".1" ZoomOffset=".7"/>
+                </sparrow:SparrowChart.XAxis>
+                <sparrow:SparrowChart.YAxis>
+                    <sparrow:LinearYAxis Header="Weight" StringFormat="#.##" MajorLineSize="10"/>
+                </sparrow:SparrowChart.YAxis>
+                <sparrow:SeriesCollection>
+                    <sparrow:LineSeries x:Name="FitbitLineSeries" Background="GreenYellow" PointsSource="{Binding Points}" XPath="dateTime" YPath="value" Stroke="LimeGreen" StrokeThickness="3"/>
+                </sparrow:SeriesCollection>
+            </sparrow:SparrowChart>
+        </StackPanel>
+    </DataTemplate>
+
+    <Style x:Key="FitbitNutritionLabel" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Light"/>
+    </Style>
+
+    <Style x:Key="FitbitNutritionSubLabel" TargetType="TextBlock" BasedOn="{StaticResource FitbitNutritionLabel}">
+    </Style>
+
+    <Style x:Key="FitbitNutritionValue" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="DarkOrange"/>
+        <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}"/>
+    </Style>
+
+    <ControlTemplate x:Key="PhoneProgressBarSliderThumb" TargetType="Thumb">
+        <Rectangle Fill="{TemplateBinding Foreground}" Height="24" IsHitTestVisible="False" Width="24"/>
+    </ControlTemplate>
+
+    <Style x:Key="PhoneProgressBarSliderStyle" TargetType="Slider">
+        <Setter Property="Maximum" Value="3000"/>
+        <Setter Property="Minimum" Value="0"/>
+        <Setter Property="Value" Value="0"/>
+        <Setter Property="Opacity" Value="0"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid IsHitTestVisible="False">
+                        <Grid x:Name="HorizontalTemplate">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <RepeatButton x:Name="HorizontalTrackLargeChangeDecreaseRepeatButton" Grid.Column="0" Height="0" Template="{x:Null}"/>
+                            <Thumb x:Name="HorizontalThumb" Grid.Column="1" Foreground="{TemplateBinding Foreground}" Height="24" IsTabStop="False" Template="{StaticResource PhoneProgressBarSliderThumb}"/>
+                            <RepeatButton x:Name="HorizontalTrackLargeChangeIncreaseRepeatButton" Grid.Column="2" Height="0" Template="{x:Null}"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ProgressBarStyle1" TargetType="ProgressBar">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="Foreground" Value="{StaticResource PhoneAccentBrush}"/>
+        <Setter Property="Background" Value="{StaticResource PhoneAccentBrush}"/>
+        <Setter Property="Maximum" Value="100"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+        <Setter Property="Padding" Value="{StaticResource PhoneHorizontalMargin}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Determinate"/>
+                                <VisualState x:Name="Indeterminate">
+                                    <Storyboard Duration="00:00:04.4" RepeatBehavior="Forever">
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="IndeterminateRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DeterminateRoot">
+                                            <DiscreteObjectKeyFrame KeyTime="0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Collapsed</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Value" Storyboard.TargetName="Slider1">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="2000"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="3000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseIn" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="Value" Storyboard.TargetName="Slider2">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="2000"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="3000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseIn" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="Value" Storyboard.TargetName="Slider3">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="2000"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="3000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseIn" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="Value" Storyboard.TargetName="Slider4">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="2000"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="3000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseIn" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="Value" Storyboard.TargetName="Slider5">
+                                            <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="1000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="2000"/>
+                                            <EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="3000">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseIn" Exponent="1"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Slider1">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Slider2">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Slider3">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Slider4">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="Slider5">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1"/>
+                                            <DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/>
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="DeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Visible">
+                            <Rectangle x:Name="ProgressBarTrack" Fill="{TemplateBinding Background}" Height="44" Opacity="0.1"/>
+                            <Rectangle x:Name="ProgressBarIndicator" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Left" Height="44"/>
+                        </Grid>
+                        <Border x:Name="IndeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Collapsed">
+                            <Grid>
+                                <Slider x:Name="Slider1" Foreground="{TemplateBinding Foreground}" Style="{StaticResource PhoneProgressBarSliderStyle}"/>
+                                <Slider x:Name="Slider2" Foreground="{TemplateBinding Foreground}" Style="{StaticResource PhoneProgressBarSliderStyle}"/>
+                                <Slider x:Name="Slider3" Foreground="{TemplateBinding Foreground}" Style="{StaticResource PhoneProgressBarSliderStyle}"/>
+                                <Slider x:Name="Slider4" Foreground="{TemplateBinding Foreground}" Style="{StaticResource PhoneProgressBarSliderStyle}"/>
+                                <Slider x:Name="Slider5" Foreground="{TemplateBinding Foreground}" Style="{StaticResource PhoneProgressBarSliderStyle}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <DataTemplate x:Key="FitbitFoodTemplate">
+        <Grid Background="{StaticResource ResultBackground}">
+            
+        <ListBox ItemsSource="{Binding Foods}" Style="{StaticResource ListBoxStyle}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                        <StackPanel Margin="10,0">
+                            <Border Padding="0,10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding loggedFood.name}" 
+                                               TextTrimming="WordEllipsis" 
+                                               FontSize="{StaticResource PhoneFontSizeLarge}" 
+                                               FontWeight="Light"/>
+
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding loggedFood.amount}" Foreground="{StaticResource AccentColor}" FontWeight="Light"/>
+                                        <TextBlock Text="{Binding loggedFood.unit.plural, StringFormat=' {0}'}"  Foreground="{StaticResource AccentColor}" FontWeight="Light"/>
+                                        <TextBlock Text="{Binding loggedFood.calories, StringFormat=', {0} calories'}" Foreground="{StaticResource AccentColor}" FontWeight="Light"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Stretch">
+                                                <TextBlock Text="Protein" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.protein}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="Carbs" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.carbs}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="Fat" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.fat}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="3">
+                                                <TextBlock Text="Fiber" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.fiber}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="4">
+                                                <TextBlock Text="Sodium" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.sodium}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" mg" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            
+                            <Border Style="{StaticResource Divider}"/>
+                        </StackPanel>
+                    </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        </Grid>
+        <!--
+        <phone:Pivot>
+            <phone:Pivot.ItemContainerStyle>
+                <Style TargetType="phone:PivotItem">
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </phone:Pivot.ItemContainerStyle>
+
+            <phone:PivotItem Header="Food Log">
+                <ListBox ItemsSource="{Binding Foods}" ItemContainerStyle="{StaticResource ListBoxItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,10" Padding="10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" 
+                                               Text="{Binding loggedFood.name}" 
+                                               TextWrapping="Wrap" 
+                                               FontSize="{StaticResource PhoneFontSizeLarge}" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="White" 
+                                               VerticalAlignment="Center"/>
+
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                        <TextBlock Text="{Binding loggedFood.amount}" Style="{StaticResource FitbitNutritionSubLabel}"/>
+                                        <TextBlock Text="{Binding loggedFood.unit.plural, StringFormat=' {0}'}" Style="{StaticResource FitbitNutritionSubLabel}"/>
+                                        <TextBlock Text="{Binding loggedFood.calories, StringFormat=', {0} calories'}" Style="{StaticResource FitbitNutritionSubLabel}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                                <ColumnDefinition Width="85"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Stretch">
+                                                <TextBlock Text="Protein" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.protein}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="Carbs" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.carbs}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="Fat" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.fat}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="3">
+                                                <TextBlock Text="Fiber" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.fiber}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" g" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="4">
+                                                <TextBlock Text="Sodium" Margin="0,0,10,0" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding nutritionalValues.sodium}" Style="{StaticResource FitbitNutritionValue}"/>
+                                                    <TextBlock Text=" mg" Style="{StaticResource FitbitNutritionLabel}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </phone:PivotItem>
+
+            <phone:PivotItem Header="Daily Summary">
+                <StackPanel>
+                    <TextBlock Text="Today, you can still eat:" Margin="0,0,10,0" FontWeight="SemiBold" FontSize="{StaticResource PhoneFontSizeMedium}" Foreground="#cccccc"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding CaloriesRemaining}" Foreground="#78d023" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+                        <TextBlock Text="{Binding FoodGoals.calories, StringFormat=' out of about {0} cals'}" FontSize="{StaticResource PhoneFontSizeLarge}" Foreground="#cccccc" FontWeight="SemiBold"/>
+                    </StackPanel>
+
+                    <ProgressBar Maximum="{Binding FoodGoals.calories}" Value="{Binding FoodSummary.calories}" Height="50" Style="{StaticResource ProgressBarStyle1}"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Protein:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding FoodSummary.protein}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Carbs:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding FoodSummary.carbs}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Fat:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding FoodSummary.fat}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Fiber:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding FoodSummary.fiber, StringFormat='{0:#}'}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Sodium:" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding FoodSummary.sodium}"/>
+                    </StackPanel>
+                </StackPanel>
+            </phone:PivotItem>
+        </phone:Pivot>
+        -->
+    </DataTemplate>
+</ResourceDictionary>

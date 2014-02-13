@@ -1,5 +1,0 @@
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\Debug\EnhancedPivot.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\Debug\EnhancedPivot.pdb
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Debug\EnhancedPivot.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Debug\EnhancedPivot.pdb
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\Debug\EnhancedPivot.g.resources

@@ -1,0 +1,86 @@
+﻿<local:ViewBase
+    x:Class="PlexiVoice.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:PlexiVoice.Views"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True"
+    Style="{StaticResource SlideTransition}"
+    DataContext="{Binding MainViewModel, Source={StaticResource Locator}}">
+    
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0">
+            <controls:PageTitle/>
+        </Border>
+        
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ListBox x:Name="DialogList"
+                     ItemsSource="{Binding Items}"
+                     ItemContainerStyle="{StaticResource ListBoxItem}"
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Stretch">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <Storyboard x:Name="Template_Loaded" BeginTime="00:00:00" Completed="TemplateAnimation_Completed">
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="00:00:0.7"/>
+                                    
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)">
+                                        <EasingDoubleKeyFrame Value="0" KeyTime="00:00:0.7"/>
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </StackPanel.Resources>
+                                
+                            <StackPanel.RenderTransform>
+                                <CompositeTransform x:Name="StackPanel_CompositeTransform"/>
+                            </StackPanel.RenderTransform>
+
+                            <util:ResultsTemplateSelector Loaded="Template_Loaded" Content="{Binding}"
+                                                      HorizontalContentAlignment="Stretch"
+                                                      AlarmTemplate="{StaticResource AlarmTemplate}"
+                                                      ClockTemplate="{StaticResource ClockTemplate}"
+                                                      DialogTemplate="{StaticResource DialogTemplate}"
+                                                      DictionaryTemplate="{StaticResource DictionaryTemplate}"
+                                                      EventsTemplate="{StaticResource EventsTemplate}"
+                                                      FitbitFoodTemplate="{StaticResource FitbitFoodTemplate}"
+                                                      FitbitWeightTemplate="{StaticResource FitbitWeightTemplate}"
+                                                      FlightsTemplate="{StaticResource FlightsTemplate}"
+                                                      FuelTemplate="{StaticResource FuelTemplate}"
+                                                      GeopoliticsTemplate="{StaticResource GeopoliticsTemplate}"
+                                                      HoroscopeTemplate="{StaticResource HoroscopeTemplate}"
+                                                      MoviesTemplate="{StaticResource MoviesTemplate}"
+                                                      RealEstateTemplate="{StaticResource RealEstateTemplate}"
+                                                      ReminderTemplate="{StaticResource ReminderTemplate}"
+                                                      SearchTemplate="{StaticResource SearchTemplate}"
+                                                      ShoppingTemplate="{StaticResource ShoppingTemplate}"
+                                                      StockTemplate="{StaticResource StockTemplate}"
+                                                      WeatherTemplate="{StaticResource WeatherTemplate}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+
+</local:ViewBase>

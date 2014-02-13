@@ -1,0 +1,100 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+
+    <DataTemplate x:Key="ReminderTemplate">
+        <Border Padding="10" 
+                Margin="0,15,0,0">
+            <!--Tap="ReminderItem_Tapped">-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--
+                <Image Grid.Column="0" Grid.Row="0" 
+                       Source="/Assets/feature.alarm.png" 
+                       Width="100" 
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"                                                   
+                       Opacity="{Binding BeginTime, Converter={StaticResource NotificationOpacityConverter}}"/>
+                -->
+                <StackPanel Grid.Column="1" Grid.Row="0" 
+                            Margin="12,0,0,0" 
+                            VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title}" 
+                               Foreground="White" 
+                               TextWrapping="NoWrap"
+                               TextTrimming="WordEllipsis"
+                               FontSize="30" 
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="{Binding BeginTime, Converter={StaticResource NotificationDateConverter}}"
+                               Margin="0,10,0,0" 
+                               Foreground="White" 
+                               FontSize="20"/>
+
+                    <!--<toolkit:ToggleSwitch Click="ReminderToggle_Click"/>-->
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ReminderListTemplate">
+        <Grid Background="{StaticResource ResultBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <StackPanel>
+                <TextBlock Text="Reminders" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}" 
+                           FontWeight="Thin" 
+                           TextAlignment="Center"
+                           Margin="10"/>
+
+                <Border Style="{StaticResource Divider}" Margin="0,10,0,0"/>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="1">
+                <TextBlock x:Name="RemindersEmpty" 
+                           Text="No Saved Reminders" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}"
+                           FontWeight="Thin"
+                           Visibility="{Binding ReminderVisibility}"
+                           Margin="10"/>
+
+                <ListBox x:Name="AlarmListBox" 
+                         ItemsSource="{Binding Reminders}"
+                         ItemContainerStyle="{StaticResource ListBoxItem}"
+                         Visibility="{Binding Reminders, Converter={StaticResource NullToVisibilityConverter}}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="10,0">
+                                <Border Padding="0,10">
+                                    <Grid>
+                                        
+                                    </Grid>
+                                </Border>
+                                
+                                <Border Style="{StaticResource Divider}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

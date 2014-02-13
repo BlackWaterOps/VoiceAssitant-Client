@@ -1,0 +1,162 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+    
+    <DataTemplate x:Key="MoviesTemplate">
+        <StackPanel Background="{StaticResource ResultBackground}">
+            <TextBlock Text="Currently Playing" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}" 
+                           FontWeight="Thin" 
+                           Margin="0,20"
+                           HorizontalAlignment="Center"/>
+
+            <ListBox x:Name="MoviesLLS" 
+                     ItemsSource="{Binding Items}" 
+                     Style="{StaticResource ListBoxStyle}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <toolkit:WrapPanel ItemWidth="140" ItemHeight="320" Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="10,0" HorizontalAlignment="Center">
+                            <Border Height="178">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Tap">
+                                        <command:EventToCommand Command="{Binding DataContext.MovieItemSelection, ElementName=MoviesLLS}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                                <c4f:SuperImage Source="{Binding image}" 
+                                        Style="{StaticResource ThumbnailStyle}"
+                                        PlaceholderImageSource="/Assets/feature.camera.png" 
+                                        PlaceholderImageStretch="Uniform" />
+                            </Border>
+
+                            <TextBlock Text="{Binding title}" 
+                                       TextWrapping="Wrap"
+                                       TextTrimming="WordEllipsis"
+                                       LineStackingStrategy="BlockLineHeight"
+                                       LineHeight="24"
+                                       MaxHeight="48"
+                                       FontWeight="SemiBold"
+                                       TextAlignment="Center"/>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Rectangle Width="25" Height="25" Fill="{Binding ratings.critics_score, Converter={StaticResource ImageConverter}, ConverterParameter=critics_score}"/>
+                                <TextBlock Text="{Binding ratings.critics_score, StringFormat='{0}\%'}" Margin="10,0,0,0"/>
+                            </StackPanel>
+
+                            <Border BorderBrush="White" 
+                                    BorderThickness="1" 
+                                    HorizontalAlignment="Center" 
+                                    Padding="5" Margin="0,10">
+                                <TextBlock Text="{Binding mpaa_rating}"/>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="MovieDetailsTemplate">
+        <ScrollViewer>
+            <Grid Background="{StaticResource ResultBackground}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="10"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="1" Margin="10,0">
+                    <TextBlock Text="{Binding CurrentItem.title}" 
+                           FontSize="{StaticResource PhoneFontSizeExtraLarge}" 
+                           FontWeight="Light"
+                           HorizontalAlignment="Center"/>
+                </StackPanel>
+                
+                <Border Grid.Row="3" Style="{StaticResource Divider}"/>
+                
+                <StackPanel Grid.Row="5" Margin="10,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <Border BorderBrush="White" 
+                                BorderThickness="1" 
+                                HorizontalAlignment="Left"
+                                Padding="5" Margin="0,10">
+                                <TextBlock Text="{Binding CurrentItem.mpaa_rating}"/>
+                            </Border>
+
+                            <StackPanel Margin="0,20,0,0">
+                                <TextBlock Text="Starring" Margin="0,0,0,5"/>
+
+                                <ListBox ItemsSource="{Binding CurrentItem.abridged_cast}" Style="{StaticResource ListBoxStyle}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding name}" FontWeight="Light"/>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,20,0,0">
+                                <TextBlock Text="Runtime"/>
+
+                                <TextBlock Text="{Binding CurrentItem.runtime, StringFormat='{0}m'}" FontWeight="Light"/>
+                            </StackPanel>
+
+                            <Grid Margin="0,20,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Rectangle Width="25" Height="25" Fill="{Binding CurrentItem.ratings.critics_score, Converter={StaticResource ImageConverter}, ConverterParameter=critics_score}"/>
+                                    <TextBlock Text="{Binding CurrentItem.ratings.critics_score, StringFormat='{0}\%'}" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Rectangle Width="25" Height="25" Fill="{Binding CurrentItem.ratings.audience_score, Converter={StaticResource ImageConverter}, ConverterParameter=audience_score}"/>
+                                    <TextBlock Text="{Binding CurrentItem.ratings.audience_score, StringFormat='{0}\%'}" Margin="10,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <Border Grid.Column="1" Height="200">
+                            <c4f:SuperImage Source="{Binding CurrentItem.image}" 
+                                        Style="{StaticResource ThumbnailStyle}"
+                                        PlaceholderImageSource="/Assets/feature.camera.png" 
+                                        PlaceholderImageStretch="Uniform" />
+                        </Border>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}" Margin="0,20"/>
+
+                    <TextBlock Text="{Binding CurrentItem.synopsis}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </DataTemplate>
+</ResourceDictionary>

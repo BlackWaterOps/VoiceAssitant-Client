@@ -1,0 +1,144 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+
+    <DataTemplate x:Key="AlarmTemplate">
+        <Border Background="{StaticResource ResultBackground}"
+                Padding="10" 
+                Margin="0,15,0,0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Tap">
+                    <command:EventToCommand Command="{Binding AlarmItemSelection}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding CurrentAlarm.Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+
+                <TextBlock Grid.Row="1" Text="{Binding CurrentAlarm.DisplayName}"/>
+
+                <TextBlock Grid.Row="2" Text="{Binding CurrentAlarm.Names, Converter={StaticResource DayOfWeekConverter}}"/>
+                <!--
+                                        <toolkit:ToggleSwitch Grid.Column="1" Header="" Checked="AlarmToggle_Checked" Unchecked="AlarmToggle_Unchecked">
+                                            <toolkit:ToggleSwitch.HeaderTemplate>
+                                                <DataTemplate/>                                                
+                                            </toolkit:ToggleSwitch.HeaderTemplate>
+                                        </toolkit:ToggleSwitch>
+                                        -->
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="AlarmListTemplate">
+        <Grid Background="{StaticResource ResultBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <StackPanel>
+                <TextBlock Text="Alarms" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}" 
+                           FontWeight="Thin" 
+                           TextAlignment="Center"
+                           Margin="10"/>
+
+                <Border Style="{StaticResource Divider}" Margin="0,10,0,0"/>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="1">
+                <TextBlock x:Name="AlarmsEmpty" 
+                           Text="No Saved Alarms" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}"
+                           FontWeight="Thin"
+                           Visibility="{Binding AlarmVisibility}"
+                           Margin="10"/>
+
+                <ListBox x:Name="AlarmListBox" 
+                         ItemsSource="{Binding Alarms}"
+                         ItemContainerStyle="{StaticResource ListBoxItem}"
+                         Visibility="{Binding Alarms, Converter={StaticResource NullToVisibilityConverter}}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="10,0">
+                                <Border Padding="0,10">
+                                    <Grid>
+                                        <!--
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Text="{Binding Time, StringFormat='h:mm tt'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+
+                                        <TextBlock Grid.Row="1" Text="{Binding DisplayName}"/>
+
+                                        <TextBlock Grid.Row="2" Text="{Binding Days, Converter={StaticResource DayOfWeekConverter}}"/>
+                                        -->
+                                        <toolkit:ToggleSwitch x:Name="AlarmToggle" Margin="0,-20">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Checked">
+                                                    <command:EventToCommand Command="{Binding DataContext.AlarmChecked, ElementName=AlarmListBox}" CommandParameter="{Binding}"/>
+                                                </i:EventTrigger>
+
+                                                <i:EventTrigger EventName="Unchecked">
+                                                    <command:EventToCommand Command="{Binding DataContext.AlarmUnchecked, ElementName=AlarmListBox}" CommandParameter="{Binding}"/>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                            
+                                            <toolkit:ToggleSwitch.ContentTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding DataContext.Time, ElementName=AlarmToggle, StringFormat='h:mm tt'}" 
+                                                                   FontSize="{StaticResource PhoneFontSizeLarge}"/>
+
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding DataContext.DisplayName, ElementName=AlarmToggle, StringFormat='{0}\: '}" FontSize="{StaticResource PhoneFontSizeSmall}"/>
+                                                            <ContentControl HorizontalAlignment="Left" FontSize="{StaticResource PhoneFontSizeSmall}" Content="{Binding}"/>
+                                                        </StackPanel>
+                                                        
+                                                        <TextBlock Text="{Binding DataContext.Names, ElementName=AlarmToggle, Converter={StaticResource DayOfWeekConverter}}" FontSize="{StaticResource PhoneFontSizeSmall}" Foreground="{StaticResource PhoneSubtleBrush}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </toolkit:ToggleSwitch.ContentTemplate>
+                                        </toolkit:ToggleSwitch>
+                                        
+                                    </Grid>
+                                </Border>
+                                
+                                <Border Style="{StaticResource Divider}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

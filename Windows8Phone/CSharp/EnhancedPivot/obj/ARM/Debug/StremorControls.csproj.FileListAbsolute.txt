@@ -1,5 +1,0 @@
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\ARM\Debug\StremorControls.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\Bin\ARM\Debug\StremorControls.pdb
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\ARM\Debug\StremorControls.g.resources
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\ARM\Debug\StremorControls.dll
-C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\Please2\EnhancedPivot\obj\ARM\Debug\StremorControls.pdb

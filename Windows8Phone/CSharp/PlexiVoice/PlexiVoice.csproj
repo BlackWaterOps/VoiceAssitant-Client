@@ -1,0 +1,482 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{420C4E58-1173-4C44-9206-93CC4FCC84E1}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PlexiVoice</RootNamespace>
+    <AssemblyName>PlexiVoice</AssemblyName>
+    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>PlexiVoice_$(Configuration)_$(Platform).xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>PlexiVoice.App</SilverlightAppEntry>
+    <ValidateXaml>true</ValidateXaml>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|ARM' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|ARM' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\ARM\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Clock.xaml.cs">
+      <DependentUpon>Clock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PageTitle.xaml.cs">
+      <DependentUpon>PageTitle.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ValidationTextBox.xaml.cs">
+      <DependentUpon>ValidationTextBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VerifyPrompt.xaml.cs">
+      <DependentUpon>VerifyPrompt.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LocalizedStrings.cs" />
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AltFuelModel.cs" />
+    <Compile Include="Models\DatabaseModel.cs" />
+    <Compile Include="ModelsV1\DatabaseModel.cs" />
+    <Compile Include="Models\DialogModel.cs" />
+    <Compile Include="Models\DictionaryModel.cs" />
+    <Compile Include="Models\EventModel.cs" />
+    <Compile Include="Models\FitbitFoodModel.cs" />
+    <Compile Include="Models\FitbitWeightModel.cs" />
+    <Compile Include="Models\FlightModel.cs" />
+    <Compile Include="Models\GeopoliticsModel.cs" />
+    <Compile Include="Models\HoroscopeModel.cs" />
+    <Compile Include="Models\MainMenuModel.cs" />
+    <Compile Include="Models\Messages.cs" />
+    <Compile Include="Models\ModelBase.cs" />
+    <Compile Include="Models\MoviesModel.cs" />
+    <Compile Include="Models\NewsModel.cs" />
+    <Compile Include="Models\ProviderModel.cs" />
+    <Compile Include="Models\RealEstateModel.cs" />
+    <Compile Include="Models\SearchModel.cs" />
+    <Compile Include="Models\ShoppingModel.cs" />
+    <Compile Include="Models\StockModel.cs" />
+    <Compile Include="Models\WeatherModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\AppResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AppResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Util\AccountHelper.cs" />
+    <Compile Include="Util\Converters.cs" />
+    <Compile Include="Util\Enumerations.cs" />
+    <Compile Include="Util\Interfaces.cs" />
+    <Compile Include="Util\LinqToVisualTree.cs" />
+    <Compile Include="Util\MapService.cs" />
+    <Compile Include="Util\MigrationHelper.cs" />
+    <Compile Include="Util\NavigationService.cs" />
+    <Compile Include="Util\Serialization.cs" />
+    <Compile Include="Util\SpeechService.cs" />
+    <Compile Include="Util\TaskService.cs" />
+    <Compile Include="Util\TemplateSelector.cs" />
+    <Compile Include="ViewModels\AlarmBase.cs" />
+    <Compile Include="ViewModels\AlarmDetailsViewModel.cs" />
+    <Compile Include="ViewModels\AlarmListViewModel.cs" />
+    <Compile Include="ViewModels\AlarmViewModel.cs" />
+    <Compile Include="ViewModels\ChoiceViewModel.cs" />
+    <Compile Include="ViewModels\ClockViewModel.cs" />
+    <Compile Include="ViewModels\DetailsViewModel.cs" />
+    <Compile Include="ViewModels\FitbitFoodViewModel.cs" />
+    <Compile Include="ViewModels\FitbitWeightViewModel.cs" />
+    <Compile Include="ViewModels\DetailsBase.cs" />
+    <Compile Include="ViewModels\DictionaryViewModel.cs" />
+    <Compile Include="ViewModels\EventDetailsViewModel.cs" />
+    <Compile Include="ViewModels\EventsViewModel.cs" />
+    <Compile Include="ViewModels\FitbitActivityViewModel.cs" />
+    <Compile Include="ViewModels\FlightsViewModel.cs" />
+    <Compile Include="ViewModels\FuelDetailsViewModel.cs" />
+    <Compile Include="ViewModels\FuelViewModel.cs" />
+    <Compile Include="ViewModels\GeopoliticsViewModel.cs" />
+    <Compile Include="ViewModels\HoroscopeViewModel.cs" />
+    <Compile Include="ViewModels\ImagesViewModel.cs" />
+    <Compile Include="ViewModels\ImageViewModel.cs" />
+    <Compile Include="ViewModels\ListBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MovieDetailsViewModel.cs" />
+    <Compile Include="ViewModels\MoviesViewModel.cs" />
+    <Compile Include="ViewModels\NewsViewModel.cs" />
+    <Compile Include="ViewModels\NotificationsViewModel.cs" />
+    <Compile Include="ViewModels\RealEstateDetailsViewModel.cs" />
+    <Compile Include="ViewModels\RealEstateViewModel.cs" />
+    <Compile Include="ViewModels\ReminderBase.cs" />
+    <Compile Include="ViewModels\ReminderDetailsViewModel.cs" />
+    <Compile Include="ViewModels\ReminderListViewModel.cs" />
+    <Compile Include="ViewModels\ReminderViewModel.cs" />
+    <Compile Include="ViewModels\SearchViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\ShoppingViewModel.cs" />
+    <Compile Include="ViewModels\StockViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\WeatherViewModel.cs" />
+    <Compile Include="Views\Alarm.xaml.cs">
+      <DependentUpon>Alarm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Details.xaml.cs">
+      <DependentUpon>Details.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ForgotPassword.xaml.cs">
+      <DependentUpon>ForgotPassword.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MoviesDetails.xaml.cs">
+      <DependentUpon>MoviesDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RealEstateDetails.xaml.cs">
+      <DependentUpon>RealEstateDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Registration.xaml.cs">
+      <DependentUpon>Registration.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Reminder.xaml.cs">
+      <DependentUpon>Reminder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Search.xaml.cs">
+      <DependentUpon>Search.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ViewBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+    <Page Include="Controls\Clock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PageTitle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\ValidationTextBox.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\VerifyPrompt.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Templates\AlarmTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\ReminderTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Views\RealEstateDetails.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Settings.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Resource Include="Templates\MoviesTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\WeatherTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\SearchTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\StockTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\NewsTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\DictionaryTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\FlightsTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\RealEstateTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\EventsTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\FuelTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\GeopoliticsTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\HoroscopeTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\ShoppingTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\FitbitTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\ImagesTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Templates\AccessoryTemplates.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Views\Alarm.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Details.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ForgotPassword.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MoviesDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Registration.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Reminder.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Search.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Fonts\artill_clean_icons.otf" />
+    <Resource Include="Assets\Fonts\FontAwesome.otf" />
+    <Resource Include="Assets\Fonts\forcasticons.ttf" />
+    <None Include="Assets\Fonts\Roboto-Black.ttf" />
+    <None Include="Assets\Fonts\Roboto-BlackItalic.ttf" />
+    <None Include="Assets\Fonts\Roboto-Bold.ttf" />
+    <None Include="Assets\Fonts\Roboto-BoldItalic.ttf" />
+    <None Include="Assets\Fonts\Roboto-Italic.ttf" />
+    <None Include="Assets\Fonts\Roboto-Light.ttf" />
+    <None Include="Assets\Fonts\Roboto-LightItalic.ttf" />
+    <None Include="Assets\Fonts\Roboto-Medium.ttf" />
+    <None Include="Assets\Fonts\Roboto-MediumItalic.ttf" />
+    <None Include="Assets\Fonts\Roboto-Regular.ttf" />
+    <None Include="Assets\Fonts\Roboto-Thin.ttf" />
+    <None Include="Assets\Fonts\Roboto-ThinItalic.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-Bold.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-BoldItalic.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-Italic.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-Light.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-LightItalic.ttf" />
+    <None Include="Assets\Fonts\RobotoCondensed-Regular.ttf" />
+    <None Include="Assets\Fonts\weather.ttf" />
+    <None Include="packages.config" />
+    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\check.png">
+      <Link>Assets\check.png</Link>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\delete.png">
+      <Link>Assets\delete.png</Link>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Dark\feature.calendar.png">
+      <Link>Assets\feature.calendar.png</Link>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SDKs\Windows Phone\v8.0\Icons\Light\feature.camera.png">
+      <Link>Assets\feature.camera.png</Link>
+    </Content>
+    <Content Include="Assets\add.png" />
+    <Content Include="Assets\AlignmentGrid.png" />
+    <Content Include="Assets\ApplicationIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\clock_face.png" />
+    <Content Include="Assets\close.png" />
+    <Content Include="Assets\feature.alarm.png" />
+    <Content Include="Assets\Horoscope\zodiac-aquarius.png" />
+    <Content Include="Assets\Horoscope\zodiac-aries.png" />
+    <Content Include="Assets\Horoscope\zodiac-cancer.png" />
+    <Content Include="Assets\Horoscope\zodiac-capricorn.png" />
+    <Content Include="Assets\Horoscope\zodiac-gemini.png" />
+    <Content Include="Assets\Horoscope\zodiac-leo.png" />
+    <Content Include="Assets\Horoscope\zodiac-libra.png" />
+    <Content Include="Assets\Horoscope\zodiac-picies.png" />
+    <Content Include="Assets\Horoscope\zodiac-sagittarus.png" />
+    <Content Include="Assets\Horoscope\zodiac-scorpio.png" />
+    <Content Include="Assets\Horoscope\zodiac-taurus.png" />
+    <Content Include="Assets\Horoscope\zodiac-virgo.png" />
+    <Content Include="Assets\microphone.png" />
+    <Content Include="Assets\pin.png" />
+    <Content Include="Assets\plexi-100x100.png" />
+    <Content Include="Assets\plexi-background.png" />
+    <Content Include="Assets\plexi-big-black-720.png" />
+    <Content Include="Assets\plexi-UI-logo.png" />
+    <Content Include="Assets\rotten-tomatoes-icons.png" />
+    <Content Include="Assets\save.png" />
+    <Content Include="Assets\Tiles\FlipCycleTileLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\FlipCycleTileMedium.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\FlipCycleTileSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\IconicTileMediumLarge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\IconicTileSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Tiles\plexi-159x159.png" />
+    <Content Include="Assets\Tiles\plexi-336x336.png" />
+    <Content Include="Assets\Tiles\plexi-691x336.png" />
+    <Content Include="PlexiCommands.xml" />
+    <Content Include="README_FIRST.txt" />
+    <Content Include="Toolkit.Content\ApplicationBar.Add.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
+    <Content Include="Toolkit.Content\ApplicationBar.Select.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AppResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Coding4Fun.Toolkit.Controls">
+      <HintPath>..\packages\Coding4Fun.Toolkit.Controls.2.0.7\lib\windowsphone8\Coding4Fun.Toolkit.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras.WP8">
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.Extras.WP8.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.WP8">
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\GalaSoft.MvvmLight.WP8.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Phone.Controls.Toolkit">
+      <HintPath>..\packages\WPtoolkit.4.2013.08.16\lib\wp8\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\portable-net45+wp80+win8\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sparrow.Chart.WP8.45">
+      <HintPath>..\packages\Sparrow.Chart.WP8.13.1.0.113\lib\windowsphone8\Sparrow.Chart.WP8.45.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=3.9.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\wp8\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="TimeZones">
+      <HintPath>..\packages\WinRTTimeZones.1.0\lib\wp8\TimeZones.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Samples\MediaViewer\MediaViewer.csproj">
+      <Project>{41D422A7-5968-47DF-8B7B-4DBFA1484B07}</Project>
+      <Name>MediaViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\SDK\WP8\PlexiSDK\PlexiSDK\PlexiSDK.csproj">
+      <Project>{8D014A37-1956-491E-BD58-B3A62A0040CE}</Project>
+      <Name>PlexiSDK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions />
+  <Import Project="..\packages\WinRTTimeZones.1.0\tools\WinRTTimeZones.targets" />
+</Project>
