@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Phone
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexiVoice", "PlexiVoice\PlexiVoice.csproj", "{420C4E58-1173-4C44-9206-93CC4FCC84E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaViewer", "..\..\Samples\MediaViewer\MediaViewer.csproj", "{41D422A7-5968-47DF-8B7B-4DBFA1484B07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaViewer", "MediaViewer\MediaViewer.csproj", "{41D422A7-5968-47DF-8B7B-4DBFA1484B07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexiSDK", "..\..\SDK\WP8\PlexiSDK\PlexiSDK\PlexiSDK.csproj", "{8D014A37-1956-491E-BD58-B3A62A0040CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexiSDK", "PlexiSDK\PlexiSDK\PlexiSDK.csproj", "{8D014A37-1956-491E-BD58-B3A62A0040CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

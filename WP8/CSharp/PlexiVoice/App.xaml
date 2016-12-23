@@ -1,0 +1,259 @@
+<Application x:Class="PlexiVoice.App" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone" 
+             xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+             xmlns:util="clr-namespace:PlexiVoice.Util"
+             xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+             xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+             xmlns:vm="clr-namespace:PlexiVoice.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             d1p1:Ignorable="d" 
+             xmlns:d1p1="http://schemas.openxmlformats.org/markup-compatibility/2006">
+    <!--Application Resources-->
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--<local:LocalizedStrings xmlns:local="clr-namespace:PlexiVoice" x:Key="LocalizedStrings" />-->
+
+            <LinearGradientBrush x:Key="BackgroundGradient">
+                <GradientStop Color="#f0f0f0" Offset="0.0"/>
+                <GradientStop Color="White" Offset=".15"/>
+                <GradientStop Color="#f0f0f0" Offset=".85"/>
+            </LinearGradientBrush>
+
+            <SolidColorBrush x:Name="ResultBackground" Opacity="0.2" Color="{StaticResource PhoneContrastBackgroundColor}"/>
+            
+            <SolidColorBrush x:Name="AccentColor" Color="LightGray" />
+                        
+            <!-- listbox item 100% width -->
+            <Style x:Key="ListBoxItem" TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            </Style>
+
+            <Style x:Key="ListBoxStyle" TargetType="ListBox">
+                <Setter Property="ItemContainerStyle" Value="{StaticResource ListBoxItem}"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
+            </Style>
+
+            <Style x:Key="Divider" TargetType="Border">
+                <Setter Property="Height" Value="1"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="Opacity" Value="0.2"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+
+            <!-- global fontawesome uri -->
+            <Style x:Key="FontAwesomeBase" TargetType="Glyphs">
+                <Setter Property="FontUri" Value="/PlexiVoice;component/Assets/Fonts/FontAwesome.otf#FontAwesome" />
+            </Style>
+
+            <Style x:Key="ThumbnailStyle" TargetType="c4f:SuperImage">
+                <Setter Property="Stretch" Value="Uniform"/>
+                <Setter Property="PlaceholderOpacity" Value="0.06"/>
+            </Style>
+            
+            <ImageBrush x:Key="ContentBackground" 
+                        ImageSource="/Assets/plexi-background.png"
+                        AlignmentX="Center"
+                        AlignmentY="Center"
+                        Stretch="UniformToFill"/>
+
+            <!-- Override default toolkit Expander View -->
+            <Style x:Key="CustomExpanderView" TargetType="toolkit:ExpanderView">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="toolkit:ExpanderView">
+                            <Grid>
+                                <Grid.Resources>
+                                    <QuadraticEase x:Key="QuadraticEaseOut" EasingMode="EaseOut"/>
+                                    <QuadraticEase x:Key="QuadraticEaseInOut" EasingMode="EaseInOut"/>
+                                </Grid.Resources>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="ExpansionStates">
+                                        <VisualStateGroup.Transitions>
+                                            <VisualTransition From="Collapsed" GeneratedDuration="0:0:0.15" To="Expanded">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="ItemsCanvas">
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseOut}" KeyTime="0:0:0.00" Value="0"/>
+                                                        <EasingDoubleKeyFrame x:Name="CollapsedToExpandedKeyFrame" EasingFunction="{StaticResource QuadraticEaseOut}" KeyTime="0:0:0.15" Value="1"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                    <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ItemsCanvas"/>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                            <VisualTransition From="Expanded" GeneratedDuration="0:0:0.15" To="Collapsed">
+                                                <Storyboard>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="ItemsCanvas">
+                                                        <EasingDoubleKeyFrame x:Name="ExpandedToCollapsedKeyFrame" EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.00" Value="1"/>
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.15" Value="0"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ItemsCanvas">
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.00" Value="1.0"/>
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.15" Value="0.0"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="ItemsCanvas">
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.00" Value="0.0"/>
+                                                        <EasingDoubleKeyFrame EasingFunction="{StaticResource QuadraticEaseInOut}" KeyTime="0:0:0.15" Value="-35"/>
+                                                    </DoubleAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </VisualTransition>
+                                        </VisualStateGroup.Transitions>
+                                        <VisualState x:Name="Collapsed">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="ItemsCanvas"/>
+                                                <DoubleAnimation Duration="0" To="0.0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ItemsCanvas"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Expanded">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0" Storyboard.TargetProperty="(FrameworkElement.Height)" Storyboard.TargetName="ItemsCanvas"/>
+                                                <DoubleAnimation Duration="0" To="1.0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ItemsCanvas"/>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="ExpandabilityStates">
+                                        <VisualState x:Name="Expandable"/>
+                                        <VisualState x:Name="NonExpandable">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="ExpandableContent">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="Collapsed"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <!--
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="Line">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="Collapsed"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            -->
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="NonExpandableContent">
+                                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.0" Value="Visible"/>
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ListBoxItem Height="Auto" x:Name="ExpandableContent" toolkit:TiltEffect.IsTiltEnabled="False" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <ContentControl x:Name="Header" Grid.ColumnSpan="2" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Row="0"/>
+                                        <ContentControl x:Name="Expander" ContentTemplate="{TemplateBinding ExpanderTemplate}" Content="{TemplateBinding Expander}" Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0" Grid.Row="1"/>
+                                        <Grid x:Name="ExpanderPanel" Background="Transparent" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
+                                    </Grid>
+                                </ListBoxItem>
+                                <ContentControl x:Name="NonExpandableContent" ContentTemplate="{TemplateBinding NonExpandableHeaderTemplate}" Content="{TemplateBinding NonExpandableHeader}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Grid.Row="0" Grid.RowSpan="2" Visibility="Collapsed"/>
+                                <Canvas x:Name="ItemsCanvas" Margin="0" Opacity="0.0" Grid.Row="2">
+                                    <Canvas.RenderTransform>
+                                        <CompositeTransform TranslateY="0.0"/>
+                                    </Canvas.RenderTransform>
+                                    <ItemsPresenter x:Name="Presenter"/>
+                                </Canvas>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- toolkit page transitions -->
+            <Style x:Key="SlideTransition" TargetType="phone:PhoneApplicationPage">
+                <Setter Property="toolkit:TransitionService.NavigationInTransition">
+                    <Setter.Value>
+                        <toolkit:NavigationInTransition>
+                            <toolkit:NavigationInTransition.Backward>
+                                <toolkit:SlideTransition Mode="SlideRightFadeIn"/>
+                            </toolkit:NavigationInTransition.Backward>
+                            <toolkit:NavigationInTransition.Forward>
+                                <toolkit:SlideTransition Mode="SlideLeftFadeIn"/>
+                            </toolkit:NavigationInTransition.Forward>
+                        </toolkit:NavigationInTransition>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="toolkit:TransitionService.NavigationOutTransition">
+                    <Setter.Value>
+                        <toolkit:NavigationOutTransition>
+                            <toolkit:NavigationOutTransition.Backward>
+                                <toolkit:SlideTransition Mode="SlideRightFadeOut"/>
+                            </toolkit:NavigationOutTransition.Backward>
+                            <toolkit:NavigationOutTransition.Forward>
+                                <toolkit:SlideTransition Mode="SlideLeftFadeOut"/>
+                            </toolkit:NavigationOutTransition.Forward>
+                        </toolkit:NavigationOutTransition>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- converters -->
+            <!--
+            <util:BackgroundConverter x:Key="BackgroundConverter" />
+            <util:ForegroundConverter x:Key="ForegroundConverter" />
+            <util:AlignmentConverter x:Key="AlignmentConverter" />
+            <util:ChatBubbleConverter x:Key="ChatBubbleConverter" />  
+            <util:VisibilityConverter x:Key="VisibilityConverter"/>
+            -->
+            <util:DayOfWeekConverter x:Key="DayOfWeekConverter" />
+            <util:PrettyDateConverter x:Key="PrettyDateConverter" />
+            <util:ZodiacConverter x:Key="ZodiacConverter" />
+            <util:EntityConverter x:Key="EntityConverter" />
+            <util:WeatherConverter x:Key="WeatherConverter" />
+            <util:FlightConverter x:Key="FlightConverter" />
+            <util:RealEstateConverter x:Key="RealEstateConverter" />
+            <util:ColorConverter x:Key="ColorConverter" />
+            <util:VisibilityConverter x:Key="VisibilityConverter" />
+            <util:NotificationBackgroundConverter x:Key="NotificationBackgroundConverter" />
+            <util:NotificationDateConverter x:Key="NotificationDateConverter" />
+            <util:NotificationOpacityConverter x:Key="NotificationOpacityConverter" />
+            <util:ImageConverter x:Key="ImageConverter"/>
+            <util:VisibilityToMarginConverter x:Key="VisibilityToMarginConverter"/>
+            <toolkit:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/AccessoryTemplates.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/AlarmTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/DictionaryTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/EventsTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/FitbitTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/FlightsTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/FuelTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/GeopoliticsTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/HoroscopeTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/ImagesTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/MoviesTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/NewsTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/RealEstateTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/ReminderTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/SearchTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/ShoppingTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/StockTemplate.xaml" />
+                <ResourceDictionary Source="/PlexiVoice;component/Templates/WeatherTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+    
+  <Application.ApplicationLifetimeObjects>
+    <!--Required object that handles lifetime events for the application-->
+    <shell:PhoneApplicationService Launching="Application_Launching" Closing="Application_Closing" Activated="Application_Activated" Deactivated="Application_Deactivated" />
+  </Application.ApplicationLifetimeObjects>
+</Application>

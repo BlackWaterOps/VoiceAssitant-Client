@@ -1,0 +1,12 @@
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\PlexiSDK.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\PlexiSDK.pdb
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\Newtonsoft.Json.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\Newtonsoft.Json.xml
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.Resources.PlexiResources.resources
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csproj.GenerateResource.Cache
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.dll
+C:\Users\Jeff Schifano\Documents\Visual Studio 2012\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.pdb
+D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csprojResolveAssemblyReference.cache
+D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.Resources.PlexiResources.resources
+D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csproj.GenerateResource.Cache
+D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.pdb

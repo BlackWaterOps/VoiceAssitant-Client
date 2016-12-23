@@ -1,0 +1,264 @@
+.template-data {
+	background-color: white;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	min-height: 75px;
+	max-height: 225px;
+}
+
+.template-item {
+	border-bottom: 1px solid #dfdfdf;
+	padding: 10px 0;
+	position: relative;
+	&:last-child {
+		border-bottom: none;
+	}
+}
+
+.template-item-image {
+	float: left;
+	min-width: 100px;
+	margin-right: 20px;
+}
+
+.template-item-title {
+	font-size: 1.125em;
+	margin-bottom: 10px;
+}
+
+.template-item-details {
+	vertical-align: top;
+}
+
+// SHOPPING STYLES
+.shopping-item {
+	&:last-child {
+		padding-bottom: 0;
+	}
+
+	.template-item-image {
+		width: 160px;
+	}
+}
+
+.shopping-price {
+	font-weight: normal;
+}
+
+// IMAGE STYLES
+.images {
+    //text-align: center;
+    //padding: 5px;
+    min-height: 200px;
+    width: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    img {
+        border: solid white 2px;
+        box-shadow: 0 0 10px black;
+        margin: 5px;
+        max-width: 250px;
+    }
+}
+
+// NEWS STYLES
+.news-item {
+	margin-bottom: 10px;	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.news-title, .news-summary {
+	font-weight: normal;
+}
+
+.news-title {
+	font-size: 20px;
+	padding: 0;
+	margin: 0;
+	font-family: 'Trebuchet MS';
+}
+
+.news-pubdate, .news-source {
+	display: inline-block;
+	width: 49%;
+	text-align: right;
+	color: rgba(0,0,0,.6);
+	font-size: 12px;
+	padding-top: 4px;
+	margin-bottom: 6px;
+}
+
+.news-pubdate {
+	text-align: left;
+}
+
+.news-source {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.news-summary {
+	line-height: 20px;
+}
+
+// FLIGHT STYLES
+.flights {
+	color: black;
+	font-weight: normal;
+}
+
+.flight-info-item {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #dcdcdc;
+	&:last-child {
+		border: 0;
+	}
+}
+
+.flight-status {
+	color: green;
+	margin: 10px 0;
+	&.status-delay {
+		color: red;
+	}
+}
+
+.flight-info {
+	//padding: 10px;
+	div {
+		float: right;
+		text-align: right;
+	}
+}
+
+.flight-location {
+	float: left;
+}
+
+.flight-arrival-info {
+	margin-top: 20px;
+}
+
+// MOVIE STYLES
+.movie-rating {
+	border: 1px solid #ccc;
+	padding: 4px;
+}
+
+.movie-score {
+	font-weight: normal;
+}
+
+// EVENT STYLES
+.event-time, .event-address {
+	font-weight: normal;
+}
+
+.event-time {
+	color: #999;
+}
+
+// STOCK
+.stock {
+	max-height: 330px;
+}
+
+.stock-name {
+	font-size: 1em;
+}
+
+.stock-arrow {
+	margin: 0 5px 0 20px;
+	vertical-align: text-bottom;
+}
+
+.stock-share-price
+{
+	font-size: 1.5em;
+	margin: 5px 0;
+	span {
+		font-size: .75em;
+		&.stock-down {
+			color: red;
+			&:before {
+				@extend .stock-arrow;
+				content: "\2193";
+			}
+		}
+		&.stock-up {
+			color: green;
+			&:before {
+				@extend .stock-arrow;
+				content: "\2191";
+			}
+		}
+	}
+}
+
+// SEARCH
+.search-item {
+	font-weight: normal;
+}
+
+.search-image {
+	width: 120px;
+}
+
+.search-title {
+	color: blue;
+	text-decoration: underline;
+	font-size: 1em;
+}
+
+.search-url {
+	color: green;
+	font-size: .8125em;
+}
+
+.search-summary {
+	font-size: .8125em;
+}
+
+// GEOPOLITICS
+.geopolitics {
+	max-height: 300px;
+}
+
+.geopolitics-flag {
+	width: 120px;
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+.geopolitics-text {
+	margin: 30px 0 0;
+}
+
+// DICTIONARY
+.dictionary {
+	font-weight: normal !important;
+}
+
+.dictionary-headword {
+	margin: 10px 0;
+}
+
+.dictionary-pos {
+	margin: 30px 0 0;
+}
+
+.dictionary-definition-item {
+	margin: 10px 0;
+	border-top: 1px solid #dcdcdc;
+	padding: 10px 0;
+}
+
+.dictionary-examples {
+	list-style: disc !important;
+	padding-left: 40px;
+}

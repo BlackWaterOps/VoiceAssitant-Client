@@ -327,6 +327,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Fonts\artill_clean_icons.otf" />
+    <None Include="repositories.config" />
+    <None Include="WinRTTimeZones.1.0.nupkg" />
     <Resource Include="Assets\Fonts\FontAwesome.otf" />
     <Resource Include="Assets\Fonts\forcasticons.ttf" />
     <None Include="Assets\Fonts\Roboto-Black.ttf" />
@@ -457,7 +459,10 @@
       <HintPath>..\packages\WinRTTimeZones.1.0\lib\wp8\TimeZones.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="WinRTTimeZones.1.0\" />
+    <Folder Include="WPtoolkit.4.2013.08.16\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Samples\MediaViewer\MediaViewer.csproj">
       <Project>{41D422A7-5968-47DF-8B7B-4DBFA1484B07}</Project>

@@ -1,0 +1,614 @@
+/* line 1, ../scss/templates.scss */
+.template-data {
+  background-color: white;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  min-height: 75px;
+  max-height: 225px; }
+
+/* line 9, ../scss/templates.scss */
+.template-item {
+  border-bottom: 1px solid #dfdfdf;
+  padding: 10px 0;
+  position: relative; }
+  /* line 13, ../scss/templates.scss */
+  .template-item:last-child {
+    border-bottom: none; }
+
+/* line 18, ../scss/templates.scss */
+.template-item-image {
+  float: left;
+  min-width: 100px;
+  margin-right: 20px; }
+
+/* line 24, ../scss/templates.scss */
+.template-item-title {
+  font-size: 1.125em;
+  margin-bottom: 10px; }
+
+/* line 29, ../scss/templates.scss */
+.template-item-details {
+  vertical-align: top; }
+
+/* line 35, ../scss/templates.scss */
+.shopping-item:last-child {
+  padding-bottom: 0; }
+/* line 39, ../scss/templates.scss */
+.shopping-item .template-item-image {
+  width: 160px; }
+
+/* line 44, ../scss/templates.scss */
+.shopping-price {
+  font-weight: normal; }
+
+/* line 49, ../scss/templates.scss */
+.images {
+  min-height: 200px;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; }
+  /* line 58, ../scss/templates.scss */
+  .images img {
+    border: solid white 2px;
+    box-shadow: 0 0 10px black;
+    margin: 5px;
+    max-width: 250px; }
+
+/* line 67, ../scss/templates.scss */
+.news-item {
+  margin-bottom: 10px; }
+  /* line 69, ../scss/templates.scss */
+  .news-item:last-child {
+    margin-bottom: 0; }
+
+/* line 74, ../scss/templates.scss */
+.news-title, .news-summary {
+  font-weight: normal; }
+
+/* line 78, ../scss/templates.scss */
+.news-title {
+  font-size: 20px;
+  padding: 0;
+  margin: 0;
+  font-family: 'Trebuchet MS'; }
+
+/* line 85, ../scss/templates.scss */
+.news-pubdate, .news-source {
+  display: inline-block;
+  width: 49%;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  padding-top: 4px;
+  margin-bottom: 6px; }
+
+/* line 95, ../scss/templates.scss */
+.news-pubdate {
+  text-align: left; }
+
+/* line 99, ../scss/templates.scss */
+.news-source {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
+
+/* line 105, ../scss/templates.scss */
+.news-summary {
+  line-height: 20px; }
+
+/* line 110, ../scss/templates.scss */
+.flights {
+  color: black;
+  font-weight: normal; }
+
+/* line 115, ../scss/templates.scss */
+.flight-info-item {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dcdcdc; }
+  /* line 118, ../scss/templates.scss */
+  .flight-info-item:last-child {
+    border: 0; }
+
+/* line 123, ../scss/templates.scss */
+.flight-status {
+  color: green;
+  margin: 10px 0; }
+  /* line 126, ../scss/templates.scss */
+  .flight-status.status-delay {
+    color: red; }
+
+/* line 133, ../scss/templates.scss */
+.flight-info div {
+  float: right;
+  text-align: right; }
+
+/* line 139, ../scss/templates.scss */
+.flight-location {
+  float: left; }
+
+/* line 143, ../scss/templates.scss */
+.flight-arrival-info {
+  margin-top: 20px; }
+
+/* line 148, ../scss/templates.scss */
+.movie-rating {
+  border: 1px solid #ccc;
+  padding: 4px; }
+
+/* line 153, ../scss/templates.scss */
+.movie-score {
+  font-weight: normal; }
+
+/* line 158, ../scss/templates.scss */
+.event-time, .event-address {
+  font-weight: normal; }
+
+/* line 162, ../scss/templates.scss */
+.event-time {
+  color: #999; }
+
+/* line 167, ../scss/templates.scss */
+.stock {
+  max-height: 330px; }
+
+/* line 171, ../scss/templates.scss */
+.stock-name {
+  font-size: 1em; }
+
+/* line 175, ../scss/templates.scss */
+.stock-arrow, .stock-share-price span.stock-down:before, .stock-share-price span.stock-up:before {
+  margin: 0 5px 0 20px;
+  vertical-align: text-bottom; }
+
+/* line 181, ../scss/templates.scss */
+.stock-share-price {
+  font-size: 1.5em;
+  margin: 5px 0; }
+  /* line 184, ../scss/templates.scss */
+  .stock-share-price span {
+    font-size: .75em; }
+    /* line 186, ../scss/templates.scss */
+    .stock-share-price span.stock-down {
+      color: red; }
+      /* line 188, ../scss/templates.scss */
+      .stock-share-price span.stock-down:before {
+        content: "\2193"; }
+    /* line 193, ../scss/templates.scss */
+    .stock-share-price span.stock-up {
+      color: green; }
+      /* line 195, ../scss/templates.scss */
+      .stock-share-price span.stock-up:before {
+        content: "\2191"; }
+
+/* line 204, ../scss/templates.scss */
+.search-item {
+  font-weight: normal; }
+
+/* line 208, ../scss/templates.scss */
+.search-image {
+  width: 120px; }
+
+/* line 212, ../scss/templates.scss */
+.search-title {
+  color: blue;
+  text-decoration: underline;
+  font-size: 1em; }
+
+/* line 218, ../scss/templates.scss */
+.search-url {
+  color: green;
+  font-size: .8125em; }
+
+/* line 223, ../scss/templates.scss */
+.search-summary {
+  font-size: .8125em; }
+
+/* line 228, ../scss/templates.scss */
+.geopolitics {
+  max-height: 300px; }
+
+/* line 232, ../scss/templates.scss */
+.geopolitics-flag {
+  width: 120px;
+  vertical-align: middle;
+  margin-right: 5px; }
+
+/* line 238, ../scss/templates.scss */
+.geopolitics-text {
+  margin: 30px 0 0; }
+
+/* line 243, ../scss/templates.scss */
+.dictionary {
+  font-weight: normal !important; }
+
+/* line 247, ../scss/templates.scss */
+.dictionary-headword {
+  margin: 10px 0; }
+
+/* line 251, ../scss/templates.scss */
+.dictionary-pos {
+  margin: 30px 0 0; }
+
+/* line 255, ../scss/templates.scss */
+.dictionary-definition-item {
+  margin: 10px 0;
+  border-top: 1px solid #dcdcdc;
+  padding: 10px 0; }
+
+/* line 261, ../scss/templates.scss */
+.dictionary-examples {
+  list-style: disc !important;
+  padding-left: 40px; }
+
+/* line 4, ../scss/style.scss */
+*, *:before, *:after {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/* line 9, ../scss/style.scss */
+body {
+  font-family: "HelveticaNeue-Light", "HelveticaNeue", Arial;
+  padding: 0;
+  margin: 0;
+  background-color: #1f2122;
+  overflow: hidden; }
+
+/* line 16, ../scss/style.scss */
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+/* line 21, ../scss/style.scss */
+a {
+  text-decoration: none;
+  color: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); }
+
+/* line 27, ../scss/style.scss */
+a img {
+  border: none; }
+
+/* line 30, ../scss/style.scss */
+div, p, input {
+  margin: 0px; }
+
+/* line 33, ../scss/style.scss */
+.wrapper {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  -webkit-overflow-scrolling: touch; }
+  /* line 41, ../scss/style.scss */
+  .wrapper .board {
+    position: relative; }
+
+/* line 46, ../scss/style.scss */
+.input-form.cancel .main-input {
+  padding-right: 85px; }
+/* line 50, ../scss/style.scss */
+.input-form.cancel .cancel-btn {
+  right: 0; }
+
+/* line 55, ../scss/style.scss */
+.main-input {
+  font-size: 46px;
+  padding: 7px 5px 7px 5px;
+  margin-top: 20px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  color: #c5185e;
+  box-shadow: 0 0 10px black;
+  background-color: #1f2122;
+  border: solid #1f2122 1px;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 69, ../scss/style.scss */
+  body.choice .main-input {
+    left: 300px; }
+
+/* line 73, ../scss/style.scss */
+.main-input:focus {
+  outline: none; }
+
+/* line 76, ../scss/style.scss */
+.cancel-btn {
+  position: fixed;
+  bottom: 0;
+  right: -80px;
+  background: #9a9a9a;
+  color: rgba(31, 33, 34, 0.8);
+  border-left: 1px solid #b3b3b3;
+  width: 80px;
+  font-size: 46px;
+  padding: 7px 5px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  text-shadow: 1px 4px 6px #9a9a9a, 0 0 0 #000, 1px 4px 6px #9a9a9a;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+
+/* line 93, ../scss/style.scss */
+.board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  overflow: auto;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 101, ../scss/style.scss */
+  body.choice .board {
+    margin-left: 300px; }
+
+/* line 105, ../scss/style.scss */
+.list-slider {
+  position: fixed;
+  left: 0;
+  width: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: white;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 0 10px black; }
+  /* line 117, ../scss/style.scss */
+  body.choice .list-slider {
+    width: 300px; }
+  /* line 121, ../scss/style.scss */
+  .list-slider li {
+    padding: 10px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    background: #f9f9f9;
+    cursor: pointer; }
+    /* line 127, ../scss/style.scss */
+    .list-slider li:last-child {
+      border: 0; }
+
+/* line 132, ../scss/style.scss */
+.bubble {
+  width: 100%;
+  padding: 15px;
+  color: black;
+  text-align: left;
+  font-size: 21px;
+  font-weight: bold;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/* line 141, ../scss/style.scss */
+.in {
+  background-color: #e2e2e2;
+  text-align: right;
+  color: #333; }
+
+/* line 147, ../scss/style.scss */
+.out {
+  background-color: white;
+  color: #c5185e;
+  text-align: left; }
+
+/* line 153, ../scss/style.scss */
+.out ul {
+  font-size: 16px;
+  list-style-type: none;
+  column-count: 5; }
+
+/* line 161, ../scss/style.scss */
+.debug {
+  margin-top: 10px; }
+  /* line 164, ../scss/style.scss */
+  .debug .underspeak {
+    font-size: 14px;
+    color: #555;
+    font-weight: lighter;
+    text-align: left; }
+  /* line 171, ../scss/style.scss */
+  .debug b, .debug strong {
+    margin-left: 10px; }
+    /* line 174, ../scss/style.scss */
+    .debug b:nth-child(1), .debug strong:nth-child(1) {
+      margin-left: 1px; }
+  /* line 179, ../scss/style.scss */
+  .debug .expand, .debug .simulate {
+    border: solid #bbb 1px;
+    background: #ddd;
+    padding: 0 7px;
+    margin-left: 10px;
+    color: inherit;
+    text-decoration: none;
+    font-size: 11px;
+    cursor: pointer; }
+  /* line 190, ../scss/style.scss */
+  .debug .data {
+    font-size: 12px;
+    font-family: "Monaco", "Courier New", monospace;
+    font-weight: normal;
+    margin-top: 5px;
+    color: #555;
+    display: none;
+    border-top: solid #ccc 1px;
+    margin-top: 15px;
+    padding-top: 10px;
+    text-align: left; }
+    /* line 202, ../scss/style.scss */
+    .debug .data pre {
+      white-space: pre;
+      word-wrap: break-word;
+      font-family: "Monaco", "Courier New", monospace;
+      font-size: 14px; }
+
+/* line 211, ../scss/style.scss */
+.extLink {
+  display: block;
+  text-align: right;
+  color: #37c;
+  font-size: .875em; }
+
+/* line 218, ../scss/style.scss */
+.loader {
+  position: absolute;
+  left: 17px;
+  bottom: 17px;
+  z-index: 999;
+  display: none;
+  -webkit-transition: .2s ease-in-out;
+  -moz-transition: .2s ease-in-out;
+  -ms-transition: .2s ease-in-out;
+  -o-transition: .2s ease-in-out;
+  transition: .2s ease-in-out; }
+  /* line 225, ../scss/style.scss */
+  body.choice .loader {
+    margin-left: 310px; }
+
+/* line 230, ../scss/style.scss */
+.webpage {
+  padding: 20px;
+  text-align: center;
+  background: white; }
+  /* line 235, ../scss/style.scss */
+  .webpage iframe {
+    width: 100%;
+    min-height: 400px;
+    border: solid #ccc 1px;
+    box-shadow: inset 0 0 5px #ccc; }
+
+/* line 243, ../scss/style.scss */
+.i {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border-radius: 50px;
+  padding: 3px 14px;
+  border: rgba(255, 255, 255, 0.2);
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 22px;
+  z-index: 999999; }
+  /* line 257, ../scss/style.scss */
+  .i:hover {
+    background: black; }
+
+/* line 262, ../scss/style.scss */
+.init {
+  position: absolute;
+  top: 40%;
+  width: 100%;
+  color: #aaa;
+  display: none;
+  text-align: center; }
+  /* line 270, ../scss/style.scss */
+  .init h1 {
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    font-size: 48px; }
+  /* line 277, ../scss/style.scss */
+  .init .subtitle {
+    font-size: 14px; }
+
+/********  PhoneGap only **********/
+/* line 284, ../scss/style.scss */
+.control {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  text-align: center; }
+  /* line 292, ../scss/style.scss */
+  .control .micbutton {
+    display: block;
+    width: 100px;
+    margin: 0 auto;
+    cursor: pointer;
+    position: relative; }
+    /* line 298, ../scss/style.scss */
+    .control .micbutton:before, .control .micbutton:after {
+      content: "";
+      position: absolute;
+      background-color: #303336;
+      height: 130px;
+      width: 130px;
+      z-index: -9;
+      top: -15px;
+      left: -15px;
+      border-radius: 50%; }
+    /* line 309, ../scss/style.scss */
+    .control .micbutton:after {
+      -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+      z-index: -999; }
+  /* line 315, ../scss/style.scss */
+  .control:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0px;
+    top: -30px;
+    height: 90px;
+    z-index: -99; }
+  /* line 324, ../scss/style.scss */
+  .control:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 20px;
+    background-color: #303336;
+    -webkit-box-shadow: 0 -2px 8px 5px rgba(0, 0, 0, 0.35);
+    height: 85px;
+    z-index: -99; }
+
+/* line 337, ../scss/style.scss */
+.cf {
+  *zoom: 1; }
+
+/* line 341, ../scss/style.scss */
+.cf:before, .cf:after {
+  content: "";
+  display: table;
+  line-height: 0;
+  height: 0; }
+
+/* line 348, ../scss/style.scss */
+.cf:after {
+  clear: both; }

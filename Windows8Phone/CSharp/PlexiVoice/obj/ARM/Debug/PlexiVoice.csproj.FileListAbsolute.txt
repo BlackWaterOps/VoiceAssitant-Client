@@ -105,3 +105,23 @@ C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\PlexiVoice\PlexiVoi
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\PlexiVoice\PlexiVoice\obj\ARM\Debug\PlexiVoice.dll
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\PlexiVoice\PlexiVoice\obj\ARM\Debug\PlexiVoice.pdb
 C:\Users\Jeff Schifano\Documents\Visual Studio 2012\Projects\PlexiVoice\PlexiVoice\obj\ARM\Debug\XapCacheFile.xml
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\PlexiVoice.csprojResolveAssemblyReference.cache
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\App.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Controls\Clock.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Controls\PageTitle.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Controls\ValidationTextBox.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Controls\VerifyPrompt.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\MainPage.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\RealEstateDetails.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Settings.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Alarm.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Details.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\ForgotPassword.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\MoviesDetails.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Registration.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Reminder.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\Views\Search.g.cs
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\PlexiVoice.g.resources
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\PlexiVoice.Resources.AppResources.resources
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\PlexiVoice.csproj.GenerateResource.Cache
+D:\GitHub\stremor-please\Windows8Phone\CSharp\PlexiVoice\obj\ARM\Debug\PlexiVoice.pdb

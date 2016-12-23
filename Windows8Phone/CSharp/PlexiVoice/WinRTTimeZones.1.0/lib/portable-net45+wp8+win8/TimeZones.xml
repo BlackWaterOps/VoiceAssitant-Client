@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TimeZones</name>
+    </assembly>
+    <members>
+        <member name="T:TimeZones.ITimeZoneServiceAdapter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TimeZones.ITimeZoneServiceAdapter.FindSystemTimeZoneById(System.String)">
+            <summary>
+            Gets a TimeZoneEx by id.
+            </summary>
+            <param name="id">Invariant Time Zone name. See SystemTimeZoneIds property for full list.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.ITimeZoneServiceAdapter.GetAllTimeZones">
+            <summary>
+            All Time Zones
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TimeZones.ITimeZoneServiceAdapter.SystemTimeZoneIds">
+            <summary>
+                All available time zones
+            </summary>
+        </member>
+        <member name="P:TimeZones.ITimeZoneServiceAdapter.Local">
+            <summary>
+            The Local Time Zone
+            </summary>
+        </member>
+        <member name="T:TimeZones.ITimeZoneEx">
+            <summary>
+            Represents a time zone
+            </summary>
+        </member>
+        <member name="M:TimeZones.ITimeZoneEx.IsDaylightSavingTime(System.DateTimeOffset)">
+            <summary>
+            Determines if the current datetime value is in daylight time or not
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.ITimeZoneEx.ConvertTime(System.DateTimeOffset)">
+            <summary>
+             Gets a DateTimeOffset for this time zone
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TimeZones.ITimeZoneEx.BaseUtcOffset">
+            <summary>
+            Normal offset from UTC
+            </summary>
+        </member>
+        <member name="P:TimeZones.ITimeZoneEx.StandardName">
+            <summary>
+            Localized name for standard time
+            </summary>
+        </member>
+        <member name="P:TimeZones.ITimeZoneEx.DaylightName">
+            <summary>
+            Localized name for daylight time
+            </summary>
+        </member>
+        <member name="P:TimeZones.ITimeZoneEx.Id">
+            <summary>
+            System Id for this time zone
+            </summary>
+        </member>
+        <member name="T:TimeZones.Strings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TimeZones.Strings.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TimeZones.Strings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:TimeZones.Strings.AdapterNotSupported">
+            <summary>
+              Looks up a localized string similar to This API is not supported on this platform..
+            </summary>
+        </member>
+        <member name="P:TimeZones.Strings.AssemblyNotSupported">
+            <summary>
+              Looks up a localized string similar to To use this API, the platform-specific assembly must be present in the probing path. If running on Windows Store or Desktop, verify that platform-specific projects have a reference to their appropriate platform-specific assembly (TimeZones.NetCore or TimeZones.NetFx, respectively) so that it ends up in the package. Otherwise, if running on .NET Framework verify that TimeZones.NetFx is alongside TimeZones.* on disk..
+            </summary>
+        </member>
+        <member name="T:TimeZones.TimeZoneInfoExException">
+            <summary>
+            Exception thrown from Time Zone
+            </summary>
+        </member>
+        <member name="M:TimeZones.TimeZoneInfoExException.#ctor(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="code"></param>
+            <param name="message"></param>
+        </member>
+        <member name="T:TimeZones.TimeZoneService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TimeZones.TimeZoneService.FindSystemTimeZoneById(System.String)">
+            <summary>
+            Gets a TimeZoneEx by id.
+            </summary>
+            <param name="id">Invariant Time Zone name. See TimeZones property for full list.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.TimeZoneService.ConvertTimeBySystemTimeZoneId(System.DateTimeOffset,System.String)">
+            <summary>
+            Converts a DateTimeOffset to one in the specified system time zone
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <param name="destinationTimeZoneId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.TimeZoneService.SpecifyTimeZone(System.DateTimeOffset,TimeZones.ITimeZoneEx)">
+            <summary>
+            Sets the specified timezone on the date without converting the time
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <param name="timeZone"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TimeZones.TimeZoneService.Utc">
+            <summary>
+            UTC Time Zone
+            </summary>
+        </member>
+        <member name="P:TimeZones.TimeZoneService.Local">
+            <summary>
+            Local Time Zone
+            </summary>
+        </member>
+        <member name="P:TimeZones.TimeZoneService.SystemTimeZoneIds">
+            <summary>
+                All available time zones
+            </summary>
+        </member>
+        <member name="P:TimeZones.TimeZoneService.AllTimeZones">
+            <summary>
+            All Time Zones 
+            </summary>
+        </member>
+    </members>
+</doc>

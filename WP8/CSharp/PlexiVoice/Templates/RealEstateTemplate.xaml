@@ -1,0 +1,355 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:PlexiVoice.Controls"
+    xmlns:util="clr-namespace:PlexiVoice.Util"
+    xmlns:c4f="clr-namespace:Coding4Fun.Toolkit.Controls;assembly=Coding4Fun.Toolkit.Controls"
+    xmlns:map="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:sparrow="clr-namespace:Sparrow.Chart;assembly=Sparrow.Chart.WP8.45"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8">
+      
+    <Style x:Key="RealEstateLabel" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="White"/>
+    </Style>
+
+    <Style x:Key="RealEstateAverageLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Average: "/>
+    </Style>
+
+    <Style x:Key="RealEstateMinLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Min: "/>
+    </Style>
+
+    <Style x:Key="RealEstateMaxLabel" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="Text" Value="Max: "/>
+    </Style>
+
+    <Style x:Key="RealEstateHeader" TargetType="TextBlock" BasedOn="{StaticResource RealEstateLabel}">
+        <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeLarge}"/>
+    </Style>
+
+    <DataTemplate x:Key="RealEstateTemplate">
+        <Grid Background="{StaticResource ResultBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="{Binding Location}" 
+                           FontSize="{StaticResource PhoneFontSizeLarge}" 
+                           FontWeight="Thin" 
+                           Margin="0,20"
+                           HorizontalAlignment="Center"/>
+                
+                <Border Style="{StaticResource Divider}"/>
+                
+                <map:Map x:Name="RealEstateMap"
+                        Height="400"
+                        IsHitTestVisible="False"
+                        VerticalAlignment="Stretch" 
+                        VerticalContentAlignment="Stretch" 
+                        HorizontalAlignment="Stretch" 
+                        HorizontalContentAlignment="Stretch">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <command:EventToCommand Command="{Binding MapLoaded}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </map:Map>
+                
+                <Border Style="{StaticResource Divider}"/>
+            </StackPanel>
+
+            <ListBox x:Name="ListingsListBox" 
+                     Grid.Row="1" 
+                     Style="{StaticResource ListBoxStyle}"
+                     ItemsSource="{Binding Listings}" 
+                     toolkit:TiltEffect.IsTiltEnabled="True">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="10,0">
+                            <Border Padding="0,10">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Tap">
+                                        <command:EventToCommand Command="{Binding DataContext.RealEstateItemSelection, ElementName=ListingsListBox}" CommandParameter="{Binding}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                        
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="10"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <Border Background="White" Width="100" Height="100" VerticalAlignment="Center">
+                                        <c4f:SuperImage Source="{Binding images, Converter={StaticResource ImageConverter}}"
+                                                Background="White"
+                                                Style="{StaticResource ThumbnailStyle}"        
+                                                HorizontalAlignment="Center"
+                                                Stretch="Uniform"
+                                                PlaceholderImageSource="/Assets/feature.camera.png"
+                                                PlaceholderImageStretch="Uniform"/>
+                                    </Border>
+
+                                    <Grid Grid.Column="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Text="{Binding title}"
+                                                   TextTrimming="WordEllipsis"
+                                                   FontSize="{StaticResource PhoneFontSizeLarge}"
+                                                   FontWeight="Light"/>
+
+                                        <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding attributes.price, StringFormat='{0:c}'}" Foreground="{StaticResource AccentColor}" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding attributes.bedrooms, StringFormat='{0} bed'}" Foreground="{StaticResource AccentColor}"/>
+                                            <TextBlock Text="{Binding attributes.bathrooms, StringFormat='/{0} bath'}" Foreground="{StaticResource AccentColor}"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                            <TextBlock Text="{Binding attributes.square_feet, StringFormat='{0:n0} sq ft'}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource Divider}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RealEstateRentTemplate">
+        <StackPanel> 
+            <TextBlock Text="{Binding attributes.price, StringFormat='Rent: {0:c}'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+            
+            <Grid Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- Left Column -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding attributes.bedrooms, StringFormat='{0} bed'}"/>
+                    <TextBlock Text="{Binding attributes.bathrooms, StringFormat='/{0} bath'}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="1" Text="{Binding attributes.square_feet, StringFormat='{0:n0} sq ft'}"/>
+                
+                <!-- Right Column -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="Pets: "/>
+                    <TextBlock Text="{Binding attributes.pets_allowed, TargetNullValue='N/A'}"/>
+                </StackPanel>
+                
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding attributes.amenities}" TextWrapping="Wrap"/>
+            </Grid>
+        </StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="RealEstateBuyTemplate">
+        <StackPanel>
+            <TextBlock Text="{Binding attributes.price, StringFormat='For Sale: {0:c}'}" FontSize="{StaticResource PhoneFontSizeLarge}"/>
+
+            <Grid Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- Left Column -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="{Binding attributes.bedrooms, StringFormat='{0} bed'}"/>
+                    <TextBlock Text="{Binding attributes.bathrooms, StringFormat='/{0} bath'}"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding attributes.square_feet, StringFormat='{0:n0} sq ft'}"/>
+                
+                <!-- Right Column -->
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding attributes.year, StringFormat='Year built: {0}'}"/>
+
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding attributes.amenities}"/>
+            </Grid>
+        </StackPanel>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="RealEstateDetailsTemplate">
+        <Grid Background="{StaticResource ResultBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="10"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="1" Margin="10,0">
+                <TextBlock Text="{Binding CurrentItem, Converter={StaticResource RealEstateConverter}}" 
+                           FontSize="{StaticResource PhoneFontSizeExtraLarge}" 
+                           FontWeight="Thin" 
+                           TextAlignment="Center"
+                           TextTrimming="WordEllipsis"/>
+
+                <TextBlock Text="{Binding CurrentItem.location.name}" 
+                           FontWeight="Thin"
+                           FontSize="{StaticResource PhoneFontSizeMedium}"
+                           TextAlignment="Center"/>
+            </StackPanel>
+
+            <Border Grid.Row="3" Style="{StaticResource Divider}"/>
+
+            <ScrollViewer Grid.Row="5" Margin="10,0">
+                <StackPanel>
+                    <util:RealEstateTemplateSelector Content="{Binding CurrentItem}"
+                                                 HorizontalContentAlignment="Stretch"
+                                                 Rent="{StaticResource RealEstateRentTemplate}"
+                                                 Buy="{StaticResource RealEstateBuyTemplate}"/>
+
+                    <TextBlock Text="{Binding CurrentItem.body}" TextWrapping="Wrap" Margin="0,10"/>
+
+                    <Border Background="Transparent" BorderBrush="White" BorderThickness="2" toolkit:TiltEffect.IsTiltEnabled="True">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Tap">
+                                <command:EventToCommand Command="{Binding ShowFullMapCommand}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <map:Map x:Name="EventMap" 
+                             Height="400" 
+                             HorizontalAlignment="Stretch" 
+                             HorizontalContentAlignment="Stretch"
+                             ZoomLevel="15"
+                             IsHitTestVisible="False">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Loaded">
+                                    <command:EventToCommand Command="{Binding MapLoaded}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </map:Map>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <!--
+        <phone:Pivot x:Name="ListingDetailsPivotView">
+            <phone:Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" FontWeight="Light"/>
+                </DataTemplate>
+            </phone:Pivot.HeaderTemplate>
+            <phone:PivotItem Header="Details" x:Name="DetailsPivotPanel">
+                <ScrollViewer Background="White" Foreground="Black" Margin="10" Padding="10">
+                    <StackPanel HorizontalAlignment="Stretch">
+                        <Grid Margin="0,20,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="Asking: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.price, StringFormat='{0:c}'}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Text="Bedrooms: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.bedrooms}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock Text="Bathrooms: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.bathrooms}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="Amenities: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.amenities}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" Visibility="{Binding CurrentItem.attributes.pets_allowed, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBlock Text="Pets Allowed: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.pets_allowed}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Visibility="Collapsed">
+                                <TextBlock Text="Pets Allowed: "/>
+                                <TextBlock Text="{Binding CurrentItem.attributes.pets_allowed}"/>
+                            </StackPanel>
+                        </Grid>
+                       
+                        <TextBlock x:Name="ListingDescription" Text="{Binding CurrentItem.body}" Margin="0,20,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </phone:PivotItem>
+
+            <phone:PivotItem Header="Location" x:Name="DirectionsPivotPanel">
+                <StackPanel>
+                    <map:Map x:Name="EventMap" 
+                                 Height="400" 
+                                 HorizontalAlignment="Stretch" 
+                                 HorizontalContentAlignment="Stretch"
+                                 ZoomLevel="15"
+                                 IsHitTestVisible="False">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Loaded">
+                                <command:EventToCommand Command="{Binding MapLoaded}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </map:Map>
+
+                    <Button x:Name="EventMapButton" Content="View Full Map" HorizontalAlignment="Stretch" Command="{Binding ShowFullMapCommand}" CommandParameter="real_estate"/>
+                </StackPanel>
+            </phone:PivotItem>
+                <phone:PivotItem Header="Photos">
+                    <ListBox ItemsSource="{Binding CurrentItem.images}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding src}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </phone:PivotItem>
+        </phone:Pivot>-->
+    </DataTemplate>
+</ResourceDictionary>

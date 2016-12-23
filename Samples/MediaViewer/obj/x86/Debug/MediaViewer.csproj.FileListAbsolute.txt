@@ -1,0 +1,5 @@
+D:\GitHub\stremor-please\Samples\MediaViewer\Bin\x86\Debug\MediaViewer.dll
+D:\GitHub\stremor-please\Samples\MediaViewer\Bin\x86\Debug\MediaViewer.pdb
+D:\GitHub\stremor-please\Samples\MediaViewer\obj\x86\Debug\MediaViewer.g.resources
+D:\GitHub\stremor-please\Samples\MediaViewer\obj\x86\Debug\MediaViewer.dll
+D:\GitHub\stremor-please\Samples\MediaViewer\obj\x86\Debug\MediaViewer.pdb

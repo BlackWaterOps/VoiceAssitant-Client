@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="PlexiVoice.Controls.PageTitle"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    d:DesignHeight="480" d:DesignWidth="480">
+    
+    <UserControl.Resources>
+        <Style x:Key="AppTitleIcon" TargetType="Image">
+            <Setter Property="Source" Value="/Assets/plexi-UI-logo.png"/>
+            <Setter Property="Width" Value="41"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="16,10"/>
+        </Style>
+
+        <Style x:Key="AppTitle" TargetType="TextBlock">
+            <Setter Property="Text" Value="plexi" />
+            <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilyNormal}" />
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeNormal}" />
+            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
+            <Setter Property="Margin" Value="16,10" />
+        </Style>
+
+        <Style x:Key="PageTitleBase" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe WP" />
+            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="TextTrimming" Value="WordEllipsis"/>
+        </Style>
+
+        <Style x:Key="PageTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeExtraLarge}" />
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="16,0,0,10" />
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
+
+        <Style x:Key="PageSubTitle" TargetType="TextBlock" BasedOn="{StaticResource PageTitleBase}">
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeSmall}" />
+            <Setter Property="Margin" Value="16,10" />
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid x:Name="PageTitleLayoutRoot" Background="Transparent">
+        <StackPanel Grid.Row="0">
+            <Border x:Name="AppTitleBorder">
+                <Image Style="{StaticResource AppTitleIcon}"/>
+            </Border>
+            <Border x:Name="PageTitleBorder" Visibility="Collapsed">
+                <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitle}"/>
+            </Border>
+            <Border x:Name="PageSubTitleBorder" Visibility="Collapsed">
+                <TextBlock Text="{Binding SubTitle}" Style="{StaticResource PageSubTitle}"/>
+            </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>
