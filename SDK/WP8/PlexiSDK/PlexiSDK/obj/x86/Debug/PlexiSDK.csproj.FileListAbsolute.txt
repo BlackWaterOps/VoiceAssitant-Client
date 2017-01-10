@@ -10,3 +10,11 @@ D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csproj
 D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.Resources.PlexiResources.resources
 D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csproj.GenerateResource.Cache
 D:\GitHub\stremor-please\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.pdb
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\PlexiSDK.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\PlexiSDK.pdb
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\Newtonsoft.Json.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\x86\Debug\Newtonsoft.Json.xml
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.Resources.PlexiResources.resources
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.csproj.GenerateResource.Cache
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\x86\Debug\PlexiSDK.pdb

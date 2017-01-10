@@ -1,0 +1,50 @@
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <AppTargetFxGreaterThanWP80 Condition= "'$(TargetFrameworkIdentifier)' == 'WindowsPhone' AND '$(SilverlightApplication)' == 'true' AND
+												 ($([System.Version]::Parse('$(TargetFrameworkVersion.TrimStart(`v`))').CompareTo( $([System.Version]::Parse('8.0')) )) &gt;= 0)">true</AppTargetFxGreaterThanWP80>
+    </PropertyGroup>
+    <Target Name="PlatformCheck" BeforeTargets="BuildOnlySettings" Condition=" ('$(AppTargetFxGreaterThanWP80)' == 'true')  AND ('$(DesignTimeBuild)' != 'true') ">
+        <Error Condition=" ('$(Platform)' != 'x86') AND ('$(Platform)' != 'ARM') " Text="$(MSBuildThisFileName) does not support the currently selected platform of '$(Platform)'. The supported platforms are 'x86' and 'ARM'." />
+    </Target>
+    <Target Name="InjectReference" BeforeTargets="ResolveAssemblyReferences" Condition=" ('$(AppTargetFxGreaterThanWP80)' == 'true')  AND ('$(DesignTimeBuild)' != 'true') ">
+        <ItemGroup Condition=" '$(Platform)' == 'x86' ">
+            <Reference Include="$(MSBuildThisFileDirectory)native\x86\TimeZones.WP8.Native.winmd">
+                <Implementation>TimeZones.WP8.Native.dll</Implementation>
+                <Name>TimeZones.WP8.Native</Name>
+                <Private>true</Private>
+            </Reference>
+            <Content Include="$(MSBuildThisFileDirectory)native\x86\TimeZones.WP8.Native.dll">
+                <Link>TimeZones.WP8.Native.dll</Link>
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </Content>
+          <!--<Content Include="$(MSBuildThisFileDirectory)native\x86\TimeZones.WP8.Native.winmd">
+            <Link>TimeZones.WP8.Native.winmd</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </Content>-->
+          <Reference Include="$(MSBuildThisFileDirectory)native\x86\TimeZones.Platform.dll">
+                <Name>TimeZones.Platform</Name>
+                <Private>true</Private>
+            </Reference>
+        </ItemGroup>
+        <ItemGroup Condition=" '$(Platform)' == 'ARM' ">
+            <Reference Include="$(MSBuildThisFileDirectory)native\ARM\TimeZones.WP8.Native.winmd">
+                <Implementation>TimeZones.WP8.Native.dll</Implementation>
+                <Name>TimeZones.WP8.Native</Name>
+                <Private>true</Private>
+            </Reference>
+            <Content Include="$(MSBuildThisFileDirectory)native\ARM\TimeZones.WP8.Native.dll">
+                <Link>TimeZones.WP8.Native.dll</Link>
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </Content>
+          <!--<Content Include="$(MSBuildThisFileDirectory)native\ARM\TimeZones.WP8.Native.winmd">
+            <Link>TimeZones.WP8.Native.winmd</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          </Content>-->
+            <Reference Include="$(MSBuildThisFileDirectory)native\ARM\TimeZones.Platform.dll">
+                <Name>TimeZones.Platform</Name>
+                <Private>true</Private>
+            </Reference>
+        </ItemGroup>
+    </Target>
+</Project>

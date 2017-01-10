@@ -1,0 +1,5 @@
+D:\GitHub\VoiceAssitant-Client\Samples\MediaViewer\Bin\Release\MediaViewer.dll
+D:\GitHub\VoiceAssitant-Client\Samples\MediaViewer\Bin\Release\MediaViewer.pdb
+D:\GitHub\VoiceAssitant-Client\Samples\MediaViewer\obj\Release\MediaViewer.g.resources
+D:\GitHub\VoiceAssitant-Client\Samples\MediaViewer\obj\Release\MediaViewer.dll
+D:\GitHub\VoiceAssitant-Client\Samples\MediaViewer\obj\Release\MediaViewer.pdb

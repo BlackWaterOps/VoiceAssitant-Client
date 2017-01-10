@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{420c4e58-1173-4c44-9206-93cc4fcc84e1}" Title="VoiceAssistant" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="VoiceAssistant author" Description="Sample description" Publisher="VoiceAssistant" PublisherID="{c3eff696-cc41-4e1e-925b-772363091209}">
+  <App xmlns="" ProductID="{420c4e58-1173-4c44-9206-93cc4fcc84e1}" Title="PlexiVoice" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Stremor Corp" Description="Sample description" Publisher="PlexiVoice" PublisherID="{c3eff696-cc41-4e1e-925b-772363091209}">
     <IconPath IsRelative="true" IsResource="false">Assets\plexi-100x100.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
@@ -23,12 +23,12 @@
       <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
     </Tasks>
     <Tokens>
-      <PrimaryToken TokenID="VoiceAssistantToken" TaskName="_default">
+      <PrimaryToken TokenID="PlexiVoiceToken" TaskName="_default">
         <TemplateFlip>
           <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\plexi-159x159.png</SmallImageURI>
           <Count>0</Count>
           <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\plexi-336x336.png</BackgroundImageURI>
-          <Title>VoiceAssistant</Title>
+          <Title>PlexiVoice</Title>
           <BackContent></BackContent>
           <BackBackgroundImageURI></BackBackgroundImageURI>
           <BackTitle></BackTitle>
@@ -40,6 +40,12 @@
         </TemplateFlip>
       </PrimaryToken>
     </Tokens>
+    <ActivatableClasses>
+      <InProcessServer>
+        <Path>TimeZones.WP8.Native.dll</Path>
+        <ActivatableClass ActivatableClassId="TimeZones.WP8.Native.TimeZoneInfoEx" ThreadingModel="both" />
+      </InProcessServer>
+    </ActivatableClasses>
     <ScreenResolutions>
       <ScreenResolution Name="ID_RESOLUTION_WVGA" />
       <ScreenResolution Name="ID_RESOLUTION_WXGA" />

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+    <assembly>
+        <name>TimeZones.WinRT</name>
+    </assembly>
+    <members>
+        <member name="T:TimeZones.WinRT.TimeZoneService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TimeZones.WinRT.TimeZoneService.FindSystemTimeZoneById(System.String)">
+            <summary>
+                Gets a TimeZoneEx by id.
+            </summary>
+            <param name="id">Invariant Time Zone name. See TimeZones property for full list.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.WinRT.TimeZoneService.ConvertTimeBySystemTimeZoneId(Windows.Foundation.DateTime,System.String)">
+            <summary>
+                Converts a DateTimeOffset to one in the specified system time zone
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <param name="destinationTimeZoneId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.WinRT.TimeZoneService.SpecifyTimeZone(Windows.Foundation.DateTime,TimeZones.WinRT.ITimeZoneEx)">
+            <summary>
+            Sets the specified timezone on the date without converting the time
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <param name="timeZone"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TimeZones.WinRT.TimeZoneService.Utc">
+            <summary>
+            UTC Time Zone
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.TimeZoneService.Local">
+            <summary>
+            Local Time Zone
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.TimeZoneService.SystemTimeZoneIds">
+            <summary>
+                All available time zones
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.TimeZoneService.AllTimeZones">
+            <summary>
+            All Time Zones 
+            </summary>
+        </member>
+        <member name="T:TimeZones.WinRT.ITimeZoneEx">
+            <summary>
+                Represents a time zone
+            </summary>
+        </member>
+        <member name="M:TimeZones.WinRT.ITimeZoneEx.IsDaylightSavingTime(Windows.Foundation.DateTime)">
+            <summary>
+                Determines if the current datetime value is in daylight time or not
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TimeZones.WinRT.ITimeZoneEx.ConvertTime(Windows.Foundation.DateTime)">
+            <summary>
+                Gets a DateTimeOffset for this time zone
+            </summary>
+            <param name="dateTimeOffset"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TimeZones.WinRT.ITimeZoneEx.BaseUtcOffset">
+            <summary>
+                Normal offset from UTC
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.ITimeZoneEx.StandardName">
+            <summary>
+                Localized name for standard time
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.ITimeZoneEx.DaylightName">
+            <summary>
+                Localized name for daylight time
+            </summary>
+        </member>
+        <member name="P:TimeZones.WinRT.ITimeZoneEx.Id">
+            <summary>
+                System Id for this time zone
+            </summary>
+        </member>
+    </members>
+</doc>

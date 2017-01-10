@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Java/Plexi/Plexi/src/instrumentTest/java"/>
+	<classpathentry kind="src" path="Java/Plexi/Plexi/src/main/java"/>
+	<classpathentry kind="src" path="Java/Plexi/PlexiClient/src/main/java"/>
+	<classpathentry kind="src" path="PhoneGap/gen"/>
+	<classpathentry kind="src" path="PhoneGap/src"/>
+	<classpathentry kind="lib" path="Java/Plexi/gradle/wrapper/gradle-wrapper.jar"/>
+	<classpathentry kind="lib" path="Java/Plexi/PlexiClient/gradle-0.7.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

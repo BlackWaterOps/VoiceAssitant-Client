@@ -1,0 +1,9 @@
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\Release\PlexiSDK.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\Release\PlexiSDK.pdb
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\Release\Newtonsoft.Json.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\Bin\Release\Newtonsoft.Json.xml
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\Release\PlexiSDK.csprojResolveAssemblyReference.cache
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\Release\PlexiSDK.Resources.PlexiResources.resources
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\Release\PlexiSDK.csproj.GenerateResource.Cache
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\Release\PlexiSDK.dll
+D:\GitHub\VoiceAssitant-Client\SDK\WP8\PlexiSDK\PlexiSDK\obj\Release\PlexiSDK.pdb
